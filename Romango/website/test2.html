@@ -118,6 +118,10 @@
 	<img id='pattern_large' src='image/pattern_large.png' border='0'>
   </div>
   
+  <div style="position: absolute; left: 175px; top: 175px; ">
+	<img id='inseam_large' src='image/inseam_large.png' border='0'>
+  </div>
+  
   
    <div style="position: absolute; left: 292px; top: 10px; title='Cowboy Boots'">
     <a href='test.html'><img id='cowboy_small' src='image/cowboy_small.png' border='0'></a>
@@ -146,6 +150,10 @@
   <div style="position: absolute; right: 95px; top: 95px; title='Design'">
     <a href='test.html'><img id='pattern_small' src='image/pattern_small.png' border='0'></a>
   </div>
+  
+   <div style="position: absolute; left: 95px; bottom: 95px; title='Design'">
+    <a href='test.html'><img id='inseam_small' src='image/inseam_small.png' border='0'></a>
+  </div>
  
  <div class="text_box" id="center_tip">&nbsp;&nbsp;Western Boots&nbsp;&nbsp;</div>
  
@@ -169,6 +177,8 @@
 	 var $boots_small = $('#boots_small');
 	 var $pattern_large = $('#pattern_large');
 	 var $pattern_small = $('#pattern_small');
+	 var $inseam_large = $('#inseam_large');
+	 var $inseam_small = $('#inseam_small');
 	 
 	 $cowboy_large.hide();
 	 $dress_large.hide();
@@ -177,6 +187,7 @@
 	 $huarache_large.hide();
 	 $boots_large.hide();
 	 $pattern_large.hide();
+	 $inseam_large.hide();
 	 
 	 $center_tip.hide();
 	
@@ -255,6 +266,17 @@
 		});	 
 	$pattern_small.mouseout(function() {
 	 	 $pattern_large.fadeOut('fast'); 
+		 $center_tip.fadeOut('fast'); 
+		  });	 
+		  
+    // ------------ Inseam
+	$inseam_small.mouseover(function(){
+	 	$inseam_large.slideDown('slow'); 
+		$center_tip.text('Craftsmanship!');
+		$center_tip.fadeIn('fast');
+		});	 
+	$inseam_small.mouseout(function() {
+	 	 $inseam_large.fadeOut('fast'); 
 		 $center_tip.fadeOut('fast'); 
 		  });	 
 	
