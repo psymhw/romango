@@ -5,6 +5,7 @@
 <meta http-equiv="content-type" content="text/html; charset=iso-8859-1"/>
  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
  <script type="text/javascript" src="js/jquery.easing.1.3.js"></script>	
+ <script type="text/javascript" src="js/menu.js"></script>	
  <link rel="stylesheet" type="text/css" href="style.css" media="screen"/>
 <title>Romango Handmade Shoes</title>
 <jsp:include page="metatags.html" />
@@ -17,8 +18,8 @@
   	 <div class="clearer"></div>
   	 <div id="container2">
   	 	<div class="title">
-  	      <img src="image/littleshoe.jpg" alt="Romango Shoes" width="50" height="50" />
-		  <img src="image/romangoshoes.jpg" alt="Romango Shoes" width="300" height="60" />
+  	     
+		  <img src="image/header2.jpg" alt="Romango Shoes"  />
 		</div>
 		<h1>Custom Fit, Handmade Shoes</h1><br/>
 		
@@ -263,61 +264,6 @@
 		  });	 
     </script>
 	
-	<script type="text/javascript">
-
-	$(document).ready(function () {
-
-		//transitions
-		//for more transition, goto http://gsgd.co.uk/sandbox/jquery/easing/
-		var style = 'easeOutElastic';
-
-		//Retrieve the selected item position and width
-		var default_left = Math.round($('#lava li.selected').offset().left - $('#lava').offset().left);
-		var default_width = $('#lava li.selected').width();
-
-		//Set the floating bar position and width
-		$('#box').css({left: default_left});
-		$('#box .head').css({width: default_width});
-
-		//if mouseover the menu item
-		$('#lava li').hover(function () {
-			
-			//Get the position and width of the menu item
-			left = Math.round($(this).offset().left - $('#lava').offset().left);
-			width = $(this).width(); 
-		$('#debug').html(left);
-			//Set the floating bar position, width and transition
-			$('#box').stop(false, true).animate({left: left},{duration:1000, easing: style});	
-			$('#box .head').stop(false, true).animate({width:width},{duration:1000, easing: style});	
-		
-		//if user click on the menu
-		}).click(function () {
-			
-			//reset the selected item
-			$('#lava li').removeClass('selected');	
-			
-			//select the current item
-			$(this).addClass('selected');
 	
-		});
-		
-		//If the mouse leave the menu, reset the floating bar to the selected item
-		$('#lava').mouseleave(function () {
-
-			//Retrieve the selected item position and width
-			default_left = Math.round($('#lava li.selected').offset().left - $('#lava').offset().left);
-			default_width = $('#lava li.selected').width();
-			
-			//Set the floating bar position, width and transition
-			$('#box').stop(false, true).animate({left: default_left},{duration:1500, easing: style});	
-			$('#box .head').stop(false, true).animate({width:default_width},{duration:1500, easing: style});		
-			
-		});
-		
-	});
-	
-
-	</script>
-  
 </body>
 <html>
