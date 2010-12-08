@@ -1,0 +1,323 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1"/>
+ <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+ <script type="text/javascript" src="js/jquery.easing.1.3.js"></script>	
+ <link rel="stylesheet" type="text/css" href="style.css" media="screen"/>
+<title>Romango Handmade Shoes</title>
+<jsp:include page="metatags.html" />
+
+</head>
+<body>
+	
+	
+  <div id="wrapper">
+  	 <div class="clearer"></div>
+  	 <div id="container2">
+  	 	<div class="title">
+  	      <img src="image/littleshoe.jpg" alt="Romango Shoes" width="50" height="50" />
+		  <img src="image/romangoshoes.jpg" alt="Romango Shoes" width="300" height="60" />
+		</div>
+		<h1>Custom Fit, Handmade Shoes</h1><br/>
+		
+		<!-- Lava Menu -->
+	    <div id="lava_container">
+          <div id="lava">
+	        <ul>
+		      <li><a href="#">home</a></li>
+		      <li class="selected"><a href="#">about</a></li>
+		      <li><a href="#">contact</a></li>
+	        </ul>
+	        <!-- If you want to make it even simpler, you can append these html using jquery -->
+	        <div id="box"><div class="head"></div></div>
+          </div>
+        </div>
+
+
+		<br />
+		<ul>
+          <li>Located in Eugene, Oregon area but remote fitting is available.</li>
+		  <li>Able to fit feet that are long, short, wide, narrow etc. </li>
+		  <li>Can build to accommodate orthopedic inserts</li>
+		  <li>Pricing: Men's dress shoes: $700, dance shoes: $500, women's boots: $1,000. </li>
+        </ul>
+		
+
+		
+     </div>
+	 
+	 
+	 
+    <div id="container">
+      <div style="position: relative; left: 1px; top: 1px; ">
+        <img name="backgorund" src="image/background.png" id="background" border="0" />
+	  </div>
+	  <!-- large hidden images -->
+   <div style="position: absolute; left: 175px; top: 175px; ">
+    <img id='cowboy_large' src='image/cowboy_large.png' border='0'/>
+   </div>
+  
+  <div style="position: absolute; left: 175px; top: 175px; ">
+	<img id='dress_large' src='image/dress_large.png' border='0'/>
+  </div>
+  
+  <div style="position: absolute; left: 175px; top: 175px; ">
+	<img id='dance_large' src='image/dance_large.png' border='0'/>
+  </div>
+  
+  <div style="position: absolute; left: 175px; top: 175px; ">
+	<img id='chelsea_large' src='image/chelsea_large.png' border='0'/>
+  </div>
+  
+  <div style="position: absolute; left: 175px; top: 175px; ">
+	<img id='boots_large' src='image/boots_large.png' border='0'/>
+  </div>
+  
+  <div style="position: absolute; left: 175px; top: 175px; ">
+	<img id='huarache_large' src='image/huarache_large.png' border='0'/>
+  </div>
+  
+  <div style="position: absolute; left: 175px; top: 175px; ">
+	<img id='pattern_large' src='image/pattern_large.png' border='0'/>
+  </div>
+  
+   <div style="position: absolute; left: 175px; top: 175px; ">
+	<img id='women_dance_large' src='image/women_dance_large.png' border='0'/>
+  </div>
+  
+	  
+	  
+	  
+	  
+	   <div style="position: absolute; left: 292px; top: 10px; title='Cowboy Boots'">
+	    <a href='test.html'><img id='cowboy_small' src='image/cowboy_small.png' border='0/'></a>
+	  </div>
+	  
+	  <div style="position: absolute; left: 10px; top: 292px; title='Mens Dress Shoes'">
+	    <a href='test.html'><img id='dress_small' src='image/dress_small.png' border='0'/></a>
+	  </div>
+	  
+	   <div style="position: absolute; right: 10px; top: 292px; title='Mens Dance Shoes'">
+	    <a href='test.html'><img id='dance_small' src='image/dance_small.png' border='0'/></a>
+	  </div>
+	  
+	  <div style="position: absolute; left: 292px; bottom: 10px; title='Chelsea Boots'">
+	    <a href='test.html'><img id='chelsea_small' src='image/chelsea_small.png' border='0'/></a>
+	  </div>
+	  
+	  <div style="position: absolute; left: 95px; top: 95px; title='Womens Boots'">
+	    <a href='test.html'><img id='boots_small' src='image/boots_small.png' border='0'/></a>
+	  </div>
+	 
+	 <div style="position: absolute; right: 95px; bottom: 95px; title='Womens Boots'">
+	    <a href='test.html'><img id='huarache_small' src='image/huarache_small.png' border='0'/></a>
+	  </div>
+	  
+	  <div style="position: absolute; right: 95px; top: 95px; title='Design'">
+	    <a href='test.html'><img id='pattern_small' src='image/pattern_small.png' border='0'/></a>
+	  </div>
+	  
+	   <div style="position: absolute; left: 95px; bottom: 95px; title='Design'">
+	    <a href='test.html'><img id='women_dance_small' src='image/women_dance_small.png' border='0'/></a>
+	  </div>
+	 
+	 <div class="text_box" id="center_tip">&nbsp;&nbsp;Western Boots&nbsp;&nbsp;</div>
+ 
+ </div>
+  
+  <div id="container3">
+  	<hr/>
+	<p>
+      <a href="http://www.romangoshoes.com/MpegCW.mov"><img src="http://www.romangoshoes.com/stone.jpg"  style="border:0;" /></a>
+	  <br>The Cordwainer by Peter Stone
+	</p>
+	 <div class="left">Copyright &copy; 2007-2010 <a href="index.jsp">romangoshoes.com</a></div>
+
+		<div class="right">All rights reserved</div>
+
+		<div class="clearer"></div>
+	
+  </div>
+	 
+	  		
+  </div>
+  
+  <script>
+	 var $center_tip = $('#center_tip');
+	 var $cowboy_small = $('#cowboy_small');
+	 var $cowboy_large = $('#cowboy_large');
+	 var $dress_small = $('#dress_small');
+	 var $dress_large = $('#dress_large');
+	 var $dance_large = $('#dance_large');
+	 var $dance_small = $('#dance_small');
+	 var $chelsea_large = $('#chelsea_large');
+	 var $chelsea_small = $('#chelsea_small');
+	 var $huarache_large = $('#huarache_large');
+	 var $huarache_small = $('#huarache_small');
+	 var $boots_large = $('#boots_large');
+	 var $boots_small = $('#boots_small');
+	 var $pattern_large = $('#pattern_large');
+	 var $pattern_small = $('#pattern_small');
+	 var $women_dance_large = $('#women_dance_large');
+	 var $women_dance_small = $('#women_dance_small');
+	 
+	 $cowboy_large.hide();
+	 $dress_large.hide();
+	 $dance_large.hide();
+	 $chelsea_large.hide();
+	 $huarache_large.hide();
+	 $boots_large.hide();
+	 $pattern_large.hide();
+	 $women_dance_large.hide();
+	 $center_tip.hide();
+	
+	// ---------- Cowboy Boot
+    $cowboy_small.mouseover(function(){
+	 	$cowboy_large.slideDown('slow'); 
+		$center_tip.text('Western Boots');
+		$center_tip.fadeIn('fast'); 
+		});	 
+	$cowboy_small.mouseout(function() {
+	 	 $cowboy_large.fadeOut('fast');  
+		 $center_tip.fadeOut('slow'); 
+		 });
+	 
+	// --------- Men's Dress Shoes
+	$dress_small.mouseover(function(){
+	 	$dress_large.slideDown('slow'); 
+		$center_tip.text('Men\'s Dress Shoes');
+		$center_tip.slideDown('fast'); 
+		});	 
+	$dress_small.mouseout(function() {
+	 	 $dress_large.fadeOut('fast'); 
+		 $center_tip.fadeOut('fast'); 
+		  });	 
+		  
+	// --------- Men's Dance Shoes
+	$dance_small.mouseover(function(){
+	 	$dance_large.slideDown('slow'); 
+		$center_tip.text('Men\'s Dance Shoes');
+		$center_tip.fadeIn('fast'); 
+		});	 
+	$dance_small.mouseout(function() {
+	 	 $dance_large.fadeOut('fast');  
+		 $center_tip.fadeOut('fast'); 
+		 });	 
+		 
+	// ----------- Chelsea Boots
+	$chelsea_small.mouseover(function(){
+	 	$chelsea_large.slideDown('slow'); 
+		$center_tip.text('Chelsea Boots');
+		$center_tip.fadeIn('fast'); 
+		});	 
+	$chelsea_small.mouseout(function() {
+	 	 $chelsea_large.fadeOut('fast');  
+		 $center_tip.fadeOut('fast'); 
+		 });
+		 
+	// ------------ Women's Boots
+	$boots_small.mouseover(function(){
+	 	$boots_large.slideDown('slow'); 
+		$center_tip.text('Women\' Boots');
+		$center_tip.fadeIn('fast');
+		});	 
+		 
+	$boots_small.mouseout(function() {
+	 	 $boots_large.fadeOut('fast'); 
+		 $center_tip.fadeOut('fast'); 
+		  });
+		 	 
+	// ------------ Huarache Sandals
+	$huarache_small.mouseover(function(){
+	 	$huarache_large.slideDown('slow'); 
+		$center_tip.text('Huarache Sandals');
+		$center_tip.fadeIn('fast');
+		});	 
+	$huarache_small.mouseout(function() {
+	 	 $huarache_large.fadeOut('fast'); 
+		 $center_tip.fadeOut('fast'); 
+		  });	 
+		  
+    // ------------ Pattern
+	$pattern_small.mouseover(function(){
+	 	$pattern_large.slideDown('slow'); 
+		$center_tip.text('Design!');
+		$center_tip.fadeIn('fast');
+		});	 
+	$pattern_small.mouseout(function() {
+	 	 $pattern_large.fadeOut('fast'); 
+		 $center_tip.fadeOut('fast'); 
+		  });	 
+		  
+		  // ------------ women_dance
+	$women_dance_small.mouseover(function(){
+	 	$women_dance_large.slideDown('slow'); 
+		$center_tip.text('Women\'s Dance Shoes');
+		$center_tip.fadeIn('fast');
+		});	 
+	$women_dance_small.mouseout(function() {
+	 	 $women_dance_large.fadeOut('fast'); 
+		 $center_tip.fadeOut('fast'); 
+		  });	 
+    </script>
+	
+	<script type="text/javascript">
+
+	$(document).ready(function () {
+
+		//transitions
+		//for more transition, goto http://gsgd.co.uk/sandbox/jquery/easing/
+		var style = 'easeOutElastic';
+
+		//Retrieve the selected item position and width
+		var default_left = Math.round($('#lava li.selected').offset().left - $('#lava').offset().left);
+		var default_width = $('#lava li.selected').width();
+
+		//Set the floating bar position and width
+		$('#box').css({left: default_left});
+		$('#box .head').css({width: default_width});
+
+		//if mouseover the menu item
+		$('#lava li').hover(function () {
+			
+			//Get the position and width of the menu item
+			left = Math.round($(this).offset().left - $('#lava').offset().left);
+			width = $(this).width(); 
+		$('#debug').html(left);
+			//Set the floating bar position, width and transition
+			$('#box').stop(false, true).animate({left: left},{duration:1000, easing: style});	
+			$('#box .head').stop(false, true).animate({width:width},{duration:1000, easing: style});	
+		
+		//if user click on the menu
+		}).click(function () {
+			
+			//reset the selected item
+			$('#lava li').removeClass('selected');	
+			
+			//select the current item
+			$(this).addClass('selected');
+	
+		});
+		
+		//If the mouse leave the menu, reset the floating bar to the selected item
+		$('#lava').mouseleave(function () {
+
+			//Retrieve the selected item position and width
+			default_left = Math.round($('#lava li.selected').offset().left - $('#lava').offset().left);
+			default_width = $('#lava li.selected').width();
+			
+			//Set the floating bar position, width and transition
+			$('#box').stop(false, true).animate({left: default_left},{duration:1500, easing: style});	
+			$('#box .head').stop(false, true).animate({width:default_width},{duration:1500, easing: style});		
+			
+		});
+		
+	});
+	
+
+	</script>
+  
+</body>
+<html>
