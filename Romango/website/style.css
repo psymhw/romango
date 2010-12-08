@@ -20,7 +20,7 @@ h1,h2,h3 {color: #442; padding: 8px 0 2px;}
 form,table {margin-bottom: 1.2em;}
 label {display: block;}
 li {line-height: 1.5em;}
-p {padding: 2px 0 10px;}
+p {padding: 2px 0 10px; margin-left: 50px; margin-right: 50px; }
 .smalltext {
 	font-size: 0.9em;
 	font-style: normal;
@@ -264,7 +264,7 @@ h1 {
 		z-index:50; 
 
 		/* image of the right rounded corner */
-		background:url(tail.gif) no-repeat right center; 
+		background:url(image/tail2.png) no-repeat right center; 
 		height:20px;
 		
 		/* add padding 8px so that the tail would appear */
@@ -276,7 +276,7 @@ h1 {
 	
 	#lava #box .head {
 		/* image of the left rounded corner */
-		background:url(head.gif) no-repeat 0 0; 
+		background:url(image/head2.png) no-repeat 0 0; 
 		height:20px;
 
 		/* self-adjust left padding to make sure the box display in the center of the item */
