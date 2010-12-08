@@ -237,7 +237,7 @@ h1 {
 		
 		/* center the menu, depend on the width of you menu*/
 		left:20px; 
-		top:0; 
+		top:5px; 
 		
 		/* should be higher than #box */
 		z-index:100;
@@ -258,7 +258,7 @@ h1 {
 		/* position absolute so that z-index can be defined and able to move this item using javascript */
 		position:absolute; 
 		left:0; 
-		top:0; 
+		top:5px; 
 		
 		/* should be lower than the list menu */
 		z-index:50; 
