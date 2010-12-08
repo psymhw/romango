@@ -27,9 +27,11 @@
 	    <div id="lava_container">
           <div id="lava">
 	        <ul>
-		      <li><a href="#">home</a></li>
-		      <li class="selected"><a href="#">about</a></li>
+		      <li class="selected"><a href="#">home</a></li>
+		      <li><a href="#">about</a></li>
 		      <li><a href="#">contact</a></li>
+			   <li><a href="video.html">video</a></li>
+			    <li><a href="#">in the news</a></li>
 	        </ul>
 	        <!-- If you want to make it even simpler, you can append these html using jquery -->
 	        <div id="box"><div class="head"></div></div>
@@ -89,15 +91,12 @@
   </div>
   
 	  
-	  
-	  
-	  
 	   <div style="position: absolute; left: 292px; top: 10px; title='Cowboy Boots'">
 	    <a href='test.html'><img id='cowboy_small' src='image/cowboy_small.png' border='0/'></a>
 	  </div>
 	  
 	  <div style="position: absolute; left: 10px; top: 292px; title='Mens Dress Shoes'">
-	    <a href='test.html'><img id='dress_small' src='image/dress_small.png' border='0'/></a>
+	    <a href='men_dress.html'><img id='dress_small' src='image/dress_small.png' border='0'/></a>
 	  </div>
 	  
 	   <div style="position: absolute; right: 10px; top: 292px; title='Mens Dance Shoes'">
@@ -124,26 +123,17 @@
 	    <a href='test.html'><img id='women_dance_small' src='image/women_dance_small.png' border='0'/></a>
 	  </div>
 	 
-	 <div class="text_box" id="center_tip">&nbsp;&nbsp;Western Boots&nbsp;&nbsp;</div>
+	  <div class="text_box" id="center_tip">&nbsp;&nbsp;Western Boots&nbsp;&nbsp;</div>
  
- </div>
+  </div>
   
   <div id="container3">
   	<hr/>
-	<p>
-      <a href="http://www.romangoshoes.com/MpegCW.mov"><img src="http://www.romangoshoes.com/stone.jpg"  style="border:0;" /></a>
-	  <br>The Cordwainer by Peter Stone
-	</p>
-	 <div class="left">Copyright &copy; 2007-2010 <a href="index.jsp">romangoshoes.com</a></div>
-
-		<div class="right">All rights reserved</div>
-
-		<div class="clearer"></div>
-	
+	<div class="left">Copyright &copy; 2007-2010 <a href="index.jsp">romangoshoes.com</a></div>
+    <div class="right">All rights reserved</div>
+	<div class="clearer"></div>
   </div>
-	 
-	  		
-  </div>
+</div>
   
   <script>
 	 var $center_tip = $('#center_tip');
