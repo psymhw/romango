@@ -44,7 +44,7 @@
           <li>Located in Eugene, Oregon area but remote fitting is available.</li>
 		  <li>Able to fit feet that are long, short, wide, narrow etc. </li>
 		  <li>Can build to accommodate orthopedic inserts</li>
-		  <li>Pricing: Men's dress shoes: $700, dance shoes: $500, women's boots: $1,000. </li>
+		  <li>Pricing:  dance shoes: $500, men's dress shoes: $700, boots: $1,000. </li>
         </ul>
 		
 
@@ -92,7 +92,7 @@
   
 	  
 	   <div style="position: absolute; left: 292px; top: 10px; title='Cowboy Boots'">
-	    <a href='test.html'><img id='cowboy_small' src='image/cowboy_small.png' border='0/'></a>
+	    <a href='cowboy.html'><img id='cowboy_small' src='image/cowboy_small.png' border='0/'></a>
 	  </div>
 	  
 	  <div style="position: absolute; left: 10px; top: 292px; title='Mens Dress Shoes'">
