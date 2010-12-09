@@ -14,7 +14,7 @@ body {
 a {color: #642;}
 a:hover {color: #963;}
 
-h1,h2,h3 {color: #442; padding: 8px 0 2px;}
+h1,h2,h3 {color: #442; padding: 8px 0 2px; margin-left: 10px;}
 
 
 form,table {margin-bottom: 1.2em;}
