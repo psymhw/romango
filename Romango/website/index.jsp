@@ -40,12 +40,19 @@
 
 
 		<br />
+		<table border="0" width="100%"><tr><td valign="top">
 		<ul>
           <li>Located in Eugene, Oregon area but remote fitting is available.</li>
 		  <li>Able to fit feet that are long, short, wide, narrow etc. </li>
 		  <li>Can build to accommodate orthopedic inserts</li>
 		  <li>Pricing:  dance shoes: $500, men's dress shoes: $700, boots: $1,000. </li>
         </ul>
+		</td>
+		<td width="250px">
+			<img src="image/gldlogo.png" />
+			<br/>
+			The Honourable Cordwainers' Company Member
+		</td></tr></table>
 		
 
 		
@@ -108,7 +115,7 @@
 	  </div>
 	  
 	  <div style="position: absolute; left: 95px; top: 95px; title='Womens Boots'">
-	    <a href='test.html'><img id='boots_small' src='image/boots_small.png' border='0'/></a>
+	    <a href='womens_boots.html'><img id='boots_small' src='image/boots_small.png' border='0'/></a>
 	  </div>
 	 
 	 <div style="position: absolute; right: 95px; bottom: 95px; title='Womens Boots'">
