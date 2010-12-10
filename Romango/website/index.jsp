@@ -107,27 +107,27 @@
 	  </div>
 	  
 	   <div style="position: absolute; right: 10px; top: 292px; title='Mens Dance Shoes'">
-	    <a href='test.html'><img id='dance_small' src='image/dance_small.png' border='0'/></a>
+	    <a href='mens_dance.html'><img id='dance_small' src='image/dance_small.png' border='0'/></a>
 	  </div>
 	  
 	  <div style="position: absolute; left: 292px; bottom: 10px; title='Chelsea Boots'">
-	    <a href='test.html'><img id='chelsea_small' src='image/chelsea_small.png' border='0'/></a>
+	    <img id='chelsea_small' src='image/chelsea_small.png' border='0'/>
 	  </div>
 	  
 	  <div style="position: absolute; left: 95px; top: 95px; title='Womens Boots'">
 	    <a href='womens_boots.html'><img id='boots_small' src='image/boots_small.png' border='0'/></a>
 	  </div>
 	 
-	 <div style="position: absolute; right: 95px; bottom: 95px; title='Womens Boots'">
-	    <a href='test.html'><img id='huarache_small' src='image/huarache_small.png' border='0'/></a>
+	 <div style="position: absolute; right: 95px; bottom: 95px; title='Huaraches'">
+	    <img id='huarache_small' src='image/huarache_small.png' border='0'/>
 	  </div>
 	  
 	  <div style="position: absolute; right: 95px; top: 95px; title='Design'">
-	    <a href='test.html'><img id='pattern_small' src='image/pattern_small.png' border='0'/></a>
+	    <img id='pattern_small' src='image/pattern_small.png' border='0'/>
 	  </div>
 	  
 	   <div style="position: absolute; left: 95px; bottom: 95px; title='Design'">
-	    <a href='test.html'><img id='women_dance_small' src='image/women_dance_small.png' border='0'/></a>
+	    <img id='women_dance_small' src='image/women_dance_small.png' border='0'/>
 	  </div>
 	 
 	  <div class="text_box" id="center_tip">&nbsp;&nbsp;Western Boots&nbsp;&nbsp;</div>
