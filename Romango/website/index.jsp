@@ -31,7 +31,7 @@
 		      <li><a href="about.html">about</a></li>
 		      <li><a href="contact.html">contact</a></li>
 			   <li><a href="video.html">video</a></li>
-			    <li><a href="inTheNews.ht,l">in the news</a></li>
+			    <li><a href="inTheNews.html">in the news</a></li>
 	        </ul>
 	        <!-- If you want to make it even simpler, you can append these html using jquery -->
 	        <div id="box"><div class="head"></div></div>
@@ -39,20 +39,7 @@
         </div>
 
 
-		<br />
-		<table border="0" width="100%"><tr><td valign="top">
-		<ul>
-          <li>Located in Eugene, Oregon area but remote fitting is available.</li>
-		  <li>Able to fit feet that are long, short, wide, narrow etc. </li>
-		  <li>Can build to accommodate orthopedic inserts</li>
-		  <li>Pricing:  dance shoes: $500, men's dress shoes: $700, boots: $1,000. </li>
-        </ul>
-		</td>
-		<td width="250px">
-			<img src="image/gldlogo.png" />
-			<br/>
-			The Honourable Cordwainers' Company Member
-		</td></tr></table>
+		
 		
 
 		
@@ -135,6 +122,24 @@
   </div>
   
   <div id="container3">
+  	
+	
+	<br />
+		<table border="0" width="100%"><tr><td valign="top">
+		<ul>
+          <li>Located in Eugene, Oregon area but remote fitting is available.</li>
+		  <li>Able to fit feet that are long, short, wide, narrow etc. </li>
+		  <li>Can build to accommodate orthopedic inserts</li>
+		  <li>Pricing:  dance shoes: $500, men's dress shoes: $700, boots: $1,000. </li>
+        </ul>
+		</td>
+		<td width="250px">
+			<img src="image/gldlogo.png" />
+			<br/>
+			The Honourable Cordwainers' Company Member
+		</td></tr></table>
+	
+	
   	<hr/>
 	<div class="left">Copyright &copy; 2007-2010 <a href="index.jsp">romangoshoes.com</a></div>
     <div class="right">All rights reserved</div>
