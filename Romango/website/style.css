@@ -27,7 +27,7 @@ p {padding: 2px 0 10px; margin-left: 50px; margin-right: 50px; }
 	font-weight: normal;
 	font-variant: normal;
 }
-ul {padding: 0 2em 1.2em;}
+ul {padding: 0 2em 1.2em; margin-left: 50px;}
 
 #wrapper {
 	background: #332 url(image/wrapper.gif) no-repeat left bottom;

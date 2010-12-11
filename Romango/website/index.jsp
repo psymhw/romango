@@ -28,10 +28,10 @@
           <div id="lava">
 	        <ul>
 		      <li class="selected"><a href="#">home</a></li>
-		      <li><a href="#">about</a></li>
-		      <li><a href="#">contact</a></li>
+		      <li><a href="about.html">about</a></li>
+		      <li><a href="contact.html">contact</a></li>
 			   <li><a href="video.html">video</a></li>
-			    <li><a href="#">in the news</a></li>
+			    <li><a href="inTheNews.ht,l">in the news</a></li>
 	        </ul>
 	        <!-- If you want to make it even simpler, you can append these html using jquery -->
 	        <div id="box"><div class="head"></div></div>
@@ -119,7 +119,7 @@
 	  </div>
 	 
 	 <div style="position: absolute; right: 95px; bottom: 95px; title='Huaraches'">
-	    <img id='huarache_small' src='image/huarache_small.png' border='0'/>
+	     <a href='huarache.html'><img id='huarache_small' src='image/huarache_small.png' border='0'/></a>
 	  </div>
 	  
 	  <div style="position: absolute; right: 95px; top: 95px; title='Design'">
