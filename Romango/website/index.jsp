@@ -98,7 +98,7 @@
 	  </div>
 	  
 	  <div style="position: absolute; left: 292px; bottom: 10px; title='Chelsea Boots'">
-	    <img id='chelsea_small' src='image/chelsea_small.png' border='0'/>
+	    <a href='chelsea.html'><img id='chelsea_small' src='image/chelsea_small.png' border='0'/></a>
 	  </div>
 	  
 	  <div style="position: absolute; left: 95px; top: 95px; title='Womens Boots'">
@@ -125,6 +125,7 @@
   	
 	
 	<br />
+	    <p>Click on the images above for more info on each stlye</p>
 		<table border="0" width="100%"><tr><td valign="top">
 		<ul>
           <li>Located in Eugene, Oregon area but remote fitting is available.</li>
