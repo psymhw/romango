@@ -32,6 +32,7 @@
 		      <li><a href="contact.html">contact</a></li>
 			   <li><a href="video.html">video</a></li>
 			    <li><a href="inTheNews.html">in the news</a></li>
+				<li><a href="study.html">study</a></li>
 	        </ul>
 	        <!-- If you want to make it even simpler, you can append these html using jquery -->
 	        <div id="box"><div class="head"></div></div>
@@ -142,7 +143,7 @@
 	
 	
   	<hr/>
-	<div class="left">Copyright &copy; 2007-2010 <a href="index.jsp">romangoshoes.com</a></div>
+	<div class="left">Copyright &copy; 2007-2011 <a href="index.jsp">romangoshoes.com</a></div>
     <div class="right">All rights reserved</div>
 	<div class="clearer"></div>
   </div>
