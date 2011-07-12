@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE struts-config PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
+          "http://struts.apache.org/dtds/struts-config_1_2.dtd">
+
+
+ <struts-config>
+   
+  <form-beans type="org.apache.struts.action.ActionFormBean">
+     <form-bean name="AddressForm" type="address.AddressForm" />
+  </form-beans>
+ 
+  <action-mappings>
+  
+  
+	
+	<action path="/test" type="test.TestAction">
+  	  <forward name="list" path="/jsp/test/testListMain.jsp" redirect="false" />
+	  <forward name="show" path="/jsp/test/testShowMain.jsp" redirect="false" />
+	</action>
+ 
+ 	<action path="/login"
+	type="login.LoginAction">
+	<forward name="eventList" path="/events.do" redirect="true" />
+	<forward name="loginError" path="/struts/login/loginErrorMain.jsp" redirect="false" />
+	 <forward name="unsupportedForward" path="/struts/common/unsupportedForward.jsp" redirect="false" />
+	</action>
+	
+	
+  </action-mappings>
+  
+  
+  <message-resources parameter="MessageResources" />
+  
+  <plug-in className="org.apache.struts.tiles.TilesPlugin" >
+      <set-property property="definitions-config" value="/WEB-INF/tiles-defs.xml,/WEB-INF/tiles-tests-defs.xml" />
+      <set-property property="definitions-parser-validate" value="true" />
+      <set-property property="moduleAware" value="true" />
+   </plug-in>
+  
+   <!--
+  	<plug-in className="org.apache.struts.validator.ValidatorPlugIn" >
+      <set-property property="pathnames" value="/WEB-INF/validator-rules.xml,/WEB-INF/validation.xml" />
+    </plug-in>
+  -->
+ 
+ </struts-config>
