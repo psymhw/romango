@@ -1,0 +1,1 @@
+This is jsp/common/dummy.jsp - a place holder

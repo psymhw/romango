@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?> 
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"
+       "http://struts.apache.org/dtds/tiles-config_1_1.dtd">
+
+<tiles-definitions>
+	<definition name="layout" path="/layout/layout.jsp">
+		<put name="body" value=""/>
+	</definition>
+	<definition name="homepage" extends="layout">
+		<put name="body" value="/archive/index.jsp"/>
+	</definition>
+	
+	<!-- not called directly 
+	This is the master set of tiles all filled out with dummy content.
+	the "mainsitedef", immediatley below, is an extension that overrides 
+	all the dummies but it's usefulness is apparent further down where the admin 
+	definition uses some of it but leaves the rest to dummies. The dummy.jsp 
+	has nothing but a comment, which is viewable in the browser. -->
+	<definition name="masterdef" page="/jsp/layout/mainLayout.jsp">
+		<put name="title" value="/jsp/common/title.jsp"/>
+		<put name="header" value="/jsp/common/header.jsp"/>
+		<put name="menu" value="/jsp/common/dummy.jsp"/>
+		<put name="body" value="/jsp/common/dummy.jsp"/>
+		<put name="footer" value="/jsp/common/dummy.jsp"/>
+	</definition>
+	
+	<definition name="mainsitedef" extends="masterdef">
+		<put name="title" value="/jsp/common/title.jsp"/>
+		<put name="header" value="/jsp/common/header.jsp"/>
+		<put name="menu" value="/jsp/common/menu.jsp"/>
+		<put name="body" value="/jsp/common/dummy.jsp"/>
+		<put name="footer" value="/jsp/common/footer.jsp"/>
+	</definition>
+	
+	
+	
+</tiles-definitions>
