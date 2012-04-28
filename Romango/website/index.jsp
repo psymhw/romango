@@ -159,8 +159,14 @@
 		
 		
 		</p>
-	
-	
+		<br/>
+		<hr/>
+		<br/>
+		<p>
+		
+	<img  src='image/closeup.jpg' border='2'/>
+	</p>
+	<br/>
   	<hr/>
 	<div class="left">Copyright &copy; 2007-2011 <a href="index.jsp">romangoshoes.com</a></div>
     <div class="right">All rights reserved</div>
