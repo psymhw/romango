@@ -1,0 +1,2 @@
+jfx.build.stagingdir = ${workspace}/Hello FX/build
+jfx.build.apptitle = Hello FX
