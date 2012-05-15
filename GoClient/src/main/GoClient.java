@@ -1,6 +1,7 @@
     package main;
       
-   import java.io.BufferedReader;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,12 +10,14 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import com.sun.javafx.geom.Point2D;
 
 import javafx.application.Application;  
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Group;  
 import javafx.scene.Scene;  
 import javafx.scene.control.Button;
@@ -22,6 +25,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;  
 import javafx.scene.shape.Rectangle;
@@ -32,8 +37,9 @@ import javafx.stage.StageStyle;
 
 public class GoClient extends Application  
 {  
-   final static int BLACK = 0;
-   final static int WHITE = 1;
+   final static int OPEN = 0;
+   final static int BLACK = 1;
+   final static int WHITE = 2;
    private ImageView quit;
   
    Image board_top_image;
@@ -68,7 +74,7 @@ public class GoClient extends Application
    
    
    ArrayList move = new ArrayList();
-   
+   //Group moves;
    
    
    
@@ -80,8 +86,8 @@ public class GoClient extends Application
 	  readTestSgfFile();
 	  
 	  
-	  Point2D board_origin = new Point2D(50,50);
-	  Point2D grid_origin = new Point2D(50,50);
+	  Point2D board_origin = new Point2D(0,0);
+	  Point2D grid_origin = new Point2D(0,0);
 	  
      // final Circle circ = new Circle(40, 40, 30);  
       
@@ -89,53 +95,70 @@ public class GoClient extends Application
       r.setFill(Color.YELLOW);
       r.setX(10);
       r.setY(10);
-      r.setWidth(1000);
-      r.setHeight(830);
+      r.setWidth(100);
+      r.setHeight(330);
       r.setArcWidth(20);
       r.setArcHeight(20);
       
       
      // final Group root = new Group(circ, r, quit, board_ul_corner, board_top ); 
       
-      Group root = new Group();
-      root.getChildren().addAll(r, quit);
-      
+      Group boardGroup = new Group();
+            
       Group board = getBoardBackground(board_origin);
       
       Group grid = getGrid(grid_origin);
       
-      Group moves = getMoves(grid_origin);
+      final  Group moves = getMoves();
       
-      root.getChildren().add(board);
-      root.getChildren().add(grid);
-      root.getChildren().add(moves);
+      FlowPane flowPane = new FlowPane();
+      flowPane.setPadding(new Insets(5, 5, 5, 5));
+      flowPane.setVgap(4);
+      flowPane.setHgap(4);
       
-      final TextField gameNumber = new TextField();
-      gameNumber.setLayoutX(850);
-      gameNumber.setLayoutY(100);
+      flowPane.setPrefWrapLength(170); // preferred width allows for two columns
+      flowPane.setStyle("-fx-background-color: DAE6F3;");
+      
+      
+      boardGroup.getChildren().add(board);
+      boardGroup.getChildren().add(grid);
+     
+      
+      flowPane.getChildren().add(r);
+      flowPane.getChildren().add(boardGroup); 
+     
+      
+     
+      
+   //   final TextField gameNumber = new TextField();
+   //   gameNumber.setLayoutX(850);
+  //    gameNumber.setLayoutY(100);
 
       
-      Button b = new Button("Click Me");
-      b.setLayoutX(850);
-      b.setLayoutY(50);
+  //    Button b = new Button("Click Me");
+  //    b.setLayoutX(850);
+  //    b.setLayoutY(50);
       
-      EventHandler bHandler = new EventHandler<ActionEvent>() {
-          public void handle(ActionEvent event) {
-              System.out.println("Hello World!"+
-              gameNumber.getText());
-          }
-      };
+  //    EventHandler bHandler = new EventHandler<ActionEvent>() {
+   //       public void handle(ActionEvent event) {
+  //            System.out.println("Hello World!"+
+  //            gameNumber.getText());
+   //       }
+  //    };
       
-      b.setOnAction(bHandler);
+   //   b.setOnAction(bHandler);
       
       
-      root.getChildren().addAll(b, gameNumber);
+  //    boardGroup.getChildren().addAll(b, gameNumber);
       
-      final Scene scene = new Scene(root, 1020, 900); 
-      scene.setOnMouseClicked(new EventHandler<MouseEvent>() {public void handle(MouseEvent t) 
+      final Scene scene = new Scene(flowPane, 1020, 680);
+     
+      boardGroup.setOnMouseClicked(new EventHandler<MouseEvent>() {public void handle(MouseEvent t) 
       { 
-    	//System.out.println("x: "+t.getSceneX()+"y: "+t.getSceneY());
-        getSgfCoord(t.getSceneX(),t.getSceneY());
+    	 //String boardPosition= getSgfCoord(t.getX(),t.getY());
+    	  BoardPosition bp = new BoardPosition(t.getX(),t.getY());
+    	  System.out.println("x: "+bp.x+" y: "+bp.y+" sgf: "+bp.getSgfPosition());
+    	// findStone(moves, boardPosition);
       }
 
 	});
@@ -145,24 +168,37 @@ public class GoClient extends Application
    //   stage.initStyle(StageStyle.TRANSPARENT);
       stage.setScene(scene);  
       stage.show();  
+      
+      boardGroup.getChildren().add(moves);
+      
+  //    ImageView bsi=getImageView(black_stone_image,grid_origin.x+35,grid_origin.y+40);
+  //    grid.getChildren().add(bsi);
+ // 	 grid.getChildren().add(new Stone(black_stone_image,BLACK,"aa"));
+ // 	 grid.getChildren().add(getImageView(black_stone_image,grid_origin.x+(3*35),grid_origin.y+40));
+  //	 bsi.setVisible(false);
+  	 
+  	 
+   }
+   
+   static void findStone(Group moves, String boardPosition)
+   {
+	  List movesList = moves.getChildren();
+	  Iterator it = movesList.iterator();
+	  Stone s;
+	  while(it.hasNext())
+	  {
+		  s = (Stone)it.next();
+		  if (s.getBoardPosition().equals(boardPosition))
+		  {
+			System.out.println("Found Stone... Color: "+s.getStoneColor());
+			s.setVisible(false);
+		  }
+	  }
+	   
+	   
    }
    
    
-   private void getSgfCoord(double sceneX, double sceneY) 
-   {
-	  double x = sceneX-68;
-	  double y = sceneY-68;
-	  
-	  int xx = (int)Math.round(x/35)+97;
-	  int yy = (int)Math.round(y/35)+97;
-	  
-	  char xxx=(char)xx;
-	  char yyy=(char)yy;
-	  
-	  if ((xxx>='a')&&(xxx<'t')&&(yyy>='a')&&(yyy<'t'))
-	  System.out.println("pos: "+xxx+""+yyy);
-		
-	}
    private void importImages()
    {
 	 board_ul_corner_image = new Image(GoClient.class.getResourceAsStream("/images/wood4_ul.gif"));
@@ -199,7 +235,7 @@ public class GoClient extends Application
 	// File sgfFile = new File(GoClient.class.getResourceAsStream("/sgf/test.sgf"));
    }
    
-   private Group getMoves(Point2D grid_origin)
+   private Group getMoves()
    {
 	  Group moveGroup = new Group();
 	  Iterator it = move.iterator();
@@ -210,8 +246,9 @@ public class GoClient extends Application
 	  boolean test=true;
 	  int moveNumber=0;
 	  int lastMove=0;
+	  String sgfPosition="";
 	  
-	   String moveLine;
+	   String moveLine="";
 	   int counter=0;
 	   while(it.hasNext())
 	   {
@@ -228,14 +265,11 @@ public class GoClient extends Application
 			 if (handicap>0)
 			 {
 			   int xPos=3;
-			   int yPos=4;
+			   int yPos=5;
 			   for(int i=0; i<handicap; i++)
 			   {
-				 xInt=moveLine.charAt(xPos);
-			     yInt=moveLine.charAt(yPos);
-			     x=(xInt-97)*35;
-				 y=(yInt-97)*35;
-				 moveGroup.getChildren().add(getImageView(black_stone_image,grid_origin.x+x,grid_origin.y+y));
+				 sgfPosition=  moveLine.substring(xPos,yPos);
+				 moveGroup.getChildren().add(new Stone(black_stone_image, BLACK, new BoardPosition(sgfPosition)));
 			     xPos+=4;
 			     yPos+=4;
 			   }
@@ -248,24 +282,18 @@ public class GoClient extends Application
 			 moveNumber=moveLine.charAt(4)-48;
 			 System.out.println("Move Number: "+moveNumber);
 			 
-			 xInt=moveLine.charAt(8);
-			 yInt=moveLine.charAt(9);
-			 x=(xInt-97)*35;
-			 y=(yInt-97)*35;
-			 moveGroup.getChildren().add(getImageView(white_stone_image,grid_origin.x+x,grid_origin.y+y));
+			 sgfPosition = moveLine.substring(8,10);
+			 moveGroup.getChildren().add(new Stone(white_stone_image, WHITE, new BoardPosition(sgfPosition)));
 			 counter++;
 			 continue;
 		   }
 		   
 		   
-		  // if (test) continue;
+		//   if (test) continue;
 		   if (moveLine.startsWith(";B"))
 		   {
-			   xInt=moveLine.charAt(3);
-				 yInt=moveLine.charAt(4);
-			 x=(xInt-97)*35;
-			 y=(yInt-97)*35;
-			 moveGroup.getChildren().add(getImageView(black_stone_image,grid_origin.x+x,grid_origin.y+y));
+			 sgfPosition=moveLine.substring(3,5);
+			 moveGroup.getChildren().add(new Stone(black_stone_image, BLACK, new BoardPosition(sgfPosition)));
 			 counter++;
 			 moveNumber++;
 			 lastMove=BLACK;
@@ -273,11 +301,8 @@ public class GoClient extends Application
 		   }
 		   if (moveLine.startsWith(";W"))
 		   {
-			 xInt=moveLine.charAt(3);
-			 yInt=moveLine.charAt(4);
-			 x=(xInt-97)*35;
-			 y=(yInt-97)*35;
-			 moveGroup.getChildren().add(getImageView(white_stone_image,grid_origin.x+x,grid_origin.y+y));
+			   sgfPosition=moveLine.substring(3,5);
+			 moveGroup.getChildren().add(new Stone(white_stone_image, WHITE,new BoardPosition(sgfPosition)));
 			 counter++;
 			 moveNumber++;
 			 lastMove=WHITE;
@@ -287,10 +312,11 @@ public class GoClient extends Application
 		  // if (counter>10) break;
 	   }
 	   
+	   System.out.println("Board Position: "+sgfPosition);
 	   if (lastMove==BLACK)
-		   moveGroup.getChildren().add(getImageView(black_move_image,grid_origin.x+x,grid_origin.y+y)); 
+		   moveGroup.getChildren().add(new Stone(black_move_image, BLACK,new BoardPosition(sgfPosition))); 
 	   else
-		   moveGroup.getChildren().add(getImageView(white_move_image,grid_origin.x+x,grid_origin.y+y));
+		   moveGroup.getChildren().add(new Stone(white_move_image, WHITE,new BoardPosition(sgfPosition)));
 	   
 	  return moveGroup;
    }
