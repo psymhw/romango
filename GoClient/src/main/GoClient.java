@@ -21,6 +21,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;  
+import javafx.scene.Node;
 import javafx.scene.Scene;  
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -85,6 +86,10 @@ public class GoClient extends Application
    AudioClip stoneSound;
    AudioClip errorSound;
    
+   Group boardGroup;
+   Group moves;
+   
+   
    public void start(final Stage stage) throws Exception  
    {  
 	   
@@ -107,11 +112,11 @@ public class GoClient extends Application
       r.setArcWidth(20);
       r.setArcHeight(20);
            
-      final Group boardGroup = new Group();
+      boardGroup = new Group();
       Group board = getBoardBackground();
-      final Group grid = getGrid();
-    //  final  Group moves = getMoves();
-      final  Group moves = new Group();
+      Group grid = getGrid();
+    //   Group moves = getMoves();
+      moves = new Group();
     
       
       FlowPane flowPane = new FlowPane();
@@ -123,80 +128,28 @@ public class GoClient extends Application
       
       boardGroup.getChildren().add(board);
       boardGroup.getChildren().add(grid);
-      
       boardGroup.getChildren().add(moves);
-     
-      Button b = new Button("Play All");
-      b.setLayoutX(10);
-      b.setLayoutY(10);
-      
-      // BUTTON
-      EventHandler bHandler = new EventHandler<ActionEvent>() {
-          public void handle(ActionEvent event) {
-              System.out.println("Hello World!");
-              //boardGroup.getChildren().removeAll();
-       //       boardGroup.getChildren().add(moves);
-          //    grid.getChildren().add(getImageView(black_stone_image,(3*35),40));
-            //  +gameNumber.getText());
-          }
-      };
-      
-      b.setOnAction(bHandler);
-      
-      Button b2 = new Button("Clear");
-      b2.setLayoutX(10);
-      b2.setLayoutY(40);
-      
-      // BUTTON
-      EventHandler bHandler2 = new EventHandler<ActionEvent>() {
-          public void handle(ActionEvent event) {
-              System.out.println("Hello World!");
-    //          removeLastStone(moves);
-            //  boardGroup.getChildren().removeAll();
-           //   boardGroup.getChildren().add(moves);
-          //    grid.getChildren().add(getImageView(black_stone_image,(3*35),40));
-            //  +gameNumber.getText());
-          }
-      };
-      
-      b2.setOnAction(bHandler2);
       
       Group controlGroup = new Group();
       controlGroup.getChildren().add(r);
-      controlGroup.getChildren().add(b);
-      controlGroup.getChildren().add(b2);
+      controlGroup.getChildren().add(getSomeButton());
+      controlGroup.getChildren().add(getDeleteLastMoveBotton());
       
      
       flowPane.getChildren().add(boardGroup); 
       flowPane.getChildren().add(controlGroup);
-     
-      
-     
       
    //   final TextField gameNumber = new TextField();
    //   gameNumber.setLayoutX(850);
   //    gameNumber.setLayoutY(100);
-
-      
-     
-      
   //    boardGroup.getChildren().addAll(b, gameNumber);
       
       final Scene scene = new Scene(flowPane, 1020, 680);
      
       // MOUSE
-      boardGroup.setOnMouseClicked(new EventHandler<MouseEvent>() {public void handle(MouseEvent t) 
-      { 
-    	 //String boardPosition= getSgfCoord(t.getX(),t.getY());
-    	  BoardPosition bp = new BoardPosition(t.getX(),t.getY());
-    	  System.out.println("x: "+bp.x+" y: "+bp.y+" sgf: "+bp.getSgfPosition());
-    	  placeStone(moves, bp);
-    	//  boardGroup.getChildren().add(moves);
-    	// findStone(moves, boardPosition);
-      }
-
-
-	});
+      setupMouse();
+     
+      
       scene.setFill(null);
       
   
@@ -204,20 +157,47 @@ public class GoClient extends Application
       stage.setScene(scene);  
       stage.show();  
       
- //     boardGroup.getChildren().add(moves);
-    //  printMoveMap();
-     
-  //    ImageView bsi=getImageView(black_stone_image,grid_origin.x+35,grid_origin.y+40);
-  //    grid.getChildren().add(bsi);
- // 	 grid.getChildren().add(new Stone(black_stone_image,BLACK,"aa"));
-	// grid.getChildren().add(getImageView(black_stone_image,(3*35),40));
-  //	 bsi.setVisible(false);
-  	 
-  	 
-   }
+   } // end of start method
    
-   private void initiallizeMoveMap() 
+   private Button getSomeButton() 
    {
+	 Button b = new Button("Play All");
+	 b.setLayoutX(10);
+	 b.setLayoutY(10);
+	      
+	 EventHandler bHandler = new EventHandler<ActionEvent>() {
+	          public void handle(ActionEvent event) {
+	              System.out.println("Hello World!"); } };
+	      
+	 b.setOnAction(bHandler);
+	 return b;
+  }
+
+   private void setupMouse() 
+   {
+	   boardGroup.setOnMouseClicked(new EventHandler<MouseEvent>() {public void handle(MouseEvent t) 
+	      { 
+	    	BoardPosition bp = new BoardPosition(t.getX(),t.getY());
+	    	placeStone(moves, bp);
+	      }});
+   }
+
+private Button getDeleteLastMoveBotton() 
+   {
+	 Button deleteLastMove = new Button("<X");
+	 deleteLastMove.setLayoutX(10);
+	 deleteLastMove.setLayoutY(40);
+	 
+	 EventHandler bHandler2 = new EventHandler<ActionEvent>() {
+	          public void handle(ActionEvent event) {
+	             removeLastStone(moves); }};
+	      
+	 deleteLastMove.setOnAction(bHandler2);
+	 return deleteLastMove; 
+   }
+
+  private void initiallizeMoveMap() 
+  {
 	for(int i=0; i<19; i++)
 	{
 	  for(int j=0; j<19; j++)
@@ -225,7 +205,7 @@ public class GoClient extends Application
 		moveMap[i][j]=OPEN;
 	  }
 	}
-   }
+  }
 	
 	private void printMoveMap() 
 	   {
@@ -239,33 +219,23 @@ public class GoClient extends Application
 		}
     }
 
-static void findStone(Group moves, String boardPosition)
-   {
-	  List movesList = moves.getChildren();
-	  Iterator it = movesList.iterator();
-	  Stone s;
-	  while(it.hasNext())
+  static void findStone(Group moves, String boardPosition)
+  {
+	List movesList = moves.getChildren();
+	Iterator it = movesList.iterator();
+	Stone s;
+	while(it.hasNext())
+	{
+	  s = (Stone)it.next();
+	  if (s.getBoardPosition().equals(boardPosition))
 	  {
-		  s = (Stone)it.next();
-		  if (s.getBoardPosition().equals(boardPosition))
-		  {
-			System.out.println("Found Stone... Color: "+s.getStoneColor());
-			s.setVisible(false);
-		  }
+		System.out.println("Found Stone... Color: "+s.getStoneColor());
+		s.setVisible(false);
 	  }
-	   
-	   
-   }
+	}
+  }
 
-static void removeLastStone(Group moves)
-{
-	  List movesList = moves.getChildren();
-	  
-	  int size = moves.getChildren().size();
-	  Stone s = (Stone) moves.getChildren().get(size-1);
-	 // s.setVisible(false);
-	  moves.getChildren().remove(size-1);
-}
+
    
    
    private void importImages()
@@ -593,6 +563,19 @@ private void placeStone(Group moves, BoardPosition bp)
 	// if (moveNumber==6) printMoveMap();
 }
   
+void removeLastStone(Group moves)
+{
+	  List movesList = moves.getChildren();
+	  
+	  int size = moves.getChildren().size();
+	  Stone s = (Stone) moves.getChildren().get(size-1);
+	  BoardPosition bp = s.getBoardPosition();
+	  moveMap[bp.x][bp.y]=OPEN;
+	 // s.setVisible(false);
+	  if (s.getStoneColor()==BLACK) lastMove=WHITE;
+	  else lastMove=BLACK;
+	  moves.getChildren().remove(size-1);
+}
    /** 
     * Main function used to run JavaFX 2.0 example. 
     *  
