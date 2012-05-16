@@ -14,8 +14,6 @@ public class Stone extends ImageView
        this.boardPosition=boardPosition;
        this.stoneColor=stoneColor;
        setImage(stone_image);	
-       
-       
        setX(boardPosition.getSceneX());
        setY(boardPosition.getSceneY());
     }

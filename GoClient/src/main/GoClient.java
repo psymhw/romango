@@ -1,6 +1,8 @@
     package main;
       
 
+import java.applet.Applet;
+import java.applet.AudioClip;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -76,56 +78,97 @@ public class GoClient extends Application
    ArrayList move = new ArrayList();
    //Group moves;
    
-   
+   int[][] moveMap = new int[19][19];
+   int lastMove=WHITE;
+   int moveNumber=1;
+  // SoundClip stoneSound;
+   AudioClip stoneSound;
+   AudioClip errorSound;
    
    public void start(final Stage stage) throws Exception  
    {  
 	   
 	  setQuit();
 	  importImages();
-	  readTestSgfFile();
+	  stoneSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/stone.wav"));
+	  errorSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/error.wav"));
+
+	  //stoneSound = new SoundClip("stone.wav");
+	//  readTestSgfFile();
 	  
-	  
-	  Point2D board_origin = new Point2D(0,0);
-	  Point2D grid_origin = new Point2D(0,0);
-	  
-     // final Circle circ = new Circle(40, 40, 30);  
+	  initiallizeMoveMap();
       
       Rectangle r = new Rectangle();
       r.setFill(Color.YELLOW);
-      r.setX(10);
-      r.setY(10);
-      r.setWidth(100);
-      r.setHeight(330);
+      r.setX(0);
+      r.setY(0);
+      r.setWidth(335);
+      r.setHeight(670);
       r.setArcWidth(20);
       r.setArcHeight(20);
-      
-      
-     // final Group root = new Group(circ, r, quit, board_ul_corner, board_top ); 
-      
-      Group boardGroup = new Group();
-            
-      Group board = getBoardBackground(board_origin);
-      
-      Group grid = getGrid(grid_origin);
-      
-      final  Group moves = getMoves();
+           
+      final Group boardGroup = new Group();
+      Group board = getBoardBackground();
+      final Group grid = getGrid();
+    //  final  Group moves = getMoves();
+      final  Group moves = new Group();
+    
       
       FlowPane flowPane = new FlowPane();
       flowPane.setPadding(new Insets(5, 5, 5, 5));
       flowPane.setVgap(4);
       flowPane.setHgap(4);
-      
       flowPane.setPrefWrapLength(170); // preferred width allows for two columns
       flowPane.setStyle("-fx-background-color: DAE6F3;");
       
-      
       boardGroup.getChildren().add(board);
       boardGroup.getChildren().add(grid);
-     
       
-      flowPane.getChildren().add(r);
+      boardGroup.getChildren().add(moves);
+     
+      Button b = new Button("Play All");
+      b.setLayoutX(10);
+      b.setLayoutY(10);
+      
+      // BUTTON
+      EventHandler bHandler = new EventHandler<ActionEvent>() {
+          public void handle(ActionEvent event) {
+              System.out.println("Hello World!");
+              //boardGroup.getChildren().removeAll();
+       //       boardGroup.getChildren().add(moves);
+          //    grid.getChildren().add(getImageView(black_stone_image,(3*35),40));
+            //  +gameNumber.getText());
+          }
+      };
+      
+      b.setOnAction(bHandler);
+      
+      Button b2 = new Button("Clear");
+      b2.setLayoutX(10);
+      b2.setLayoutY(40);
+      
+      // BUTTON
+      EventHandler bHandler2 = new EventHandler<ActionEvent>() {
+          public void handle(ActionEvent event) {
+              System.out.println("Hello World!");
+    //          removeLastStone(moves);
+            //  boardGroup.getChildren().removeAll();
+           //   boardGroup.getChildren().add(moves);
+          //    grid.getChildren().add(getImageView(black_stone_image,(3*35),40));
+            //  +gameNumber.getText());
+          }
+      };
+      
+      b2.setOnAction(bHandler2);
+      
+      Group controlGroup = new Group();
+      controlGroup.getChildren().add(r);
+      controlGroup.getChildren().add(b);
+      controlGroup.getChildren().add(b2);
+      
+     
       flowPane.getChildren().add(boardGroup); 
+      flowPane.getChildren().add(controlGroup);
      
       
      
@@ -135,31 +178,23 @@ public class GoClient extends Application
   //    gameNumber.setLayoutY(100);
 
       
-  //    Button b = new Button("Click Me");
-  //    b.setLayoutX(850);
-  //    b.setLayoutY(50);
-      
-  //    EventHandler bHandler = new EventHandler<ActionEvent>() {
-   //       public void handle(ActionEvent event) {
-  //            System.out.println("Hello World!"+
-  //            gameNumber.getText());
-   //       }
-  //    };
-      
-   //   b.setOnAction(bHandler);
-      
+     
       
   //    boardGroup.getChildren().addAll(b, gameNumber);
       
       final Scene scene = new Scene(flowPane, 1020, 680);
      
+      // MOUSE
       boardGroup.setOnMouseClicked(new EventHandler<MouseEvent>() {public void handle(MouseEvent t) 
       { 
     	 //String boardPosition= getSgfCoord(t.getX(),t.getY());
     	  BoardPosition bp = new BoardPosition(t.getX(),t.getY());
     	  System.out.println("x: "+bp.x+" y: "+bp.y+" sgf: "+bp.getSgfPosition());
+    	  placeStone(moves, bp);
+    	//  boardGroup.getChildren().add(moves);
     	// findStone(moves, boardPosition);
       }
+
 
 	});
       scene.setFill(null);
@@ -169,18 +204,42 @@ public class GoClient extends Application
       stage.setScene(scene);  
       stage.show();  
       
-      boardGroup.getChildren().add(moves);
-      
+ //     boardGroup.getChildren().add(moves);
+    //  printMoveMap();
+     
   //    ImageView bsi=getImageView(black_stone_image,grid_origin.x+35,grid_origin.y+40);
   //    grid.getChildren().add(bsi);
  // 	 grid.getChildren().add(new Stone(black_stone_image,BLACK,"aa"));
- // 	 grid.getChildren().add(getImageView(black_stone_image,grid_origin.x+(3*35),grid_origin.y+40));
+	// grid.getChildren().add(getImageView(black_stone_image,(3*35),40));
   //	 bsi.setVisible(false);
   	 
   	 
    }
    
-   static void findStone(Group moves, String boardPosition)
+   private void initiallizeMoveMap() 
+   {
+	for(int i=0; i<19; i++)
+	{
+	  for(int j=0; j<19; j++)
+	  {
+		moveMap[i][j]=OPEN;
+	  }
+	}
+   }
+	
+	private void printMoveMap() 
+	   {
+		for(int j=0; j<19; j++)
+		{
+		  for(int i=0; i<19; i++)
+		  {
+			System.out.print(moveMap[i][j]+" ");
+		  }
+		  System.out.println();
+		}
+    }
+
+static void findStone(Group moves, String boardPosition)
    {
 	  List movesList = moves.getChildren();
 	  Iterator it = movesList.iterator();
@@ -197,6 +256,16 @@ public class GoClient extends Application
 	   
 	   
    }
+
+static void removeLastStone(Group moves)
+{
+	  List movesList = moves.getChildren();
+	  
+	  int size = moves.getChildren().size();
+	  Stone s = (Stone) moves.getChildren().get(size-1);
+	 // s.setVisible(false);
+	  moves.getChildren().remove(size-1);
+}
    
    
    private void importImages()
@@ -244,9 +313,10 @@ public class GoClient extends Application
 	  int yInt=0;
 	  int handicap=0;
 	  boolean test=true;
-	  int moveNumber=0;
-	  int lastMove=0;
+	  
+	  
 	  String sgfPosition="";
+	  BoardPosition bp= new BoardPosition(0,0);
 	  
 	   String moveLine="";
 	   int counter=0;
@@ -269,7 +339,9 @@ public class GoClient extends Application
 			   for(int i=0; i<handicap; i++)
 			   {
 				 sgfPosition=  moveLine.substring(xPos,yPos);
-				 moveGroup.getChildren().add(new Stone(black_stone_image, BLACK, new BoardPosition(sgfPosition)));
+				 bp=new BoardPosition(sgfPosition);
+				 moveMap[bp.x][bp.y]=BLACK;
+				 moveGroup.getChildren().add(new Stone(black_stone_image, BLACK, bp ));
 			     xPos+=4;
 			     yPos+=4;
 			   }
@@ -283,7 +355,9 @@ public class GoClient extends Application
 			 System.out.println("Move Number: "+moveNumber);
 			 
 			 sgfPosition = moveLine.substring(8,10);
-			 moveGroup.getChildren().add(new Stone(white_stone_image, WHITE, new BoardPosition(sgfPosition)));
+			 bp=new BoardPosition(sgfPosition);
+			 moveMap[bp.x][bp.y]=WHITE;
+			 moveGroup.getChildren().add(new Stone(white_stone_image, WHITE, bp));
 			 counter++;
 			 continue;
 		   }
@@ -293,7 +367,9 @@ public class GoClient extends Application
 		   if (moveLine.startsWith(";B"))
 		   {
 			 sgfPosition=moveLine.substring(3,5);
-			 moveGroup.getChildren().add(new Stone(black_stone_image, BLACK, new BoardPosition(sgfPosition)));
+			 bp=new BoardPosition(sgfPosition);
+			 moveMap[bp.x][bp.y]=BLACK;
+			 moveGroup.getChildren().add(new Stone(black_stone_image, BLACK, bp));
 			 counter++;
 			 moveNumber++;
 			 lastMove=BLACK;
@@ -301,8 +377,10 @@ public class GoClient extends Application
 		   }
 		   if (moveLine.startsWith(";W"))
 		   {
-			   sgfPosition=moveLine.substring(3,5);
-			 moveGroup.getChildren().add(new Stone(white_stone_image, WHITE,new BoardPosition(sgfPosition)));
+			 sgfPosition=moveLine.substring(3,5);
+			 bp=new BoardPosition(sgfPosition);
+			 moveMap[bp.x][bp.y]=WHITE;
+			 moveGroup.getChildren().add(new Stone(white_stone_image, WHITE,bp));
 			 counter++;
 			 moveNumber++;
 			 lastMove=WHITE;
@@ -314,9 +392,9 @@ public class GoClient extends Application
 	   
 	   System.out.println("Board Position: "+sgfPosition);
 	   if (lastMove==BLACK)
-		   moveGroup.getChildren().add(new Stone(black_move_image, BLACK,new BoardPosition(sgfPosition))); 
+		   moveGroup.getChildren().add(new Stone(black_move_image, BLACK, bp)); 
 	   else
-		   moveGroup.getChildren().add(new Stone(white_move_image, WHITE,new BoardPosition(sgfPosition)));
+		   moveGroup.getChildren().add(new Stone(white_move_image, WHITE,bp));
 	   
 	  return moveGroup;
    }
@@ -342,52 +420,52 @@ public class GoClient extends Application
 	
    }
    
-   private Group getGrid(Point2D grid_origin)
+   private Group getGrid()
    {
 	 Group grid = new Group();
 	 
-	 grid.getChildren().add(getImageView(grid_ul_corner_image,grid_origin.x,grid_origin.y));
-	 grid.getChildren().add(getImageView(grid_ur_corner_image,grid_origin.x+630,grid_origin.y));
-	 grid.getChildren().add(getImageView(grid_ll_corner_image,grid_origin.x,grid_origin.y+630));
-	 grid.getChildren().add(getImageView(grid_lr_corner_image,grid_origin.x+630,grid_origin.y+630));
+	 grid.getChildren().add(getImageView(grid_ul_corner_image,  0,   0));
+	 grid.getChildren().add(getImageView(grid_ur_corner_image,630,   0));
+	 grid.getChildren().add(getImageView(grid_ll_corner_image,  0, 630));
+	 grid.getChildren().add(getImageView(grid_lr_corner_image,630, 630));
 	 
 	 for(int i=0; i<17; i++)
 	 {
-	   grid.getChildren().add(getImageView(grid_top_image,grid_origin.x+((i+1)*35),grid_origin.y)); 
+	   grid.getChildren().add(getImageView(grid_top_image,((i+1)*35),0)); 
 	 }
 	 
 	 for(int i=0; i<17; i++)
 	 {
-	   grid.getChildren().add(getImageView(grid_left_image,grid_origin.x,grid_origin.y+((i+1)*35))); 
+	   grid.getChildren().add(getImageView(grid_left_image,0,((i+1)*35))); 
 	 }
 	 
 	 for(int j=0; j<17; j++)
 	 {
 	   for(int i=0; i<17; i++)
 	   {
-	     grid.getChildren().add(getImageView(grid_cross_image,grid_origin.x+((i+1)*35),grid_origin.y+((j+1)*35))); 
+	     grid.getChildren().add(getImageView(grid_cross_image,((i+1)*35),((j+1)*35))); 
 	   }
 	 }
 	 
 	 for(int i=0; i<17; i++)
 	 {
-	   grid.getChildren().add(getImageView(grid_right_image,grid_origin.x+630,grid_origin.y+((i+1)*35))); 
+	   grid.getChildren().add(getImageView(grid_right_image,630,((i+1)*35))); 
 	 }
 	 
 	 for(int i=0; i<17; i++)
 	 {
-	   grid.getChildren().add(getImageView(grid_bottom_image,grid_origin.x+((i+1)*35),grid_origin.y+630)); 
+	   grid.getChildren().add(getImageView(grid_bottom_image,((i+1)*35),630)); 
 	 }
 	 
-	 grid.getChildren().add(getImageView(grid_hoshi_image,grid_origin.x+105,grid_origin.y+105));
-	 grid.getChildren().add(getImageView(grid_hoshi_image,grid_origin.x+315,grid_origin.y+105));
-	 grid.getChildren().add(getImageView(grid_hoshi_image,grid_origin.x+525,grid_origin.y+105));
-	 grid.getChildren().add(getImageView(grid_hoshi_image,grid_origin.x+105,grid_origin.y+315));
-	 grid.getChildren().add(getImageView(grid_hoshi_image,grid_origin.x+315,grid_origin.y+315));
-	 grid.getChildren().add(getImageView(grid_hoshi_image,grid_origin.x+525,grid_origin.y+315));
-	 grid.getChildren().add(getImageView(grid_hoshi_image,grid_origin.x+105,grid_origin.y+525));
-	 grid.getChildren().add(getImageView(grid_hoshi_image,grid_origin.x+315,grid_origin.y+525));
-	 grid.getChildren().add(getImageView(grid_hoshi_image,grid_origin.x+525,grid_origin.y+525));
+	 grid.getChildren().add(getImageView(grid_hoshi_image,105,105));
+	 grid.getChildren().add(getImageView(grid_hoshi_image,315,105));
+	 grid.getChildren().add(getImageView(grid_hoshi_image,525,105));
+	 grid.getChildren().add(getImageView(grid_hoshi_image,105,315));
+	 grid.getChildren().add(getImageView(grid_hoshi_image,315,315));
+	 grid.getChildren().add(getImageView(grid_hoshi_image,525,315));
+	 grid.getChildren().add(getImageView(grid_hoshi_image,105,525));
+	 grid.getChildren().add(getImageView(grid_hoshi_image,315,525));
+	 grid.getChildren().add(getImageView(grid_hoshi_image,525,525));
 	 
 	// grid.getChildren().add(getImageView(black_stone_image,grid_origin.x+35,grid_origin.y+40));
 	// grid.getChildren().add(getImageView(black_stone_image,grid_origin.x+(2*35),grid_origin.y+40));
@@ -396,75 +474,75 @@ public class GoClient extends Application
 	 return grid;
    }
    
-   private Group getBoardBackground(Point2D board_origin)
+   private Group getBoardBackground()
    {
 	 Group board = new Group();
 	 
-	 board.getChildren().add(getImageView(board_ul_corner_image,board_origin.x,board_origin.y));
-	 board.getChildren().add(getImageView(board_ur_corner_image,board_origin.x+660,board_origin.y));
-	 board.getChildren().add(getImageView(board_ll_corner_image,board_origin.x,board_origin.y+660));
-	 board.getChildren().add(getImageView(board_lr_corner_image,board_origin.x+660,board_origin.y+660));
+	 board.getChildren().add(getImageView(board_ul_corner_image,0,0));
+	 board.getChildren().add(getImageView(board_ur_corner_image,660,0));
+	 board.getChildren().add(getImageView(board_ll_corner_image,0,660));
+	 board.getChildren().add(getImageView(board_lr_corner_image,660,660));
 	 
-	 board.getChildren().add(getImageView(board_left_image,board_origin.x,board_origin.y+10));
-	 board.getChildren().add(getImageView(board_left_image,board_origin.x,board_origin.y+110));
-	 board.getChildren().add(getImageView(board_left_image,board_origin.x,board_origin.y+210));
-	 board.getChildren().add(getImageView(board_left_image,board_origin.x,board_origin.y+310));
-	 board.getChildren().add(getImageView(board_left_image,board_origin.x,board_origin.y+410));
-	 board.getChildren().add(getImageView(board_left_image,board_origin.x,board_origin.y+510));
-	 board.getChildren().add(getImageView(board_left_image,board_origin.x,board_origin.y+560));
-	// board.getChildren().add(getImageView(board_left_image,board_origin.x,board_origin.y+460));
+	 board.getChildren().add(getImageView(board_left_image,0,10));
+	 board.getChildren().add(getImageView(board_left_image,0,110));
+	 board.getChildren().add(getImageView(board_left_image,0,210));
+	 board.getChildren().add(getImageView(board_left_image,0,310));
+	 board.getChildren().add(getImageView(board_left_image,0,410));
+	 board.getChildren().add(getImageView(board_left_image,0,510));
+	 board.getChildren().add(getImageView(board_left_image,0,560));
+	// board.getChildren().add(getImageView(board_left_image,board_origin.x,460));
 	 
-	 board.getChildren().add(getImageView(board_right_image,board_origin.x+660,board_origin.y+10));
-	 board.getChildren().add(getImageView(board_right_image,board_origin.x+660,board_origin.y+110));
-	 board.getChildren().add(getImageView(board_right_image,board_origin.x+660,board_origin.y+210));
-	 board.getChildren().add(getImageView(board_right_image,board_origin.x+660,board_origin.y+310));
-	 board.getChildren().add(getImageView(board_right_image,board_origin.x+660,board_origin.y+410));
-	 board.getChildren().add(getImageView(board_right_image,board_origin.x+660,board_origin.y+510));
-	 board.getChildren().add(getImageView(board_right_image,board_origin.x+660,board_origin.y+560));
-	// board.getChildren().add(getImageView(board_right_image,board_origin.x+660,board_origin.y+660));
+	 board.getChildren().add(getImageView(board_right_image,660,10));
+	 board.getChildren().add(getImageView(board_right_image,660,110));
+	 board.getChildren().add(getImageView(board_right_image,660,210));
+	 board.getChildren().add(getImageView(board_right_image,660,310));
+	 board.getChildren().add(getImageView(board_right_image,660,410));
+	 board.getChildren().add(getImageView(board_right_image,660,510));
+	 board.getChildren().add(getImageView(board_right_image,660,560));
+	// board.getChildren().add(getImageView(board_right_image,660,660));
 	 		 
-	 board.getChildren().add(getImageView(board_top_image,board_origin.x+10,board_origin.y));
-	 board.getChildren().add(getImageView(board_top_image,board_origin.x+160,board_origin.y));
-	 board.getChildren().add(getImageView(board_top_image,board_origin.x+310,board_origin.y));
-	 board.getChildren().add(getImageView(board_top_image,board_origin.x+460,board_origin.y));
-	 board.getChildren().add(getImageView(board_top_image,board_origin.x+510,board_origin.y));
+	 board.getChildren().add(getImageView(board_top_image,10,0));
+	 board.getChildren().add(getImageView(board_top_image,160,0));
+	 board.getChildren().add(getImageView(board_top_image,310,0));
+	 board.getChildren().add(getImageView(board_top_image,460,0));
+	 board.getChildren().add(getImageView(board_top_image,510,0));
 	
-	 board.getChildren().add(getImageView(board_bottom_image,board_origin.x+10,board_origin.y+660));
-	 board.getChildren().add(getImageView(board_bottom_image,board_origin.x+160,board_origin.y+660));
-	 board.getChildren().add(getImageView(board_bottom_image,board_origin.x+310,board_origin.y+660));
-	 board.getChildren().add(getImageView(board_bottom_image,board_origin.x+460,board_origin.y+660));
-	 board.getChildren().add(getImageView(board_bottom_image,board_origin.x+510,board_origin.y+660));
+	 board.getChildren().add(getImageView(board_bottom_image,10,660));
+	 board.getChildren().add(getImageView(board_bottom_image,160,660));
+	 board.getChildren().add(getImageView(board_bottom_image,310,660));
+	 board.getChildren().add(getImageView(board_bottom_image,460,660));
+	 board.getChildren().add(getImageView(board_bottom_image,510,660));
 	
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+10,board_origin.y+10));
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+160,board_origin.y+10));
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+310,board_origin.y+10));
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+460,board_origin.y+10));
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+510,board_origin.y+10));
+	 board.getChildren().add(getImageView(board_fill_image,10,10));
+	 board.getChildren().add(getImageView(board_fill_image,160,10));
+	 board.getChildren().add(getImageView(board_fill_image,310,10));
+	 board.getChildren().add(getImageView(board_fill_image,460,10));
+	 board.getChildren().add(getImageView(board_fill_image,510,10));
 	 
 	 
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+10,board_origin.y+160));
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+160,board_origin.y+160));
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+310,board_origin.y+160));
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+460,board_origin.y+160));
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+510,board_origin.y+160));
+	 board.getChildren().add(getImageView(board_fill_image,10,160));
+	 board.getChildren().add(getImageView(board_fill_image,160,160));
+	 board.getChildren().add(getImageView(board_fill_image,310,160));
+	 board.getChildren().add(getImageView(board_fill_image,460,160));
+	 board.getChildren().add(getImageView(board_fill_image,510,160));
 	 
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+10,board_origin.y+310));
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+160,board_origin.y+310));
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+310,board_origin.y+310));
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+460,board_origin.y+310));
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+510,board_origin.y+310));
+	 board.getChildren().add(getImageView(board_fill_image,10,310));
+	 board.getChildren().add(getImageView(board_fill_image,160,310));
+	 board.getChildren().add(getImageView(board_fill_image,310,310));
+	 board.getChildren().add(getImageView(board_fill_image,460,310));
+	 board.getChildren().add(getImageView(board_fill_image,510,310));
 	 
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+10,board_origin.y+460));
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+160,board_origin.y+460));
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+310,board_origin.y+460));
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+460,board_origin.y+460));
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+510,board_origin.y+460));
+	 board.getChildren().add(getImageView(board_fill_image,10,460));
+	 board.getChildren().add(getImageView(board_fill_image,160,460));
+	 board.getChildren().add(getImageView(board_fill_image,310,460));
+	 board.getChildren().add(getImageView(board_fill_image,460,460));
+	 board.getChildren().add(getImageView(board_fill_image,510,460));
 	 
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+10,board_origin.y+510));
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+160,board_origin.y+510));
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+310,board_origin.y+510));
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+460,board_origin.y+510));
-	 board.getChildren().add(getImageView(board_fill_image,board_origin.x+510,board_origin.y+510));
+	 board.getChildren().add(getImageView(board_fill_image,10,510));
+	 board.getChildren().add(getImageView(board_fill_image,160,510));
+	 board.getChildren().add(getImageView(board_fill_image,310,510));
+	 board.getChildren().add(getImageView(board_fill_image,460,510));
+	 board.getChildren().add(getImageView(board_fill_image,510,510));
 	 
 	 return board;
    }
@@ -487,6 +565,33 @@ private void setQuit()
 	
   quit.setOnMouseClicked(new EventHandler<MouseEvent>() {public void handle(MouseEvent t) { System.exit(0);}});
 }  
+
+
+private void placeStone(Group moves, BoardPosition bp) 
+{
+	if (moveMap[bp.x][bp.y]!=OPEN)
+	{
+		errorSound.play();
+		return;
+	}
+	if (lastMove==BLACK)
+	{	
+	  moveMap[bp.x][bp.y]=WHITE;	
+	  moves.getChildren().add(new Stone(white_stone_image, WHITE, bp));
+	  lastMove=WHITE;
+	  
+	}
+	else
+	{
+	  moveMap[bp.x][bp.y]=BLACK;	
+	  moves.getChildren().add(new Stone(black_stone_image, BLACK, bp));
+	  lastMove=BLACK;
+	}
+	stoneSound.play();
+	moveNumber++;
+	
+	// if (moveNumber==6) printMoveMap();
+}
   
    /** 
     * Main function used to run JavaFX 2.0 example. 
