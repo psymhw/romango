@@ -26,8 +26,8 @@ public void setSceneY(int sceneY) {
 
 public BoardPosition(double sceneX, double sceneY)
 {
-  this.sceneX=sceneX;
-  this.sceneY=sceneY;
+  //this.sceneX=sceneX;
+  //this.sceneY=sceneY;
 	
   double xxx = sceneX+23;
   double yyy = sceneY+23;
@@ -40,8 +40,10 @@ public BoardPosition(double sceneX, double sceneY)
 		 this.x=xx;
 		 this.y=yy;
 	  }
-	  
 	  sgfPosition = calcSgfPosition();
+	  this.sceneX = calcSceneX();
+	  this.sceneY = calcSceneY();
+	  
 }
 
 
