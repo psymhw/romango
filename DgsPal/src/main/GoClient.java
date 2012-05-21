@@ -88,15 +88,9 @@ public class GoClient extends Application
    
   Image grid_cross_image;
    
-//  Image black_stone_image;
-//  Image white_stone_image;
-//  Image black_move_image;
-//  Image white_move_image;
-   
-   
-  ArrayList moveLine = new ArrayList();
-  ArrayList moves = new ArrayList();
-  ArrayList capturedStonesArray = new ArrayList();
+  ArrayList <String>moveLine = new ArrayList<>();
+  ArrayList <Move>moves = new ArrayList<>();
+  ArrayList <Stone>capturedStonesArray = new ArrayList<>();
    
   int[][] moveMap = new int[19][19];
   int[][] groupMap = new int[19][19];
@@ -262,13 +256,13 @@ public class GoClient extends Application
     Button b = new Button("Get SGF");
     // b.setLayoutX(10);
     // b.setLayoutY(10);
-    EventHandler bHandler = new EventHandler<ActionEvent>() {
-	          public void handle(ActionEvent event) {
-	              System.out.println("Hello World!"); 
-	              getMoves();  
+    EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
+	          public void handle(MouseEvent event) {
+	            //  System.out.println("Hello World!"); 
+	              getSgfMoves();  
 	          } };
 	  
-     b.setOnAction(bHandler);
+     b.setOnMouseClicked(bHandler);
      return b;
   }
 
@@ -461,7 +455,7 @@ public class GoClient extends Application
 	// File sgfFile = new File(GoClient.class.getResourceAsStream("/sgf/test.sgf"));
    }
    
-   private void getMoves()
+   private void getSgfMoves()
    {
      clear();
      readTestSgfFile();
@@ -935,8 +929,8 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
 
     private void checkLibertiesOfNeighbors(int x, int y) 
     {
-      boolean debug=true;
-      int checkX=x, checkY=y, color=0, startColor=0;
+      boolean debug=false;
+      int startColor=0;
       
       startColor = moveMap[x][y];
       if (debug) System.out.println("Start Color is "+startColor);
@@ -979,13 +973,13 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
 
     private void captureGroup(List<SimplePosition> groupPositions) 
     {
-        System.out.println("CAPTURE GROUP");
+       // System.out.println("CAPTURE GROUP");
       Iterator it=groupPositions.iterator();
       SimplePosition sp;
       while(it.hasNext())
       {
          sp=(SimplePosition)it.next(); 
-         System.out.println("Position: "+sp.x+"-"+sp.y);
+       //  System.out.println("Position: "+sp.x+"-"+sp.y);
          capturePiece(sp.x, sp.y);
          
       }
