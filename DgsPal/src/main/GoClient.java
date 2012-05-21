@@ -19,10 +19,13 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBoxBuilder;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -58,8 +61,6 @@ public class GoClient extends Application
   final static int STYLE_NUMBERED_8=8;
   final static int STYLE_NUMBERED_9=9;
   final static int STYLE_LAST_MOVE=10;
-  
-  
    
   private ImageView quit;
   
@@ -96,11 +97,10 @@ public class GoClient extends Application
   int[][] groupMap = new int[19][19];
   int lastMove=WHITE;
   int moveNumber=0;
-  // SoundClip stoneSound;
+
   AudioClip stoneSound;
   AudioClip errorSound;
    
-  Group boardGroup;
   Group movesGroup;
    
   int handicapInt=0;
@@ -110,91 +110,18 @@ public class GoClient extends Application
   Text movenoVal;
   Text capturedBlackVal;
   Text capturedWhiteVal;
-  
-   
    
   public void start(final Stage stage) throws Exception  
   {  
     setQuit();
     importImages();
     
-    //Stone s = new Stone(black_stone_image, white_stone_image);
-    
     stoneSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/stone.wav"));
     errorSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/error.wav"));
-    
-    
-    
 	  
     initiallizeMoveMap();
     captured[BLACK]=0;
     captured[WHITE]=0;
-      
-    Rectangle r = new Rectangle();
-    r.setFill(Color.YELLOW);
-    r.setX(0);
-    r.setY(0);
-    r.setWidth(335);
-    r.setHeight(670);
-    r.setArcWidth(20);
-    r.setArcHeight(20);
-      
-    int yPos=125;
-    Text moveno = new Text("Move #:");
-    moveno.setX(40);
-    moveno.setY(yPos+25);
-    moveno.setFont(Font.font("Serif", 20));
-      
-    movenoVal = new Text("0");
-    movenoVal.setX(120);
-    movenoVal.setY(yPos+25);
-    movenoVal.setFont(Font.font("Serif", 20));
-      
-    Text handicap = new Text("Handicap:");
-    handicap.setX(25);
-    handicap.setY(yPos);
-    handicap.setFont(Font.font("Serif", 20));
-    
-    handicapVal = new Text(""+handicapInt);
-    handicapVal.setX(120);
-    handicapVal.setY(yPos);
-    handicapVal.setFont(Font.font("Serif", 20));
-    
-    Text capturedBlack = new Text("Captured Black:");
-    capturedBlack.setX(25);
-    capturedBlack.setY(yPos+50);
-    capturedBlack.setFont(Font.font("Serif", 20));
-    
-    capturedBlackVal = new Text("0");
-    capturedBlackVal.setX(165);
-    capturedBlackVal.setY(yPos+50);
-    capturedBlackVal.setFont(Font.font("Serif", 20));
-    
-    Text capturedWhite = new Text("Captured White:");
-    capturedWhite.setX(25);
-    capturedWhite.setY(yPos+75);
-    capturedWhite.setFont(Font.font("Serif", 20));
-    
-    capturedWhiteVal = new Text("0");
-    capturedWhiteVal.setX(165);
-    capturedWhiteVal.setY(yPos+75);
-    capturedWhiteVal.setFont(Font.font("Serif", 20));
-    
-     
-    Rectangle infoBox = new Rectangle();
-    infoBox.setX(20);
-    infoBox.setY(100);
-    infoBox.setWidth(300);
-    infoBox.setHeight(200);
-    infoBox.setArcWidth(20);
-    infoBox.setArcHeight(20); 
-    infoBox.setFill(Color.GRAY);
-
-    boardGroup = new Group();
-    Group board = getBoardBackground();
-    Group grid = getGrid();
-    
-    movesGroup = new Group();
       
     FlowPane flowPane = new FlowPane();
     flowPane.setPadding(new Insets(5, 5, 5, 5));
@@ -203,46 +130,11 @@ public class GoClient extends Application
     flowPane.setPrefWrapLength(170); // preferred width allows for two columns
     flowPane.setStyle("-fx-background-color: DAE6F3;");
       
-    boardGroup.getChildren().add(board);
-    boardGroup.getChildren().add(grid);
-    boardGroup.getChildren().add(movesGroup);
-      
-    FlowPane buttonFlowPane = new FlowPane();
-    buttonFlowPane.setPadding(new Insets(5, 5, 5, 5));
-    buttonFlowPane.setVgap(4);
-    buttonFlowPane.setHgap(4);
-    buttonFlowPane.setPrefWrapLength(320); // preferred width allows for two columns
-    buttonFlowPane.setStyle("-fx-background-color: RED;");
-      
-    buttonFlowPane.getChildren().add(getClearButton());
-    buttonFlowPane.getChildren().add(getSgfButton());
-    buttonFlowPane.getChildren().add(getDeleteLastMoveButton());
-    buttonFlowPane.getChildren().add(getPreviousMoveButton());
-    buttonFlowPane.getChildren().add(getNextMoveButton());
-      buttonFlowPane.getChildren().add(loginButton());
-      //controlGroup.getChildren().add(buttonFlowPane);
-    Group controlGroup = new Group();
-    controlGroup.getChildren().add(r);
-    controlGroup.getChildren().add(buttonFlowPane);
-    controlGroup.getChildren().add(infoBox);
-    controlGroup.getChildren().add(handicap);
-    controlGroup.getChildren().add(handicapVal);
-    controlGroup.getChildren().add(moveno);
-    controlGroup.getChildren().add(movenoVal);
-    controlGroup.getChildren().add(capturedBlack);
-    controlGroup.getChildren().add(capturedBlackVal);
-    controlGroup.getChildren().add(capturedWhite);
-    controlGroup.getChildren().add(capturedWhiteVal);
-  // controlGroup.getChildren().add(loginButton());
-            
-     
-    flowPane.getChildren().add(boardGroup); 
-    flowPane.getChildren().add(controlGroup);
+    flowPane.getChildren().add(getBoardGroup()); 
+    flowPane.getChildren().add(getGridPane());
       
     final Scene scene = new Scene(flowPane, 1020, 680);
      
-    setupMouse();
-      
     scene.setFill(null);
   
     //   stage.initStyle(StageStyle.TRANSPARENT);
@@ -250,7 +142,125 @@ public class GoClient extends Application
     stage.show();  
       
   } // end of start method
+
+private GridPane getGridPane() {
+	GridPane gridPane = new GridPane(); 
+    gridPane.setPadding(new Insets(10, 10, 10, 10));
+    gridPane.setVgap(2);
+    gridPane.setHgap(5);
+    
+    gridPane.add(getButtonBox(), 0, 0);
+    gridPane.add(getIdentBox(), 0, 1);
+    gridPane.add(getInfoGroup(), 0, 2);
+    gridPane.add(new Text("row four column one here"), 0, 3);
+	return gridPane;
+}
+
+  private Group getBoardGroup()
+  {
+	  Group boardGroup = new Group();
+	  Group board = getBoardBackground();
+	  Group grid = getGrid();
+	  movesGroup = new Group();
+	  boardGroup.getChildren().add(board);
+	  boardGroup.getChildren().add(grid);
+	  boardGroup.getChildren().add(movesGroup);  
+	  setupMouse(boardGroup);
+	  return boardGroup;
+  }
+  
+private HBox getButtonBox() {
+	HBox buttonBox = new HBox();
+      buttonBox.setPadding(new Insets(3, 3, 3, 3));
+      buttonBox.setSpacing(5);
+ 
+      buttonBox.getChildren().add(getClearButton());
+      buttonBox.getChildren().add(getSgfButton());
+      buttonBox.getChildren().add(getDeleteLastMoveButton());
+      buttonBox.getChildren().add(getPreviousMoveButton());
+      buttonBox.getChildren().add(getNextMoveButton());
+	return buttonBox;
+}
+
+private HBox getIdentBox() {
+	HBox identBox = new HBox();
+      identBox.setPadding(new Insets(3, 3, 3, 3));
+      identBox.setSpacing(5);
+      identBox.getChildren().add(new Text("User ID"));
+      identBox.getChildren().add(loginButton());
+	return identBox;
+}
    
+private Group getInfoGroup()
+{
+	Group infoGroup = new Group();
+	  //  infoGroup.getChildren().add(r);
+	 //   infoGroup.getChildren().add(buttonFlowPane);
+	  //  infoGroup.getChildren().add(identityFlowPane);
+	//    
+	Rectangle bx = new Rectangle();
+	  //  bx.setX(20);
+	  //  bx.setY(100);
+	    bx.setWidth(300);
+	    bx.setHeight(200);
+	    bx.setArcWidth(20);
+	    bx.setArcHeight(20); 
+	    bx.setFill(Color.GRAY);
+	    
+	    int yPos=30;
+	    Text moveno = new Text("Move #:");
+	    moveno.setX(40);
+	    moveno.setY(yPos+25);
+	    moveno.setFont(Font.font("Serif", 20));
+	      
+	    movenoVal = new Text("0");
+	    movenoVal.setX(120);
+	    movenoVal.setY(yPos+25);
+	    movenoVal.setFont(Font.font("Serif", 20));
+	      
+	    Text handicap = new Text("Handicap:");
+	    handicap.setX(25);
+	    handicap.setY(yPos);
+	    handicap.setFont(Font.font("Serif", 20));
+	    
+	    handicapVal = new Text(""+handicapInt);
+	    handicapVal.setX(120);
+	    handicapVal.setY(yPos);
+	    handicapVal.setFont(Font.font("Serif", 20));
+	    
+	    Text capturedBlack = new Text("Captured Black:");
+	    capturedBlack.setX(25);
+	    capturedBlack.setY(yPos+50);
+	    capturedBlack.setFont(Font.font("Serif", 20));
+	    
+	    capturedBlackVal = new Text("0");
+	    capturedBlackVal.setX(165);
+	    capturedBlackVal.setY(yPos+50);
+	    capturedBlackVal.setFont(Font.font("Serif", 20));
+	    
+	    Text capturedWhite = new Text("Captured White:");
+	    capturedWhite.setX(25);
+	    capturedWhite.setY(yPos+75);
+	    capturedWhite.setFont(Font.font("Serif", 20));
+	    
+	    capturedWhiteVal = new Text("0");
+	    capturedWhiteVal.setX(165);
+	    capturedWhiteVal.setY(yPos+75);
+	    capturedWhiteVal.setFont(Font.font("Serif", 20));
+	    
+	    infoGroup.getChildren().add(bx);
+	    infoGroup.getChildren().add(handicap);
+	    infoGroup.getChildren().add(handicapVal);
+	    infoGroup.getChildren().add(moveno);
+	    infoGroup.getChildren().add(movenoVal);
+	    infoGroup.getChildren().add(capturedBlack);
+	    infoGroup.getChildren().add(capturedBlackVal);
+	    infoGroup.getChildren().add(capturedWhite);
+	    infoGroup.getChildren().add(capturedWhiteVal);
+	  // infoGroup.getChildren().add(loginButton());
+	    return infoGroup;
+}
+
   private Button getSgfButton() 
   {
     Button b = new Button("Get SGF");
@@ -266,7 +276,7 @@ public class GoClient extends Application
      return b;
   }
 
-  private void setupMouse() 
+  private void setupMouse(Group boardGroup) 
   {
      
     boardGroup.setOnMouseClicked(new EventHandler<MouseEvent>() {public void handle(MouseEvent t) 
@@ -277,12 +287,14 @@ public class GoClient extends Application
       placeStone(s);}});
   }
 
-  Button loginButton()
+  Hyperlink loginButton()
 {
-    Button btn = new Button();
+    Hyperlink btn = new Hyperlink();
     
      btn.setText("Open Dialog");
+     
      btn.setOnAction(new EventHandler<ActionEvent>() {
+    	
 
          @Override
          public void handle(ActionEvent event) {
