@@ -3,6 +3,7 @@ package main;
 import java.applet.Applet;  
 import java.applet.AudioClip;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -11,6 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -20,6 +23,8 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -110,7 +115,12 @@ public class GoClient extends Application
   Text movenoVal;
   Text capturedBlackVal;
   Text capturedWhiteVal;
-   
+  String userId = "Not Set";
+  String password;
+  Hyperlink userNameLink;
+  TextField userIdField;
+  TextField passwordField; 
+  
   public void start(final Stage stage) throws Exception  
   {  
     setQuit();
@@ -140,6 +150,19 @@ public class GoClient extends Application
     //   stage.initStyle(StageStyle.TRANSPARENT);
     stage.setScene(scene);  
     stage.show();  
+    
+    File directory = new File (".");
+    try {
+    	 System.out.println ("Current directory's canonical path: " 
+    	  + directory.getCanonicalPath());
+    	 File resourceFile= new File(directory.getCanonicalPath()+"\\resources.properties");
+    	 if (resourceFile.exists()) System.out.println("resources.properties found");
+    	 
+    	 }catch(Exception e) {
+    	 System.out.println("Exceptione is ="+e.getMessage());
+    	 
+    	
+    	  }
       
   } // end of start method
 
@@ -182,12 +205,21 @@ private HBox getButtonBox() {
 	return buttonBox;
 }
 
-private HBox getIdentBox() {
-	HBox identBox = new HBox();
-      identBox.setPadding(new Insets(3, 3, 3, 3));
-      identBox.setSpacing(5);
-      identBox.getChildren().add(new Text("User ID"));
-      identBox.getChildren().add(loginButton());
+private HBox getIdentBox() 
+{
+   HBox identBox = new HBox();
+   identBox.setPadding(new Insets(3, 3, 3, 3));
+   identBox.setSpacing(5);
+   Label userIdLinkLabel = new Label("User ID: ");
+   userIdLinkLabel.setFont(Font.font("Serif", 18));
+   userIdLinkLabel.setPrefHeight(30);
+   userIdLinkLabel.setAlignment(Pos.CENTER_RIGHT);
+     
+   identBox.getChildren().add(userIdLinkLabel);
+   userNameLink=loginButton();
+   userNameLink.setPrefHeight(30);
+   userNameLink.setAlignment(Pos.CENTER_RIGHT);
+   identBox.getChildren().add(userNameLink);
 	return identBox;
 }
    
@@ -288,12 +320,12 @@ private Group getInfoGroup()
   }
 
   Hyperlink loginButton()
-{
-    Hyperlink btn = new Hyperlink();
-    
-     btn.setText("Open Dialog");
+  {
+    Hyperlink hyperlink = new Hyperlink();
+    hyperlink.setFont(Font.font("Serif", 20));
+    hyperlink.setText(userId);
      
-     btn.setOnAction(new EventHandler<ActionEvent>() {
+    hyperlink.setOnAction(new EventHandler<ActionEvent>() {
     	
 
          @Override
@@ -301,27 +333,60 @@ private Group getInfoGroup()
              final Stage myDialog = new Stage();
           //   myDialog.initModality(Modality.WINDOW_MODAL);
           myDialog.initModality(Modality.APPLICATION_MODAL);
-             Button okButton = new Button("CLOSE");
+             Button okButton = new Button("SAVE");
              okButton.setOnAction(new EventHandler<ActionEvent>(){
 
                  @Override
                  public void handle(ActionEvent arg0) {
+                	
+                	 
+                	  userId=userIdField.getText();
+                	  userNameLink.setText(userId);
+                	  
+                	  password=passwordField.getText();
+         			 System.out.println("userId: "+userId);
+         			System.out.println("password: "+password);
                      myDialog.close();
                  }
               
              });
-          
-             Scene myDialogScene = new Scene(VBoxBuilder.create()
-                     .children(new Text("Hello! it's My Dialog."), okButton)
-                     .alignment(Pos.CENTER)
-                     .padding(new Insets(10))
-                     .build());
+       
+             
+             userIdField = new TextField();
+             userIdField.setText(userId);
+             userIdField.setPrefColumnCount(30);
+             
+             
+             Text userIdLabel = new Text("User ID: ");
+             userIdLabel.setFont(Font.font("Serif", 20));
+            
+             
+             
+             Text passwordLabel = new Text("Password: ");
+             passwordLabel.setFont(Font.font("Serif", 20));
+             passwordField = new TextField();
+            // passwordField.setText(userId);
+             passwordField.setPrefColumnCount(30);
+             
+             GridPane gridPane = new GridPane();
+             gridPane.setPadding(new Insets(10, 10, 10, 10));
+             gridPane.setVgap(2);
+             gridPane.setHgap(5);
+             gridPane.add(userIdLabel, 0, 0);
+             gridPane.add(userIdField, 1, 0);
+             gridPane.add(passwordLabel, 0, 1);
+             gridPane.add(passwordField, 1, 1);
+             gridPane.add(okButton, 1, 2);
+             
+             
+             Scene myDialogScene = new Scene(gridPane, 300, 100);
+                     
           
              myDialog.setScene(myDialogScene);
              myDialog.show();
          }
      });
-     return btn;
+     return hyperlink;
 }
   
   private Button getDeleteLastMoveButton() 
