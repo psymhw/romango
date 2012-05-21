@@ -278,7 +278,6 @@ public class GoClient extends Application
     boardGroup.setOnMouseClicked(new EventHandler<MouseEvent>() {public void handle(MouseEvent t) 
     { 
       int thisMoveColor=0;
-      BoardPosition bp = new BoardPosition(t.getX(),t.getY());
       if (lastMove==BLACK) thisMoveColor=WHITE;  else thisMoveColor=BLACK;
       Stone s = new Stone(thisMoveColor, t.getX(),t.getY(), STYLE_LAST_MOVE);
       placeStone(s);}});
@@ -750,7 +749,6 @@ void removeMoveImageFromPreviousMove()
   int color=0;
               
    Stone stone;
-   BoardPosition bp;
    int i=moveList.size()-1;
    while(it.hasPrevious())
    {
@@ -772,7 +770,6 @@ void restoreMoveImageToPrevousStone(Move m)
   int color=0;
               
    Stone stone;
-   BoardPosition bp;
    int i=moveList.size()-1;
    while(it.hasPrevious())
    {
@@ -795,7 +792,6 @@ void putMoveImageOnLastStone()
   int color=0;
               
    Stone stone;
-   BoardPosition bp;
    int i=moveList.size()-1;
    while(it.hasPrevious())
    {
@@ -848,7 +844,6 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
   int color=0;
               
    Stone stone;
-   BoardPosition bp;
    int i=moveList.size()-1;
    while(it.hasPrevious())
    {
@@ -1003,14 +998,10 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
       int color=0;
               
       Stone stone;
-      BoardPosition bp;
-      SimplePosition sp;
       int i=0;
       while(it.hasNext())
       {
         stone=(Stone)it.next();
-    //    bp=stone.getBoardPosition();
-     //   sp=bp.getSimplePosition();
         if ((stone.x==x)&&(stone.y==y)) 
         { 
           stone.setCaptureMoveNumber(moveNumber);  
@@ -1031,19 +1022,16 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
     {
       Iterator it = capturedStonesArray.iterator();
       Stone s;
-      BoardPosition bp;
       boolean capturedStonesFound=false;
       
       while(it.hasNext())
       {
         s = (Stone)it.next();
-      //  bp=s.getBoardPosition();
         if ((s.getCaptureMoveNumber()==moveNumber)&&(s.forget==false))
         {
           movesGroup.getChildren().add(s);
           moveMap[s.x][s.y]=s.getStoneColor();
           capturedStonesFound=true;
-         // capturedStonesArray.remove(i);
         }
       }
       
