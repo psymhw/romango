@@ -3,7 +3,10 @@ package main;
 import java.applet.Applet;  
 import java.applet.AudioClip;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -125,6 +128,7 @@ public class GoClient extends Application
   {  
     setQuit();
     importImages();
+    getResources();
     
     stoneSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/stone.wav"));
     errorSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/error.wav"));
@@ -151,20 +155,61 @@ public class GoClient extends Application
     stage.setScene(scene);  
     stage.show();  
     
-    File directory = new File (".");
-    try {
-    	 System.out.println ("Current directory's canonical path: " 
-    	  + directory.getCanonicalPath());
-    	 File resourceFile= new File(directory.getCanonicalPath()+"\\resources.properties");
-    	 if (resourceFile.exists()) System.out.println("resources.properties found");
-    	 
-    	 }catch(Exception e) {
-    	 System.out.println("Exceptione is ="+e.getMessage());
-    	 
-    	
-    	  }
+    
       
   } // end of start method
+
+private void getResources() 
+{
+  File resourceFile=null;
+  File directory = new File (".");
+  try 
+  {
+	resourceFile= new File(directory.getCanonicalPath()+"\\resources.properties");
+  } catch (IOException e) { e.printStackTrace(); }
+
+  if (resourceFile!=null)
+  {
+	if (resourceFile.exists())
+    {
+	  try 
+	  {
+	    InputStream in = new FileInputStream(resourceFile);
+	    InputStreamReader isr = new InputStreamReader(in);
+	    BufferedReader br = new BufferedReader(isr);
+	    String line;
+		      
+	    while ((line = br.readLine()) != null) 
+	    { 
+	      if (line.startsWith("username: ")) userId = line.substring(10);
+	      if (line.startsWith("password: ")) password = line.substring(10);
+	    }
+	  } catch (IOException io) { System.out.println("Ooops"); }
+    }
+	System.out.println("USERNAME: "+userId); 
+	System.out.println("PASSWORD: "+password); 
+  }
+}
+
+private void writeResources() 
+{
+	File resourceFile=null;
+	  File directory = new File (".");
+	  try 
+	  {
+		resourceFile= new File(directory.getCanonicalPath()+"\\resources.properties");
+	  } catch (IOException e) { e.printStackTrace(); }
+
+	FileWriter fstream;
+	try 
+	{
+	  fstream = new FileWriter(resourceFile);
+	  BufferedWriter out = new BufferedWriter(fstream);
+	  out.write("username: "+userId+"\n");
+	  out.write("password: "+password+"\n");
+	  out.close();
+	} catch (IOException e) { e.printStackTrace();}
+}
 
 private GridPane getGridPane() {
 	GridPane gridPane = new GridPane(); 
@@ -241,22 +286,22 @@ private Group getInfoGroup()
 	    
 	    int yPos=30;
 	    Text moveno = new Text("Move #:");
-	    moveno.setX(40);
+	    moveno.setX(90);
 	    moveno.setY(yPos+25);
 	    moveno.setFont(Font.font("Serif", 20));
 	      
 	    movenoVal = new Text("0");
-	    movenoVal.setX(120);
+	    movenoVal.setX(165);
 	    movenoVal.setY(yPos+25);
 	    movenoVal.setFont(Font.font("Serif", 20));
 	      
 	    Text handicap = new Text("Handicap:");
-	    handicap.setX(25);
+	    handicap.setX(75);
 	    handicap.setY(yPos);
 	    handicap.setFont(Font.font("Serif", 20));
 	    
 	    handicapVal = new Text(""+handicapInt);
-	    handicapVal.setX(120);
+	    handicapVal.setX(165);
 	    handicapVal.setY(yPos);
 	    handicapVal.setFont(Font.font("Serif", 20));
 	    
@@ -326,9 +371,6 @@ private Group getInfoGroup()
     hyperlink.setText(userId);
      
     hyperlink.setOnAction(new EventHandler<ActionEvent>() {
-    	
-
-         @Override
          public void handle(ActionEvent event) {
              final Stage myDialog = new Stage();
           //   myDialog.initModality(Modality.WINDOW_MODAL);
@@ -336,18 +378,17 @@ private Group getInfoGroup()
              Button okButton = new Button("SAVE");
              okButton.setOnAction(new EventHandler<ActionEvent>(){
 
-                 @Override
                  public void handle(ActionEvent arg0) {
-                	
-                	 
                 	  userId=userIdField.getText();
                 	  userNameLink.setText(userId);
-                	  
                 	  password=passwordField.getText();
-         			 System.out.println("userId: "+userId);
-         			System.out.println("password: "+password);
-                     myDialog.close();
+         			  System.out.println("userId: "+userId);
+         			  System.out.println("password: "+password);
+         			  writeResources();
+                      myDialog.close();
                  }
+
+				
               
              });
        
@@ -881,6 +922,7 @@ void removeLastStone()  // NOT capture
 {
   int color;
   int size = moves.size();
+  if (moveNumber==0) return;
   if (size>0)
   {
     Move m = (Move) moves.get(size-1);
