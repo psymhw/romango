@@ -1,6 +1,6 @@
 package main;
 
-import java.applet.Applet;  
+import java.applet.Applet;
 import java.applet.AudioClip;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+
+import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -27,6 +27,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextAreaBuilder;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -34,7 +37,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBoxBuilder;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -103,7 +105,7 @@ public class GoClient extends Application
    
   int[][] moveMap = new int[19][19];
   int[][] groupMap = new int[19][19];
-  int lastMove=WHITE;
+  int lastMoveColor=WHITE;
   int moveNumber=0;
 
   AudioClip stoneSound;
@@ -115,20 +117,35 @@ public class GoClient extends Application
   int captured[]= new int[3];
    
   Text handicapVal;
-  Text movenoVal;
+  Text movenoVal= new Text("0");;
   Text capturedBlackVal;
   Text capturedWhiteVal;
-  String userId = "Not Set";
-  String password;
+  String userId = "noset";
+  String password="noset";
   Hyperlink userNameLink;
   TextField userIdField;
   TextField passwordField; 
+  
+  DragonAccess dragonAccess;
+  Move lastMove;
+  boolean makeMove=false;
+  String currentGameNo="noset";
+
+  TextArea textArea;
+
   
   public void start(final Stage stage) throws Exception  
   {  
     setQuit();
     importImages();
     getResources();
+    
+    
+    
+    
+    
+    
+    
     
     stoneSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/stone.wav"));
     errorSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/error.wav"));
@@ -155,10 +172,47 @@ public class GoClient extends Application
     stage.setScene(scene);  
     stage.show();  
     
+    if (!"noset".equals(password)) checkForGame(true);
+   // textArea.setText(dragonAccess.getSgfFile());
     
+   // textArea.setText("HELLO WORLD\n\n"+textArea.getText());
+    //textArea.scrollTopProperty();
+    //textArea.positionCaret(30);
       
   } // end of start method
 
+  private void checkForGame(boolean startup)
+  {
+	 dragonAccess=new DragonAccess(userId, password);
+	 String status = dragonAccess.getStatus();
+	 textArea.insertText(0, dragonAccess.getFeedback());
+	 
+	 System.out.println("GAME: " + status);
+	 
+	 if (!"error".equals(status))   //  game is found on dragon status check
+	 {
+		if (!currentGameNo.equals(status))  // if the current game number is not equal to that number, make it so and save it
+		{
+		   currentGameNo=status;
+		   writeResources();
+		}
+	 }
+	 
+	 // status could be 'error' here but we may have a stored game number
+	 
+	 
+	 if (!"noset".equals(currentGameNo))  // if the game number is not 'noset' it should be a real game number
+	 {
+	   moveLine=dragonAccess.getSgf(currentGameNo);
+	   if (startup) getSgfMoves();
+	 }
+	 
+	 
+	    //dragonAccess.login();
+	    //dragonAccess.makeMove();
+	  //  moveLine=dragonAccess.getSgf();
+  }
+  
 private void getResources() 
 {
   File resourceFile=null;
@@ -178,16 +232,21 @@ private void getResources()
 	    InputStreamReader isr = new InputStreamReader(in);
 	    BufferedReader br = new BufferedReader(isr);
 	    String line;
-		      
+		    
+	    userId="noset";
+	    password="noset";
+	    currentGameNo="noset";
 	    while ((line = br.readLine()) != null) 
 	    { 
 	      if (line.startsWith("username: ")) userId = line.substring(10);
 	      if (line.startsWith("password: ")) password = line.substring(10);
+	      if (line.startsWith("gamenumb: ")) currentGameNo = line.substring(10);
 	    }
 	  } catch (IOException io) { System.out.println("Ooops"); }
     }
 	System.out.println("USERNAME: "+userId); 
 	System.out.println("PASSWORD: "+password); 
+	System.out.println("GAMENO: "+currentGameNo); 
   }
 }
 
@@ -207,6 +266,7 @@ private void writeResources()
 	  BufferedWriter out = new BufferedWriter(fstream);
 	  out.write("username: "+userId+"\n");
 	  out.write("password: "+password+"\n");
+	  out.write("gamenumb: "+currentGameNo+"\n");
 	  out.close();
 	} catch (IOException e) { e.printStackTrace();}
 }
@@ -220,7 +280,9 @@ private GridPane getGridPane() {
     gridPane.add(getButtonBox(), 0, 0);
     gridPane.add(getIdentBox(), 0, 1);
     gridPane.add(getInfoGroup(), 0, 2);
-    gridPane.add(new Text("row four column one here"), 0, 3);
+    gridPane.add(timer(), 0, 3);
+    gridPane.add(getTextBox(), 0, 4);
+    gridPane.add(new Text("row 6 column one here"), 0, 5);
 	return gridPane;
 }
 
@@ -243,7 +305,7 @@ private HBox getButtonBox() {
       buttonBox.setSpacing(5);
  
       buttonBox.getChildren().add(getClearButton());
-      buttonBox.getChildren().add(getSgfButton());
+   //   buttonBox.getChildren().add(getSgfButton());
       buttonBox.getChildren().add(getDeleteLastMoveButton());
       buttonBox.getChildren().add(getPreviousMoveButton());
       buttonBox.getChildren().add(getNextMoveButton());
@@ -290,7 +352,6 @@ private Group getInfoGroup()
 	    moveno.setY(yPos+25);
 	    moveno.setFont(Font.font("Serif", 20));
 	      
-	    movenoVal = new Text("0");
 	    movenoVal.setX(165);
 	    movenoVal.setY(yPos+25);
 	    movenoVal.setFont(Font.font("Serif", 20));
@@ -359,7 +420,7 @@ private Group getInfoGroup()
     boardGroup.setOnMouseClicked(new EventHandler<MouseEvent>() {public void handle(MouseEvent t) 
     { 
       int thisMoveColor=0;
-      if (lastMove==BLACK) thisMoveColor=WHITE;  else thisMoveColor=BLACK;
+      if (lastMoveColor==BLACK) thisMoveColor=WHITE;  else thisMoveColor=BLACK;
       Stone s = new Stone(thisMoveColor, t.getX(),t.getY(), STYLE_LAST_MOVE);
       placeStone(s);}});
   }
@@ -573,10 +634,30 @@ private Group getInfoGroup()
 	// File sgfFile = new File(GoClient.class.getResourceAsStream("/sgf/test.sgf"));
    }
    
+   private TextArea getTextBox()
+   {
+	   textArea = TextAreaBuilder.create()
+               .prefWidth(200)
+               .wrapText(true)
+               .build();
+       
+	   return textArea;
+	   /*
+       ScrollPane scrollPane = new ScrollPane();
+       scrollPane.getStyleClass().add("noborder-scroll-pane");
+       scrollPane.setContent(textArea);
+       scrollPane.setFitToWidth(true);
+       scrollPane.setPrefWidth(200);
+       scrollPane.setPrefHeight(100);
+       
+       return scrollPane;
+       */
+   }
+   
    private void getSgfMoves()
    {
      clear();
-     readTestSgfFile();
+    // readTestSgfFile();
      Iterator it = moveLine.iterator();
      String sgfPosition="";
      String moveLine="";
@@ -639,6 +720,17 @@ private Group getInfoGroup()
      movenoVal.setText(""+moveNumber);
      putMoveImageOnLastStone();
      stoneSound.play();
+     lastMove = moves.get(moves.size()-1);
+     System.out.println("Last Move: "+colorStr(lastMove.color)+" position: "+lastMove.getSgfPosition());
+     makeMove=true;
+   }
+   
+   public String colorStr(int color)
+   {
+	  String colorStr="OPEN";
+	  if (color==BLACK) colorStr="BLACK";
+	  if (color==WHITE) colorStr="WHITE";
+	  return colorStr;
    }
    
    private void readTestSgfFile()
@@ -807,7 +899,7 @@ private void placeStone(int color, String sgfPosition, int style)
   
   moveMap[s.x][s.y]=color;
   movesGroup.getChildren().add(s);
-  lastMove=color;
+  lastMoveColor=color;
   moves.add(new Move(s.x, s.y, color));
  // if (s.style==STYLE_LAST_MOVE) removeMoveImageFromPreviousMove();
   moveNumber++;
@@ -823,7 +915,7 @@ private void placeStone(int color, int x, int y)
   
   moveMap[x][y]=color;	
   movesGroup.getChildren().add(new Stone(color, x, y, STYLE_LAST_MOVE));
-  lastMove=color;
+  lastMoveColor=color;
   moves.add(new Move(x, y, color));
   removeMoveImageFromPreviousMove();
   moveNumber++;
@@ -839,13 +931,20 @@ private void placeStone(Stone s)
   
   moveMap[s.x][s.y]=s.getStoneColor();	
   movesGroup.getChildren().add(s);
-  lastMove=s.getStoneColor();
-  moves.add(new Move(s.x, s.y, s.getStoneColor()));
+  lastMoveColor=s.getStoneColor();
+  Move move = new Move(s.x, s.y, s.getStoneColor());
+  moves.add(move);
   if (s.style==STYLE_LAST_MOVE) removeMoveImageFromPreviousMove();
   moveNumber++;
   movenoVal.setText(""+moveNumber);
   checkLibertiesOfNeighbors(s.x, s.y);
   if (s.style!=STYLE_REGULAR)stoneSound.play();
+ // if (makeMove)
+ // {	  
+ //   dragonAccess.login();
+  //  dragonAccess.makeMove(lastMove.getSgfPosition(), move.getSgfPosition(), s.getStoneColor());
+//  }
+// makeMove=false;
 }
 
 
@@ -898,6 +997,8 @@ void restoreMoveImageToPrevousStone(Move m)
 
 void putMoveImageOnLastStone()
 {
+  if (moves==null) return;	
+  System.out.println("moves: "+moves.size());
   Move m = (Move)moves.get(moves.size()-1);
   ObservableList moveList  = movesGroup.getChildren();
   ListIterator it = moveList.listIterator(moveList.size());
@@ -929,8 +1030,8 @@ void removeLastStone()  // NOT capture
     
     color = moveMap[m.x][m.y];
     moveMap[m.x][m.y]=OPEN;
-    if (color==BLACK) lastMove=WHITE;
-    else lastMove=BLACK;
+    if (color==BLACK) lastMoveColor=WHITE;
+    else lastMoveColor=BLACK;
     
    
     removeStone(m.x, m.y);
@@ -1178,6 +1279,7 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
    
    private void clear() 
    {
+	 if (movesGroup==null) return;  
      ObservableList list=movesGroup.getChildren();  
      while (list.size() > 0)
      {
@@ -1194,6 +1296,14 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
      movenoVal.setText("0");
      capturedBlackVal.setText("0");
      capturedWhiteVal.setText("0");
+   }
+   
+  
+   Group timer()
+   {
+	 MyTimer myTimer = new MyTimer();
+	 return myTimer.getTimer();
+	
    }
     
 }  
