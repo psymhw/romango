@@ -21,4 +21,13 @@ public class Move
     this.color=color;
   }
     
+  public String getSgfPosition()
+  {
+          String pos = new String();
+          char xx = (char)(x+97); 
+          char yy = (char)(y+97);
+
+          pos=""+xx+""+yy;
+          return pos;
+  }
 }
