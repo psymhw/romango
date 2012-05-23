@@ -127,9 +127,12 @@ public class GoClient extends Application
   TextField passwordField; 
   
   DragonAccess dragonAccess;
-  Move lastMove;
+  Move lastSgfMove;
+  int lastSgfMoveNumber;
   boolean makeMove=false;
   String currentGameNo="noset";
+  
+  Button commitButton;
 
   TextArea textArea;
 
@@ -183,29 +186,29 @@ public class GoClient extends Application
 
   private void checkForGame(boolean startup)
   {
-	 dragonAccess=new DragonAccess(userId, password);
-	 String status = dragonAccess.getStatus();
-	 textArea.insertText(0, dragonAccess.getFeedback());
+	 if (startup) dragonAccess=new DragonAccess(userId, password);
 	 
-	 System.out.println("GAME: " + status);
+	 long gameNo= dragonAccess.checkForMove();
+	 textArea.insertText(0, dragonAccess.getFeedback()+"\n");
+	 //textArea.insertText(0, "***********\n");
 	 
-	 if (!"error".equals(status))   //  game is found on dragon status check
+	 if (gameNo>0)
 	 {
-		if (!currentGameNo.equals(status))  // if the current game number is not equal to that number, make it so and save it
+		if (!currentGameNo.equals(""+gameNo))  // if the current game number is not equal to that number, make it so and save it
 		{
-		   currentGameNo=status;
-		   writeResources();
+		  currentGameNo=""+gameNo;
+		  writeResources();
 		}
+		 
 	 }
 	 
-	 // status could be 'error' here but we may have a stored game number
+	 // if we got to here, there is either currentGameNo has a game number or it's still 'noset'	
 	 
+	 if ("noset".equals(currentGameNo))  return;
 	 
-	 if (!"noset".equals(currentGameNo))  // if the game number is not 'noset' it should be a real game number
-	 {
-	   moveLine=dragonAccess.getSgf(currentGameNo);
-	   if (startup) getSgfMoves();
-	 }
+	 moveLine=dragonAccess.getSgf(currentGameNo);
+	 if (startup) getSgfMoves();
+	 
 	 
 	 
 	    //dragonAccess.login();
@@ -327,7 +330,8 @@ private HBox getIdentBox()
    userNameLink.setPrefHeight(30);
    userNameLink.setAlignment(Pos.CENTER_RIGHT);
    identBox.getChildren().add(userNameLink);
-	return identBox;
+   identBox.getChildren().add(getCommitButton());
+   return identBox;
 }
    
 private Group getInfoGroup()
@@ -413,6 +417,24 @@ private Group getInfoGroup()
      b.setOnMouseClicked(bHandler);
      return b;
   }
+  
+  private Button getCommitButton() 
+  {
+    commitButton = new Button("Commit");
+    // b.setLayoutX(10);
+    // b.setLayoutY(10);
+    EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
+	          public void handle(MouseEvent event) 
+	          {
+	        	Move m = moves.get(lastSgfMoveNumber+1);  
+	            System.out.println("Commit: "+m.getSgfPosition()); 
+	               
+	          } };
+	  
+     commitButton.setOnMouseClicked(bHandler);
+     return commitButton;
+  }
+
 
   private void setupMouse(Group boardGroup) 
   {
@@ -720,8 +742,11 @@ private Group getInfoGroup()
      movenoVal.setText(""+moveNumber);
      putMoveImageOnLastStone();
      stoneSound.play();
-     lastMove = moves.get(moves.size()-1);
-     System.out.println("Last Move: "+colorStr(lastMove.color)+" position: "+lastMove.getSgfPosition());
+     lastSgfMoveNumber=moves.size()-1;
+     lastSgfMove = moves.get(lastSgfMoveNumber);
+     
+     System.out.println("Last Move: "+colorStr(lastSgfMove.color)+" position: "+lastSgfMove.getSgfPosition());
+     
      makeMove=true;
    }
    

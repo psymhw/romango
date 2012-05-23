@@ -74,48 +74,52 @@ public class DragonAccess
     */
   }
    
-   public String getStatus()
+   public long checkForMove()
    {
 	 String surl = "http://www.dragongoserver.net/quick_status.php?&quick_mode=1&user=" + userId;
-	 String returnVal="error";
-	  String gameLine="";    
-	   String gameStr="";
+	 
+	 String secondLine="";    
+	 String gameStr="";
+	 StringBuffer rawMessage = new StringBuffer();
+	 boolean emptyList = false;
+	 long gameLong=0;
+	 
 	 try
 	 {
 	   URL url;
 	   url = new URL(surl);
-	           
 	   URLConnection con = url.openConnection();
 	   con = url.openConnection();
 	   InputStream is = con.getInputStream();
 	   InputStreamReader isr = new InputStreamReader(is);
 	   BufferedReader br = new BufferedReader(isr);
 	   String line = null;
-	 
 	   
 	   int count=0;
 	   while ( (line = br.readLine()) != null)
 	   {
-	      System.out.println("line: " + line);
-	     
+	     // System.out.println("line: " + line);
+	      rawMessage.append(line+"\n");
 	      count++;
-	      if (count==2) gameLine=line;
-	      
+	      if (count==2) secondLine=line;
 	   }
 	 } catch (Throwable t)  {  t.printStackTrace(); }
 	 
-	 gameStr=gameLine.substring(4,11);
-	
-	 long gameLong=0;
-	 try {
-	  gameLong = Long.parseLong(gameStr.trim());
-	 } catch (Exception e) {}
-	 
-	 if (gameLong>0) returnVal=gameStr.trim();
+	 if (secondLine.contains("empty list")) emptyList=true;
 	 
 	 feedback=new StringBuffer();
-	 feedback.append("DGS Status: "+returnVal+"\n");
-	 return returnVal;
+	 if (emptyList)
+	 {
+	    feedback.append("no moves waiting"); 
+	 }
+	 else 
+	 {	 
+	   gameStr=secondLine.substring(4,11);
+	   try { gameLong = Long.parseLong(gameStr.trim()); } catch (Exception e) {}
+	   if (gameLong>0) feedback.append("Game Found: #"+gameStr.trim());
+	   else feedback.append(rawMessage);
+	 }
+	 return gameLong;
    }
    
    public ArrayList <String> getSgf(String currentGameNo)
