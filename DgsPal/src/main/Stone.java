@@ -19,11 +19,25 @@ public class Stone extends ImageView
   private String sgfPosition;
   private double sceneX=0;
   private double sceneY=0;
+  private Move move;
   
   int style=0;
-
   
   public boolean forget=false;
+  
+  public Stone(Move move, int style)
+  {
+	this.move=move;  
+    this.x=move.x;
+    this.y=move.y;
+    sgfPosition = move.getSgfPosition();
+    sceneX = calcSceneX();
+    sceneY = calcSceneY();
+    this.style=style;
+    this.stoneColor=move.color;
+    createStone();
+  }
+  
   
   
     public Stone(int color, String sgfPosition, int style)

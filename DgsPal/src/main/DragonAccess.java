@@ -1,8 +1,11 @@
 package main;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
@@ -24,6 +27,37 @@ public class DragonAccess
   String password;
   StringBuffer sgfFileString = new StringBuffer();
   StringBuffer feedback = new StringBuffer();
+  int handicap=0;
+  int loginAttempts=0;
+  
+  public int getHandicap() {
+	return handicap;
+}
+
+public void setHandicap(int handicap) {
+	this.handicap = handicap;
+}
+
+Move lastSgfMove;
+  boolean loggedIn=false;
+  
+  public Move getLastSgfMove() {
+	return lastSgfMove;
+}
+
+public void setLastSgfMove(Move lastSgfMove) {
+	this.lastSgfMove = lastSgfMove;
+}
+
+public int getLastSgfMoveNumber() {
+	return lastSgfMoveNumber;
+}
+
+public void setLastSgfMoveNumber(int lastSgfMoveNumber) {
+	this.lastSgfMoveNumber = lastSgfMoveNumber;
+}
+
+int lastSgfMoveNumber=0;
 	
   public DragonAccess(String userId, String password) 
   {
@@ -40,11 +74,9 @@ public class DragonAccess
     cookie_handle.setSecure(false);
     
     HttpCookie cookie_sessioncode = new HttpCookie("cookie_sessioncode", "9009AB8583A63AC6A66A2C6914A98E7BFA2601C93");
-    cookie_sessioncode.setDomain("www.dragongoserver.net");
+    cookie_sessioncode.setDomain("www.dragongoserver.net");               
     cookie_sessioncode.setPath("/");
     cookie_sessioncode.setSecure(false);
-    
-   
     
     URI dragonURI=null;
     
@@ -53,10 +85,12 @@ public class DragonAccess
 		dragonURI = new URI("www.dragongoserver.net");
 	} catch (URISyntaxException e) {e.printStackTrace();}
    
-   /* 
-    cookieJar.add(dragonURI, cookie_handle);
-    cookieJar.add(dragonURI, cookie_sessioncode);
     
+   // cookieJar.add(dragonURI, cookie_handle);
+  //  cookieJar.add(dragonURI, cookie_sessioncode);
+  //  loggedIn=true;
+    
+   /* 
     List cookies = cookieJar.getCookies();
     System.out.println("cookies: "+cookies.size());
     Iterator it = cookies.iterator();
@@ -81,8 +115,10 @@ public class DragonAccess
 	 String secondLine="";    
 	 String gameStr="";
 	 StringBuffer rawMessage = new StringBuffer();
+	 rawMessage.append("checkForMove: "); 
 	 boolean emptyList = false;
 	 long gameLong=0;
+	 
 	 
 	 try
 	 {
@@ -90,6 +126,7 @@ public class DragonAccess
 	   url = new URL(surl);
 	   URLConnection con = url.openConnection();
 	   con = url.openConnection();
+	   
 	   InputStream is = con.getInputStream();
 	   InputStreamReader isr = new InputStreamReader(is);
 	   BufferedReader br = new BufferedReader(isr);
@@ -98,7 +135,7 @@ public class DragonAccess
 	   int count=0;
 	   while ( (line = br.readLine()) != null)
 	   {
-	     // System.out.println("line: " + line);
+		 System.out.println("line: " + line);
 	      rawMessage.append(line+"\n");
 	      count++;
 	      if (count==2) secondLine=line;
@@ -119,14 +156,20 @@ public class DragonAccess
 	   if (gameLong>0) feedback.append("Game Found: #"+gameStr.trim());
 	   else feedback.append(rawMessage);
 	 }
+	 
+	 
 	 return gameLong;
    }
    
-   public ArrayList <String> getSgf(String currentGameNo)
+   public ArrayList <Move> getSgf(String currentGameNo)
    {
+	 ArrayList <Move>sgfMoves = new ArrayList<>();
 	 sgfFileString= new StringBuffer(); 
 	 String surl = "http://www.dragongoserver.net/sgf.php?gid="+currentGameNo+"&quick_mode=1";
-	 ArrayList <String>moveLine= new ArrayList<>();;
+	 ArrayList <String>moveLine= new ArrayList<>();
+	 Move move=null;
+	 lastSgfMoveNumber=0;
+	 
 	 try
 	 {
 	   URL url;
@@ -143,19 +186,86 @@ public class DragonAccess
 	   {
 		   moveLine.add(line);
 		   sgfFileString.append(line+"\n");
-	      System.out.println("line: " + line);
+	     // System.out.println("line: " + line);
 	   }
 	 } catch (Throwable t)  {  t.printStackTrace(); }
 	 
-	 return moveLine;
+	 Iterator it = moveLine.iterator();
+     String sgfPosition="";
+     String line="";
+	   
+     while(it.hasNext())  // get handicap count
+     {
+       line=(String)it.next();
+       if (line.startsWith("HA"))
+       {
+	     handicap=line.charAt(3)-48;  
+         continue;
+       }
+		      
+       if (line.startsWith("AB"))  // get handicap moves
+       {
+	     if (handicap>0)
+	     {
+	       int xPos=3;
+	       int yPos=5;
+	       for(int i=0; i<handicap; i++)
+	       {
+	         sgfPosition=  line.substring(xPos,yPos);
+	         move=new Move(sgfPosition,GoClient.BLACK);
+	         sgfMoves.add(move);
+	         lastSgfMoveNumber++;
+	         xPos+=4;
+	        yPos+=4;
+	       }
+	     }
+	     continue;
+       }
+	 
+       if (line.startsWith(";MN"))  // get first white move
+       {
+	     sgfPosition = line.substring(8,10);
+	     move=new Move(sgfPosition,GoClient.WHITE);
+	     sgfMoves.add(move);
+	     lastSgfMoveNumber++;
+	     continue;
+       }
+       if (line.startsWith(";B"))  // black move
+       {
+	     sgfPosition=line.substring(3,5);
+	     move=new Move(sgfPosition,GoClient.BLACK);
+	     sgfMoves.add(move);
+	     lastSgfMoveNumber++;
+	     continue;
+       }
+      
+       if (line.startsWith(";W"))  // white move
+       {
+	     sgfPosition=line.substring(3,5);
+	     move=new Move(sgfPosition,GoClient.WHITE);
+	     sgfMoves.add(move);
+	     lastSgfMoveNumber++;
+	     continue;
+       }
+     }
+	   
+     lastSgfMove = move;
+     return sgfMoves;
    }
    
-   public void makeMove(String lastMove, String thisMove, int color)
+   public boolean makeMove(String gameNo, String lastMove, String thisMove, int color)
    {
+	 StringBuffer rawMessage = new StringBuffer();
+	 String secondLine="";
      String colorString;
+     boolean loginError=false;
+     boolean success=false;
+     
+     if (!loggedIn) login(); else feedback = new StringBuffer();
+    // feedback.append("Dragon move\n");
      
      if (color==GoClient.BLACK) colorString="B"; else colorString="W";
-	 String surl = "http://www.dragongoserver.net/quick_play.php?gid=735095&handle="+userId
+	 String surl = "http://www.dragongoserver.net/quick_play.php?gid="+gameNo+"&handle="+userId
 			 +"&sgf_prev="+lastMove
 			 +"&sgf_move="+thisMove
 			 +"&color="+colorString;
@@ -166,21 +276,53 @@ public class DragonAccess
 	           
 	   URLConnection con = url.openConnection();
 	   con = url.openConnection();
+	   con.setDoOutput(true);  // triggers POST method
 	   InputStream is = con.getInputStream();
 	   InputStreamReader isr = new InputStreamReader(is);
 	   BufferedReader br = new BufferedReader(isr);
 	   String line = null;
+	   
+	  // boolean success=false;
 	          
+	   int count=0;
+	   System.out.println("move cmd: " + surl);
 	   while ( (line = br.readLine()) != null)
 	   {
-	      System.out.println("line: " + line);
+	      System.out.println("move line: " + line);
+	      if (line.contains("#Error: not_logged_in")) loginError=true;
+	      rawMessage.append(line);
+	      count++;
+	      if (count==2) secondLine=line;
 	   }
 	 } catch (Throwable t)  {  t.printStackTrace(); }
+	 
+	 if (secondLine.contains("Ok")) { success=true; feedback.append("move: ok\n"); }
+	  else { feedback.append(rawMessage); feedback.append("\n"); }
+	 
+	 if (loginError)
+	 {
+		if (loginAttempts<2)
+		{	
+		  login();
+		  loginAttempts++;
+		  success=makeMove(gameNo, lastMove,thisMove,color);
+		}
+	 }
+	 
+	 return success;
    }
    
    
    public void login()
    {
+	 loggedIn=true;  
+	 String secondLine="";
+	 StringBuffer rawMessage = new StringBuffer();
+	 rawMessage.append("login(): ");
+	 feedback = new StringBuffer();
+	 
+	// feedback.append("Dragon Login\n");
+	 
 	 String surl = "http://www.dragongoserver.net/login.php?quick_mode=1&userid=" + userId + "&passwd=" + password;
 	 try
 	 {
@@ -190,9 +332,12 @@ public class DragonAccess
 	   URLConnection con = url.openConnection();
 	   Object obj = con.getContent();
 	   con = url.openConnection();
+	   
 	   obj = con.getContent();
-       CookieStore cookieJar = manager.getCookieStore();
+       cookieJar = manager.getCookieStore();
+       /*
        List cookies = cookieJar.getCookies();
+       
        System.out.println("cookies: "+cookies.size());
        Iterator it = cookies.iterator();
        HttpCookie cookie;
@@ -206,17 +351,27 @@ public class DragonAccess
         		 +" path: "+cookie.getPath()
         		 );
        }
-      
+      */
        InputStream is = con.getInputStream();
        InputStreamReader isr = new InputStreamReader(is);
        BufferedReader br = new BufferedReader(isr);
        String line = null;
+       int count=0;
        while ( (line = br.readLine()) != null)
        {
-           System.out.println("line: " + line);
+         System.out.println("login line: " + line);
+         rawMessage.append(line);
+         count++;
+         if (count==2) secondLine=line;
        }
 	 } catch (Throwable t)  {  t.printStackTrace(); } 
        
+	  if (secondLine.contains("Ok")) 
+	  {	  
+		  System.out.println("login appending OK");
+		  feedback.append("login: ok\n");
+	  }
+	  else { feedback.append(rawMessage); feedback.append("\n"); }
    }
    
    public String getSgfFile()
@@ -296,5 +451,7 @@ public class DragonAccess
        } catch (Throwable t)  {  t.printStackTrace(); }
    }
    */
+   
+   
 
 }
