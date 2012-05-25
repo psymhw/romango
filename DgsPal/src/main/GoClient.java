@@ -2,6 +2,7 @@ package main;
 
 import java.applet.Applet;
 import java.applet.AudioClip;
+import java.awt.Paint;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -20,6 +21,7 @@ import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -41,6 +43,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
   
@@ -99,8 +102,9 @@ public class GoClient extends Application
    
   Image grid_cross_image;
    
-  ArrayList <String>moveLine = new ArrayList<>();
+  //ArrayList <String>moveLine = new ArrayList<>();
   ArrayList <Move>moves = new ArrayList<>();
+  ArrayList <Move>sgfMoves = new ArrayList<>();
   ArrayList <Stone>capturedStonesArray = new ArrayList<>();
    
   int[][] moveMap = new int[19][19];
@@ -116,10 +120,13 @@ public class GoClient extends Application
   int handicapInt=0;
   int captured[]= new int[3];
    
-  Text handicapVal;
-  Text movenoVal= new Text("0");;
-  Text capturedBlackVal;
-  Text capturedWhiteVal;
+  Text handicapVal= new Text("0");
+  Text moveNoVal= new Text("0");
+  Text capturedBlackVal = new Text("0");
+  Text capturedWhiteVal= new Text("0");
+  Text localMovesVal= new Text("0");
+  Text gameNoVal= new Text("0");
+  
   String userId = "noset";
   String password="noset";
   Hyperlink userNameLink;
@@ -129,12 +136,17 @@ public class GoClient extends Application
   DragonAccess dragonAccess;
   Move lastSgfMove;
   int lastSgfMoveNumber;
+  int colorToPlay=WHITE;
+  int localMoves=0;
+  int handicap=0;
+  
+  
   boolean makeMove=false;
   String currentGameNo="noset";
   
   Button commitButton;
 
-  TextArea textArea;
+  TextArea feedbackArea;
 
   
   public void start(final Stage stage) throws Exception  
@@ -142,13 +154,6 @@ public class GoClient extends Application
     setQuit();
     importImages();
     getResources();
-    
-    
-    
-    
-    
-    
-    
     
     stoneSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/stone.wav"));
     errorSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/error.wav"));
@@ -176,26 +181,32 @@ public class GoClient extends Application
     stage.show();  
     
     if (!"noset".equals(password)) checkForGame(true);
-   // textArea.setText(dragonAccess.getSgfFile());
+   // feedbackArea.setText(dragonAccess.getSgfFile());
     
-   // textArea.setText("HELLO WORLD\n\n"+textArea.getText());
-    //textArea.scrollTopProperty();
-    //textArea.positionCaret(30);
+   // feedbackArea.setText("HELLO WORLD\n\n"+feedbackArea.getText());
+    //feedbackArea.scrollTopProperty();
+    //feedbackArea.positionCaret(30);
       
   } // end of start method
 
-  private void checkForGame(boolean startup)
+  private boolean checkForGame(boolean startup)
   {
 	 if (startup) dragonAccess=new DragonAccess(userId, password);
 	 
+	 boolean gameFound=false;
+	
+	 
 	 long gameNo= dragonAccess.checkForMove();
-	 textArea.insertText(0, dragonAccess.getFeedback()+"\n");
-	 //textArea.insertText(0, "***********\n");
+	 feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
+	 //feedbackArea.insertText(0, "***********\n");
 	 
 	 if (gameNo>0)
 	 {
+		gameFound=true;	
+		//System.out.println("game found");
 		if (!currentGameNo.equals(""+gameNo))  // if the current game number is not equal to that number, make it so and save it
 		{
+		 
 		  currentGameNo=""+gameNo;
 		  writeResources();
 		}
@@ -204,18 +215,58 @@ public class GoClient extends Application
 	 
 	 // if we got to here, there is either currentGameNo has a game number or it's still 'noset'	
 	 
-	 if ("noset".equals(currentGameNo))  return;
+	 gameNoVal.setText(currentGameNo);
 	 
-	 moveLine=dragonAccess.getSgf(currentGameNo);
-	 if (startup) getSgfMoves();
+	 if ("noset".equals(currentGameNo))  return false;
+	 
+	 sgfMoves=dragonAccess.getSgf(currentGameNo);
+	 lastSgfMove=dragonAccess.getLastSgfMove();
+	 lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
+	 handicap=dragonAccess.getHandicap();
+	 
+	 if (startup) 
+	 {	 
+	    playAllSgfMoves();
+	    if (lastSgfMove.color==BLACK)  { colorToPlay=WHITE; }
+	 }
+	 else
+	 {
+	    if (gameFound) 
+	    {
+	      if (localMoves>1) // could just roll back local moves here.
+	      {
+	    	 clear();
+	    	 playAllSgfMoves();
+	      }
+	      else
+	      {
+	        playNewMove();
+	      }
+	    }
+	 }
+	
+	 
+	 if (gameFound)
+	  {
+	     
+	     commitButton.setDisable(false);
+	      // System.out.println("commit button enabled");
+	  } 
+	  else
+	  {
+	  	commitButton.setDisable(true);
+	   	//System.out.println("commit button disabled");
+	  }
 	 
 	 
-	 
-	    //dragonAccess.login();
-	    //dragonAccess.makeMove();
-	  //  moveLine=dragonAccess.getSgf();
+	 if (gameFound) return true; else return false;
   }
   
+  private void playNewMove()  
+  {
+	placeStone(lastSgfMove, STYLE_LAST_MOVE);
+  }
+
 private void getResources() 
 {
   File resourceFile=null;
@@ -274,7 +325,11 @@ private void writeResources()
 	} catch (IOException e) { e.printStackTrace();}
 }
 
-private GridPane getGridPane() {
+private GridPane getGridPane() 
+{
+	
+	
+    
 	GridPane gridPane = new GridPane(); 
     gridPane.setPadding(new Insets(10, 10, 10, 10));
     gridPane.setVgap(2);
@@ -284,11 +339,55 @@ private GridPane getGridPane() {
     gridPane.add(getIdentBox(), 0, 1);
     gridPane.add(getInfoGroup(), 0, 2);
     gridPane.add(timer(), 0, 3);
-    gridPane.add(getTextBox(), 0, 4);
-    gridPane.add(new Text("row 6 column one here"), 0, 5);
+
+    
+    
+    gridPane.add(getFeedbackLabel(), 0, 4);
+    gridPane.add(getFeedbackBox(), 0, 5);
+    
+ //   gridPane.add(getControlButtons2(), 0, 5);
+  //  gridPane.add(getRefreshButton(), 0, 5);
+  //  gridPane.add(getCommitButton(), 0, 6);
+  //  gridPane.add(getCommitTestButton(), 0, 7);
 	return gridPane;
 }
 
+  Group getFeedbackLabel()
+  {
+	  
+	  Rectangle bx = new Rectangle();
+	    bx.setWidth(300);
+	    bx.setHeight(50);
+	    bx.setArcWidth(10);
+	    bx.setArcHeight(10); 
+	    Color c =  Color.web("DAE6F3");
+	    bx.setFill(c);
+	   // new Color("DAE6F3")
+	    Group labelGroup = new Group();
+	    
+	    Text dragonInfoLabel = new Text("Dragon Info");
+	    dragonInfoLabel.setFont(Font.font("Serif", 20));
+	    dragonInfoLabel.setX(10);
+	    dragonInfoLabel.setY(40);
+	    
+	    labelGroup.getChildren().add(bx);
+	    labelGroup.getChildren().add(dragonInfoLabel);
+	    
+	   return labelGroup;
+  }
+
+  HBox getControlButtons2()
+  {
+	  HBox buttonBox = new HBox();
+      buttonBox.setPadding(new Insets(3, 3, 3, 3));
+      buttonBox.setSpacing(5);
+ 
+      buttonBox.getChildren().add(getRefreshButton());
+      buttonBox.getChildren().add(getCommitButton());
+    
+	return buttonBox;  
+  }
+   
   private Group getBoardGroup()
   {
 	  Group boardGroup = new Group();
@@ -307,11 +406,13 @@ private HBox getButtonBox() {
       buttonBox.setPadding(new Insets(3, 3, 3, 3));
       buttonBox.setSpacing(5);
  
-      buttonBox.getChildren().add(getClearButton());
+   //   buttonBox.getChildren().add(getClearButton());
    //   buttonBox.getChildren().add(getSgfButton());
       buttonBox.getChildren().add(getDeleteLastMoveButton());
-      buttonBox.getChildren().add(getPreviousMoveButton());
-      buttonBox.getChildren().add(getNextMoveButton());
+   //   buttonBox.getChildren().add(getPreviousMoveButton());
+   //   buttonBox.getChildren().add(getNextMoveButton());
+      buttonBox.getChildren().add(getRefreshButton());
+      buttonBox.getChildren().add(getCommitButton());
 	return buttonBox;
 }
 
@@ -330,7 +431,7 @@ private HBox getIdentBox()
    userNameLink.setPrefHeight(30);
    userNameLink.setAlignment(Pos.CENTER_RIGHT);
    identBox.getChildren().add(userNameLink);
-   identBox.getChildren().add(getCommitButton());
+  // identBox.getChildren().add(getCommitButton());
    return identBox;
 }
    
@@ -342,67 +443,83 @@ private Group getInfoGroup()
 	  //  infoGroup.getChildren().add(identityFlowPane);
 	//    
 	Rectangle bx = new Rectangle();
-	  //  bx.setX(20);
-	  //  bx.setY(100);
 	    bx.setWidth(300);
 	    bx.setHeight(200);
 	    bx.setArcWidth(20);
 	    bx.setArcHeight(20); 
 	    bx.setFill(Color.GRAY);
 	    
-	    int yPos=30;
-	    Text moveno = new Text("Move #:");
-	    moveno.setX(90);
-	    moveno.setY(yPos+25);
-	    moveno.setFont(Font.font("Serif", 20));
-	      
-	    movenoVal.setX(165);
-	    movenoVal.setY(yPos+25);
-	    movenoVal.setFont(Font.font("Serif", 20));
-	      
-	    Text handicap = new Text("Handicap:");
-	    handicap.setX(75);
-	    handicap.setY(yPos);
-	    handicap.setFont(Font.font("Serif", 20));
+	    Text gameNoLabel = new Text("Game #:");
+	    gameNoLabel.setFont(Font.font("Serif", 20));
 	    
-	    handicapVal = new Text(""+handicapInt);
-	    handicapVal.setX(165);
-	    handicapVal.setY(yPos);
+	    gameNoVal.setFont(Font.font("Serif", 20));
+	    
+	    Text moveNoLabel = new Text("Move #:");
+	    moveNoLabel.setFont(Font.font("Serif", 20));
+	      
+	    moveNoVal.setFont(Font.font("Serif", 20));
+	      
+	    Text handicapLabel = new Text("Handicap:");
+	    handicapLabel.setFont(Font.font("Serif", 20));
+	    
+	    //handicapVal.setText(""+handicapInt);
 	    handicapVal.setFont(Font.font("Serif", 20));
 	    
-	    Text capturedBlack = new Text("Captured Black:");
-	    capturedBlack.setX(25);
-	    capturedBlack.setY(yPos+50);
-	    capturedBlack.setFont(Font.font("Serif", 20));
+	    Text capturedBlackLabel = new Text("Captured Black:");
+	    capturedBlackLabel.setFont(Font.font("Serif", 20));
 	    
-	    capturedBlackVal = new Text("0");
-	    capturedBlackVal.setX(165);
-	    capturedBlackVal.setY(yPos+50);
 	    capturedBlackVal.setFont(Font.font("Serif", 20));
 	    
-	    Text capturedWhite = new Text("Captured White:");
-	    capturedWhite.setX(25);
-	    capturedWhite.setY(yPos+75);
-	    capturedWhite.setFont(Font.font("Serif", 20));
+	    Text capturedWhiteLabel = new Text("Captured White:");
+	    capturedWhiteLabel.setFont(Font.font("Serif", 20));
 	    
-	    capturedWhiteVal = new Text("0");
-	    capturedWhiteVal.setX(165);
-	    capturedWhiteVal.setY(yPos+75);
 	    capturedWhiteVal.setFont(Font.font("Serif", 20));
 	    
-	    infoGroup.getChildren().add(bx);
-	    infoGroup.getChildren().add(handicap);
-	    infoGroup.getChildren().add(handicapVal);
-	    infoGroup.getChildren().add(moveno);
-	    infoGroup.getChildren().add(movenoVal);
-	    infoGroup.getChildren().add(capturedBlack);
-	    infoGroup.getChildren().add(capturedBlackVal);
-	    infoGroup.getChildren().add(capturedWhite);
-	    infoGroup.getChildren().add(capturedWhiteVal);
-	  // infoGroup.getChildren().add(loginButton());
+	    Text localMovesLabel = new Text("Local Moves:");
+	    localMovesLabel.setFont(Font.font("Serif", 20));
+	    
+	    localMovesVal.setFont(Font.font("Serif", 20));
+	    
+	    GridPane gridPane = new GridPane();
+        gridPane.setPadding(new Insets(10, 10, 10, 10));
+        gridPane.setVgap(2);
+        gridPane.setHgap(15);
+        
+        int row=0;
+        gridPane.add(gameNoLabel, 0, row);
+        gridPane.add(gameNoVal, 1, row++);
+        
+        gridPane.add(handicapLabel, 0, row);
+        gridPane.add(handicapVal, 1, row++);
+        
+        gridPane.add(capturedBlackLabel, 0, row);
+        gridPane.add(capturedBlackVal, 1, row++);
+        
+        gridPane.add(capturedWhiteLabel, 0, row);
+        gridPane.add(capturedWhiteVal, 1, row++);
+        
+        gridPane.add(moveNoLabel, 0, row);
+        gridPane.add(moveNoVal, 1, row++);
+        
+        gridPane.add(localMovesLabel, 0, row);
+        gridPane.add(localMovesVal, 1, row++);
+        
+        
+        gridPane.setHalignment(handicapLabel, HPos.RIGHT);
+        gridPane.setHalignment(capturedBlackLabel, HPos.RIGHT);
+        gridPane.setHalignment(capturedWhiteLabel, HPos.RIGHT);
+        gridPane.setHalignment(localMovesLabel, HPos.RIGHT);
+        gridPane.setHalignment(moveNoLabel, HPos.RIGHT);
+        gridPane.setHalignment(gameNoLabel, HPos.RIGHT);
+        
+        infoGroup.getChildren().add(bx);
+	    infoGroup.getChildren().add(gridPane);
+	    
+	    
 	    return infoGroup;
 }
 
+/*
   private Button getSgfButton() 
   {
     Button b = new Button("Get SGF");
@@ -411,13 +528,16 @@ private Group getInfoGroup()
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) {
 	            //  System.out.println("Hello World!"); 
-	              getSgfMoves();  
+	        	  
+	        	  
+	        	  playAllSgfMoves();
 	          } };
 	  
      b.setOnMouseClicked(bHandler);
      return b;
   }
-  
+  */
+
   private Button getCommitButton() 
   {
     commitButton = new Button("Commit");
@@ -426,15 +546,61 @@ private Group getInfoGroup()
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) 
 	          {
-	        	Move m = moves.get(lastSgfMoveNumber+1);  
-	            System.out.println("Commit: "+m.getSgfPosition()); 
+	        	boolean success=false;  
+	        	Move firstLiveMove = moves.get(lastSgfMoveNumber);   
+	            System.out.println("Commit, last move: "+lastSgfMove.sgfPosition+", this move: "+firstLiveMove.getSgfPosition());
+	            System.out.println("Commit, last move#: "+lastSgfMoveNumber+", movelist size: "+moves.size());
+	            
+	            success=dragonAccess.makeMove(currentGameNo, lastSgfMove.sgfPosition,firstLiveMove.getSgfPosition(), firstLiveMove.color);
+	            feedbackArea.insertText(0, dragonAccess.getFeedback());
+	            if (success) commitButton.setDisable(true);
 	               
 	          } };
 	  
      commitButton.setOnMouseClicked(bHandler);
      return commitButton;
   }
+  
+  private Button getCommitTestButton() 
+  {
+    Button commitTestButton = new Button("Commit Test");
+    // b.setLayoutX(10);
+    // b.setLayoutY(10);
+    EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
+	          public void handle(MouseEvent event) 
+	          {
+	        	int numbMoves = moves.size();
+	        	if (numbMoves>lastSgfMoveNumber)
+	        	{
+	        	  Move firstLiveMove = moves.get(lastSgfMoveNumber);   
+	        	  feedbackArea.insertText(0,"Commit, last move: "+lastSgfMove.sgfPosition+", this move: "+firstLiveMove.getSgfPosition());
+	        	  feedbackArea.insertText(0,"Commit, last move#: "+lastSgfMoveNumber+", movelist size: "+moves.size());
+	        	}
+	        	else feedbackArea.insertText(0,"numbMoves: "+numbMoves+" not > lastSgfMoveNumber: "+lastSgfMoveNumber);
+	        	
+	          //  dragonAccess.makeMove(lastSgfMove.sgfPosition,firstLiveMove.getSgfPosition(), firstLiveMove.color);
+	           // feedbackArea.insertText(0, dragonAccess.getFeedback());
+	               
+	          } };
+	  
+     commitTestButton.setOnMouseClicked(bHandler);
+     return commitTestButton;
+  }
 
+  private Button getRefreshButton() 
+  {
+    Button refreshButton = new Button("Refresh");
+    // b.setLayoutX(10);
+    // b.setLayoutY(10);
+    EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
+	          public void handle(MouseEvent event) 
+	          {
+	        	checkForGame(false);
+	          } };
+	  
+     refreshButton.setOnMouseClicked(bHandler);
+     return refreshButton;
+  }
 
   private void setupMouse(Group boardGroup) 
   {
@@ -443,8 +609,13 @@ private Group getInfoGroup()
     { 
       int thisMoveColor=0;
       if (lastMoveColor==BLACK) thisMoveColor=WHITE;  else thisMoveColor=BLACK;
-      Stone s = new Stone(thisMoveColor, t.getX(),t.getY(), STYLE_LAST_MOVE);
-      placeStone(s);}});
+      Move move = new Move(t.getX(),t.getY(), thisMoveColor);
+     // Stone s = new Stone(thisMoveColor, t.getX(),t.getY(), STYLE_LAST_MOVE);
+      placeStone(move, STYLE_LAST_MOVE );
+      localMoves++;
+      localMovesVal.setText(""+localMoves);  
+    }});
+     
   }
 
   Hyperlink loginButton()
@@ -656,18 +827,18 @@ private Group getInfoGroup()
 	// File sgfFile = new File(GoClient.class.getResourceAsStream("/sgf/test.sgf"));
    }
    
-   private TextArea getTextBox()
+   private TextArea getFeedbackBox()
    {
-	   textArea = TextAreaBuilder.create()
+	   feedbackArea = TextAreaBuilder.create()
                .prefWidth(200)
                .wrapText(true)
                .build();
        
-	   return textArea;
+	   return feedbackArea;
 	   /*
        ScrollPane scrollPane = new ScrollPane();
        scrollPane.getStyleClass().add("noborder-scroll-pane");
-       scrollPane.setContent(textArea);
+       scrollPane.setContent(feedbackArea);
        scrollPane.setFitToWidth(true);
        scrollPane.setPrefWidth(200);
        scrollPane.setPrefHeight(100);
@@ -676,76 +847,30 @@ private Group getInfoGroup()
        */
    }
    
-   private void getSgfMoves()
+   private void playAllSgfMoves()
    {
      clear();
     // readTestSgfFile();
-     Iterator it = moveLine.iterator();
+     Iterator it = sgfMoves.iterator();
      String sgfPosition="";
      String moveLine="";
+     Move move;
 	   
      while(it.hasNext())
      {
-       moveLine=(String)it.next();
-       if (moveLine.startsWith("HA"))
-       {
-	 handicapInt=moveLine.charAt(3)-48;  
-         handicapVal.setText(""+handicapInt);
-         continue;
-       }
-		      
-       if (moveLine.startsWith("AB"))
-       {
-	 if (handicapInt>0)
-	 {
-	   int xPos=3;
-	   int yPos=5;
-	   for(int i=0; i<handicapInt; i++)
-	   {
-	     sgfPosition=  moveLine.substring(xPos,yPos);
-	     //placeStone(BLACK, sgfPosition, STYLE_REGULAR);
-             placeStone(new Stone(BLACK, sgfPosition, STYLE_REGULAR));
-	     xPos+=4;
-	     yPos+=4;
-	   }
-	 }
-	 continue;
-       }
-	 
-       if (moveLine.startsWith(";MN"))
-       {
-	// moveNumber=moveLine.charAt(4)-48;
-	 System.out.println("Move Number: "+moveNumber);
-	 sgfPosition = moveLine.substring(8,10);
-         placeStone(new Stone(WHITE, sgfPosition, STYLE_REGULAR));
-	
-	 continue;
-       }
-       //   if (test) continue;
-       if (moveLine.startsWith(";B"))
-       {
-	 sgfPosition=moveLine.substring(3,5);
-         placeStone(new Stone(BLACK, sgfPosition, STYLE_REGULAR));
-        // placeStone(BLACK, sgfPosition, STYLE_REGULAR);
-	 continue;
-       }
-      
-       if (moveLine.startsWith(";W"))
-       {
-	 sgfPosition=moveLine.substring(3,5);
-        // placeStone(WHITE, sgfPosition, STYLE_REGULAR);
-         placeStone(new Stone(WHITE, sgfPosition, STYLE_REGULAR));
-	 continue;
-       }
+       move=(Move)it.next();
+       placeStone(move, STYLE_REGULAR);
+       
      }
-	   
-     movenoVal.setText(""+moveNumber);
+		      
+     handicapVal.setText(""+handicap);
+     moveNoVal.setText(""+lastSgfMoveNumber);
      putMoveImageOnLastStone();
      stoneSound.play();
-     lastSgfMoveNumber=moves.size()-1;
-     lastSgfMove = moves.get(lastSgfMoveNumber);
      
-     System.out.println("Last Move: "+colorStr(lastSgfMove.color)+" position: "+lastSgfMove.getSgfPosition());
+     lastSgfMove = dragonAccess.getLastSgfMove();
+     
+     System.out.println("Last Move: "+lastSgfMoveNumber+", "+colorStr(lastSgfMove.color)+" position: "+lastSgfMove.getSgfPosition());
      
      makeMove=true;
    }
@@ -758,6 +883,7 @@ private Group getInfoGroup()
 	  return colorStr;
    }
    
+   /*
    private void readTestSgfFile()
    {
      try 
@@ -770,6 +896,7 @@ private Group getInfoGroup()
        while ((line = br.readLine()) != null) { moveLine.add(line); }
      } catch (IOException io) { System.out.println("Ooops"); }
    }
+   */
    
    private Group getGrid()
    {
@@ -950,6 +1077,7 @@ private void placeStone(int color, int x, int y)
 }
 */
 
+/*
 private void placeStone(Stone s) 
 {
   if (moveMap[s.x][s.y]!=OPEN) return;
@@ -971,6 +1099,27 @@ private void placeStone(Stone s)
 //  }
 // makeMove=false;
 }
+
+*/
+
+private void placeStone(Move move, int style) 
+{
+  if (moveMap[move.x][move.y]!=OPEN) return;
+  
+  moveMap[move.x][move.y]=move.color;	
+  
+  
+  movesGroup.getChildren().add(new Stone(move, style));
+  lastMoveColor=move.color;
+  moves.add(move);
+  if (style==STYLE_LAST_MOVE) removeMoveImageFromPreviousMove();
+  moveNumber++;
+  moveNoVal.setText(""+moveNumber);
+  checkLibertiesOfNeighbors(move.x, move.y);
+  if (style!=STYLE_REGULAR)stoneSound.play();
+
+}
+
 
 
 
@@ -1047,7 +1196,9 @@ void putMoveImageOnLastStone()
 void removeLastStone()  // NOT capture
 {
   int color;
+  
   int size = moves.size();
+  if (size<=lastSgfMoveNumber) return;
   if (moveNumber==0) return;
   if (size>0)
   {
@@ -1057,7 +1208,6 @@ void removeLastStone()  // NOT capture
     moveMap[m.x][m.y]=OPEN;
     if (color==BLACK) lastMoveColor=WHITE;
     else lastMoveColor=BLACK;
-    
    
     removeStone(m.x, m.y);
     moves.remove(size-1);
@@ -1071,7 +1221,9 @@ void removeLastStone()  // NOT capture
   
   restoreCapturedPieces();
   moveNumber--;
-   movenoVal.setText(""+moveNumber);
+  moveNoVal.setText(""+moveNumber);
+  localMoves--;
+  localMovesVal.setText(""+localMoves);
 }
 
 
@@ -1318,9 +1470,11 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
      captured[BLACK]=0;
      captured[WHITE]=0;
      handicapVal.setText("0");
-     movenoVal.setText("0");
+     moveNoVal.setText("0");
      capturedBlackVal.setText("0");
      capturedWhiteVal.setText("0");
+     localMoves=0;
+     localMovesVal.setText("0");
    }
    
   
