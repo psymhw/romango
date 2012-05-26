@@ -34,7 +34,11 @@ public class DragonAccess
   
   public String getMessage() {
 	  if (currentMessage)
-	return message;
+	  {
+	    message=message.replaceAll("_", " ");
+	    message=message.substring(0,message.length()-1);
+		  return message;
+	  }
 	  else return "";
 }
 
