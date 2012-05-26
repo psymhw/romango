@@ -15,9 +15,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Timer;
 
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -47,6 +50,8 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
   
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 public class GoClient extends Application  
 {  
@@ -75,6 +80,11 @@ public class GoClient extends Application
   final static int STYLE_NUMBERED_9=9;
   final static int STYLE_NUMBERED_10=10;
   final static int STYLE_LAST_MOVE=11;
+  
+  final static int REFRESH_LOCAL=0;
+  final static int REFRESH_STARTUP=1;
+  final static int REFRESH_TIMED=2;
+  
    
   private ImageView quit;
   
@@ -148,7 +158,17 @@ public class GoClient extends Application
   Button commitButton;
 
   TextArea feedbackArea;
-  TextArea messageArea;
+  TextArea sendMessageArea;
+  TextArea receiveMessageArea;
+  
+  ImageView turnImageView;
+  Image blackStoneImage;
+  Image whiteStoneImage;
+  
+  Timer timer;
+  
+  IntegerProperty timerCount= new SimpleIntegerProperty(0);
+ 
 
   
   public void start(final Stage stage) throws Exception  
@@ -156,9 +176,32 @@ public class GoClient extends Application
     setQuit();
     importImages();
     getResources();
-    
+    setupRefreshTimer();
+    timerCount.addListener(new ChangeListener<Number>(){
+   
+    public void changed(ObservableValue<? extends Number> arg0,  Number arg1, Number arg2) 
+       {
+              System.out.println("Arg0: "+arg0);
+              System.out.println("Arg1: "+arg1);
+              System.out.println("Arg2: "+arg2);
+              
+              if (arg2==(Number)3) 
+              {
+            	  System.out.println("HELLO");
+            		 timer.cancel();
+            	     timer.purge();
+            	     timer= new Timer();
+            	     timer.schedule(new RemindTask((SimpleIntegerProperty) timerCount), 10000, 10000);
+              }
+           }
+    		
+    });
     stoneSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/stone.wav"));
     errorSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/error.wav"));
+    
+    blackStoneImage = new Image(Stone.class.getResourceAsStream("/images/b.gif")); 
+    whiteStoneImage = new Image(Stone.class.getResourceAsStream("/images/w.gif")); 
+    turnImageView = new ImageView(blackStoneImage);
 	  
     initiallizeMoveMap();
     captured[BLACK]=0;
@@ -181,8 +224,13 @@ public class GoClient extends Application
     //   stage.initStyle(StageStyle.TRANSPARENT);
     stage.setScene(scene);  
     stage.show();  
+    dragonAccess=new DragonAccess(userId, password);
+	 dragonAccess.login();
     
-    if (!"noset".equals(password)) checkForGame(true);
+    
+    if (!"noset".equals(password)) checkForGame(REFRESH_STARTUP);
+    timerTest();
+    
    // feedbackArea.setText(dragonAccess.getSgfFile());
     
    // feedbackArea.setText("HELLO WORLD\n\n"+feedbackArea.getText());
@@ -191,13 +239,17 @@ public class GoClient extends Application
       
   } // end of start method
 
-  private boolean checkForGame(boolean startup)
+  public void stop()
   {
-	 if (startup) 
-	 {	 
-		 dragonAccess=new DragonAccess(userId, password);
-		 dragonAccess.login();
-	 }
+	//this.stop();
+	 timer.cancel();
+     timer.purge();
+
+  }
+  
+  private boolean checkForGame(int type)
+  {
+	
 	 boolean gameFound=false;
 	 
 	 long gameNo= dragonAccess.checkForMove();
@@ -209,7 +261,6 @@ public class GoClient extends Application
 		//System.out.println("game found");
 		if (!currentGameNo.equals(""+gameNo))  // if the current game number is not equal to that number, make it so and save it
 		{
-		 
 		  currentGameNo=""+gameNo;
 		  writeResources();
 		}
@@ -226,12 +277,21 @@ public class GoClient extends Application
 	 lastSgfMove=dragonAccess.getLastSgfMove();
 	 lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
 	 handicap=dragonAccess.getHandicap();
-	 messageArea.setText(dragonAccess.getMessage());
+	 receiveMessageArea.setText(dragonAccess.getMessage());
 	 
-	 if (startup) 
+	 if (type==REFRESH_STARTUP||type==REFRESH_LOCAL) 
 	 {	 
 	    playAllSgfMoves();
-	    if (lastSgfMove.color==BLACK)  { colorToPlay=WHITE; }
+	    if (lastSgfMove.color==BLACK)  
+	    { 
+	      colorToPlay=WHITE; 
+	      turnImageView.setImage(whiteStoneImage);
+	    } 
+	    else 
+	    {
+	      colorToPlay=BLACK;
+	      turnImageView.setImage(blackStoneImage);
+	    }
 	 }
 	 else
 	 {
@@ -325,13 +385,14 @@ private GridPane getRightPane()
     gridPane.add(getButtonBox(), 0, 0);
     gridPane.add(getIdentBox(), 0, 1);
     gridPane.add(getInfoGroup(), 0, 2);
-    gridPane.add(timer(), 0, 3);
+    gridPane.add(new Text("PLACEHOLDER"), 0, 3);
     
     gridPane.add(getFeedbackLabel(), 0, 4);
     gridPane.add(getFeedbackBox(), 0, 5);
     
     gridPane.add(getMessageLabel(), 0, 6);
-    gridPane.add(getMessageBox(), 0, 7);
+    gridPane.add(getReceiveMessageBox(), 0, 7);
+    gridPane.add(getSendMessageBox(), 0, 8);
     
  //   gridPane.add(getControlButtons2(), 0, 5);
   //  gridPane.add(getRefreshButton(), 0, 5);
@@ -388,6 +449,7 @@ private GridPane getRightPane()
 	   return labelGroup;
   }
 
+  /*
   HBox getControlButtons2()
   {
 	  HBox buttonBox = new HBox();
@@ -399,7 +461,7 @@ private GridPane getRightPane()
     
 	return buttonBox;  
   }
-   
+   */
   private Group getBoardGroup()
   {
 	  Group boardGroup = new Group();
@@ -462,6 +524,8 @@ private Group getInfoGroup()
 	    bx.setArcHeight(20); 
 	    bx.setFill(Color.GRAY);
 	    
+	    
+	    
 	    Text gameNoLabel = new Text("Game #:");
 	    gameNoLabel.setFont(Font.font("Serif", 20));
 	    
@@ -493,6 +557,9 @@ private Group getInfoGroup()
 	    
 	    localMovesVal.setFont(Font.font("Serif", 20));
 	    
+	    Text turnLabel = new Text("Turn: ");
+	    turnLabel.setFont(Font.font("Serif", 20));
+	    
 	    GridPane gridPane = new GridPane();
         gridPane.setPadding(new Insets(10, 10, 10, 10));
         gridPane.setVgap(2);
@@ -517,6 +584,8 @@ private Group getInfoGroup()
         gridPane.add(localMovesLabel, 0, row);
         gridPane.add(localMovesVal, 1, row++);
         
+        gridPane.add(turnLabel,0,row);
+        gridPane.add(turnImageView,1,row++);
         
         gridPane.setHalignment(handicapLabel, HPos.RIGHT);
         gridPane.setHalignment(capturedBlackLabel, HPos.RIGHT);
@@ -524,6 +593,9 @@ private Group getInfoGroup()
         gridPane.setHalignment(localMovesLabel, HPos.RIGHT);
         gridPane.setHalignment(moveNoLabel, HPos.RIGHT);
         gridPane.setHalignment(gameNoLabel, HPos.RIGHT);
+        gridPane.setHalignment(turnLabel, HPos.RIGHT);
+        
+        
         
         infoGroup.getChildren().add(bx);
 	    infoGroup.getChildren().add(gridPane);
@@ -568,18 +640,18 @@ private Group getInfoGroup()
 	            		                      lastSgfMove.sgfPosition,
 	            		                      firstLiveMove.getSgfPosition(), 
 	            		                      firstLiveMove.color,
-	            		                      messageArea.getText()
+	            		                      sendMessageArea.getText()
 	            		                      );
 	            feedbackArea.insertText(0, dragonAccess.getFeedback());
 	            if (success) 
 	            { 
 	            	commitButton.setDisable(true); 
-	                if (messageArea.getText()!=null)
+	                if (sendMessageArea.getText()!=null)
 	                {	
-	            	  if (messageArea.getText().length()>0) 
-	                	feedbackArea.insertText(0, "message sent:\n"+messageArea.getText()+"\n");
+	            	  if (sendMessageArea.getText().length()>0) 
+	                	feedbackArea.insertText(0, "message sent:\n"+sendMessageArea.getText()+"\n");
 	                }
-	                messageArea.setText(""); }
+	                sendMessageArea.setText(""); }
 	          } };
 	  
      commitButton.setOnMouseClicked(bHandler);
@@ -610,7 +682,7 @@ private Group getInfoGroup()
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) 
 	          {
-	        	checkForGame(false);
+	        	checkForGame(REFRESH_LOCAL);
 	          } };
 	  
      refreshButton.setOnMouseClicked(bHandler);
@@ -863,15 +935,29 @@ private Group getInfoGroup()
        */
    }
    
-   private TextArea getMessageBox()
+   private TextArea getSendMessageBox()
    {
-	   messageArea = TextAreaBuilder.create()
+	   sendMessageArea = TextAreaBuilder.create()
                .prefWidth(200)
-               .prefHeight(140)
+               .prefHeight(70)
                .wrapText(true)
                .build();
        
-	   return messageArea;
+	   return sendMessageArea;
+   }
+   
+   private TextArea getReceiveMessageBox()
+   {
+	   receiveMessageArea = TextAreaBuilder.create()
+               .prefWidth(200)
+               .prefHeight(70)
+               .wrapText(true)
+               .build();
+	   
+	   Color c =  Color.web("DAE6F3");
+	   receiveMessageArea.setStyle("-fx-background-color: lightgoldenrodyellow;");
+	   receiveMessageArea.setEditable(false);
+	   return receiveMessageArea;
    }
    
    private void playAllSgfMoves()
@@ -1505,11 +1591,36 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
    }
    
   
-   Group timer()
+   void timerTest()
    {
-	 MyTimer myTimer = new MyTimer();
-	 return myTimer.getTimer();
-	
+	  timer = new Timer();
+	  timer.schedule(new RemindTask((SimpleIntegerProperty) timerCount), 5000, 5000);
    }
+   
+   void setupRefreshTimer()
+   {
+	   timerCount.addListener(new ChangeListener<Number>(){
+		   
+		    public void changed(ObservableValue<? extends Number> arg0,  Number arg1, Number arg2) 
+		       {
+		              System.out.println("Arg0: "+arg0);
+		              System.out.println("Arg1: "+arg1);
+		              System.out.println("Arg2: "+arg2);
+		              
+		              if (arg2==(Number)3) 
+		              {
+		            	  System.out.println("HELLO");
+		            		 timer.cancel();
+		            	     timer.purge();
+		            	     timer= new Timer();
+		            	     timer.schedule(new RemindTask((SimpleIntegerProperty) timerCount), 10000, 10000);
+		              }
+		           }
+		    		
+		    });   
+   }
+   
+      
+  
     
 }  
