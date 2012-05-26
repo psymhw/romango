@@ -29,8 +29,20 @@ public class DragonAccess
   StringBuffer feedback = new StringBuffer();
   int handicap=0;
   int loginAttempts=0;
+  String message;
+  boolean currentMessage=false;
   
-  public int getHandicap() {
+  public String getMessage() {
+	  if (currentMessage)
+	return message;
+	  else return "";
+}
+
+public void setMessage(String message) {
+	this.message = message;
+}
+
+public int getHandicap() {
 	return handicap;
 }
 
@@ -165,7 +177,7 @@ int lastSgfMoveNumber=0;
    {
 	 ArrayList <Move>sgfMoves = new ArrayList<>();
 	 sgfFileString= new StringBuffer(); 
-	 String surl = "http://www.dragongoserver.net/sgf.php?gid="+currentGameNo+"&quick_mode=1";
+	 String surl = "http://www.dragongoserver.net/sgf.php?gid="+currentGameNo+"&owned_comments=1";
 	 ArrayList <String>moveLine= new ArrayList<>();
 	 Move move=null;
 	 lastSgfMoveNumber=0;
@@ -193,10 +205,11 @@ int lastSgfMoveNumber=0;
 	 Iterator it = moveLine.iterator();
      String sgfPosition="";
      String line="";
-	   
+	  
      while(it.hasNext())  // get handicap count
      {
        line=(String)it.next();
+       System.out.println(line);
        if (line.startsWith("HA"))
        {
 	     handicap=line.charAt(3)-48;  
@@ -236,6 +249,7 @@ int lastSgfMoveNumber=0;
 	     move=new Move(sgfPosition,GoClient.BLACK);
 	     sgfMoves.add(move);
 	     lastSgfMoveNumber++;
+	     currentMessage=false;
 	     continue;
        }
       
@@ -245,7 +259,13 @@ int lastSgfMoveNumber=0;
 	     move=new Move(sgfPosition,GoClient.WHITE);
 	     sgfMoves.add(move);
 	     lastSgfMoveNumber++;
+	     currentMessage=false;
 	     continue;
+       }
+       if (line.startsWith("C["))  // white move
+       {
+    	  message=line.substring(line.indexOf(':')+1); 
+    	  currentMessage=true;
        }
      }
 	   
@@ -253,7 +273,7 @@ int lastSgfMoveNumber=0;
      return sgfMoves;
    }
    
-   public boolean makeMove(String gameNo, String lastMove, String thisMove, int color)
+   public boolean makeMove(String gameNo, String lastMove, String thisMove, int color, String message)
    {
 	 StringBuffer rawMessage = new StringBuffer();
 	 String secondLine="";
@@ -269,6 +289,15 @@ int lastSgfMoveNumber=0;
 			 +"&sgf_prev="+lastMove
 			 +"&sgf_move="+thisMove
 			 +"&color="+colorString;
+	 
+	 if (message!=null)
+	 {
+		 if (message.length()>0)
+		 {
+		   message=message.replaceAll(" ", "_");	 
+		   surl=surl+"&message="+message;
+		 }
+	 }
 	 try
 	 {
 	   URL url;
@@ -305,7 +334,7 @@ int lastSgfMoveNumber=0;
 		{	
 		  login();
 		  loginAttempts++;
-		  success=makeMove(gameNo, lastMove,thisMove,color);
+		  success=makeMove(gameNo, lastMove,thisMove,color, message);
 		}
 	 }
 	 
@@ -382,6 +411,35 @@ int lastSgfMoveNumber=0;
    public String getFeedback()
    {
 	  return feedback.toString(); 
+   }
+   
+   public void testNotes()
+   {
+		 String surl = "http://www.dragongoserver.net/do_quicl.php?obj=game&cmd=get_notes&gid=736429";
+		 try
+		 {
+		   URL url;
+		   url = new URL(surl);
+		           
+		   URLConnection con = url.openConnection();
+		   Object obj = con.getContent();
+		   con = url.openConnection();
+		   
+		   obj = con.getContent();
+	       cookieJar = manager.getCookieStore();
+	      
+	       InputStream is = con.getInputStream();
+	       InputStreamReader isr = new InputStreamReader(is);
+	       BufferedReader br = new BufferedReader(isr);
+	       String line = null;
+	     
+	       while ( (line = br.readLine()) != null)
+	       {
+	         System.out.println("test line: " + line);
+	       }
+		 } catch (Throwable t)  {  t.printStackTrace(); } 
+	       
+		 
    }
    
    /*
