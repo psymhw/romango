@@ -73,8 +73,8 @@ public class GoClient extends Application
   final static int STYLE_NUMBERED_7=7;
   final static int STYLE_NUMBERED_8=8;
   final static int STYLE_NUMBERED_9=9;
-  final static int STYLE_NUMBERED_10=9;
-  final static int STYLE_LAST_MOVE=10;
+  final static int STYLE_NUMBERED_10=10;
+  final static int STYLE_LAST_MOVE=11;
    
   private ImageView quit;
   
@@ -626,8 +626,8 @@ private Group getInfoGroup()
       if (lastMoveColor==BLACK) thisMoveColor=WHITE;  else thisMoveColor=BLACK;
       Move move = new Move(t.getX(),t.getY(), thisMoveColor);
      // Stone s = new Stone(thisMoveColor, t.getX(),t.getY(), STYLE_LAST_MOVE);
-      placeStone(move, STYLE_LAST_MOVE);
       localMoves++;
+      placeStone(move, localMoves);
       localMovesVal.setText(""+localMoves);  
     }});
      
@@ -1139,7 +1139,7 @@ private void placeStone(Move move, int style)
   movesGroup.getChildren().add(new Stone(move, style));
   lastMoveColor=move.color;
   moves.add(move);
-  if (style==STYLE_LAST_MOVE) removeMoveImageFromPreviousMove();
+ // if (style==STYLE_LAST_MOVE) removeMoveImageFromPreviousMove();
   moveNumber++;
   moveNoVal.setText(""+moveNumber);
   checkLibertiesOfNeighbors(move.x, move.y);
