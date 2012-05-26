@@ -73,6 +73,7 @@ public class GoClient extends Application
   final static int STYLE_NUMBERED_7=7;
   final static int STYLE_NUMBERED_8=8;
   final static int STYLE_NUMBERED_9=9;
+  final static int STYLE_NUMBERED_10=9;
   final static int STYLE_LAST_MOVE=10;
    
   private ImageView quit;
@@ -147,6 +148,7 @@ public class GoClient extends Application
   Button commitButton;
 
   TextArea feedbackArea;
+  TextArea messageArea;
 
   
   public void start(final Stage stage) throws Exception  
@@ -170,7 +172,7 @@ public class GoClient extends Application
     flowPane.setStyle("-fx-background-color: DAE6F3;");
       
     flowPane.getChildren().add(getBoardGroup()); 
-    flowPane.getChildren().add(getGridPane());
+    flowPane.getChildren().add(getRightPane());
       
     final Scene scene = new Scene(flowPane, 1020, 680);
      
@@ -191,14 +193,15 @@ public class GoClient extends Application
 
   private boolean checkForGame(boolean startup)
   {
-	 if (startup) dragonAccess=new DragonAccess(userId, password);
-	 
+	 if (startup) 
+	 {	 
+		 dragonAccess=new DragonAccess(userId, password);
+		 dragonAccess.login();
+	 }
 	 boolean gameFound=false;
-	
 	 
 	 long gameNo= dragonAccess.checkForMove();
 	 feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
-	 //feedbackArea.insertText(0, "***********\n");
 	 
 	 if (gameNo>0)
 	 {
@@ -223,6 +226,7 @@ public class GoClient extends Application
 	 lastSgfMove=dragonAccess.getLastSgfMove();
 	 lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
 	 handicap=dragonAccess.getHandicap();
+	 messageArea.setText(dragonAccess.getMessage());
 	 
 	 if (startup) 
 	 {	 
@@ -244,20 +248,8 @@ public class GoClient extends Application
 	      }
 	    }
 	 }
-	
 	 
-	 if (gameFound)
-	  {
-	     
-	     commitButton.setDisable(false);
-	      // System.out.println("commit button enabled");
-	  } 
-	  else
-	  {
-	  	commitButton.setDisable(true);
-	   	//System.out.println("commit button disabled");
-	  }
-	 
+	 if (gameFound) commitButton.setDisable(false); else commitButton.setDisable(true);
 	 
 	 if (gameFound) return true; else return false;
   }
@@ -298,9 +290,7 @@ private void getResources()
 	    }
 	  } catch (IOException io) { System.out.println("Ooops"); }
     }
-	System.out.println("USERNAME: "+userId); 
-	System.out.println("PASSWORD: "+password); 
-	System.out.println("GAMENO: "+currentGameNo); 
+	
   }
 }
 
@@ -325,11 +315,8 @@ private void writeResources()
 	} catch (IOException e) { e.printStackTrace();}
 }
 
-private GridPane getGridPane() 
+private GridPane getRightPane() 
 {
-	
-	
-    
 	GridPane gridPane = new GridPane(); 
     gridPane.setPadding(new Insets(10, 10, 10, 10));
     gridPane.setVgap(2);
@@ -339,11 +326,12 @@ private GridPane getGridPane()
     gridPane.add(getIdentBox(), 0, 1);
     gridPane.add(getInfoGroup(), 0, 2);
     gridPane.add(timer(), 0, 3);
-
-    
     
     gridPane.add(getFeedbackLabel(), 0, 4);
     gridPane.add(getFeedbackBox(), 0, 5);
+    
+    gridPane.add(getMessageLabel(), 0, 6);
+    gridPane.add(getMessageBox(), 0, 7);
     
  //   gridPane.add(getControlButtons2(), 0, 5);
   //  gridPane.add(getRefreshButton(), 0, 5);
@@ -357,7 +345,7 @@ private GridPane getGridPane()
 	  
 	  Rectangle bx = new Rectangle();
 	    bx.setWidth(300);
-	    bx.setHeight(50);
+	    bx.setHeight(30);
 	    bx.setArcWidth(10);
 	    bx.setArcHeight(10); 
 	    Color c =  Color.web("DAE6F3");
@@ -368,7 +356,31 @@ private GridPane getGridPane()
 	    Text dragonInfoLabel = new Text("Dragon Info");
 	    dragonInfoLabel.setFont(Font.font("Serif", 20));
 	    dragonInfoLabel.setX(10);
-	    dragonInfoLabel.setY(40);
+	    dragonInfoLabel.setY(25);
+	    
+	    labelGroup.getChildren().add(bx);
+	    labelGroup.getChildren().add(dragonInfoLabel);
+	    
+	   return labelGroup;
+  }
+  
+  Group getMessageLabel()
+  {
+	  
+	  Rectangle bx = new Rectangle();
+	    bx.setWidth(300);
+	    bx.setHeight(25);
+	    bx.setArcWidth(10);
+	    bx.setArcHeight(10); 
+	    Color c =  Color.web("DAE6F3");
+	    bx.setFill(c);
+	   // new Color("DAE6F3")
+	    Group labelGroup = new Group();
+	    
+	    Text dragonInfoLabel = new Text("Message");
+	    dragonInfoLabel.setFont(Font.font("Serif", 20));
+	    dragonInfoLabel.setX(10);
+	    dragonInfoLabel.setY(30);
 	    
 	    labelGroup.getChildren().add(bx);
 	    labelGroup.getChildren().add(dragonInfoLabel);
@@ -413,6 +425,7 @@ private HBox getButtonBox() {
    //   buttonBox.getChildren().add(getNextMoveButton());
       buttonBox.getChildren().add(getRefreshButton());
       buttonBox.getChildren().add(getCommitButton());
+      buttonBox.getChildren().add(getTestButton());
 	return buttonBox;
 }
 
@@ -548,39 +561,41 @@ private Group getInfoGroup()
 	          {
 	        	boolean success=false;  
 	        	Move firstLiveMove = moves.get(lastSgfMoveNumber);   
-	            System.out.println("Commit, last move: "+lastSgfMove.sgfPosition+", this move: "+firstLiveMove.getSgfPosition());
-	            System.out.println("Commit, last move#: "+lastSgfMoveNumber+", movelist size: "+moves.size());
+	         //   System.out.println("Commit, last move: "+lastSgfMove.sgfPosition+", this move: "+firstLiveMove.getSgfPosition());
+	          //  System.out.println("Commit, last move#: "+lastSgfMoveNumber+", movelist size: "+moves.size());
 	            
-	            success=dragonAccess.makeMove(currentGameNo, lastSgfMove.sgfPosition,firstLiveMove.getSgfPosition(), firstLiveMove.color);
+	            success=dragonAccess.makeMove(currentGameNo, 
+	            		                      lastSgfMove.sgfPosition,
+	            		                      firstLiveMove.getSgfPosition(), 
+	            		                      firstLiveMove.color,
+	            		                      messageArea.getText()
+	            		                      );
 	            feedbackArea.insertText(0, dragonAccess.getFeedback());
-	            if (success) commitButton.setDisable(true);
-	               
+	            if (success) 
+	            { 
+	            	commitButton.setDisable(true); 
+	                if (messageArea.getText()!=null)
+	                {	
+	            	  if (messageArea.getText().length()>0) 
+	                	feedbackArea.insertText(0, "message sent:\n"+messageArea.getText()+"\n");
+	                }
+	                messageArea.setText(""); }
 	          } };
 	  
      commitButton.setOnMouseClicked(bHandler);
      return commitButton;
   }
   
-  private Button getCommitTestButton() 
+  private Button getTestButton() 
   {
-    Button commitTestButton = new Button("Commit Test");
+    Button commitTestButton = new Button("Test");
     // b.setLayoutX(10);
     // b.setLayoutY(10);
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) 
 	          {
-	        	int numbMoves = moves.size();
-	        	if (numbMoves>lastSgfMoveNumber)
-	        	{
-	        	  Move firstLiveMove = moves.get(lastSgfMoveNumber);   
-	        	  feedbackArea.insertText(0,"Commit, last move: "+lastSgfMove.sgfPosition+", this move: "+firstLiveMove.getSgfPosition());
-	        	  feedbackArea.insertText(0,"Commit, last move#: "+lastSgfMoveNumber+", movelist size: "+moves.size());
-	        	}
-	        	else feedbackArea.insertText(0,"numbMoves: "+numbMoves+" not > lastSgfMoveNumber: "+lastSgfMoveNumber);
-	        	
-	          //  dragonAccess.makeMove(lastSgfMove.sgfPosition,firstLiveMove.getSgfPosition(), firstLiveMove.color);
-	           // feedbackArea.insertText(0, dragonAccess.getFeedback());
-	               
+	        	dragonAccess.login();  
+	        	dragonAccess.getSgf(currentGameNo);
 	          } };
 	  
      commitTestButton.setOnMouseClicked(bHandler);
@@ -611,7 +626,7 @@ private Group getInfoGroup()
       if (lastMoveColor==BLACK) thisMoveColor=WHITE;  else thisMoveColor=BLACK;
       Move move = new Move(t.getX(),t.getY(), thisMoveColor);
      // Stone s = new Stone(thisMoveColor, t.getX(),t.getY(), STYLE_LAST_MOVE);
-      placeStone(move, STYLE_LAST_MOVE );
+      placeStone(move, STYLE_LAST_MOVE);
       localMoves++;
       localMovesVal.setText(""+localMoves);  
     }});
@@ -831,6 +846,7 @@ private Group getInfoGroup()
    {
 	   feedbackArea = TextAreaBuilder.create()
                .prefWidth(200)
+               .prefHeight(140)
                .wrapText(true)
                .build();
        
@@ -845,6 +861,17 @@ private Group getInfoGroup()
        
        return scrollPane;
        */
+   }
+   
+   private TextArea getMessageBox()
+   {
+	   messageArea = TextAreaBuilder.create()
+               .prefWidth(200)
+               .prefHeight(140)
+               .wrapText(true)
+               .build();
+       
+	   return messageArea;
    }
    
    private void playAllSgfMoves()
