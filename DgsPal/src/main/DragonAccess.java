@@ -220,7 +220,7 @@ int lastSgfMoveNumber=0;
      while(it.hasNext())  // get handicap count
      {
        line=(String)it.next();
-       System.out.println(line);
+      // System.out.println(line);
        if (line.startsWith("HA"))
        {
 	     handicap=line.charAt(3)-48;  
@@ -325,10 +325,10 @@ int lastSgfMoveNumber=0;
 	  // boolean success=false;
 	          
 	   int count=0;
-	   System.out.println("move cmd: " + surl);
+	 //  System.out.println("move cmd: " + surl);
 	   while ( (line = br.readLine()) != null)
 	   {
-	      System.out.println("move line: " + line);
+	    //  System.out.println("move line: " + line);
 	      if (line.contains("#Error: not_logged_in")) loginError=true;
 	      rawMessage.append(line);
 	      count++;
@@ -399,7 +399,7 @@ int lastSgfMoveNumber=0;
        int count=0;
        while ( (line = br.readLine()) != null)
        {
-         System.out.println("login line: " + line);
+         //System.out.println("login line: " + line);
          rawMessage.append(line);
          count++;
          if (count==2) secondLine=line;
@@ -408,7 +408,6 @@ int lastSgfMoveNumber=0;
        
 	  if (secondLine.contains("Ok")) 
 	  {	  
-		  System.out.println("login appending OK");
 		  feedback.append("login: ok\n");
 	  }
 	  else { feedback.append(rawMessage); feedback.append("\n"); }

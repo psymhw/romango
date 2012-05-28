@@ -310,10 +310,9 @@ public class GoClient extends Application
 		currentGameNo=""+gameNo;
 		writeResources();
 	  }
-	  
-	  gameNoVal.setText(currentGameNo);
-	  if ("noset".equals(currentGameNo))  return;
 	}
+	
+	if ("noset".equals(currentGameNo))  return;
 	
 	/*
 	 * for startup, I don't care if a game was found. 
@@ -321,6 +320,8 @@ public class GoClient extends Application
 	 * I'll get the current game.
 	 * 
 	 */
+	
+	gameNoVal.setText(currentGameNo);
 	sgfMoves=dragonAccess.getSgf(currentGameNo);
 	lastSgfMove=dragonAccess.getLastSgfMove();
 	lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
@@ -636,7 +637,7 @@ private HBox getButtonBox() {
    //   buttonBox.getChildren().add(getNextMoveButton());
       buttonBox.getChildren().add(getRefreshButton());
       buttonBox.getChildren().add(getCommitButton());
-      buttonBox.getChildren().add(getTestButton());
+ //     buttonBox.getChildren().add(getTestButton());
 	return buttonBox;
 }
 
@@ -775,16 +776,11 @@ private Group getInfoGroup()
   private Button getCommitButton() 
   {
     commitButton = new Button("Commit");
-    // b.setLayoutX(10);
-    // b.setLayoutY(10);
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) 
 	          {
 	        	boolean success=false;  
 	        	Move firstLocalMove = moves.get(lastSgfMoveNumber);   
-	         //   System.out.println("Commit, last move: "+lastSgfMove.sgfPosition+", this move: "+firstLiveMove.getSgfPosition());
-	          //  System.out.println("Commit, last move#: "+lastSgfMoveNumber+", movelist size: "+moves.size());
-	            
 	            success=dragonAccess.makeMove(currentGameNo, 
 	            		                      lastSgfMove.sgfPosition,
 	            		                      firstLocalMove.getSgfPosition(), 
@@ -802,6 +798,8 @@ private Group getInfoGroup()
 	                }
 	                sendMessageArea.setText(""); 
 	               
+	                removeMoveImageFromLastSgfMove();
+	                putMoveImageOnCommittedStone();
 	                
 	                startAutoRefresh();  
 	                
@@ -1420,7 +1418,32 @@ void removeMoveImageFromPreviousMove()
     // bp=stone.getBoardPosition();
      if ((stone.x==m.x)&&(stone.y==m.y)) 
      { 
-       stone.setRegularImage();;
+       stone.setRegularImage();
+       break; 
+     }
+     i--;
+    }
+}
+
+void removeMoveImageFromLastSgfMove()
+{
+  if (moveNumber==0) return;
+  if (moveNumber>=moves.size()) return; 
+  System.out.println("last SGF move: "+lastSgfMove.sgfPosition);
+ // Move m = (Move) moves.get(moveNumber-1);
+  ObservableList moveList  =movesGroup.getChildren();
+  ListIterator it = moveList.listIterator(moveList.size());
+  int color=0;
+              
+   Stone stone;
+   int i=moveList.size()-1;
+   while(it.hasPrevious())
+   {
+     stone=(Stone)it.previous();
+    // bp=stone.getBoardPosition();
+     if ((stone.x==lastSgfMove.x)&&(stone.y==lastSgfMove.y)) 
+     { 
+       stone.setRegularImage();
        break; 
      }
      i--;
@@ -1471,7 +1494,33 @@ void putMoveImageOnLastStone()
      i--;
     }
 }
+
+void putMoveImageOnCommittedStone()
+{
+  if (moves==null) return;	
+  System.out.println("moves: "+moves.size());
+  Move firstLocalMove = moves.get(lastSgfMoveNumber);
+  ObservableList moveList  = movesGroup.getChildren();
+  ListIterator it = moveList.listIterator(moveList.size());
+  int color=0;
+              
+   Stone stone;
+   int i=moveList.size()-1;
+   while(it.hasPrevious())
+   {
+     stone=(Stone)it.previous();
+   //  bp=stone.getBoardPosition();
+     if ((stone.x==firstLocalMove.x)&&(stone.y==firstLocalMove.y)) 
+     { 
+       stone.setMoveImage();;
+       break; 
+     }
+     i--;
+    }
+}
   
+
+
 void removeLastStone()  // NOT capture
 {
   int color;
@@ -1814,7 +1863,7 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
     	 				                                public void handle(Event event) 
     					                                {
     						                             // System.out.println("level: "+timeStr[level]+" cycle: "+cycleCount+ " second: "+count++);
-    						                              timedUpdateText.setText("  Update: "+(interval[level]-count)+" (interval "+timeStr[level]+")");
+    						                              timedUpdateText.setText("  update: "+(interval[level]-count));
     						                              if (count>=interval[level]) 
     						                              {
     						                                count=0;
