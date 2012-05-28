@@ -1427,8 +1427,8 @@ void removeMoveImageFromPreviousMove()
 
 void removeMoveImageFromLastSgfMove()
 {
-  if (moveNumber==0) return;
-  if (moveNumber>=moves.size()) return; 
+ // if (moveNumber==0) return;
+ // if (moveNumber>=moves.size()) return; 
   System.out.println("last SGF move: "+lastSgfMove.sgfPosition);
  // Move m = (Move) moves.get(moveNumber-1);
   ObservableList moveList  =movesGroup.getChildren();
