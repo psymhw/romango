@@ -15,14 +15,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Timer;
 
+
+import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -49,6 +51,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
   
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -81,11 +84,6 @@ public class GoClient extends Application
   final static int STYLE_NUMBERED_10=10;
   final static int STYLE_LAST_MOVE=11;
   
-  final static int REFRESH_LOCAL=0;
-  final static int REFRESH_STARTUP=1;
-  final static int REFRESH_TIMED=2;
-  
-   
   private ImageView quit;
   
   Image board_top_image;
@@ -165,37 +163,34 @@ public class GoClient extends Application
   Image blackStoneImage;
   Image whiteStoneImage;
   
-  Timer timer;
   
-  IntegerProperty timerCount= new SimpleIntegerProperty(0);
- 
+  private Timeline timeline;
+  private KeyFrame keyFrame;
+  
+ //  ;
+  IntegerProperty Count= new SimpleIntegerProperty(0);
+ // Refresh refresh;
+  int cycleCount=0;
+	int min=60000;
+	//int min=6000; // for testing
+	int level=0;
+	//long interval[] = new long[]{         min/2,        2*min,      5*min,        10*min,       30*min,   60*min};
+	//String[] timeStr = new String[]{"30 seconds", "2 minutes", "5 minutes", "10 minutes", "30 minutes", "1 hour"};
+	//long interval[] = new long[]{         30,        60,      120,        300,       600,   1800};
+//	String[] timeStr = new String[]{"30 seconds", "1 minute", "2 minutes", "10 minutes", "30 minutes"};
+	long interval[] = new long[]{         10,        30,      60,        120,       300,   600};
+	String[] timeStr = new String[]{"10 seconds", "30 seconds", "1 minute", "2 minutes", "10 minutes", "30 minutes"};
 
+
+  Text timedUpdateText = new Text("Update Off");
   
   public void start(final Stage stage) throws Exception  
   {  
     setQuit();
     importImages();
     getResources();
-    setupRefreshTimer();
-    timerCount.addListener(new ChangeListener<Number>(){
-   
-    public void changed(ObservableValue<? extends Number> arg0,  Number arg1, Number arg2) 
-       {
-              System.out.println("Arg0: "+arg0);
-              System.out.println("Arg1: "+arg1);
-              System.out.println("Arg2: "+arg2);
-              
-              if (arg2==(Number)3) 
-              {
-            	  System.out.println("HELLO");
-            		 timer.cancel();
-            	     timer.purge();
-            	     timer= new Timer();
-            	     timer.schedule(new RemindTask((SimpleIntegerProperty) timerCount), 10000, 10000);
-              }
-           }
-    		
-    });
+    
+    
     stoneSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/stone.wav"));
     errorSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/error.wav"));
     
@@ -228,8 +223,7 @@ public class GoClient extends Application
 	 dragonAccess.login();
     
     
-    if (!"noset".equals(password)) checkForGame(REFRESH_STARTUP);
-    timerTest();
+    if (!"noset".equals(password)) startupRefresh();
     
    // feedbackArea.setText(dragonAccess.getSgfFile());
     
@@ -241,12 +235,160 @@ public class GoClient extends Application
 
   public void stop()
   {
-	//this.stop();
-	 timer.cancel();
-     timer.purge();
+	//.cancel();
+    // .purge();
 
   }
   
+  private void timedRefresh()
+  {
+	boolean gameFound=false;
+		 
+	long gameNo= dragonAccess.checkForMove();
+	feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n"); 
+
+	if (gameNo>0) gameFound=true;	
+  
+	if (gameFound) commitButton.setDisable(false); else commitButton.setDisable(true);
+	
+    if (gameFound)
+    {
+      stopAutoRefresh();
+      
+      sgfMoves=dragonAccess.getSgf(currentGameNo);
+ 	  lastSgfMove=dragonAccess.getLastSgfMove();
+ 	  lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
+ 	  handicap=dragonAccess.getHandicap();
+ 	  receiveMessageArea.setText(dragonAccess.getMessage());
+ 	   clear();
+  	    playAllSgfMoves();
+ 	  /*
+ 	  if (localMoves>1) // could just roll back local moves here.
+      {
+   	    clear();
+   	    playAllSgfMoves();
+      }
+      else
+      {
+        playNewMove();
+      }
+ 	  */
+ 	  if (lastSgfMove.color==BLACK)  
+	  { 
+	    colorToPlay=WHITE; 
+	    turnImageView.setImage(whiteStoneImage);
+	  } 
+	  else 
+	  {
+	    colorToPlay=BLACK;
+	    turnImageView.setImage(blackStoneImage);
+	  }
+    }
+  }
+  
+  private void startupRefresh()
+  {
+	boolean gameFound=false;
+		 
+	long gameNo= dragonAccess.checkForMove();
+	feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
+	
+	if (gameNo>0) gameFound=true;	
+	  
+	if (gameFound) commitButton.setDisable(false); else commitButton.setDisable(true);
+	
+	if (gameFound)
+	{
+	  stopAutoRefresh();
+	  
+	  if (!currentGameNo.equals(""+gameNo))  // if the current game number is not equal to that number, make it so and save it
+	  {
+		currentGameNo=""+gameNo;
+		writeResources();
+	  }
+	  
+	  gameNoVal.setText(currentGameNo);
+	  if ("noset".equals(currentGameNo))  return;
+	}
+	
+	/*
+	 * for startup, I don't care if a game was found. 
+	 * Unless there is no game number set
+	 * I'll get the current game.
+	 * 
+	 */
+	sgfMoves=dragonAccess.getSgf(currentGameNo);
+	lastSgfMove=dragonAccess.getLastSgfMove();
+	lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
+	handicap=dragonAccess.getHandicap();
+	receiveMessageArea.setText(dragonAccess.getMessage());
+	
+	playAllSgfMoves();
+    if (lastSgfMove.color==BLACK)  
+    { 
+      colorToPlay=WHITE; 
+      turnImageView.setImage(whiteStoneImage);
+    } 
+    else 
+    {
+      colorToPlay=BLACK;
+      turnImageView.setImage(blackStoneImage);
+    }
+    
+    if (!gameFound) startAutoRefresh();
+  }
+  
+  private void localRefresh()
+  {
+	boolean gameFound=false;
+	
+	/*
+	 * Always stop the  on a local refresh.
+	 * Will start again if no game was found.
+	 */
+	stopAutoRefresh();
+	
+	long gameNo= dragonAccess.checkForMove();
+	feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
+		
+		if (gameNo>0) gameFound=true;	
+		  
+		if (gameFound) commitButton.setDisable(false); else commitButton.setDisable(true);
+		
+		
+		
+		/*
+		 * for local refresh, I don't care if a game was found. 
+		 * Unless there is no game number set
+		 * I'll get the current game.
+		 * 
+		 */
+		sgfMoves=dragonAccess.getSgf(currentGameNo);
+		lastSgfMove=dragonAccess.getLastSgfMove();
+		lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
+		handicap=dragonAccess.getHandicap();
+		receiveMessageArea.setText(dragonAccess.getMessage());
+		
+		clear();
+		playAllSgfMoves();
+	    if (lastSgfMove.color==BLACK)  
+	    { 
+	      colorToPlay=WHITE; 
+	      turnImageView.setImage(whiteStoneImage);
+	      
+	    } 
+	    else 
+	    {
+	      colorToPlay=BLACK;
+	      turnImageView.setImage(blackStoneImage);
+	    }
+	    
+	    if (!gameFound) startAutoRefresh();
+	  
+  }
+  
+ 
+  /*
   private boolean checkForGame(int type)
   {
 	
@@ -258,6 +400,7 @@ public class GoClient extends Application
 	 if (gameNo>0)
 	 {
 		gameFound=true;	
+		stopRefresh();
 		//System.out.println("game found");
 		if (!currentGameNo.equals(""+gameNo))  // if the current game number is not equal to that number, make it so and save it
 		{
@@ -293,7 +436,8 @@ public class GoClient extends Application
 	      turnImageView.setImage(blackStoneImage);
 	    }
 	 }
-	 else
+	 
+	 if (type==REFRESH_TIMED)
 	 {
 	    if (gameFound) 
 	    {
@@ -313,6 +457,7 @@ public class GoClient extends Application
 	 
 	 if (gameFound) return true; else return false;
   }
+*/
   
   private void playNewMove()  
   {
@@ -385,7 +530,7 @@ private GridPane getRightPane()
     gridPane.add(getButtonBox(), 0, 0);
     gridPane.add(getIdentBox(), 0, 1);
     gridPane.add(getInfoGroup(), 0, 2);
-    gridPane.add(new Text("PLACEHOLDER"), 0, 3);
+    gridPane.add(timedUpdateText, 0, 3);
     
     gridPane.add(getFeedbackLabel(), 0, 4);
     gridPane.add(getFeedbackBox(), 0, 5);
@@ -632,14 +777,14 @@ private Group getInfoGroup()
 	          public void handle(MouseEvent event) 
 	          {
 	        	boolean success=false;  
-	        	Move firstLiveMove = moves.get(lastSgfMoveNumber);   
+	        	Move firstLocalMove = moves.get(lastSgfMoveNumber);   
 	         //   System.out.println("Commit, last move: "+lastSgfMove.sgfPosition+", this move: "+firstLiveMove.getSgfPosition());
 	          //  System.out.println("Commit, last move#: "+lastSgfMoveNumber+", movelist size: "+moves.size());
 	            
 	            success=dragonAccess.makeMove(currentGameNo, 
 	            		                      lastSgfMove.sgfPosition,
-	            		                      firstLiveMove.getSgfPosition(), 
-	            		                      firstLiveMove.color,
+	            		                      firstLocalMove.getSgfPosition(), 
+	            		                      firstLocalMove.color,
 	            		                      sendMessageArea.getText()
 	            		                      );
 	            feedbackArea.insertText(0, dragonAccess.getFeedback());
@@ -651,7 +796,24 @@ private Group getInfoGroup()
 	            	  if (sendMessageArea.getText().length()>0) 
 	                	feedbackArea.insertText(0, "message sent:\n"+sendMessageArea.getText()+"\n");
 	                }
-	                sendMessageArea.setText(""); }
+	                sendMessageArea.setText(""); 
+	               
+	                
+	                startAutoRefresh();  
+	                
+	               
+	               if (firstLocalMove.color==BLACK)  
+	               { 
+	                 colorToPlay=WHITE; 
+	                 turnImageView.setImage(whiteStoneImage);
+	               } 
+	               else 
+	               {
+	                 colorToPlay=BLACK;
+	                 turnImageView.setImage(blackStoneImage);
+	               }
+	            }
+	             
 	          } };
 	  
      commitButton.setOnMouseClicked(bHandler);
@@ -682,7 +844,7 @@ private Group getInfoGroup()
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) 
 	          {
-	        	checkForGame(REFRESH_LOCAL);
+	        	localRefresh();
 	          } };
 	  
      refreshButton.setOnMouseClicked(bHandler);
@@ -1590,37 +1752,91 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
      localMovesVal.setText("0");
    }
    
-  
-   void timerTest()
+  /*
+   void Test()
    {
-	  timer = new Timer();
-	  timer.schedule(new RemindTask((SimpleIntegerProperty) timerCount), 5000, 5000);
+	   = new ();
+	  .schedule(new RemindTask((SimpleIntegerProperty) Count), 0, 5000);
    }
+   */
    
-   void setupRefreshTimer()
+   /*
+   void startRefresh()
    {
-	   timerCount.addListener(new ChangeListener<Number>(){
-		   
+	  level=0; 
+	  cycleCounter=0;
+	   = new ();
+	  timedUpdateText.setText("Update every "+timeStr[level]);
+	  .schedule(new RemindTask((SimpleIntegerProperty) Count), interval[level], interval[level]);
+	  Count.addListener(new ChangeListener<Number>(){
+	 
+	  
 		    public void changed(ObservableValue<? extends Number> arg0,  Number arg1, Number arg2) 
 		       {
-		              System.out.println("Arg0: "+arg0);
-		              System.out.println("Arg1: "+arg1);
-		              System.out.println("Arg2: "+arg2);
-		              
-		              if (arg2==(Number)3) 
+		              timedRefresh();
+		    	      cycleCounter++;
+		    	      if (cycleCounter==5)
 		              {
-		            	  System.out.println("HELLO");
-		            		 timer.cancel();
-		            	     timer.purge();
-		            	     timer= new Timer();
-		            	     timer.schedule(new RemindTask((SimpleIntegerProperty) timerCount), 10000, 10000);
+		            	 level++;
+		            	 if (level>5) level=5;
+		            	  
+		            	  System.out.println(timeStr[level]);
+		            	  cycleCounter=0;
+		            	  .cancel();
+		            	  .purge();
+		            	  = new ();
+		            	  .schedule(new RemindTask((SimpleIntegerProperty) Count), interval[level], interval[level]);
+		            	  timedUpdateText.setText("Update every "+timeStr[level]);
 		              }
 		           }
 		    		
 		    });   
+	  
+	  
+	  
    }
+   */
    
+   int count=0;
+   void startAutoRefresh()
+   {
+	  level=0; 
+	  cycleCount=0;
+	  
+	  timeline = new Timeline();
+      timeline.setCycleCount(Timeline.INDEFINITE);
+      keyFrame= new KeyFrame(Duration.seconds(1), new EventHandler() 
+    	                                              {
+    	 				                                public void handle(Event event) 
+    					                                {
+    						                              System.out.println("level: "+timeStr[level]+" cycle: "+cycleCount+ " second: "+count++);
+    						                              if (count>=interval[level]) 
+    						                              {
+    						                                count=0;
+    						                                cycleCount++;
+    						                                if (cycleCount==5)
+    						                                {
+    						                                  level++;
+    						                                  if (level>5)  level=5; else System.out.println("LEVEL UP");
+    						                                	  
+    						                                  cycleCount=0;
+    						                                }
+    						                                timedRefresh();	
+    						                                timedUpdateText.setText("Update every "+timeStr[level]);
+    						                              }
+    					                                }
+    	                                              });
       
-  
+      timeline.getKeyFrames().add(keyFrame);
+      timeline.playFromStart();
+   }
+      
+   void stopAutoRefresh()
+   {
+	 timedUpdateText.setText("Update OFF ");  
+	 level=0;
+	 cycleCount=0;
+	 if (timeline!=null) timeline.stop();
+   }
     
 }  

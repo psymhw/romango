@@ -134,7 +134,7 @@ int lastSgfMoveNumber=0;
 	 rawMessage.append("checkForMove: "); 
 	 boolean emptyList = false;
 	 long gameLong=0;
-	 
+	 feedback=new StringBuffer();
 	 
 	 try
 	 {
@@ -151,26 +151,33 @@ int lastSgfMoveNumber=0;
 	   int count=0;
 	   while ( (line = br.readLine()) != null)
 	   {
-		 System.out.println("line: " + line);
+		 //System.out.println("line: " + line);
 	      rawMessage.append(line+"\n");
 	      count++;
 	      if (count==2) secondLine=line;
 	   }
-	 } catch (Throwable t)  {  t.printStackTrace(); }
+	 } catch (Exception e)  {  feedback.append(e.getMessage()); return 0; }
 	 
 	 if (secondLine.contains("empty list")) emptyList=true;
 	 
-	 feedback=new StringBuffer();
+	 
 	 if (emptyList)
 	 {
 	    feedback.append("no moves waiting"); 
 	 }
 	 else 
 	 {	 
-	   gameStr=secondLine.substring(4,11);
-	   try { gameLong = Long.parseLong(gameStr.trim()); } catch (Exception e) {}
-	   if (gameLong>0) feedback.append("Game Found: #"+gameStr.trim());
-	   else feedback.append(rawMessage);
+	   try
+	   {
+	     gameStr=secondLine.substring(4,11);
+	   } catch ( Exception e) {feedback.append("error parsing gameStr: "); feedback.append(rawMessage); }
+	   
+	   if (gameStr.length()>0)
+	   {
+	     try { gameLong = Long.parseLong(gameStr.trim()); } catch (Exception e) {}
+	     if (gameLong>0) feedback.append("Game Found: #"+gameStr.trim());
+	     else feedback.append(rawMessage);
+	   }
 	 }
 	 
 	 
