@@ -182,7 +182,7 @@ public class GoClient extends Application
 	String[] timeStr = new String[]{"10 seconds", "30 seconds", "1 minute", "2 minutes", "10 minutes", "30 minutes"};
 
 
-  Text timedUpdateText = new Text("Update Off");
+  Text timedUpdateText;
   
   public void start(final Stage stage) throws Exception  
   {  
@@ -198,6 +198,10 @@ public class GoClient extends Application
     whiteStoneImage = new Image(Stone.class.getResourceAsStream("/images/w.gif")); 
     turnImageView = new ImageView(blackStoneImage);
 	  
+    timedUpdateText = new Text("Update Off");
+	timedUpdateText.setFont(Font.font("Serif", 20));
+	
+    
     initiallizeMoveMap();
     captured[BLACK]=0;
     captured[WHITE]=0;
@@ -220,9 +224,9 @@ public class GoClient extends Application
     stage.setScene(scene);  
     stage.show();  
     dragonAccess=new DragonAccess(userId, password);
-	 dragonAccess.login();
+	dragonAccess.login();
     
-    
+	
     if (!"noset".equals(password)) startupRefresh();
     
    // feedbackArea.setText(dragonAccess.getSgfFile());
@@ -245,7 +249,7 @@ public class GoClient extends Application
 	boolean gameFound=false;
 		 
 	long gameNo= dragonAccess.checkForMove();
-	feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n"); 
+	feedbackArea.insertText(0, timeStr[level]+": "+ dragonAccess.getFeedback()+"\n"); 
 
 	if (gameNo>0) gameFound=true;	
   
@@ -1802,14 +1806,15 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
    {
 	  level=0; 
 	  cycleCount=0;
-	  
+	  timedUpdateText.setText("Update every "+timeStr[level]);
 	  timeline = new Timeline();
       timeline.setCycleCount(Timeline.INDEFINITE);
       keyFrame= new KeyFrame(Duration.seconds(1), new EventHandler() 
     	                                              {
     	 				                                public void handle(Event event) 
     					                                {
-    						                              System.out.println("level: "+timeStr[level]+" cycle: "+cycleCount+ " second: "+count++);
+    						                             // System.out.println("level: "+timeStr[level]+" cycle: "+cycleCount+ " second: "+count++);
+    						                              timedUpdateText.setText("  Update: "+(interval[level]-count)+" (interval "+timeStr[level]+")");
     						                              if (count>=interval[level]) 
     						                              {
     						                                count=0;
@@ -1818,12 +1823,12 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
     						                                {
     						                                  level++;
     						                                  if (level>5)  level=5; else System.out.println("LEVEL UP");
-    						                                	  
     						                                  cycleCount=0;
     						                                }
     						                                timedRefresh();	
-    						                                timedUpdateText.setText("Update every "+timeStr[level]);
+    						                                //timedUpdateText.setText("Update every "+timeStr[level]);
     						                              }
+    						                            count++;  
     					                                }
     	                                              });
       
