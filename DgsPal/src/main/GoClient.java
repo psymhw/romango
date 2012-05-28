@@ -168,10 +168,10 @@ public class GoClient extends Application
   private KeyFrame keyFrame;
   
  //  ;
-  IntegerProperty Count= new SimpleIntegerProperty(0);
+//  IntegerProperty Count= new SimpleIntegerProperty(0);
  // Refresh refresh;
   int cycleCount=0;
-	int min=60000;
+////	int min=60000;
 	//int min=6000; // for testing
 	int level=0;
 	//long interval[] = new long[]{         min/2,        2*min,      5*min,        10*min,       30*min,   60*min};
