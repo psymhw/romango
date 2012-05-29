@@ -141,6 +141,7 @@ public class GoClient extends Application
   Hyperlink userNameLink;
   TextField userIdField;
   TextField passwordField; 
+  Text opponentVal;
   
   DragonAccess dragonAccess;
   Move lastSgfMove;
@@ -162,10 +163,14 @@ public class GoClient extends Application
   ImageView turnImageView;
   Image blackStoneImage;
   Image whiteStoneImage;
+  Image smallerBlackStoneImage;
+  Image smallerWhiteStoneImage;
   
   
   private Timeline timeline;
   private KeyFrame keyFrame;
+  
+  Button deleteLastMoveButton;
   
  //  ;
 //  IntegerProperty Count= new SimpleIntegerProperty(0);
@@ -178,14 +183,17 @@ public class GoClient extends Application
 	//String[] timeStr = new String[]{"30 seconds", "2 minutes", "5 minutes", "10 minutes", "30 minutes", "1 hour"};
 	//long interval[] = new long[]{         30,        60,      120,        300,       600,   1800};
 //	String[] timeStr = new String[]{"30 seconds", "1 minute", "2 minutes", "10 minutes", "30 minutes"};
-	long interval[] = new long[]{         10,        30,      60,        120,       300,   600};
-	String[] timeStr = new String[]{"10 seconds", "30 seconds", "1 minute", "2 minutes", "10 minutes", "30 minutes"};
+	int cycles[] = new int[]{                6,           10,         30,           30,       100 };
+	long interval[] = new long[]{           10,           30,         60,          120,       300};
+	String[] timeStr = new String[]{"10 seconds", "30 seconds", "1 minute", "2 minutes", "5 minutes" };
 
 
   Text timedUpdateText;
+  Stage stage;
   
   public void start(final Stage stage) throws Exception  
   {  
+	this.stage=stage;  
     setQuit();
     importImages();
     getResources();
@@ -193,9 +201,7 @@ public class GoClient extends Application
     
     stoneSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/stone.wav"));
     errorSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/error.wav"));
-    
-    blackStoneImage = new Image(Stone.class.getResourceAsStream("/images/b.gif")); 
-    whiteStoneImage = new Image(Stone.class.getResourceAsStream("/images/w.gif")); 
+
     turnImageView = new ImageView(blackStoneImage);
 	  
     timedUpdateText = new Text("Update Off");
@@ -222,12 +228,14 @@ public class GoClient extends Application
   
     //   stage.initStyle(StageStyle.TRANSPARENT);
     stage.setScene(scene);  
+    stage.getIcons().add(smallerBlackStoneImage);
+    stage.setTitle("DGS Pal");
     stage.show();  
     dragonAccess=new DragonAccess(userId, password);
 	dragonAccess.login();
     
 	
-    if (!"noset".equals(password)) startupRefresh();
+    if (!"noset".equals(password)) refreshStartup();
     
    // feedbackArea.setText(dragonAccess.getSgfFile());
     
@@ -244,12 +252,11 @@ public class GoClient extends Application
 
   }
   
-  private void timedRefresh()
+  private void refreshTimed()
   {
 	boolean gameFound=false;
 		 
 	long gameNo= dragonAccess.checkForMove();
-	feedbackArea.insertText(0, timeStr[level]+": "+ dragonAccess.getFeedback()+"\n"); 
 
 	if (gameNo>0) gameFound=true;	
   
@@ -264,6 +271,7 @@ public class GoClient extends Application
  	  lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
  	  handicap=dragonAccess.getHandicap();
  	  receiveMessageArea.setText(dragonAccess.getMessage());
+ 	 opponentVal.setText("vs "+dragonAccess.getOpponent());
  	   clear();
   	    playAllSgfMoves();
  	  /*
@@ -281,16 +289,19 @@ public class GoClient extends Application
 	  { 
 	    colorToPlay=WHITE; 
 	    turnImageView.setImage(whiteStoneImage);
+	    stage.getIcons().add(smallerWhiteStoneImage);
 	  } 
 	  else 
 	  {
 	    colorToPlay=BLACK;
 	    turnImageView.setImage(blackStoneImage);
+	    stage.getIcons().add(smallerBlackStoneImage);
 	  }
     }
+    deleteLastMoveButton.setDisable(true);
   }
   
-  private void startupRefresh()
+  private void refreshStartup()
   {
 	boolean gameFound=false;
 		 
@@ -327,23 +338,27 @@ public class GoClient extends Application
 	lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
 	handicap=dragonAccess.getHandicap();
 	receiveMessageArea.setText(dragonAccess.getMessage());
+	opponentVal.setText("vs "+dragonAccess.getOpponent());
 	
 	playAllSgfMoves();
     if (lastSgfMove.color==BLACK)  
     { 
       colorToPlay=WHITE; 
       turnImageView.setImage(whiteStoneImage);
+      stage.getIcons().add(smallerWhiteStoneImage);
     } 
     else 
     {
       colorToPlay=BLACK;
       turnImageView.setImage(blackStoneImage);
+      stage.getIcons().add(smallerBlackStoneImage);
     }
     
+    deleteLastMoveButton.setDisable(true);
     if (!gameFound) startAutoRefresh();
   }
   
-  private void localRefresh()
+  private void refreshLocal()
   {
 	boolean gameFound=false;
 	
@@ -373,6 +388,8 @@ public class GoClient extends Application
 		lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
 		handicap=dragonAccess.getHandicap();
 		receiveMessageArea.setText(dragonAccess.getMessage());
+		opponentVal.setText("vs "+dragonAccess.getOpponent());
+		
 		
 		clear();
 		playAllSgfMoves();
@@ -380,16 +397,18 @@ public class GoClient extends Application
 	    { 
 	      colorToPlay=WHITE; 
 	      turnImageView.setImage(whiteStoneImage);
+	      stage.getIcons().add(smallerWhiteStoneImage);
 	      
 	    } 
 	    else 
 	    {
 	      colorToPlay=BLACK;
 	      turnImageView.setImage(blackStoneImage);
+	      stage.getIcons().add(smallerBlackStoneImage);
 	    }
 	    
 	    if (!gameFound) startAutoRefresh();
-	  
+	    deleteLastMoveButton.setDisable(true);
   }
   
  
@@ -650,12 +669,16 @@ private HBox getIdentBox()
    userIdLinkLabel.setFont(Font.font("Serif", 18));
    userIdLinkLabel.setPrefHeight(30);
    userIdLinkLabel.setAlignment(Pos.CENTER_RIGHT);
+   
+   opponentVal = new Text("");
+   opponentVal.setFont(Font.font("Serif", 18));
      
    identBox.getChildren().add(userIdLinkLabel);
    userNameLink=loginButton();
    userNameLink.setPrefHeight(30);
    userNameLink.setAlignment(Pos.CENTER_RIGHT);
    identBox.getChildren().add(userNameLink);
+   identBox.getChildren().add(opponentVal);
   // identBox.getChildren().add(getCommitButton());
    return identBox;
 }
@@ -800,6 +823,7 @@ private Group getInfoGroup()
 	               
 	                removeMoveImageFromLastSgfMove();
 	                putMoveImageOnCommittedStone();
+	             
 	                
 	                startAutoRefresh();  
 	                
@@ -808,12 +832,19 @@ private Group getInfoGroup()
 	               { 
 	                 colorToPlay=WHITE; 
 	                 turnImageView.setImage(whiteStoneImage);
+	                 stage.getIcons().add(smallerWhiteStoneImage);
 	               } 
 	               else 
 	               {
 	                 colorToPlay=BLACK;
 	                 turnImageView.setImage(blackStoneImage);
+	                 stage.getIcons().add(smallerBlackStoneImage);
 	               }
+	               
+	               lastSgfMoveNumber++;
+	               lastSgfMove=firstLocalMove;
+	               localMoves=0;
+	               localMovesVal.setText("0");
 	            }
 	             
 	          } };
@@ -846,7 +877,7 @@ private Group getInfoGroup()
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) 
 	          {
-	        	localRefresh();
+	        	refreshLocal();
 	          } };
 	  
      refreshButton.setOnMouseClicked(bHandler);
@@ -864,6 +895,7 @@ private Group getInfoGroup()
      // Stone s = new Stone(thisMoveColor, t.getX(),t.getY(), STYLE_LAST_MOVE);
       localMoves++;
       placeStone(move, localMoves);
+      deleteLastMoveButton.setDisable(false);
       localMovesVal.setText(""+localMoves);  
     }});
      
@@ -937,13 +969,13 @@ private Group getInfoGroup()
   
   private Button getDeleteLastMoveButton() 
   {
-    Button deleteLastMove = new Button("<X");
+    deleteLastMoveButton = new Button("undo move");
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
     {
       removeLastStone(); 
     }};
-    deleteLastMove.setOnAction(bHandler2);
-    return deleteLastMove; 
+    deleteLastMoveButton.setOnAction(bHandler2);
+    return deleteLastMoveButton; 
   }
   
   private Button getPreviousMoveButton() 
@@ -1068,6 +1100,14 @@ private Group getInfoGroup()
 	 
 	 grid_cross_image = new Image(GoClient.class.getResourceAsStream("/images/e.gif"));
 	 grid_hoshi_image = new Image(GoClient.class.getResourceAsStream("/images/h.gif"));
+	 
+	    
+	    blackStoneImage = new Image(Stone.class.getResourceAsStream("/images/b.gif")); 
+	    whiteStoneImage = new Image(Stone.class.getResourceAsStream("/images/w.gif")); 
+	    smallerBlackStoneImage = new Image(Stone.class.getResourceAsStream("/images/smaller_b.gif")); 
+	    smallerWhiteStoneImage = new Image(Stone.class.getResourceAsStream("/images/smaller_w.gif")); 
+	   
+	 
 	 
 	// black_stone_image = new Image(GoClient.class.getResourceAsStream("/images/b.gif"));
 	// white_stone_image = new Image(GoClient.class.getResourceAsStream("/images/w.gif"));
@@ -1526,6 +1566,7 @@ void removeLastStone()  // NOT capture
   int color;
   
   int size = moves.size();
+  
   if (size<=lastSgfMoveNumber) return;
   if (moveNumber==0) return;
   if (size>0)
@@ -1552,6 +1593,7 @@ void removeLastStone()  // NOT capture
   moveNoVal.setText(""+moveNumber);
   localMoves--;
   localMovesVal.setText(""+localMoves);
+  if (localMoves==0) deleteLastMoveButton.setDisable(true);
 }
 
 
@@ -1856,30 +1898,35 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
 	  level=0; 
 	  cycleCount=0;
 	  timedUpdateText.setText("Update every "+timeStr[level]);
+	  feedbackArea.insertText(0, "refresh rate: "+timeStr[level]+"\n"); 
+
 	  timeline = new Timeline();
       timeline.setCycleCount(Timeline.INDEFINITE);
       keyFrame= new KeyFrame(Duration.seconds(1), new EventHandler() 
-    	                                              {
-    	 				                                public void handle(Event event) 
-    					                                {
-    						                             // System.out.println("level: "+timeStr[level]+" cycle: "+cycleCount+ " second: "+count++);
-    						                              timedUpdateText.setText("  update: "+(interval[level]-count));
-    						                              if (count>=interval[level]) 
-    						                              {
-    						                                count=0;
-    						                                cycleCount++;
-    						                                if (cycleCount==5)
-    						                                {
-    						                                  level++;
-    						                                  if (level>5)  level=5; else System.out.println("LEVEL UP");
-    						                                  cycleCount=0;
-    						                                }
-    						                                timedRefresh();	
-    						                                //timedUpdateText.setText("Update every "+timeStr[level]);
-    						                              }
-    						                            count++;  
-    					                                }
-    	                                              });
+              {
+                public void handle(Event event) 
+                {
+                 // System.out.println("level: "+timeStr[level]+" cycle: "+cycleCount+ " second: "+count++);
+                  timedUpdateText.setText("  update: "+(interval[level]-count)+"  "+ dragonAccess.getFeedback());
+                  if (count>=interval[level]) 
+                  {
+                    count=0;
+                    cycleCount++;
+                    if (cycleCount==cycles[level])
+                    {
+                      level++;
+                      if (level>4)
+                    	level=4;
+                      else
+                    		feedbackArea.insertText(0, "refresh rate: "+timeStr[level]+"\n"); 
+                      cycleCount=0;
+                    }
+                    refreshTimed();	
+                    //timedUpdateText.setText("Update every "+timeStr[level]);
+                  }
+                count++;  
+                }
+              });
       
       timeline.getKeyFrames().add(keyFrame);
       timeline.playFromStart();
