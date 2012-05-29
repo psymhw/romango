@@ -27,7 +27,10 @@ public class DragonAccess
   String password;
   StringBuffer sgfFileString = new StringBuffer();
   StringBuffer feedback = new StringBuffer();
-  int handicap=0;
+  String opponent="";
+  
+
+int handicap=0;
   int loginAttempts=0;
   String message;
   boolean currentMessage=false;
@@ -42,6 +45,14 @@ public class DragonAccess
 	  else return "";
 }
 
+  
+  public String getOpponent() {
+		return opponent;
+	}
+
+	public void setOpponent(String opponent) {
+		this.opponent = opponent;
+	}
 public void setMessage(String message) {
 	this.message = message;
 }
@@ -246,6 +257,14 @@ int lastSgfMoveNumber=0;
 	     continue;
        }
 	 
+       if (line.startsWith("PW["))  // get first white move
+       {
+    	 int i = line.indexOf('(');
+    	 
+	     if (i>0) opponent = line.substring(3,i);
+	     
+	     continue;
+       }
        if (line.startsWith(";MN"))  // get first white move
        {
 	     sgfPosition = line.substring(8,10);
