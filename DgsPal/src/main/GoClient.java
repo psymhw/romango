@@ -67,6 +67,7 @@ public class GoClient extends Application
   final static int SOUTH=2;
   final static int EAST=3;
   final static int WEST=4;
+  final static int CHECK_ALL_DIRECTIONS=5;
    
   final static int GROUP_MEMBER=33;
   final static int LIBERTY=43;
@@ -117,6 +118,9 @@ public class GoClient extends Application
   ArrayList <Stone>capturedStonesArray = new ArrayList<>();
    
   int[][] moveMap = new int[19][19];
+  int[][] koMap = new int[19][19];
+  int[][] tempMap = new int[19][19];
+  
   int[][] groupMap = new int[19][19];
   int lastMoveColor=WHITE;
   int moveNumber=0;
@@ -354,7 +358,7 @@ public class GoClient extends Application
 	lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
 	handicap=dragonAccess.getHandicap();
 	receiveMessageArea.setText(dragonAccess.getMessage());
-	 gameLabel.setText(userId+" vs "+dragonAccess.getOpponent());
+	gameLabel.setText(userId+" vs "+dragonAccess.getOpponent());
 	 
 	 ArrayList comments = dragonAccess.getComments();
 		Iterator it = comments.iterator();
@@ -512,6 +516,7 @@ public class GoClient extends Application
 	 if (gameFound) return true; else return false;
   }
 */
+ 
   
   private void playNewMove()  
   {
@@ -1046,6 +1051,44 @@ private Group getInfoGroup()
       Move move = new Move(t.getX(),t.getY(), thisMoveColor);
      // Stone s = new Stone(thisMoveColor, t.getX(),t.getY(), STYLE_LAST_MOVE);
       localMoves++;
+      
+      // trial move
+      /*
+       * If any neighbors would be captured, move is legal
+       */
+      if (moveMap[move.x][move.y]!=OPEN) { 
+    	  errorSound.play(); 
+    	  moveMap[move.x][move.y]=OPEN;return;  // can't move here... already occupied.
+      }
+      
+      moveMap[move.x][move.y]=move.color;	
+      boolean anyCaptures = checkLibertiesOfNeighbors(move.x, move.y, true);
+      // if (anyCaptures) System.out.println("Stone Captured");
+      // else System.out.println("No Stone Captured");
+            
+      if (!anyCaptures)
+      {
+    	Neighbors n =countLiberties(move.x, move.y, move.color, CHECK_ALL_DIRECTIONS);
+    	// System.out.println("Liberties of new stone: "+n.liberties);
+    	if (n.liberties==0) 
+    	{ 
+    	  errorSound.play(); 
+    	  moveMap[move.x][move.y]=OPEN;return;  // can't move here... no liberties and nothing captured.
+    	 }
+      }
+      
+      
+      if (checkForKo()) 
+      {
+    	  errorSound.play(); 
+    	  moveMap[move.x][move.y]=OPEN;return;  // can't move here... ko fight. 
+      }
+      
+      moveMap[move.x][move.y]=OPEN;  // return moveMap to original state.
+      //////////////////// end trial 
+      
+      
+      
       placeStone(move, localMoves);
       deleteLastMoveButton.setDisable(false);
       localMovesVal.setText(""+localMoves);  
@@ -1130,6 +1173,21 @@ private Group getInfoGroup()
     return deleteLastMoveButton; 
   }
   
+  boolean checkForKo()
+  {
+	boolean ko=true;
+	
+	for(int i=0; i<19; i++)
+    {
+      for(int j=0; j<19; j++)
+      {
+	    if (moveMap[i][j]!=koMap[i][j]) ko=false;
+      }
+    }
+	
+	return ko;
+  }
+  
   private Button getPreviousMoveButton() 
   {
     Button b = new Button("<");
@@ -1181,6 +1239,8 @@ private Group getInfoGroup()
 	moveMap[i][j]=OPEN;
       }
     }
+    
+    copyMoveMaps();
   }
   
   private void clearGroupMap() 
@@ -1203,6 +1263,37 @@ private Group getInfoGroup()
 			System.out.print(moveMap[i][j]+" ");
 		  }
 		  System.out.println();
+		}
+    }
+	
+	private void printKoMap() 
+	   {
+		for(int j=0; j<19; j++)
+		{
+		  for(int i=0; i<19; i++)
+		  {
+			System.out.print(moveMap[i][j]+" ");
+		  }
+		  System.out.println();
+		}
+ }
+	
+	private void copyMoveMaps() 
+   {
+		for(int j=0; j<19; j++)
+		{
+		  for(int i=0; i<19; i++)
+		  {
+			koMap[i][j]=tempMap[i][j];
+		  }
+		}
+		
+		for(int j=0; j<19; j++)
+		{
+		  for(int i=0; i<19; i++)
+		  {
+			tempMap[i][j]=moveMap[i][j];
+		  }
 		}
     }
 
@@ -1341,6 +1432,8 @@ private Group getInfoGroup()
      
     //System.out.println("Last Move: "+lastSgfMoveNumber+", "+colorStr(lastSgfMove.color)+" position: "+lastSgfMove.getSgfPosition());
      
+     printMoveMap();
+     printKoMap();
      makeMove=true;
    }
    
@@ -1512,68 +1605,11 @@ private void setQuit()
 	
   quit.setOnMouseClicked(new EventHandler<MouseEvent>() {public void handle(MouseEvent t) { System.exit(0);}});
 }  
-/*
-private void placeStone(int color, String sgfPosition, int style) 
-{
-  Stone s = new Stone(color, sgfPosition, style);
-  if (moveMap[s.x][s.y]!=OPEN) return;
-  
-  moveMap[s.x][s.y]=color;
-  movesGroup.getChildren().add(s);
-  lastMoveColor=color;
-  moves.add(new Move(s.x, s.y, color));
- // if (s.style==STYLE_LAST_MOVE) removeMoveImageFromPreviousMove();
-  moveNumber++;
-  movenoVal.setText(""+moveNumber);
-  checkLibertiesOfNeighbors(s.x, s.y);
-//  if (s.style==STYLE_LAST_MOVE) stoneSound.play();
-}
 
-
-private void placeStone(int color, int x, int y) 
-{
-  if (moveMap[x][y]!=OPEN) return;
-  
-  moveMap[x][y]=color;	
-  movesGroup.getChildren().add(new Stone(color, x, y, STYLE_LAST_MOVE));
-  lastMoveColor=color;
-  moves.add(new Move(x, y, color));
-  removeMoveImageFromPreviousMove();
-  moveNumber++;
-  movenoVal.setText(""+moveNumber);
-  checkLibertiesOfNeighbors(x, y);
-  stoneSound.play();
-}
-*/
-
-/*
-private void placeStone(Stone s) 
-{
-  if (moveMap[s.x][s.y]!=OPEN) return;
-  
-  moveMap[s.x][s.y]=s.getStoneColor();	
-  movesGroup.getChildren().add(s);
-  lastMoveColor=s.getStoneColor();
-  Move move = new Move(s.x, s.y, s.getStoneColor());
-  moves.add(move);
-  if (s.style==STYLE_LAST_MOVE) removeMoveImageFromPreviousMove();
-  moveNumber++;
-  movenoVal.setText(""+moveNumber);
-  checkLibertiesOfNeighbors(s.x, s.y);
-  if (s.style!=STYLE_REGULAR)stoneSound.play();
- // if (makeMove)
- // {	  
- //   dragonAccess.login();
-  //  dragonAccess.makeMove(lastMove.getSgfPosition(), move.getSgfPosition(), s.getStoneColor());
-//  }
-// makeMove=false;
-}
-
-*/
 
 private void placeStone(Move move, int style) 
 {
-  if (moveMap[move.x][move.y]!=OPEN) return;
+  
   moveMap[move.x][move.y]=move.color;	
   movesGroup.getChildren().add(new Stone(move, style));
   lastMoveColor=move.color;
@@ -1583,6 +1619,8 @@ private void placeStone(Move move, int style)
   moveNoVal.setText(""+moveNumber);
   checkLibertiesOfNeighbors(move.x, move.y);
   if (style!=STYLE_REGULAR)stoneSound.play();
+  copyMoveMaps();
+     
 
 }
 
@@ -1842,35 +1880,48 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
         Neighbors n = new Neighbors(color);
         return n;
     }
-
+    
     private void checkLibertiesOfNeighbors(int x, int y) 
     {
+      checkLibertiesOfNeighbors(x, y, false);
+    }
+
+    private boolean checkLibertiesOfNeighbors(int x, int y, boolean trial) 
+    {
       boolean debug=false;
+      boolean capture = false;
+      boolean nCapture=false;
+      boolean sCapture=false;
+      boolean eCapture=false;
+      boolean wCapture=false;
       int startColor=0;
       
       startColor = moveMap[x][y];
       if (debug) System.out.println("Start Color is "+startColor);
       
-      //CHECK NORTH
-      checkDirectionForNeighbors(x,y,NORTH);
-      checkDirectionForNeighbors(x,y,SOUTH);
-      checkDirectionForNeighbors(x,y,EAST);
-      checkDirectionForNeighbors(x,y,WEST);
+      nCapture=checkDirectionForNeighbors(x,y,NORTH, trial);
+      sCapture=checkDirectionForNeighbors(x,y,SOUTH, trial);
+      eCapture=checkDirectionForNeighbors(x,y,EAST, trial);
+      wCapture=checkDirectionForNeighbors(x,y,WEST, trial);
+            
+      if (nCapture||sCapture||eCapture||wCapture) capture=true;
       
       if (debug) System.out.println();
+      return capture;
     }
 
-     void checkDirectionForNeighbors(int x, int y, int direction)
+     boolean checkDirectionForNeighbors(int x, int y, int direction, boolean trial)
      {
        boolean debug=false;
        int checkX=x, checkY=y, color=0, startColor=0;
        String directionString="";
        startColor = moveMap[x][y];
+       boolean capture=false;
             
-       if (direction==NORTH) { if (y==0) return;  checkY=y-1; directionString="NORTH"; }
-       if (direction==SOUTH) { if (y==18) return; checkY=y+1; directionString="SOUTH"; }
-       if (direction==EAST)  { if (x==18) return; checkX=x+1; directionString="EAST";  }
-       if (direction==WEST)  { if (x==0) return;  checkX=x-1; directionString="WEST";  }
+       if (direction==NORTH) { if (y==0) return false;  checkY=y-1; directionString="NORTH"; }
+       if (direction==SOUTH) { if (y==18) return false; checkY=y+1; directionString="SOUTH"; }
+       if (direction==EAST)  { if (x==18) return false; checkX=x+1; directionString="EAST";  }
+       if (direction==WEST)  { if (x==0) return false;  checkX=x-1; directionString="WEST";  }
        
        
          color = moveMap[checkX][checkY];
@@ -1878,13 +1929,19 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
          if ((color!=OPEN)&&(color!=startColor))
          {
            Neighbors n = countLiberties(checkX, checkY, color, START);
-           if (n.liberties==0) captureGroup(n.groupPositions);
+           if (n.liberties==0) 
+           { 
+        	 capture = true;
+        	 if (!trial) captureGroup(n.groupPositions);
+           }
            if (debug) System.out.println("Group to the "+directionString+" has "+n.liberties+" liberties");
          }
          else 
          {
            if (debug) System.out.println("No Group or non-enemy to the "+directionString);   
          }
+         
+         return capture;
        }
 
     private void captureGroup(List<SimplePosition> groupPositions) 
@@ -1996,58 +2053,14 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
      localMovesVal.setText("0");
    }
    
-  /*
-   void Test()
-   {
-	   = new ();
-	  .schedule(new RemindTask((SimpleIntegerProperty) Count), 0, 5000);
-   }
-   */
-   
-   /*
-   void startRefresh()
-   {
-	  level=0; 
-	  cycleCounter=0;
-	   = new ();
-	  timedUpdateText.setText("Update every "+timeStr[level]);
-	  .schedule(new RemindTask((SimpleIntegerProperty) Count), interval[level], interval[level]);
-	  Count.addListener(new ChangeListener<Number>(){
-	 
-	  
-		    public void changed(ObservableValue<? extends Number> arg0,  Number arg1, Number arg2) 
-		       {
-		              timedRefresh();
-		    	      cycleCounter++;
-		    	      if (cycleCounter==5)
-		              {
-		            	 level++;
-		            	 if (level>5) level=5;
-		            	  
-		            	  System.out.println(timeStr[level]);
-		            	  cycleCounter=0;
-		            	  .cancel();
-		            	  .purge();
-		            	  = new ();
-		            	  .schedule(new RemindTask((SimpleIntegerProperty) Count), interval[level], interval[level]);
-		            	  timedUpdateText.setText("Update every "+timeStr[level]);
-		              }
-		           }
-		    		
-		    });   
-	  
-	  
-	  
-   }
-   */
-   
+     
    int count=0;
    void startAutoRefresh()
    {
 	  level=0; 
 	  cycleCount=0;
 	  timedUpdateText.setText("update every "+timeStr[level]);
-	  feedbackArea.insertText(0, "refresh rate: "+timeStr[level]+"\n"); 
+	 // feedbackArea.insertText(0, "refresh rate: "+timeStr[level]+"\n"); 
 
 	  timeline = new Timeline();
       timeline.setCycleCount(Timeline.INDEFINITE);
