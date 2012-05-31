@@ -28,22 +28,19 @@ public class DragonAccess
   StringBuffer sgfFileString = new StringBuffer();
   StringBuffer feedback = new StringBuffer();
   String opponent="";
-  
-
-int handicap=0;
+  ArrayList comments = new ArrayList();
+  int lastSgfMoveNumber=0;
+  int handicap=0;
   int loginAttempts=0;
   String message;
   boolean currentMessage=false;
   
-  public String getMessage() {
-	  if (currentMessage)
-	  {
-	    message=message.replaceAll("_", " ");
-	    message=message.substring(0,message.length()-1);
-		  return message;
-	  }
+  public String getMessage() 
+  {
+	  if (currentMessage) return message;
+	 
 	  else return "";
-}
+    }
 
   
   public String getOpponent() {
@@ -84,8 +81,17 @@ public void setLastSgfMoveNumber(int lastSgfMoveNumber) {
 	this.lastSgfMoveNumber = lastSgfMoveNumber;
 }
 
-int lastSgfMoveNumber=0;
-	
+public ArrayList getComments() {
+	return comments;
+}
+
+
+public void setComments(ArrayList comments) {
+	this.comments = comments;
+}
+
+
+
   public DragonAccess(String userId, String password) 
   {
 	manager = new CookieManager();
@@ -94,6 +100,7 @@ int lastSgfMoveNumber=0;
     cookieJar = manager.getCookieStore();
     this.userId=userId;
     this.password=password;
+    
     
     HttpCookie cookie_handle = new HttpCookie("cookie_handle", userId);
     cookie_handle.setDomain("www.dragongoserver.net");
@@ -203,6 +210,8 @@ int lastSgfMoveNumber=0;
 	 ArrayList <String>moveLine= new ArrayList<>();
 	 Move move=null;
 	 lastSgfMoveNumber=0;
+	 comments=new ArrayList();
+	 String lastMoveColor="black";
 	 
 	 try
 	 {
@@ -280,6 +289,7 @@ int lastSgfMoveNumber=0;
 	     sgfMoves.add(move);
 	     lastSgfMoveNumber++;
 	     currentMessage=false;
+	     lastMoveColor="black";
 	     continue;
        }
       
@@ -290,11 +300,15 @@ int lastSgfMoveNumber=0;
 	     sgfMoves.add(move);
 	     lastSgfMoveNumber++;
 	     currentMessage=false;
+	     lastMoveColor="white";
 	     continue;
        }
        if (line.startsWith("C["))  // white move
        {
     	  message=line.substring(line.indexOf(':')+1); 
+  	      message=message.replaceAll("_", " ");
+  	      message=message.substring(0,message.length()-1);
+    	  comments.add("move "+lastSgfMoveNumber +"("+lastMoveColor+") - "+message );
     	  currentMessage=true;
        }
      }
@@ -355,7 +369,7 @@ int lastSgfMoveNumber=0;
 	   }
 	 } catch (Throwable t)  {  t.printStackTrace(); }
 	 
-	 if (secondLine.contains("Ok")) { success=true; feedback.append("move: ok\n"); }
+	 if (secondLine.contains("Ok")) { success=true; feedback.append("move: ok"); }
 	  else { feedback.append(rawMessage); feedback.append("\n"); }
 	 
 	 if (loginError)

@@ -142,6 +142,7 @@ public class GoClient extends Application
   TextField userIdField;
   TextField passwordField; 
   Text opponentVal;
+  Text gameLabel;
   
   DragonAccess dragonAccess;
   Move lastSgfMove;
@@ -204,8 +205,8 @@ public class GoClient extends Application
 
     turnImageView = new ImageView(blackStoneImage);
 	  
-    timedUpdateText = new Text("Update Off");
-	timedUpdateText.setFont(Font.font("Serif", 20));
+    timedUpdateText = new Text("update Off");
+	timedUpdateText.setFont(Font.font("Serif", 18));
 	
     
     initiallizeMoveMap();
@@ -222,7 +223,7 @@ public class GoClient extends Application
     flowPane.getChildren().add(getBoardGroup()); 
     flowPane.getChildren().add(getRightPane());
       
-    final Scene scene = new Scene(flowPane, 1020, 680);
+    final Scene scene = new Scene(flowPane, 1005, 690);
      
     scene.setFill(null);
   
@@ -231,11 +232,15 @@ public class GoClient extends Application
     stage.getIcons().add(smallerBlackStoneImage);
     stage.setTitle("DGS Pal");
     stage.show();  
-    dragonAccess=new DragonAccess(userId, password);
-	dragonAccess.login();
+    
     
 	
     if (!"noset".equals(password)) refreshStartup();
+    else
+    {
+		feedbackArea.insertText(0, "User ID and password not set. Click on user icon in upper right corner.");
+		return;
+	}
     
    // feedbackArea.setText(dragonAccess.getSgfFile());
     
@@ -265,13 +270,13 @@ public class GoClient extends Application
     if (gameFound)
     {
       stopAutoRefresh();
-      
+      deleteLastMoveButton.setDisable(true);
       sgfMoves=dragonAccess.getSgf(currentGameNo);
  	  lastSgfMove=dragonAccess.getLastSgfMove();
  	  lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
  	  handicap=dragonAccess.getHandicap();
  	  receiveMessageArea.setText(dragonAccess.getMessage());
- 	 opponentVal.setText("vs "+dragonAccess.getOpponent());
+ 	  gameLabel.setText(userId+" vs "+dragonAccess.getOpponent());
  	   clear();
   	    playAllSgfMoves();
  	  /*
@@ -298,14 +303,25 @@ public class GoClient extends Application
 	    stage.getIcons().add(smallerBlackStoneImage);
 	  }
     }
-    deleteLastMoveButton.setDisable(true);
+    
+  }
+  
+  private void login()
+  {
+	dragonAccess=new DragonAccess(userId, password);
+	dragonAccess.login(); 
   }
   
   private void refreshStartup()
   {
 	boolean gameFound=false;
+	
+	login();
 		 
+	
+	
 	long gameNo= dragonAccess.checkForMove();
+	
 	feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
 	
 	if (gameNo>0) gameFound=true;	
@@ -323,7 +339,7 @@ public class GoClient extends Application
 	  }
 	}
 	
-	if ("noset".equals(currentGameNo))  return;
+	if ("noset".equals(currentGameNo)) return;
 	
 	/*
 	 * for startup, I don't care if a game was found. 
@@ -338,7 +354,16 @@ public class GoClient extends Application
 	lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
 	handicap=dragonAccess.getHandicap();
 	receiveMessageArea.setText(dragonAccess.getMessage());
-	opponentVal.setText("vs "+dragonAccess.getOpponent());
+	 gameLabel.setText(userId+" vs "+dragonAccess.getOpponent());
+	 
+	 ArrayList comments = dragonAccess.getComments();
+		Iterator it = comments.iterator();
+		String comment;
+		while(it.hasNext())
+		{
+		  comment=(String)it.next();
+		  feedbackArea.insertText(0, comment+"\n");
+		}
 	
 	playAllSgfMoves();
     if (lastSgfMove.color==BLACK)  
@@ -368,6 +393,11 @@ public class GoClient extends Application
 	 */
 	stopAutoRefresh();
 	
+	if ("noset".equals(currentGameNo)) 
+	{	
+	  feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
+	  return;
+	}
 	long gameNo= dragonAccess.checkForMove();
 	feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
 		
@@ -388,7 +418,7 @@ public class GoClient extends Application
 		lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
 		handicap=dragonAccess.getHandicap();
 		receiveMessageArea.setText(dragonAccess.getMessage());
-		opponentVal.setText("vs "+dragonAccess.getOpponent());
+		 gameLabel.setText(userId+" vs "+dragonAccess.getOpponent());
 		
 		
 		clear();
@@ -517,6 +547,10 @@ private void getResources()
 	      if (line.startsWith("password: ")) password = line.substring(10);
 	      if (line.startsWith("gamenumb: ")) currentGameNo = line.substring(10);
 	    }
+	    
+	    System.out.println("username: "+userId);
+	    System.out.println("password: "+password);
+	    System.out.println("gameno: "+currentGameNo);
 	  } catch (IOException io) { System.out.println("Ooops"); }
     }
 	
@@ -644,20 +678,45 @@ private GridPane getRightPane()
 	  return boardGroup;
   }
   
-private HBox getButtonBox() {
-	HBox buttonBox = new HBox();
-      buttonBox.setPadding(new Insets(3, 3, 3, 3));
-      buttonBox.setSpacing(5);
+private GridPane getButtonBox() 
+{
+	GridPane gridPane = new GridPane(); 
+    gridPane.setPadding(new Insets(3, 3, 3, 3));
+    gridPane.setVgap(5);
+    gridPane.setHgap(5);
+    
+	//HBox buttonBox = new HBox();
+    //  buttonBox.setPadding(new Insets(3, 3, 3, 3));
+   //   buttonBox.setSpacing(5);
  
-   //   buttonBox.getChildren().add(getClearButton());
-   //   buttonBox.getChildren().add(getSgfButton());
-      buttonBox.getChildren().add(getDeleteLastMoveButton());
-   //   buttonBox.getChildren().add(getPreviousMoveButton());
-   //   buttonBox.getChildren().add(getNextMoveButton());
-      buttonBox.getChildren().add(getRefreshButton());
-      buttonBox.getChildren().add(getCommitButton());
- //     buttonBox.getChildren().add(getTestButton());
-	return buttonBox;
+    gridPane.add(getDeleteLastMoveButton(), 0 ,0);
+    gridPane.add(getRefreshButton(), 1 ,0);
+    gridPane.add(getCommitButton(), 2, 0);
+    //  buttonBox.getChildren().add(getBlankButton());
+      
+      
+      Rectangle bx = new Rectangle();
+	    bx.setWidth(73);
+	    bx.setHeight(30);
+	    bx.setArcWidth(2);
+	    bx.setArcHeight(2); 
+	    Color c =  Color.web("DAE6F3");
+	    bx.setFill(c);
+      
+	    
+        Group userButtonGroup = new Group();
+        userButtonGroup.getChildren().add(bx);
+        Button userButton = getUserButton();
+        
+        userButtonGroup.getChildren().add(userButton);
+	    
+	    
+    //  buttonBox.getChildren().add(getUserButton());
+        gridPane.add(bx, 3, 0);
+      gridPane.add(userButton, 4, 0);
+      gridPane.setHalignment(userButton, HPos.RIGHT);
+      
+	return gridPane;
 }
 
 private HBox getIdentBox() 
@@ -665,20 +724,26 @@ private HBox getIdentBox()
    HBox identBox = new HBox();
    identBox.setPadding(new Insets(3, 3, 3, 3));
    identBox.setSpacing(5);
-   Label userIdLinkLabel = new Label("User ID: ");
-   userIdLinkLabel.setFont(Font.font("Serif", 18));
-   userIdLinkLabel.setPrefHeight(30);
-   userIdLinkLabel.setAlignment(Pos.CENTER_RIGHT);
    
-   opponentVal = new Text("");
-   opponentVal.setFont(Font.font("Serif", 18));
+   gameLabel = new Text("");
+   gameLabel.setFont(Font.font("Serif", 18));
+   
+  // Label userIdLinkLabel = new Label("User ID: ");
+  // userIdLinkLabel.setFont(Font.font("Serif", 18));
+  // userIdLinkLabel.setPrefHeight(30);
+ //  userIdLinkLabel.setAlignment(Pos.CENTER_RIGHT);
+   
+  // opponentVal = new Text("");
+  // opponentVal.setFont(Font.font("Serif", 18));
      
-   identBox.getChildren().add(userIdLinkLabel);
-   userNameLink=loginButton();
-   userNameLink.setPrefHeight(30);
-   userNameLink.setAlignment(Pos.CENTER_RIGHT);
-   identBox.getChildren().add(userNameLink);
-   identBox.getChildren().add(opponentVal);
+ //  identBox.getChildren().add(userIdLinkLabel);
+  // userNameLink=loginButton();
+ //  userNameLink.setPrefHeight(30);
+ //  userNameLink.setAlignment(Pos.CENTER_RIGHT);
+   
+   
+   identBox.getChildren().add(gameLabel);
+ //  identBox.getChildren().add(opponentVal);
   // identBox.getChildren().add(getCommitButton());
    return identBox;
 }
@@ -810,7 +875,7 @@ private Group getInfoGroup()
 	            		                      firstLocalMove.color,
 	            		                      sendMessageArea.getText()
 	            		                      );
-	            feedbackArea.insertText(0, dragonAccess.getFeedback());
+	            feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
 	            if (success) 
 	            { 
 	            	commitButton.setDisable(true); 
@@ -867,6 +932,93 @@ private Group getInfoGroup()
 	  
      commitTestButton.setOnMouseClicked(bHandler);
      return commitTestButton;
+  }
+  
+  private Button getUserButton() 
+  {
+    Button userButton = new Button("");
+    Image userImage  = new Image(GoClient.class.getResourceAsStream("/images/user.png"));
+    EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
+    	public void handle(MouseEvent event) {
+            final Stage myDialog = new Stage();
+         //   myDialog.initModality(Modality.WINDOW_MODAL);
+         myDialog.initModality(Modality.APPLICATION_MODAL);
+            Button okButton = new Button("SAVE");
+            okButton.setOnAction(new EventHandler<ActionEvent>(){
+
+                public void handle(ActionEvent arg0) {
+               	  userId=userIdField.getText();
+               	 // userNameLink.setText(userId);
+               	  password=passwordField.getText();
+        			  System.out.println("userId: "+userId);
+        			  System.out.println("password: "+password);
+        			  writeResources();
+                     myDialog.close();
+                     login();
+                }
+
+				
+             
+            });
+      
+            
+            userIdField = new TextField();
+            userIdField.setText(userId);
+            userIdField.setPrefColumnCount(30);
+            
+            
+            Text userIdLabel = new Text("User ID: ");
+            userIdLabel.setFont(Font.font("Serif", 20));
+           
+            
+            
+            Text passwordLabel = new Text("Password: ");
+            passwordLabel.setFont(Font.font("Serif", 20));
+            passwordField = new TextField();
+            passwordField.setText(password);
+            passwordField.setPrefColumnCount(30);
+            
+            GridPane gridPane = new GridPane();
+            gridPane.setPadding(new Insets(10, 10, 10, 10));
+            gridPane.setVgap(2);
+            gridPane.setHgap(5);
+            gridPane.add(userIdLabel, 0, 0);
+            gridPane.add(userIdField, 1, 0);
+            gridPane.add(passwordLabel, 0, 1);
+            gridPane.add(passwordField, 1, 1);
+            gridPane.add(okButton, 1, 2);
+            
+            
+            Scene myDialogScene = new Scene(gridPane, 300, 100);
+                    
+         
+            myDialog.setScene(myDialogScene);
+            myDialog.show();
+        }
+	          
+    
+    };
+	  
+     userButton.setOnMouseClicked(bHandler);
+     userButton.setGraphic(new ImageView(userImage));
+     return userButton;
+  }
+  
+  private Button getBlankButton() 
+  {
+    Button blankButton = new Button("     ");
+    // b.setLayoutX(10);
+    // b.setLayoutY(10);
+  //  EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
+	//          public void handle(MouseEvent event) 
+	//          {
+	//        	dragonAccess.login();  
+	////        	dragonAccess.getSgf(currentGameNo);
+	//          } };
+	  
+     //commitTestButton.setOnMouseClicked(bHandler);
+     blankButton.setDisable(true);
+     return blankButton;
   }
 
   private Button getRefreshButton() 
@@ -969,7 +1121,7 @@ private Group getInfoGroup()
   
   private Button getDeleteLastMoveButton() 
   {
-    deleteLastMoveButton = new Button("undo move");
+    deleteLastMoveButton = new Button("< x");
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
     {
       removeLastStone(); 
@@ -1187,7 +1339,7 @@ private Group getInfoGroup()
      
      lastSgfMove = dragonAccess.getLastSgfMove();
      
-     System.out.println("Last Move: "+lastSgfMoveNumber+", "+colorStr(lastSgfMove.color)+" position: "+lastSgfMove.getSgfPosition());
+    //System.out.println("Last Move: "+lastSgfMoveNumber+", "+colorStr(lastSgfMove.color)+" position: "+lastSgfMove.getSgfPosition());
      
      makeMove=true;
    }
@@ -1422,10 +1574,7 @@ private void placeStone(Stone s)
 private void placeStone(Move move, int style) 
 {
   if (moveMap[move.x][move.y]!=OPEN) return;
-  
   moveMap[move.x][move.y]=move.color;	
-  
-  
   movesGroup.getChildren().add(new Stone(move, style));
   lastMoveColor=move.color;
   moves.add(move);
@@ -1514,7 +1663,7 @@ void restoreMoveImageToPrevousStone(Move m)
 void putMoveImageOnLastStone()
 {
   if (moves==null) return;	
-  System.out.println("moves: "+moves.size());
+  //System.out.println("moves: "+moves.size());
   Move m = (Move)moves.get(moves.size()-1);
   ObservableList moveList  = movesGroup.getChildren();
   ListIterator it = moveList.listIterator(moveList.size());
@@ -1897,7 +2046,7 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
    {
 	  level=0; 
 	  cycleCount=0;
-	  timedUpdateText.setText("Update every "+timeStr[level]);
+	  timedUpdateText.setText("update every "+timeStr[level]);
 	  feedbackArea.insertText(0, "refresh rate: "+timeStr[level]+"\n"); 
 
 	  timeline = new Timeline();
@@ -1907,7 +2056,7 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
                 public void handle(Event event) 
                 {
                  // System.out.println("level: "+timeStr[level]+" cycle: "+cycleCount+ " second: "+count++);
-                  timedUpdateText.setText("  update: "+(interval[level]-count)+"  "+ dragonAccess.getFeedback());
+                  timedUpdateText.setText("  update: "+(interval[level]-count)+"     "+dragonAccess.getFeedback());
                   if (count>=interval[level]) 
                   {
                     count=0;
@@ -1934,7 +2083,7 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
       
    void stopAutoRefresh()
    {
-	 timedUpdateText.setText("Update OFF ");  
+	 timedUpdateText.setText("update OFF ");  
 	 level=0;
 	 cycleCount=0;
 	 if (timeline!=null) timeline.stop();
