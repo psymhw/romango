@@ -116,10 +116,9 @@ public class GoClient extends Application
   ArrayList <Move>moves = new ArrayList<>();
   ArrayList <Move>sgfMoves = new ArrayList<>();
   ArrayList <Stone>capturedStonesArray = new ArrayList<>();
+  ArrayList <BoardMap>positionHistory = new ArrayList<>();
    
   int[][] moveMap = new int[19][19];
-  int[][] koMap = new int[19][19];
-  int[][] tempMap = new int[19][19];
   
   int[][] groupMap = new int[19][19];
   int lastMoveColor=WHITE;
@@ -1073,7 +1072,9 @@ private Group getInfoGroup()
     	if (n.liberties==0) 
     	{ 
     	  errorSound.play(); 
-    	  moveMap[move.x][move.y]=OPEN;return;  // can't move here... no liberties and nothing captured.
+    	  moveMap[move.x][move.y]=OPEN;
+    	  feedbackArea.insertText(0, "illegal move");
+    	  return;  // can't move here... no liberties and nothing captured.
     	 }
       }
       
@@ -1081,7 +1082,9 @@ private Group getInfoGroup()
       if (checkForKo()) 
       {
     	  errorSound.play(); 
-    	  moveMap[move.x][move.y]=OPEN;return;  // can't move here... ko fight. 
+    	  moveMap[move.x][move.y]=OPEN;
+    	  feedbackArea.insertText(0, "ko. can't move here.");
+    	  return;  // can't move here... ko fight. 
       }
       
       moveMap[move.x][move.y]=OPEN;  // return moveMap to original state.
@@ -1175,17 +1178,10 @@ private Group getInfoGroup()
   
   boolean checkForKo()
   {
-	boolean ko=true;
+	BoardMap bm = positionHistory.get(positionHistory.size()-2);
+	if (bm.equals(moveMap)) return true;
 	
-	for(int i=0; i<19; i++)
-    {
-      for(int j=0; j<19; j++)
-      {
-	    if (moveMap[i][j]!=koMap[i][j]) ko=false;
-      }
-    }
-	
-	return ko;
+	return false;
   }
   
   private Button getPreviousMoveButton() 
@@ -1236,11 +1232,9 @@ private Group getInfoGroup()
     {
       for(int j=0; j<19; j++)
       {
-	moveMap[i][j]=OPEN;
+	    moveMap[i][j]=OPEN;
       }
     }
-    
-    copyMoveMaps();
   }
   
   private void clearGroupMap() 
@@ -1278,24 +1272,7 @@ private Group getInfoGroup()
 		}
  }
 	
-	private void copyMoveMaps() 
-   {
-		for(int j=0; j<19; j++)
-		{
-		  for(int i=0; i<19; i++)
-		  {
-			koMap[i][j]=tempMap[i][j];
-		  }
-		}
-		
-		for(int j=0; j<19; j++)
-		{
-		  for(int i=0; i<19; i++)
-		  {
-			tempMap[i][j]=moveMap[i][j];
-		  }
-		}
-    }
+	
 
         /*
   static void findStone(Group moves, String boardPosition)
@@ -1619,7 +1596,7 @@ private void placeStone(Move move, int style)
   moveNoVal.setText(""+moveNumber);
   checkLibertiesOfNeighbors(move.x, move.y);
   if (style!=STYLE_REGULAR)stoneSound.play();
-  copyMoveMaps();
+  positionHistory.add(new BoardMap(moveMap));
      
 
 }
