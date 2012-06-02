@@ -1054,6 +1054,7 @@ private Group getInfoGroup()
       if (moveMap[move.x][move.y]!=OPEN) 
       { 
     	  errorSound.play(); 
+    	  feedbackArea.insertText(0, "position occupied\n");
     	  moveMap[move.x][move.y]=OPEN;return;  // can't move here... already occupied.
       }
       
@@ -1812,6 +1813,8 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
         // System.out.println("found "+i);
        moveMap[x][y]=OPEN; 
        moveList.remove(i); 
+       int historySize=positionHistory.size();
+       if (historySize>0) positionHistory.remove(historySize-1);
        break; 
      }
      i--;
