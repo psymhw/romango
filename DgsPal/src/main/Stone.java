@@ -14,26 +14,14 @@ public class Stone extends ImageView
   private static Image black_move_image=null;
   private static Image white_move_image=null;
   private static Image b1=null;
-  private static Image b2=null;
-  private static Image b3=null;
-  private static Image b4=null;
-  private static Image b5=null;
-  private static Image b6=null;
-  private static Image b7=null;
-  private static Image b8=null;
-  private static Image b9=null;
-  private static Image b10=null;
+ 
+  private static Image bx=null;
+  private static Image bcheck=null;
   
-  private static Image w1=null;
-  private static Image w2=null;
-  private static Image w3=null;
-  private static Image w4=null;
-  private static Image w5=null;
-  private static Image w6=null;
-  private static Image w7=null;
-  private static Image w8=null;
-  private static Image w9=null;
-  private static Image w10=null;
+ 
+  
+  private static Image wx=null;
+  private static Image wcheck=null;
   
   public int x;
   public int y;
@@ -141,27 +129,13 @@ public class Stone extends ImageView
       if (black_move_image==null)   black_move_image = new Image(Stone.class.getResourceAsStream("/images/bm.gif"));
       if (white_move_image==null)   white_move_image = new Image(Stone.class.getResourceAsStream("/images/wm.gif"));
       
-      if (b1==null) b1 = new Image(Stone.class.getResourceAsStream("/images/b1.gif"));
-      if (b2==null) b2 = new Image(Stone.class.getResourceAsStream("/images/b2.gif"));
-      if (b3==null) b3 = new Image(Stone.class.getResourceAsStream("/images/b3.gif"));
-      if (b4==null) b4 = new Image(Stone.class.getResourceAsStream("/images/b4.gif"));
-      if (b5==null) b5 = new Image(Stone.class.getResourceAsStream("/images/b5.gif"));
-      if (b6==null) b6 = new Image(Stone.class.getResourceAsStream("/images/b6.gif"));
-      if (b7==null) b7 = new Image(Stone.class.getResourceAsStream("/images/b7.gif"));
-      if (b8==null) b8 = new Image(Stone.class.getResourceAsStream("/images/b8.gif"));
-      if (b9==null) b9 = new Image(Stone.class.getResourceAsStream("/images/b9.gif"));
-      if (b10==null) b10 = new Image(Stone.class.getResourceAsStream("/images/b10.gif"));
+     
+      if (bx==null) bx = new Image(Stone.class.getResourceAsStream("/images/bx.gif"));
+      if (bcheck==null) bcheck = new Image(Stone.class.getResourceAsStream("/images/bcheck.gif"));
       
-      if (w1==null) w1 = new Image(Stone.class.getResourceAsStream("/images/w1.gif"));
-      if (w2==null) w2 = new Image(Stone.class.getResourceAsStream("/images/w2.gif"));
-      if (w3==null) w3 = new Image(Stone.class.getResourceAsStream("/images/w3.gif"));
-      if (w4==null) w4 = new Image(Stone.class.getResourceAsStream("/images/w4.gif"));
-      if (w5==null) w5 = new Image(Stone.class.getResourceAsStream("/images/w5.gif"));
-      if (w6==null) w6 = new Image(Stone.class.getResourceAsStream("/images/w6.gif"));
-      if (w7==null) w7 = new Image(Stone.class.getResourceAsStream("/images/w7.gif"));
-      if (w8==null) w8 = new Image(Stone.class.getResourceAsStream("/images/w8.gif"));
-      if (w9==null) w9 = new Image(Stone.class.getResourceAsStream("/images/w9.gif"));
-      if (w10==null) w10 = new Image(Stone.class.getResourceAsStream("/images/w10.gif"));
+          
+      if (wx==null) wx = new Image(Stone.class.getResourceAsStream("/images/wx.gif"));
+      if (wcheck==null) wcheck = new Image(Stone.class.getResourceAsStream("/images/wcheck.gif"));
        
       
       if (stoneColor==GoClient.WHITE)
@@ -172,37 +146,11 @@ public class Stone extends ImageView
     		setImage(white_stone_image);
     		break;
     	case 1:
-    		setImage(w1);
+    		setImage(wcheck);
     		break;
-    	case 2:
-    		setImage(w2);
-    		break;
-    	case 3:
-    		setImage(w3);
-    		break;
-    	case 4:
-    		setImage(w4);
-    		break;
-    	case 5:
-    		setImage(w5);
-    		break;
-    	case 6:
-    		setImage(w6);
-    		break;
-    	case 7:
-    		setImage(w7);
-    		break;
-    	case 8:
-    		setImage(w8);
-    		break;
-    	case 9:
-    		setImage(w9);
-    		break;
-    	case 10:
-    		setImage(w10);
-    		break;
+    	
         default:
-        	setImage(white_stone_image);
+        	setImage(wx);
     	}
       }
       else
@@ -213,37 +161,11 @@ public class Stone extends ImageView
       		setImage(black_stone_image);
       		break;
       	case 1:
-      		setImage(b1);
+      		setImage(bcheck);
       		break;
-      	case 2:
-      		setImage(b2);
-      		break;
-      	case 3:
-      		setImage(b3);
-      		break;
-      	case 4:
-      		setImage(b4);
-      		break;
-      	case 5:
-      		setImage(b5);
-      		break;
-      	case 6:
-      		setImage(b6);
-      		break;
-      	case 7:
-      		setImage(b7);
-      		break;
-      	case 8:
-      		setImage(b8);
-      		break;
-      	case 9:
-      		setImage(b9);
-      		break;
-      	case 10:
-      		setImage(b10);
-      		break;
+      	      	
           default:
-          	setImage(black_stone_image);
+          	setImage(bx);
       	}
       }
       
