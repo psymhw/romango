@@ -27,13 +27,25 @@ public class DragonAccess
   String password;
   StringBuffer sgfFileString = new StringBuffer();
   StringBuffer feedback = new StringBuffer();
-  String opponent="";
-  ArrayList comments = new ArrayList();
+  String playerWhite="";
+  String playerBlack="";
+  
+
+ArrayList comments = new ArrayList();
   int lastSgfMoveNumber=0;
   int handicap=0;
   int loginAttempts=0;
   String message;
   boolean currentMessage=false;
+  
+  public String getPlayerBlack() {
+		return playerBlack;
+	}
+
+
+	public void setPlayerBlack(String playerBlack) {
+		this.playerBlack = playerBlack;
+	}
   
   public String getMessage() 
   {
@@ -43,12 +55,12 @@ public class DragonAccess
     }
 
   
-  public String getOpponent() {
-		return opponent;
+  public String getplayerWhite() {
+		return playerWhite;
 	}
 
-	public void setOpponent(String opponent) {
-		this.opponent = opponent;
+	public void setplayerWhite(String playerWhite) {
+		this.playerWhite = playerWhite;
 	}
 public void setMessage(String message) {
 	this.message = message;
@@ -270,7 +282,15 @@ public void setComments(ArrayList comments) {
        {
     	 int i = line.indexOf('(');
     	 
-	     if (i>0) opponent = line.substring(3,i);
+	     if (i>0) playerWhite = line.substring(3,i);
+	     
+	     continue;
+       }
+       if (line.startsWith("PB["))  // get first white move
+       {
+    	 int i = line.indexOf('(');
+    	 
+	     if (i>0) playerBlack = line.substring(3,i);
 	     
 	     continue;
        }
