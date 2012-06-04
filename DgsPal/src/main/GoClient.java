@@ -2,7 +2,6 @@ package main;
 
 import java.applet.Applet;
 import java.applet.AudioClip;
-import java.awt.Paint;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,30 +10,26 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextAreaBuilder;
 import javafx.scene.control.TextField;
@@ -48,16 +43,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-  
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 
 public class GoClient extends Application  
 {  
+  final static boolean feedback_refresh_rate=false;
+   	
   final static int OPEN = 0;
   final static int BLACK = 1;
   final static int WHITE = 2;
@@ -147,7 +140,6 @@ public class GoClient extends Application
   int handicap=0;
   
   
-  boolean makeMove=false;
   String currentGameNo="noset";
   
   Button commitButton;
@@ -168,22 +160,14 @@ public class GoClient extends Application
   
   Button deleteLastMoveButton;
   
- //  ;
-//  IntegerProperty Count= new SimpleIntegerProperty(0);
  // Refresh refresh;
   int cycleCount=0;
-////	int min=60000;
-	//int min=6000; // for testing
-	int level=0;
-	//long interval[] = new long[]{         min/2,        2*min,      5*min,        10*min,       30*min,   60*min};
-	//String[] timeStr = new String[]{"30 seconds", "2 minutes", "5 minutes", "10 minutes", "30 minutes", "1 hour"};
-	//long interval[] = new long[]{         30,        60,      120,        300,       600,   1800};
-//	String[] timeStr = new String[]{"30 seconds", "1 minute", "2 minutes", "10 minutes", "30 minutes"};
-	int cycles[] = new int[]{                6,           10,         30,           30,       100 };
-	long interval[] = new long[]{           10,           30,         60,          120,       300};
-	String[] timeStr = new String[]{"10 seconds", "30 seconds", "1 minute", "2 minutes", "5 minutes" };
+  int level=0;
+  int cycles[] = new int[]{                6,           10,         30,           30,       100 };
+  long interval[] = new long[]{           10,           30,         60,          120,       300};
+  String[] timeStr = new String[]{"10 seconds", "30 seconds", "1 minute", "2 minutes", "5 minutes" };
 
-
+  SimpleDateFormat df = new SimpleDateFormat("h:mm:ss MM-dd-yy");
   Text timedUpdateText;
   Stage stage;
   
@@ -266,25 +250,10 @@ public class GoClient extends Application
     {
       stopAutoRefresh();
       deleteLastMoveButton.setDisable(true);
-      sgfMoves=dragonAccess.getSgf(currentGameNo);
- 	  lastSgfMove=dragonAccess.getLastSgfMove();
- 	  lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
- 	  handicap=dragonAccess.getHandicap();
- 	  receiveMessageArea.setText(dragonAccess.getMessage());
- 	  gameLabel.setText(userId+" vs "+dragonAccess.getOpponent());
- 	   clear();
-  	    playAllSgfMoves();
- 	  /*
- 	  if (localMoves>1) // could just roll back local moves here.
-      {
-   	    clear();
-   	    playAllSgfMoves();
-      }
-      else
-      {
-        playNewMove();
-      }
- 	  */
+      refreshCommon();
+ 	  clear();
+  	  playAllSgfMoves();
+      feedbackArea.insertText(0, df.format(new Date())+" "+lastSgfMove.getColor()+": "+lastSgfMove.getSgfPosition()+"\n");
  	  if (lastSgfMove.color==BLACK)  
 	  { 
 	    colorToPlay=WHITE; 
@@ -312,8 +281,6 @@ public class GoClient extends Application
 	boolean gameFound=false;
 	
 	login();
-		 
-	
 	
 	long gameNo= dragonAccess.checkForMove();
 	
@@ -326,7 +293,6 @@ public class GoClient extends Application
 	if (gameFound)
 	{
 	  stopAutoRefresh();
-	  
 	  if (!currentGameNo.equals(""+gameNo))  // if the current game number is not equal to that number, make it so and save it
 	  {
 		currentGameNo=""+gameNo;
@@ -344,13 +310,9 @@ public class GoClient extends Application
 	 */
 	
 	gameNoVal.setText(currentGameNo);
-	sgfMoves=dragonAccess.getSgf(currentGameNo);
-	lastSgfMove=dragonAccess.getLastSgfMove();
-	lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
-	handicap=dragonAccess.getHandicap();
-	receiveMessageArea.setText(dragonAccess.getMessage());
-	gameLabel.setText(userId+" vs "+dragonAccess.getOpponent());
-	 
+	
+	refreshCommon();
+		 
 	 ArrayList comments = dragonAccess.getComments();
 		Iterator it = comments.iterator();
 		String comment;
@@ -408,12 +370,8 @@ public class GoClient extends Application
 		 * I'll get the current game.
 		 * 
 		 */
-		sgfMoves=dragonAccess.getSgf(currentGameNo);
-		lastSgfMove=dragonAccess.getLastSgfMove();
-		lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
-		handicap=dragonAccess.getHandicap();
-		receiveMessageArea.setText(dragonAccess.getMessage());
-		 gameLabel.setText(userId+" vs "+dragonAccess.getOpponent());
+		
+		refreshCommon();
 		
 		
 		clear();
@@ -436,77 +394,17 @@ public class GoClient extends Application
 	    deleteLastMoveButton.setDisable(true);
   }
   
- 
-  /*
-  private boolean checkForGame(int type)
+  private void refreshCommon()
   {
-	
-	 boolean gameFound=false;
-	 
-	 long gameNo= dragonAccess.checkForMove();
-	 feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
-	 
-	 if (gameNo>0)
-	 {
-		gameFound=true;	
-		stopRefresh();
-		//System.out.println("game found");
-		if (!currentGameNo.equals(""+gameNo))  // if the current game number is not equal to that number, make it so and save it
-		{
-		  currentGameNo=""+gameNo;
-		  writeResources();
-		}
-		 
-	 }
-	 
-	 // if we got to here, there is either currentGameNo has a game number or it's still 'noset'	
-	 
-	 gameNoVal.setText(currentGameNo);
-	 
-	 if ("noset".equals(currentGameNo))  return false;
-	 
-	 sgfMoves=dragonAccess.getSgf(currentGameNo);
-	 lastSgfMove=dragonAccess.getLastSgfMove();
-	 lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
-	 handicap=dragonAccess.getHandicap();
-	 receiveMessageArea.setText(dragonAccess.getMessage());
-	 
-	 if (type==REFRESH_STARTUP||type==REFRESH_LOCAL) 
-	 {	 
-	    playAllSgfMoves();
-	    if (lastSgfMove.color==BLACK)  
-	    { 
-	      colorToPlay=WHITE; 
-	      turnImageView.setImage(whiteStoneImage);
-	    } 
-	    else 
-	    {
-	      colorToPlay=BLACK;
-	      turnImageView.setImage(blackStoneImage);
-	    }
-	 }
-	 
-	 if (type==REFRESH_TIMED)
-	 {
-	    if (gameFound) 
-	    {
-	      if (localMoves>1) // could just roll back local moves here.
-	      {
-	    	 clear();
-	    	 playAllSgfMoves();
-	      }
-	      else
-	      {
-	        playNewMove();
-	      }
-	    }
-	 }
-	 
-	 if (gameFound) commitButton.setDisable(false); else commitButton.setDisable(true);
-	 
-	 if (gameFound) return true; else return false;
+	sgfMoves=dragonAccess.getSgf(currentGameNo);
+	lastSgfMove=dragonAccess.getLastSgfMove();
+	lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
+	handicap=dragonAccess.getHandicap();
+	receiveMessageArea.setText(dragonAccess.getMessage());
+	gameLabel.setText(dragonAccess.getPlayerBlack()+" vs "+dragonAccess.getplayerWhite());  
   }
-*/
+ 
+  
  
   
   private void playNewMove()  
@@ -859,11 +757,13 @@ private Group getInfoGroup()
 
   private Button getCommitButton() 
   {
+	
     commitButton = new Button("Commit");
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) 
 	          {
 	        	boolean success=false;  
+	        	
 	        	Move firstLocalMove = moves.get(lastSgfMoveNumber);   
 	            success=dragonAccess.makeMove(currentGameNo, 
 	            		                      lastSgfMove.sgfPosition,
@@ -871,9 +771,10 @@ private Group getInfoGroup()
 	            		                      firstLocalMove.color,
 	            		                      sendMessageArea.getText()
 	            		                      );
-	            feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
+	            
 	            if (success) 
 	            { 
+	            	feedbackArea.insertText(0, df.format(new Date())+" "+firstLocalMove.getColor()+": "+firstLocalMove.getSgfPosition()+"\n");
 	            	commitButton.setDisable(true); 
 	                if (sendMessageArea.getText()!=null)
 	                {	
@@ -907,6 +808,7 @@ private Group getInfoGroup()
 	               localMoves=0;
 	               localMovesVal.setText("0");
 	            }
+	            else feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
 	             
 	          } };
 	  
@@ -1047,50 +949,45 @@ private Group getInfoGroup()
 
       if (testForIllegalMoves)
       {
-      // trial move
+        BoardMap savedBoardMap = new BoardMap(moveMap);
       
-      BoardMap savedBoardMap = new BoardMap(moveMap);
-      
-      if (moveMap[move.x][move.y]!=OPEN) 
-      { 
-    	  errorSound.play(); 
-    	  feedbackArea.insertText(0, "position occupied\n");
-    	  moveMap[move.x][move.y]=OPEN;return;  // can't move here... already occupied.
-      }
-      
-      moveMap[move.x][move.y]=move.color;	
-      boolean anyCaptures = checkLibertiesOfNeighbors(move.x, move.y, TRIAL);
-      // if (anyCaptures) System.out.println("Stone Captured");
-      // else System.out.println("No Stone Captured");
-            
-      if (!anyCaptures)
-      {
-    	Neighbors n =countLiberties(move.x, move.y, move.color, CHECK_ALL_DIRECTIONS);
-    	// System.out.println("Liberties of new stone: "+n.liberties);
-    	if (n.liberties==0) 
-    	{ 
-    	  errorSound.play(); 
+        if (moveMap[move.x][move.y]!=OPEN) 
+        { 
+        	
+    	 // errorSound.play(); 
+          StoneGroup stoneGroup = new StoneGroup(move.x, move.y, moveMap);
+          System.out.println("Liberties of group: "+stoneGroup.liberties);
+    	//  feedbackArea.insertText(0, "position occupied\n");
     	  restoreMoveMap(savedBoardMap.get());
-    	  feedbackArea.insertText(0, "illegal move\n");
-    	  return;  // can't move here... no liberties and nothing captured.
-    	 }
-      }
-      else 
-      {  
-        if (checkForKo()) 
-        {
-      	  errorSound.play(); 
-          restoreMoveMap(savedBoardMap.get());
-    	  feedbackArea.insertText(0, "ko. can't move here.\n");
-    	  return;  // can't move here... ko fight. 
+    	  return;  // can't move here... already occupied.
         }
-      }
-      // cleanup trial
-      restoreMoveMap(savedBoardMap.get());  // return moveMap to original state.
       
-      //////////////////// end trial 
-      }
-      
+        moveMap[move.x][move.y]=move.color;	
+        boolean captures = checkLibertiesOfNeighbors(move.x, move.y, TRIAL);
+            
+        if (captures==false)
+        {
+          StoneGroup stoneGroup = new StoneGroup(move.x, move.y, moveMap);	
+    	  if (stoneGroup.liberties==0) 
+    	  { 
+    	    errorSound.play(); 
+    	    restoreMoveMap(savedBoardMap.get());
+    	    feedbackArea.insertText(0, "illegal move\n");
+    	    return;  // can't move here... no liberties and nothing captured.
+    	  }
+        }
+        else 
+        {  
+          if (checkForKo()) 
+          {
+      	    errorSound.play(); 
+            restoreMoveMap(savedBoardMap.get());
+    	    feedbackArea.insertText(0, "ko. can't move here.\n");
+    	    return;  // can't move here... ko fight. 
+          }
+        }
+        restoreMoveMap(savedBoardMap.get());  // return moveMap to original state.
+      }  // end of testing illegal moves
       
       placeStone(move, localMoves);
       deleteLastMoveButton.setDisable(false);
@@ -1202,31 +1099,7 @@ private Group getInfoGroup()
 	return false;
   }
   
-  private Button getPreviousMoveButton() 
-  {
-    Button b = new Button("<");
-    EventHandler bHandler = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
-    {
-      rewindMove(); 
-    }};
-    b.setOnAction(bHandler);
-    return b; 
-  }
   
-  
-  // replay rewound moves
-  private Button getNextMoveButton() 
-  {
-    Button b = new Button(">");
-    EventHandler bHandler = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
-    {
-      nextMove(); 
-    }
-
-        };
-    b.setOnAction(bHandler);
-    return b; 
-  }
   
   private Button getClearButton() 
   {
@@ -1404,6 +1277,7 @@ private Group getInfoGroup()
      while(it.hasNext())
      {
        move=(Move)it.next();
+       // System.out.println(move.x+"-"+move.y);
        placeStone(move, STYLE_REGULAR, true);
        
      }
@@ -1416,10 +1290,9 @@ private Group getInfoGroup()
      lastSgfMove = dragonAccess.getLastSgfMove();
      
     //System.out.println("Last Move: "+lastSgfMoveNumber+", "+colorStr(lastSgfMove.color)+" position: "+lastSgfMove.getSgfPosition());
-     positionHistory.add(new BoardMap(moveMap));
+     
     // System.out.println("After Sgf play all.. postion history: "+positionHistory.size());
      
-     makeMove=true;
    }
    
    public String colorStr(int color)
@@ -1592,33 +1465,23 @@ private void setQuit()
 }  
 
 
-private void placeStone(Move move, int style) 
-{
-  placeStone(move, style, false);;
-  
-}
+  private void placeStone(Move move, int style) 
+  {
+    placeStone(move, style, false);;
+  }
   private void placeStone(Move move, int style, boolean fromSgf) 
   {
-	  moveMap[move.x][move.y]=move.color;	
-	  Stone stone = new Stone(move, style);
-	  visibleMoves.getChildren().add(stone);
-	 // System.out.println("added new stone to movegroup: "+stone.x+"-"+stone.y);
-	  lastMoveColor=move.color;
-	  moves.add(move);
-	 // if (style==STYLE_LAST_MOVE) removeMoveImageFromPreviousMove();
-	  moveNumber++;
-	  moveNoVal.setText(""+moveNumber);
-	  checkLibertiesOfNeighbors(move.x, move.y);
-    
-    if (!fromSgf)
-    {
-      stoneSound.play();
-      positionHistory.add(new BoardMap(moveMap));
-    }
-     
-    //listMoveGroup(); 
-   // testHistory();
-}
+	moveMap[move.x][move.y]=move.color;	
+	Stone stone = new Stone(move, style);
+	visibleMoves.getChildren().add(stone);
+	lastMoveColor=move.color;
+	moves.add(move);
+	moveNumber++;
+	moveNoVal.setText(""+moveNumber);
+	checkLibertiesOfNeighbors(move.x, move.y);
+	positionHistory.add(new BoardMap(moveMap));
+    if (!fromSgf) stoneSound.play();
+  }
 
   
   void testHistory()
@@ -1830,34 +1693,29 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
       Application.launch(arguments);  
    }
 
+   /*
     private Neighbors countLiberties(int x, int y, int color, int noCheck) 
     {
         boolean debug=false;
         
         Neighbors n = new Neighbors(x, y, color);
         if (noCheck==START) clearGroupMap();
-        if (debug) 
-        { 
-          if (noCheck==START) 
-          {
-            System.out.println(); 
-          }
-          System.out.println("Stone: "+x+"-"+y); 
-        }
         
         // check if been here already
        if (groupMap[x][y]==GROUP_MEMBER) return null;
        groupMap[x][y]=GROUP_MEMBER;
         
        
-       if (noCheck!=NORTH) directionCheck(x,y,color, n,NORTH); 
-       if (noCheck!=SOUTH) directionCheck(x,y,color, n,SOUTH);
-       if (noCheck!=WEST)  directionCheck(x,y,color, n,WEST);
-       if (noCheck!=EAST)  directionCheck(x,y,color, n,EAST);
+       if (noCheck!=NORTH) directionCheck(x,y,color, n, NORTH); 
+       if (noCheck!=SOUTH) directionCheck(x,y,color, n, SOUTH);
+       if (noCheck!=WEST)  directionCheck(x,y,color, n, WEST);
+       if (noCheck!=EAST)  directionCheck(x,y,color, n, EAST);
         
        return n;
     }
+    */
     
+   /*
     void directionCheck(int x, int y, int color, Neighbors n, int direction)
     {
       boolean debug=false;  
@@ -1884,9 +1742,8 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
         if (debug) System.out.println("  moving South");
         n.accumulate(countLiberties(checkX, checkY, color, oppositeDirection));
       }
-            
     }
-
+*/
    
     private void checkLibertiesOfNeighbors(int x, int y) 
     {
@@ -1895,7 +1752,7 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
 
     private boolean checkLibertiesOfNeighbors(int x, int y, boolean trial) 
     {
-      boolean debug=false;
+      boolean debug=true;
       boolean capture = false;
       boolean nCapture=false;
       boolean sCapture=false;
@@ -1904,24 +1761,50 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
       int startColor=0;
       
       startColor = moveMap[x][y];
-      if (debug) System.out.println("Start Color is "+startColor);
       
-      nCapture=checkDirectionForNeighbors(x,y,NORTH, trial);
-      sCapture=checkDirectionForNeighbors(x,y,SOUTH, trial);
-      eCapture=checkDirectionForNeighbors(x,y,EAST, trial);
-      wCapture=checkDirectionForNeighbors(x,y,WEST, trial);
+      nCapture=checkDirection(x,y,NORTH, trial);
+      sCapture=checkDirection(x,y,SOUTH, trial);
+      eCapture=checkDirection(x,y,EAST, trial);
+      wCapture=checkDirection(x,y,WEST, trial);
             
       if (nCapture||sCapture||eCapture||wCapture) capture=true;
       
-      if (debug) System.out.println();
       return capture;
     }
+    
+    
+     boolean checkDirection(int x, int y, int direction, boolean trial)
+     {
+       int checkX=x, checkY=y, color=0, startColor=0;
+       String directionString="";
+       
+       startColor = moveMap[x][y];
+            
+       if (direction==NORTH) { if (y==0) { directionString="EDGE";  } else { checkY=y-1; directionString="NORTH"; } }
+       if (direction==SOUTH) { if (y==18) { directionString="EDGE"; } else { checkY=y+1; directionString="SOUTH"; } }
+       if (direction==EAST)  { if (x==18) { directionString="EDGE"; } else {checkX=x+1; directionString="EAST";  } }
+       if (direction==WEST)  { if (x==0)  { directionString="EDGE"; } else { checkX=x-1; directionString="WEST";  } }
+       
+       // System.out.println("For stone: "+x+"-"+y+" "+directionString);
+       
+       if ("EDGE".equals(directionString)) return false;
+       
+       StoneGroup stoneGroup = new StoneGroup(checkX, checkY, moveMap);
+       if (stoneGroup.liberties==0) 
+       { 
+          if (!trial) captureGroup(stoneGroup.groupPositions);
+       }
+       if (stoneGroup.liberties==0) return true;
+       else return false;
+     }
 
-     boolean checkDirectionForNeighbors(int x, int y, int direction, boolean trial)
+     /*
+     boolean checkDirection(int x, int y, int direction, boolean trial)
      {
        boolean debug=false;
        int checkX=x, checkY=y, color=0, startColor=0;
        String directionString="";
+       
        startColor = moveMap[x][y];
        boolean capture=false;
             
@@ -1931,28 +1814,24 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
        if (direction==WEST)  { if (x==0) return false;  checkX=x-1; directionString="WEST";  }
        
        
-         color = moveMap[checkX][checkY];
-         if (debug) System.out.println(directionString+" Color is: "+color);
-         if ((color!=OPEN)&&(color!=startColor))
-         {
-           Neighbors n = countLiberties(checkX, checkY, color, START);
-           if (n.liberties==0) 
-           { 
-        	 capture = true;
-        	// System.out.println("liberties 0: "+x+"-"+y);
-        	 captureGroup(n.groupPositions, trial);
-           }
-           if (debug) System.out.println("Group to the "+directionString+" has "+n.liberties+" liberties");
+       color = moveMap[checkX][checkY];
+       if ((color!=OPEN)&&(color!=startColor))
+       {
+         Neighbors n = countLiberties(checkX, checkY, color, START);
+         if (n.liberties==0) 
+         { 
+       	   capture = true;
+           captureGroup(n.groupPositions, trial);
          }
-         else 
-         {
-           if (debug) System.out.println("No Group or non-enemy to the "+directionString);   
-         }
-         
-         return capture;
+         if (debug) System.out.println("Group to the "+directionString+" has "+n.liberties+" liberties");
        }
+      
+       return capture;
+     }
 
-    private void captureGroup(List<SimplePosition> groupPositions, boolean trial) 
+     */
+     
+    private void captureGroup(List<SimplePosition> groupPositions) 
     {
        // System.out.println("CAPTURE GROUP");
       Iterator it=groupPositions.iterator();
@@ -1961,46 +1840,37 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
       {
          sp=(SimplePosition)it.next(); 
       //   System.out.println("Capture Position: "+sp.x+"-"+sp.y);
-         capturePiece(sp.x, sp.y, trial);
+         capturePiece(sp.x, sp.y);
          
       }
     }
 
-    private void capturePiece(int x, int y, boolean trial) 
+    private void capturePiece(int x, int y) 
     {
       ObservableList moveList  = visibleMoves.getChildren();
       Iterator it = moveList.iterator();
       int color=0;
-            
-    //  System.out.println("Stone to capture: "+x+"-"+y);
       Stone stone;
       int i=0;
       while(it.hasNext())
       {
         stone=(Stone)it.next();
-      //  System.out.println("looking at stone: "+stone.x+"-"+stone.y);
         if ((stone.x==x)&&(stone.y==y)) 
         { 
-          if (!trial) 
-          {  
-        	stone.setCaptureMoveNumber(moveNumber);  
-            capturedStonesArray.add(stone);
-            color=moveMap[x][y];
-            captured[color]++;
-            moveList.remove(i);
-          }
+          stone.setCaptureMoveNumber(moveNumber);  
+          capturedStonesArray.add(stone);
+          color=moveMap[x][y];
+          captured[color]++;
+          moveList.remove(i);
           moveMap[x][y]=OPEN; 
-    //      System.out.println("captured: "+x+"-"+y);
           break; 
         }
         i++;
       }
+     
+      capturedBlackVal.setText(""+captured[BLACK]);
+      capturedWhiteVal.setText(""+captured[WHITE]);
       
-      if (!trial) 
-      {
-        capturedBlackVal.setText(""+captured[BLACK]);
-        capturedWhiteVal.setText(""+captured[WHITE]);
-      }
     }
     
     void listMoveGroup()
@@ -2019,6 +1889,7 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
     private void restoreCapturedPieces() 
     {
       Iterator it = capturedStonesArray.iterator();
+      ArrayList <Stone>tempCapturedStonesArray = new ArrayList<>();
       Stone s;
       boolean capturedStonesFound=false;
       
@@ -2031,37 +1902,16 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
           moveMap[s.x][s.y]=s.getStoneColor();
           capturedStonesFound=true;
         }
-      }
-      
-      if (capturedStonesFound)
-      {
-        Iterator it2 = capturedStonesArray.iterator();
-        int i=0;
-        while(it2.hasNext())
+        else
         {
-          s = (Stone)it2.next();
-         // bp=s.getBoardPosition();
-          if (s.getCaptureMoveNumber()==moveNumber)
-          {
-            s.forget=true;
-          }
-          i++;
+          tempCapturedStonesArray.add(s);
         }
       }
+      
+      if (capturedStonesFound)	capturedStonesArray=new ArrayList<>(tempCapturedStonesArray);
     }
     
-    private void rewindMove() 
-    {
-      throw new UnsupportedOperationException("Not yet implemented");
-    }
-       
-      
-  private void nextMove() 
-  {
-    throw new UnsupportedOperationException("Not yet implemented");
-  }
-   
-   private void clear() 
+    private void clear() 
    {
 	 if (visibleMoves==null) return;  
      ObservableList list=visibleMoves.getChildren();  
@@ -2092,7 +1942,8 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
 	  cycleCount=0;
 	  timedUpdateText.setText("update every "+timeStr[level]);
 	 // feedbackArea.insertText(0, "refresh rate: "+timeStr[level]+"\n"); 
-
+	  if (feedback_refresh_rate) feedbackArea.insertText(0, "refresh rate: "+timeStr[level]+"\n"); 
+	  timedUpdateText.setText("refresh rate: "+timeStr[level]);
 	  timeline = new Timeline();
       timeline.setCycleCount(Timeline.INDEFINITE);
       keyFrame= new KeyFrame(Duration.seconds(1), new EventHandler() 
@@ -2100,7 +1951,7 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
                 public void handle(Event event) 
                 {
                  // System.out.println("level: "+timeStr[level]+" cycle: "+cycleCount+ " second: "+count++);
-                  timedUpdateText.setText("  update: "+(interval[level]-count)+"     "+dragonAccess.getFeedback());
+                  //timedUpdateText.setText("  update: "+(interval[level]-count)+"     "+dragonAccess.getFeedback());
                   if (count>=interval[level]) 
                   {
                     count=0;
@@ -2111,7 +1962,10 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
                       if (level>4)
                     	level=4;
                       else
-                    		feedbackArea.insertText(0, "refresh rate: "+timeStr[level]+"\n"); 
+                      {
+                    	if (feedback_refresh_rate) feedbackArea.insertText(0, "refresh rate: "+timeStr[level]+"\n"); 
+                        timedUpdateText.setText("refresh rate: "+timeStr[level]);
+                      }
                       cycleCount=0;
                     }
                     refreshTimed();	

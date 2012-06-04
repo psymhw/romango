@@ -95,4 +95,10 @@ public class Move
 	return (yInt-97)*35;
   }
   
+  public String getColor()
+  {
+	if (color==1) return "B";
+	else return "W";
+  }
+  
 }
