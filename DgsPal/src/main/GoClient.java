@@ -20,19 +20,16 @@ import java.util.ListIterator;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextAreaBuilder;
@@ -54,7 +51,6 @@ import javafx.util.Duration;
 public class GoClient extends Application  
 {  
   final static boolean feedback_refresh_rate=false;
-  //final ScrollBar sc = new ScrollBar();
    	
   final static int OPEN = 0;
   final static int BLACK = 1;
@@ -107,10 +103,11 @@ public class GoClient extends Application
   ArrayList <Move>sgfMoves = new ArrayList<>();
   ArrayList <Stone>capturedStonesArray = new ArrayList<>();
   ArrayList <BoardMap>positionHistory = new ArrayList<>();
+  ArrayList <SimplePosition>markedStones = new ArrayList<>();
    
   int[][] moveMap = new int[19][19];
   
-  int[][] groupMap = new int[19][19];
+ // int[][] groupMap = new int[19][19];
   int lastMoveColor=WHITE;
   int moveNumber=0;
 
@@ -175,6 +172,7 @@ public class GoClient extends Application
   SimpleDateFormat df = new SimpleDateFormat("h:mm:ss MM-dd-yy");
   Text timedUpdateText;
   Stage stage;
+String Test;
   
   public void start(final Stage stage) throws Exception  
   {  
@@ -197,31 +195,29 @@ public class GoClient extends Application
     captured[BLACK]=0;
     captured[WHITE]=0;
       
-   // final FlowPane flowPane = new FlowPane();
-   // flowPane.setPadding(new Insets(5, 5, 5, 5));
-   // flowPane.setVgap(4);
-  //  flowPane.setHgap(4);
- //   flowPane.setPrefWrapLength(170); // preferred width allows for two columns
-  //  flowPane.setStyle("-fx-background-color: DAE6F3;");
-      
- //  flowPane.getChildren().add(getBoardGroup()); 
- //   flowPane.getChildren().add(getRightPane());
-    
-    HBox mainBox = new HBox();
-    mainBox.setPadding(new Insets(3, 3, 3, 3));
-    mainBox.setSpacing(5);
+ // final FlowPane flowPane = new FlowPane();
+    // flowPane.setPadding(new Insets(5, 5, 5, 5));
+    // flowPane.setVgap(4);
+   //  flowPane.setHgap(4);
+  //   flowPane.setPrefWrapLength(170); // preferred width allows for two columns
+   //  flowPane.setStyle("-fx-background-color: DAE6F3;");
+       
+  //  flowPane.getChildren().add(getBoardGroup()); 
+  //   flowPane.getChildren().add(getRightPane());
+     
+     HBox mainBox = new HBox();
+     mainBox.setPadding(new Insets(3, 3, 3, 3));
+     mainBox.setSpacing(5);
 
-    mainBox.getChildren().add(getBoardGroup());
-    mainBox.getChildren().add(getRightPane());
+     mainBox.getChildren().add(getBoardGroup());
+     mainBox.getChildren().add(getRightPane());
+     
+     ScrollPane scrollPane = new ScrollPane();
+     scrollPane.setContent(mainBox);
+     
+     final Scene scene = new Scene(scrollPane, 1005, 690);
     
-    ScrollPane scrollPane = new ScrollPane();
-    scrollPane.setContent(mainBox);
-    
-    final Scene scene = new Scene(scrollPane, 1005, 690);
-   
-    scene.setFill(null);
-    
-    
+     scene.setFill(null);
   
     //   stage.initStyle(StageStyle.TRANSPARENT);
     stage.setScene(scene);  
@@ -424,11 +420,7 @@ public class GoClient extends Application
   
  
   
-  private void playNewMove()  
-  {
-	placeStone(lastSgfMove, STYLE_LAST_MOVE);
-  }
-
+ 
 private void getResources() 
 {
   File resourceFile=null;
@@ -1013,7 +1005,7 @@ private Group getInfoGroup()
         //System.out.println("");
       }  // end of testing illegal moves
       
-      placeStone(move, localMoves);
+      placeStone(move);
       deleteLastMoveButton.setDisable(false);
       localMovesVal.setText(""+localMoves);  
     }
@@ -1025,6 +1017,7 @@ private Group getInfoGroup()
   
   private void markGroup(List<SimplePosition> groupPositions) 
   {
+	unmarkStones();  
 	Iterator it = groupPositions.iterator();
 	SimplePosition position;
 	Stone stone;
@@ -1033,11 +1026,36 @@ private Group getInfoGroup()
 	{
 	  position=(SimplePosition)it.next();
 	  stone=getStone(position);
-	  if (stone!=null) stone.setMarkImage();
+	  if (stone!=null) 
+	  {	  
+		stone.setMarkImage();
+		markedStones.add(position);
+	  }
 	}
 		
   }
 	
+  private void unmarkStones()
+  {
+	if (markedStones.size()==0) return;
+	
+	Iterator it = markedStones.iterator();
+	SimplePosition position;
+	Stone stone;
+	
+	while(it.hasNext())
+	{
+	  position=(SimplePosition)it.next();
+	  stone=getStone(position);
+	  if (stone!=null) 
+	  {	  
+		stone.setRegularImage();
+	  }
+	}
+	
+	markedStones = new ArrayList<>();
+	markLastSgfStone();
+  }
   
   private Stone getStone(SimplePosition position) 
   {
@@ -1191,16 +1209,7 @@ void restoreMoveMap(int[][] savedMoveMap)
     }
   }
   
-  private void clearGroupMap() 
-  {
-    for(int i=0; i<19; i++)
-    {
-      for(int j=0; j<19; j++)
-      {
-	groupMap[i][j]=OPEN;
-      }
-    }
-  }
+  
 	
 	private void printMoveMap() 
 	   {
@@ -1341,13 +1350,14 @@ void restoreMoveMap(int[][] savedMoveMap)
      {
        move=(Move)it.next();
        // System.out.println(move.x+"-"+move.y);
-       placeStone(move, STYLE_REGULAR, true);
+       placeStone(move,  true);
        
      }
 		      
      handicapVal.setText(""+handicap);
      moveNoVal.setText(""+lastSgfMoveNumber);
-     putMoveImageOnLastStone();
+     //putMoveImageOnLastStone();
+     markLastSgfStone();
      stoneSound.play();
      
      lastSgfMove = dragonAccess.getLastSgfMove();
@@ -1528,11 +1538,12 @@ private void setQuit()
 }  
 
 
-  private void placeStone(Move move, int style) 
+  private void placeStone(Move move) 
   {
-    placeStone(move, style, false);;
+    placeStone(move, false);;
   }
-  private void placeStone(Move move, int style, boolean fromSgf) 
+  
+  private void placeStone(Move move, boolean fromSgf) 
   {
 	moveMap[move.x][move.y]=move.color;	
 	Stone stone = new Stone(move);
@@ -1543,7 +1554,12 @@ private void setQuit()
 	moveNoVal.setText(""+moveNumber);
 	checkLibertiesOfNeighbors(move.x, move.y);
 	positionHistory.add(new BoardMap(moveMap));
-    if (!fromSgf) stoneSound.play();
+    if (!fromSgf) 
+    {	
+      stoneSound.play();
+      //unmarkStones();
+      markLocalMove();
+    }
   }
 
   
@@ -1652,6 +1668,56 @@ void putMoveImageOnLastStone()
      if ((stone.x==m.x)&&(stone.y==m.y)) 
      { 
        stone.setMoveImage();;
+       break; 
+     }
+     i--;
+    }
+}
+
+void markLocalMove()
+{
+  if (moves==null) return;	
+  //System.out.println("moves: "+moves.size());
+  Move m = (Move)moves.get(moves.size()-1);
+  ObservableList moveList  = visibleMoves.getChildren();
+  ListIterator it = moveList.listIterator(moveList.size());
+  int color=0;
+              
+   Stone stone;
+   int i=moveList.size()-1;
+   while(it.hasPrevious())
+   {
+     stone=(Stone)it.previous();
+   //  bp=stone.getBoardPosition();
+     if ((stone.x==m.x)&&(stone.y==m.y)) 
+     { 
+       if (localMoves==1) stone.setCheckImage(); else stone.setMarkImage();
+       markedStones.add(m.getSimplePosition());
+       break; 
+     }
+     i--;
+    }
+}
+
+void markLastSgfStone()
+{
+  if (moves==null) return;	
+  //System.out.println("moves: "+moves.size());
+  //Move m = (Move)moves.get(moves.size()-1);
+  ObservableList moveList  = visibleMoves.getChildren();
+  ListIterator it = moveList.listIterator(moveList.size());
+  int color=0;
+              
+   Stone stone;
+   int i=moveList.size()-1;
+   while(it.hasPrevious())
+   {
+     stone=(Stone)it.previous();
+   //  bp=stone.getBoardPosition();
+     if ((stone.x==lastSgfMove.x)&&(stone.y==lastSgfMove.y)) 
+     { 
+       stone.setMoveImage();
+       markedStones.add(lastSgfMove.getSimplePosition());
        break; 
      }
      i--;
