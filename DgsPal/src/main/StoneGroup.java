@@ -71,7 +71,7 @@ public class StoneGroup
     {
       if (groupMap[x][y]==GROUP_MEMBER) return;
        
-       groupMap[x][y]=GROUP_MEMBER;
+       if (moveMap[x][y]==color) groupMap[x][y]=GROUP_MEMBER; 
        groupPositions.add(new SimplePosition(x,y));
                
        if (noCheck!=NORTH) directionCheck(x,y, NORTH); 
@@ -96,6 +96,7 @@ public class StoneGroup
       
       if (moveMap[checkX][checkY]==OPEN) 
       {
+    	 // System.out.println(checkX+"-"+checkY+" is open");
         if (groupMap[checkX][checkY]!=LIBERTY)
         {    
           groupMap[checkX][checkY]=LIBERTY;   

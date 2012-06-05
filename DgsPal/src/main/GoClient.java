@@ -945,31 +945,36 @@ private Group getInfoGroup()
      // Stone s = new Stone(thisMoveColor, t.getX(),t.getY(), STYLE_LAST_MOVE);
       localMoves++;
       
+      
+      // show group liberties on occupied position
+      if (moveMap[move.x][move.y]!=OPEN) 
+      { 
+      	StoneGroup stoneGroup = new StoneGroup(move.x, move.y, moveMap);
+        System.out.println("Liberties of group: "+stoneGroup.liberties);
+        markGroup(stoneGroup.groupPositions);
+  	    return;        
+      }
+      
+      
       boolean testForIllegalMoves=true;
 
       if (testForIllegalMoves)
       {
         BoardMap savedBoardMap = new BoardMap(moveMap);
       
-        if (moveMap[move.x][move.y]!=OPEN) 
-        { 
-        	
-    	 // errorSound.play(); 
-          StoneGroup stoneGroup = new StoneGroup(move.x, move.y, moveMap);
-          System.out.println("Liberties of group: "+stoneGroup.liberties);
-    	//  feedbackArea.insertText(0, "position occupied\n");
-    	  restoreMoveMap(savedBoardMap.get());
-    	  return;  // can't move here... already occupied.
-        }
+       
+        
       
         moveMap[move.x][move.y]=move.color;	
         boolean captures = checkLibertiesOfNeighbors(move.x, move.y, TRIAL);
             
+        //System.out.println("captures: "+captures);
         if (captures==false)
         {
-          StoneGroup stoneGroup = new StoneGroup(move.x, move.y, moveMap);	
+        	 StoneGroup stoneGroup = new StoneGroup(move.x, move.y, moveMap);         
     	  if (stoneGroup.liberties==0) 
     	  { 
+    		 // System.out.println("liberties 0");  
     	    errorSound.play(); 
     	    restoreMoveMap(savedBoardMap.get());
     	    feedbackArea.insertText(0, "illegal move\n");
@@ -985,18 +990,59 @@ private Group getInfoGroup()
     	    feedbackArea.insertText(0, "ko. can't move here.\n");
     	    return;  // can't move here... ko fight. 
           }
+         // System.out.println("no ko");
         }
         restoreMoveMap(savedBoardMap.get());  // return moveMap to original state.
+        //System.out.println("");
       }  // end of testing illegal moves
       
       placeStone(move, localMoves);
       deleteLastMoveButton.setDisable(false);
       localMovesVal.setText(""+localMoves);  
-    }});
+    }
+
+	
+    });
      
   }
   
-  void restoreMoveMap(int[][] savedMoveMap)
+  private void markGroup(List<SimplePosition> groupPositions) 
+  {
+	Iterator it = groupPositions.iterator();
+	SimplePosition position;
+	Stone stone;
+	
+	while(it.hasNext())
+	{
+	  position=(SimplePosition)it.next();
+	  stone=getStone(position);
+	  if (stone!=null) stone.setMarkImage();
+	}
+		
+  }
+	
+  
+  private Stone getStone(SimplePosition position) 
+  {
+	  ObservableList moveList  = visibleMoves.getChildren();
+	  ListIterator it = moveList.listIterator(moveList.size());
+	  int color=0;
+	              
+	   Stone stone;
+	   int i=moveList.size()-1;
+	   while(it.hasPrevious())
+	   {
+	     stone=(Stone)it.previous();
+	     if ((stone.x==position.x)&&(stone.y==position.y)) 
+	     { 
+	       return stone;
+	     }
+	     i--;
+	   }
+	   return null;
+  } 
+
+void restoreMoveMap(int[][] savedMoveMap)
   {
 	  for(int j=0; j<19; j++)
 		{
@@ -1777,6 +1823,7 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
      {
        int checkX=x, checkY=y, color=0, startColor=0;
        String directionString="";
+       boolean capture=false;
        
        startColor = moveMap[x][y];
             
@@ -1785,17 +1832,24 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
        if (direction==EAST)  { if (x==18) { directionString="EDGE"; } else {checkX=x+1; directionString="EAST";  } }
        if (direction==WEST)  { if (x==0)  { directionString="EDGE"; } else { checkX=x-1; directionString="WEST";  } }
        
-       // System.out.println("For stone: "+x+"-"+y+" "+directionString);
+      // System.out.println("For stone: "+x+"-"+y+" "+directionString+" "+checkX+"-"+checkY+" start color: "+startColor+" color: "+color);
        
        if ("EDGE".equals(directionString)) return false;
        
-       StoneGroup stoneGroup = new StoneGroup(checkX, checkY, moveMap);
-       if (stoneGroup.liberties==0) 
-       { 
-          if (!trial) captureGroup(stoneGroup.groupPositions);
+       color=moveMap[checkX][checkY];
+       
+       if ((color!=OPEN)&&(color!=startColor))
+       {
+         StoneGroup stoneGroup = new StoneGroup(checkX, checkY, moveMap);
+         if (stoneGroup.liberties==0) 
+         { 
+          captureGroup(stoneGroup.groupPositions, trial);
+          //System.out.println("zero liberties For stone: "+x+"-"+y+" "+directionString);
+          capture= true;
+         }
        }
-       if (stoneGroup.liberties==0) return true;
-       else return false;
+       
+       return capture;
      }
 
      /*
@@ -1831,7 +1885,7 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
 
      */
      
-    private void captureGroup(List<SimplePosition> groupPositions) 
+    private void captureGroup(List<SimplePosition> groupPositions, boolean trial) 
     {
        // System.out.println("CAPTURE GROUP");
       Iterator it=groupPositions.iterator();
@@ -1840,12 +1894,12 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
       {
          sp=(SimplePosition)it.next(); 
       //   System.out.println("Capture Position: "+sp.x+"-"+sp.y);
-         capturePiece(sp.x, sp.y);
+         capturePiece(sp.x, sp.y, trial);
          
       }
     }
 
-    private void capturePiece(int x, int y) 
+    private void capturePiece(int x, int y, boolean trial) 
     {
       ObservableList moveList  = visibleMoves.getChildren();
       Iterator it = moveList.iterator();
@@ -1857,20 +1911,25 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
         stone=(Stone)it.next();
         if ((stone.x==x)&&(stone.y==y)) 
         { 
-          stone.setCaptureMoveNumber(moveNumber);  
-          capturedStonesArray.add(stone);
-          color=moveMap[x][y];
-          captured[color]++;
-          moveList.remove(i);
+          if (!trial)
+          {
+            stone.setCaptureMoveNumber(moveNumber);  
+            capturedStonesArray.add(stone);
+            color=moveMap[x][y];
+            captured[color]++;
+            moveList.remove(i);
+          }
           moveMap[x][y]=OPEN; 
           break; 
         }
         i++;
       }
      
+      if (!trial)
+      {
       capturedBlackVal.setText(""+captured[BLACK]);
       capturedWhiteVal.setText(""+captured[WHITE]);
-      
+      }
     }
     
     void listMoveGroup()
