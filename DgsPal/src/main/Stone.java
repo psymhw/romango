@@ -194,6 +194,13 @@ public class Stone extends ImageView
         
     }
     
+    void setMarkImage()
+    {
+        if (stoneColor==GoClient.WHITE) setImage(wx);
+       else setImage(bx);
+        
+    }
+    
     void setRegularImage()
     {
         if (stoneColor==GoClient.WHITE) setImage(white_stone_image);
