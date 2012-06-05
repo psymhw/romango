@@ -1535,7 +1535,7 @@ private void setQuit()
   private void placeStone(Move move, int style, boolean fromSgf) 
   {
 	moveMap[move.x][move.y]=move.color;	
-	Stone stone = new Stone(move, style);
+	Stone stone = new Stone(move);
 	visibleMoves.getChildren().add(stone);
 	lastMoveColor=move.color;
 	moves.add(move);
