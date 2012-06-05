@@ -101,4 +101,9 @@ public class Move
 	else return "W";
   }
   
+  public SimplePosition getSimplePosition()
+  {
+	 return new SimplePosition(x,y); 
+  }
+  
 }
