@@ -20,16 +20,20 @@ import java.util.ListIterator;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextAreaBuilder;
 import javafx.scene.control.TextField;
@@ -50,6 +54,7 @@ import javafx.util.Duration;
 public class GoClient extends Application  
 {  
   final static boolean feedback_refresh_rate=false;
+  //final ScrollBar sc = new ScrollBar();
    	
   final static int OPEN = 0;
   final static int BLACK = 1;
@@ -192,19 +197,31 @@ public class GoClient extends Application
     captured[BLACK]=0;
     captured[WHITE]=0;
       
-    FlowPane flowPane = new FlowPane();
-    flowPane.setPadding(new Insets(5, 5, 5, 5));
-    flowPane.setVgap(4);
-    flowPane.setHgap(4);
-    flowPane.setPrefWrapLength(170); // preferred width allows for two columns
-    flowPane.setStyle("-fx-background-color: DAE6F3;");
+   // final FlowPane flowPane = new FlowPane();
+   // flowPane.setPadding(new Insets(5, 5, 5, 5));
+   // flowPane.setVgap(4);
+  //  flowPane.setHgap(4);
+ //   flowPane.setPrefWrapLength(170); // preferred width allows for two columns
+  //  flowPane.setStyle("-fx-background-color: DAE6F3;");
       
-    flowPane.getChildren().add(getBoardGroup()); 
-    flowPane.getChildren().add(getRightPane());
-      
-    final Scene scene = new Scene(flowPane, 1005, 690);
-     
+ //  flowPane.getChildren().add(getBoardGroup()); 
+ //   flowPane.getChildren().add(getRightPane());
+    
+    HBox mainBox = new HBox();
+    mainBox.setPadding(new Insets(3, 3, 3, 3));
+    mainBox.setSpacing(5);
+
+    mainBox.getChildren().add(getBoardGroup());
+    mainBox.getChildren().add(getRightPane());
+    
+    ScrollPane scrollPane = new ScrollPane();
+    scrollPane.setContent(mainBox);
+    
+    final Scene scene = new Scene(scrollPane, 1005, 690);
+   
     scene.setFill(null);
+    
+    
   
     //   stage.initStyle(StageStyle.TRANSPARENT);
     stage.setScene(scene);  
