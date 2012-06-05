@@ -34,7 +34,7 @@ public class Stone extends ImageView
   
   public boolean forget=false;
   
-  public Stone(Move move, int style)
+  public Stone(Move move)
   {
 	this.move=move;  
     this.x=move.x;
@@ -42,7 +42,7 @@ public class Stone extends ImageView
     sgfPosition = move.getSgfPosition();
     sceneX = calcSceneX();
     sceneY = calcSceneY();
-    this.style=style;
+   
     this.stoneColor=move.color;
     createStone();
   }
@@ -132,41 +132,17 @@ public class Stone extends ImageView
      
       if (bx==null) bx = new Image(Stone.class.getResourceAsStream("/images/bx.gif"));
       if (bcheck==null) bcheck = new Image(Stone.class.getResourceAsStream("/images/bcheck.gif"));
-      
-          
       if (wx==null) wx = new Image(Stone.class.getResourceAsStream("/images/wx.gif"));
       if (wcheck==null) wcheck = new Image(Stone.class.getResourceAsStream("/images/wcheck.gif"));
        
       
       if (stoneColor==GoClient.WHITE)
       {
-    	switch(style)
-    	{
-    	case 0:
-    		setImage(white_stone_image);
-    		break;
-    	case 1:
-    		setImage(wcheck);
-    		break;
-    	
-        default:
-        	setImage(wx);
-    	}
+        setImage(white_stone_image);
       }
       else
       {
-    	  switch(style)
-      	{
-      	case 0:
-      		setImage(black_stone_image);
-      		break;
-      	case 1:
-      		setImage(bcheck);
-      		break;
-      	      	
-          default:
-          	setImage(bx);
-      	}
+        setImage(black_stone_image);
       }
       
       /*
@@ -198,6 +174,13 @@ public class Stone extends ImageView
     {
         if (stoneColor==GoClient.WHITE) setImage(wx);
        else setImage(bx);
+        
+    }
+    
+    void setCheckImage()
+    {
+        if (stoneColor==GoClient.WHITE) setImage(wcheck);
+       else setImage(bcheck);
         
     }
     
