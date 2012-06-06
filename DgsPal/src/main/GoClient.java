@@ -26,6 +26,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -45,6 +46,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -180,6 +182,8 @@ String Test;
     setQuit();
     importImages();
     getResources();
+    Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+    System.out.println("screen: "+primaryScreenBounds.getHeight()+" x "+primaryScreenBounds.getWidth());
     
     
     stoneSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/stone.wav"));
@@ -208,6 +212,7 @@ String Test;
      HBox mainBox = new HBox();
      mainBox.setPadding(new Insets(3, 3, 3, 3));
      mainBox.setSpacing(5);
+     mainBox.setStyle("-fx-background-color: DAE6F3;");
 
      mainBox.getChildren().add(getBoardGroup());
      mainBox.getChildren().add(getRightPane());
@@ -215,7 +220,9 @@ String Test;
      ScrollPane scrollPane = new ScrollPane();
      scrollPane.setContent(mainBox);
      
-     final Scene scene = new Scene(scrollPane, 1005, 690);
+     int height = 680;
+     if (primaryScreenBounds.getHeight()<680) height=(int)(primaryScreenBounds.getHeight()-10);
+     final Scene scene = new Scene(scrollPane, 1005, height);
     
      scene.setFill(null);
   
@@ -952,7 +959,7 @@ private Group getInfoGroup()
       if (lastMoveColor==BLACK) thisMoveColor=WHITE;  else thisMoveColor=BLACK;
       Move move = new Move(t.getX(),t.getY(), thisMoveColor);
      // Stone s = new Stone(thisMoveColor, t.getX(),t.getY(), STYLE_LAST_MOVE);
-      localMoves++;
+      
       
       
       // show group liberties on occupied position
@@ -970,9 +977,6 @@ private Group getInfoGroup()
       if (testForIllegalMoves)
       {
         BoardMap savedBoardMap = new BoardMap(moveMap);
-      
-       
-        
       
         moveMap[move.x][move.y]=move.color;	
         boolean captures = checkLibertiesOfNeighbors(move.x, move.y, TRIAL);
@@ -1364,7 +1368,7 @@ void restoreMoveMap(int[][] savedMoveMap)
      
     //System.out.println("Last Move: "+lastSgfMoveNumber+", "+colorStr(lastSgfMove.color)+" position: "+lastSgfMove.getSgfPosition());
      
-    // System.out.println("After Sgf play all.. postion history: "+positionHistory.size());
+    System.out.println("local moves: "+localMoves);
      
    }
    
@@ -1554,8 +1558,10 @@ private void setQuit()
 	moveNoVal.setText(""+moveNumber);
 	checkLibertiesOfNeighbors(move.x, move.y);
 	positionHistory.add(new BoardMap(moveMap));
+	
     if (!fromSgf) 
     {	
+      localMoves++;
       stoneSound.play();
       //unmarkStones();
       markLocalMove();
@@ -1772,10 +1778,10 @@ void removeLastStone()  // NOT capture
   }
   
   size = moves.size();
-  if (size>0)
-  {
-    restoreMoveImageToPrevousStone((Move)moves.get(size-1));
-  }
+ // if (size>0)
+ // {
+ //   restoreMoveImageToPrevousStone((Move)moves.get(size-1));
+ // }
   
   restoreCapturedPieces();
   moveNumber--;
