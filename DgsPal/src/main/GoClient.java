@@ -270,10 +270,11 @@ String Test;
     {
       stopAutoRefresh();
       deleteLastMoveButton.setDisable(true);
-      refreshCommon();
- 	  clear();
-  	  playAllSgfMoves();
-      feedbackArea.insertText(0, df.format(new Date())+" "+lastSgfMove.getColor()+": "+lastSgfMove.getSgfPosition()+"\n");
+      clear();
+      if (refreshCommon())
+      {
+  	    playAllSgfMoves();
+        feedbackArea.insertText(0, df.format(new Date())+" "+lastSgfMove.getColor()+": "+lastSgfMove.getSgfPosition()+"\n");
  	  if (lastSgfMove.color==BLACK)  
 	  { 
 	    colorToPlay=WHITE; 
@@ -287,8 +288,8 @@ String Test;
 	    stage.getIcons().add(smallerBlackStoneImage);
 	  }
     }
-    
   }
+}
   
   private void login()
   {
@@ -321,7 +322,7 @@ String Test;
 	}
 	
 	if ("noset".equals(currentGameNo)) return;
-	
+		
 	/*
 	 * for startup, I don't care if a game was found. 
 	 * Unless there is no game number set
@@ -331,8 +332,8 @@ String Test;
 	
 	gameNoVal.setText(currentGameNo);
 	
-	refreshCommon();
-		 
+	if (refreshCommon())
+	{	 
 	 ArrayList comments = dragonAccess.getComments();
 		Iterator it = comments.iterator();
 		String comment;
@@ -358,6 +359,7 @@ String Test;
     
     deleteLastMoveButton.setDisable(true);
     if (!gameFound) startAutoRefresh();
+	}
   }
   
   private void refreshLocal()
@@ -390,38 +392,45 @@ String Test;
 		 * I'll get the current game.
 		 * 
 		 */
-		
-		refreshCommon();
-		
-		
 		clear();
-		playAllSgfMoves();
-	    if (lastSgfMove.color==BLACK)  
-	    { 
-	      colorToPlay=WHITE; 
-	      turnImageView.setImage(whiteStoneImage);
-	      stage.getIcons().add(smallerWhiteStoneImage);
-	      
-	    } 
-	    else 
-	    {
-	      colorToPlay=BLACK;
-	      turnImageView.setImage(blackStoneImage);
-	      stage.getIcons().add(smallerBlackStoneImage);
-	    }
-	    
-	    if (!gameFound) startAutoRefresh();
-	    deleteLastMoveButton.setDisable(true);
+		if (refreshCommon())
+        {
+		  playAllSgfMoves();
+	      if (lastSgfMove.color==BLACK)  
+	      { 
+	        colorToPlay=WHITE; 
+	        turnImageView.setImage(whiteStoneImage);
+	        stage.getIcons().add(smallerWhiteStoneImage);
+	      } 
+	      else 
+	      {
+	        colorToPlay=BLACK;
+	        turnImageView.setImage(blackStoneImage);
+	        stage.getIcons().add(smallerBlackStoneImage);
+	      }
+	      if (!gameFound) startAutoRefresh();
+	      deleteLastMoveButton.setDisable(true);
+        }
   }
   
-  private void refreshCommon()
+  private boolean refreshCommon()
   {
-	sgfMoves=dragonAccess.getSgf(currentGameNo);
-	lastSgfMove=dragonAccess.getLastSgfMove();
-	lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
-	handicap=dragonAccess.getHandicap();
-	receiveMessageArea.setText(dragonAccess.getMessage());
-	gameLabel.setText(dragonAccess.getPlayerBlack()+" vs "+dragonAccess.getplayerWhite());  
+	boolean success= dragonAccess.getSgf(currentGameNo); 
+	if (success)
+	{	
+	  lastSgfMove=dragonAccess.getLastSgfMove();
+	  lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
+	  handicap=dragonAccess.getHandicap();
+	  receiveMessageArea.setText(dragonAccess.getMessage());
+	  gameLabel.setText(dragonAccess.getPlayerBlack()+" vs "+dragonAccess.getplayerWhite());
+	}
+	else
+	{
+	   receiveMessageArea.setText(dragonAccess.getMessage());
+	   gameLabel.setText("no game found");
+	   feedbackArea.insertText(0, "No game SGF file Found\n");
+	}
+	return success;
   }
  
   
