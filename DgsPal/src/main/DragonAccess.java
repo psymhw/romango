@@ -37,6 +37,11 @@ ArrayList comments = new ArrayList();
   int loginAttempts=0;
   String message;
   boolean currentMessage=false;
+  public ArrayList<Move> getSgfMoves() {
+	return sgfMoves;
+}
+
+ArrayList <Move>sgfMoves = new ArrayList<>();
   
   public String getPlayerBlack() {
 		return playerBlack;
@@ -214,9 +219,9 @@ public void setComments(ArrayList comments) {
 	 return gameLong;
    }
    
-   public ArrayList <Move> getSgf(String currentGameNo)
+   public boolean getSgf(String currentGameNo)
    {
-	 ArrayList <Move>sgfMoves = new ArrayList<>();
+	 sgfMoves = new ArrayList<>();
 	 sgfFileString= new StringBuffer(); 
 	 String surl = "http://www.dragongoserver.net/sgf.php?gid="+currentGameNo+"&owned_comments=1";
 	 ArrayList <String>moveLine= new ArrayList<>();
@@ -334,7 +339,9 @@ public void setComments(ArrayList comments) {
      }
 	   
      lastSgfMove = move;
-     return sgfMoves;
+     
+     if (sgfMoves.size()==0) return false;
+     return true;
    }
    
    public boolean makeMove(String gameNo, String lastMove, String thisMove, int color, String message)
