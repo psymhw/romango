@@ -3,6 +3,7 @@ package main;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -29,7 +30,17 @@ public class DragonAccess
   StringBuffer feedback = new StringBuffer();
   String playerWhite="";
   String playerBlack="";
+  boolean localFile=false;
   
+
+public boolean isLocalFile() {
+	return localFile;
+}
+
+
+public void setLocalFile(boolean localFile) {
+	this.localFile = localFile;
+}
 
 ArrayList comments = new ArrayList();
   int lastSgfMoveNumber=0;
@@ -260,6 +271,12 @@ public void setComments(ArrayList comments) {
        parseLine(line);
      }
      
+     if (sgfMoves.size()==0) 
+     {	 
+    	 localFile=true;
+    	 getLocalSgfFile(currentGameNo);
+     } else localFile=false;
+     
      if (sgfMoves.size()==0) return false;
      return true;
    }
@@ -321,6 +338,7 @@ public void setComments(ArrayList comments) {
        sgfPosition=line.substring(3,5);
 	   move=new Move(sgfPosition,GoClient.BLACK);
 	   sgfMoves.add(move);
+	   lastSgfMove = move;
 	   lastSgfMoveNumber++;
 	   currentMessage=false;
 	   lastMoveColor="black";
@@ -332,6 +350,7 @@ public void setComments(ArrayList comments) {
 	   sgfPosition=line.substring(3,5);
 	   move=new Move(sgfPosition,GoClient.WHITE);
 	   sgfMoves.add(move);
+	   lastSgfMove = move;
 	   lastSgfMoveNumber++;
 	   currentMessage=false;
 	   lastMoveColor="white";
@@ -346,8 +365,43 @@ public void setComments(ArrayList comments) {
 	   currentMessage=true;
 	 }
 	       
-	 if (move!=null) lastSgfMove = move;
-   }
+	}
+   
+   private void getLocalSgfFile(String currentGameNo) 
+   {
+     File resourceFile=null;
+     File directory = new File (".");
+     boolean returnVal=false;
+   //  System.out.println("trying local file");
+     int count=0;
+     try 
+     {
+   	   resourceFile= new File(directory.getCanonicalPath()+"\\"+currentGameNo+".sgf");
+     } catch (IOException e) { e.printStackTrace(); }
+
+     if (resourceFile!=null)
+     {
+   	   if (resourceFile.exists())
+       {
+   	     try 
+   	     {
+   	       InputStream in = new FileInputStream(resourceFile);
+   	       InputStreamReader isr = new InputStreamReader(in);
+   	       BufferedReader br = new BufferedReader(isr);
+   	       String line;
+   	       
+   	       while ((line = br.readLine()) != null) 
+   	      { 
+   	        parseLine(line);
+   	        count++;
+   	       // System.out.println(line);
+   	      }
+   	    } catch (IOException io) { System.out.println("Ooops");  }
+      }
+    }
+     
+    if (count>0) feedback.append("SGF file loaded from local copy.\n");
+  }
    
    public boolean makeMove(String gameNo, String lastMove, String thisMove, int color, String message)
    {
