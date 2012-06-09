@@ -257,91 +257,96 @@ public void setComments(ArrayList comments) {
      while(it.hasNext())  // get handicap count
      {
        line=(String)it.next();
-      // System.out.println(line);
-       if (line.startsWith("HA"))
-       {
-	     handicap=line.charAt(3)-48;  
-         continue;
-       }
-		      
-       if (line.startsWith("AB"))  // get handicap moves
-       {
-	     if (handicap>0)
-	     {
-	       int xPos=3;
-	       int yPos=5;
-	       for(int i=0; i<handicap; i++)
-	       {
-	         sgfPosition=  line.substring(xPos,yPos);
-	         move=new Move(sgfPosition,GoClient.BLACK);
-	         sgfMoves.add(move);
-	         lastSgfMoveNumber++;
-	         xPos+=4;
-	        yPos+=4;
-	       }
-	     }
-	     continue;
-       }
-	 
-       if (line.startsWith("PW["))  // get first white move
-       {
-    	 int i = line.indexOf('(');
-    	 
-	     if (i>0) playerWhite = line.substring(3,i);
-	     
-	     continue;
-       }
-       if (line.startsWith("PB["))  // get first white move
-       {
-    	 int i = line.indexOf('(');
-    	 
-	     if (i>0) playerBlack = line.substring(3,i);
-	     
-	     continue;
-       }
-       if (line.startsWith(";MN"))  // get first white move
-       {
-	     sgfPosition = line.substring(8,10);
-	     move=new Move(sgfPosition,GoClient.WHITE);
-	     sgfMoves.add(move);
-	     lastSgfMoveNumber++;
-	     continue;
-       }
-       if (line.startsWith(";B"))  // black move
-       {
-	     sgfPosition=line.substring(3,5);
-	     move=new Move(sgfPosition,GoClient.BLACK);
-	     sgfMoves.add(move);
-	     lastSgfMoveNumber++;
-	     currentMessage=false;
-	     lastMoveColor="black";
-	     continue;
-       }
-      
-       if (line.startsWith(";W"))  // white move
-       {
-	     sgfPosition=line.substring(3,5);
-	     move=new Move(sgfPosition,GoClient.WHITE);
-	     sgfMoves.add(move);
-	     lastSgfMoveNumber++;
-	     currentMessage=false;
-	     lastMoveColor="white";
-	     continue;
-       }
-       if (line.startsWith("C["))  // white move
-       {
-    	  message=line.substring(line.indexOf(':')+1); 
-  	      message=message.replaceAll("_", " ");
-  	      message=message.substring(0,message.length()-1);
-    	  comments.add("move "+lastSgfMoveNumber +"("+lastMoveColor+") - "+message );
-    	  currentMessage=true;
-       }
+       parseLine(line);
      }
-	   
-     lastSgfMove = move;
      
      if (sgfMoves.size()==0) return false;
      return true;
+   }
+   
+   public void parseLine(String line)
+   {
+     Move move=null;
+	 lastSgfMoveNumber=0;
+	 String sgfPosition="";
+	 String lastMoveColor="black";
+	 
+	 if (line.startsWith("HA"))
+	 {
+	   handicap=line.charAt(3)-48;  
+	   return;
+	 }
+			      
+	 if (line.startsWith("AB"))  // get handicap moves
+	 {
+	   if (handicap>0)
+	   {
+	     int xPos=3;
+		 int yPos=5;
+		 for(int i=0; i<handicap; i++)
+		 {
+		   sgfPosition=  line.substring(xPos,yPos);
+		   move=new Move(sgfPosition,GoClient.BLACK);
+		   sgfMoves.add(move);
+		   lastSgfMoveNumber++;
+		   xPos+=4;
+		   yPos+=4;
+		 }
+	   }
+	   return;
+	 }
+		 
+	 if (line.startsWith("PW["))  // get white player
+	 {
+	   int i = line.indexOf('(');
+	   if (i>0) playerWhite = line.substring(3,i);
+	   return;
+	 }
+	 if (line.startsWith("PB["))  // get black player
+	 {
+	   int i = line.indexOf('(');
+	   if (i>0) playerBlack = line.substring(3,i);
+	   return;
+	 }
+	 if (line.startsWith(";MN"))  // get first white move
+	 {
+	   sgfPosition = line.substring(8,10);
+	   move=new Move(sgfPosition,GoClient.WHITE);
+	   sgfMoves.add(move);
+	   lastSgfMoveNumber++;
+	   return;
+	 }
+	 if (line.startsWith(";B"))  // black move
+	 {
+       sgfPosition=line.substring(3,5);
+	   move=new Move(sgfPosition,GoClient.BLACK);
+	   sgfMoves.add(move);
+	   lastSgfMoveNumber++;
+	   currentMessage=false;
+	   lastMoveColor="black";
+	   return;
+	 }
+	      
+	 if (line.startsWith(";W"))  // white move
+	 {
+	   sgfPosition=line.substring(3,5);
+	   move=new Move(sgfPosition,GoClient.WHITE);
+	   sgfMoves.add(move);
+	   lastSgfMoveNumber++;
+	   currentMessage=false;
+	   lastMoveColor="white";
+	   return;
+	 }
+	 if (line.startsWith("C["))  // white move
+	 {
+	   message=line.substring(line.indexOf(':')+1); 
+	   message=message.replaceAll("_", " ");
+	   message=message.substring(0,message.length()-1);
+	   comments.add("move "+lastSgfMoveNumber +"("+lastMoveColor+") - "+message );
+	   currentMessage=true;
+	 }
+	       
+	 if (move!=null) lastSgfMove = move;
    }
    
    public boolean makeMove(String gameNo, String lastMove, String thisMove, int color, String message)
