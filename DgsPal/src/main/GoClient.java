@@ -175,6 +175,7 @@ public class GoClient extends Application
   Text timedUpdateText;
   Stage stage;
 String Test;
+boolean localFile=false;
   
   public void start(final Stage stage) throws Exception  
   {  
@@ -199,15 +200,6 @@ String Test;
     captured[BLACK]=0;
     captured[WHITE]=0;
       
- // final FlowPane flowPane = new FlowPane();
-    // flowPane.setPadding(new Insets(5, 5, 5, 5));
-    // flowPane.setVgap(4);
-   //  flowPane.setHgap(4);
-  //   flowPane.setPrefWrapLength(170); // preferred width allows for two columns
-   //  flowPane.setStyle("-fx-background-color: DAE6F3;");
-       
-  //  flowPane.getChildren().add(getBoardGroup()); 
-  //   flowPane.getChildren().add(getRightPane());
      
      HBox mainBox = new HBox();
      mainBox.setPadding(new Insets(3, 3, 3, 3));
@@ -221,7 +213,7 @@ String Test;
      scrollPane.setContent(mainBox);
      
      int height = 680;
-     if (primaryScreenBounds.getHeight()<680) height=(int)(primaryScreenBounds.getHeight()-10);
+     if (primaryScreenBounds.getHeight()<680) height=(int)(primaryScreenBounds.getHeight()-30);
      final Scene scene = new Scene(scrollPane, 1005, height);
     
      scene.setFill(null);
@@ -334,6 +326,7 @@ String Test;
 	
 	if (refreshCommon())
 	{	 
+		System.out.println("game found");
 	 ArrayList comments = dragonAccess.getComments();
 		Iterator it = comments.iterator();
 		String comment;
@@ -358,7 +351,8 @@ String Test;
     }
     
     deleteLastMoveButton.setDisable(true);
-    if (!gameFound) startAutoRefresh();
+    System.out.println("local File: "+localFile);
+    if (!localFile) startAutoRefresh();
 	}
   }
   
@@ -418,11 +412,13 @@ String Test;
 	boolean success= dragonAccess.getSgf(currentGameNo); 
 	if (success)
 	{	
+		sgfMoves=dragonAccess.getSgfMoves();
 	  lastSgfMove=dragonAccess.getLastSgfMove();
 	  lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
 	  handicap=dragonAccess.getHandicap();
 	  receiveMessageArea.setText(dragonAccess.getMessage());
 	  gameLabel.setText(dragonAccess.getPlayerBlack()+" vs "+dragonAccess.getplayerWhite());
+	  localFile=dragonAccess.isLocalFile();
 	}
 	else
 	{
@@ -1353,7 +1349,7 @@ void restoreMoveMap(int[][] savedMoveMap)
    private void playAllSgfMoves()
    {
      clear();
-    // readTestSgfFile();
+   // System.out.println("play all Sgf moves: "+sgfMoves.size());
      Iterator it = sgfMoves.iterator();
      String sgfPosition="";
      String moveLine="";
@@ -1362,7 +1358,7 @@ void restoreMoveMap(int[][] savedMoveMap)
      while(it.hasNext())
      {
        move=(Move)it.next();
-       // System.out.println(move.x+"-"+move.y);
+   //    System.out.println(move.x+"-"+move.y);
        placeStone(move,  true);
        
      }
