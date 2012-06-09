@@ -98,6 +98,9 @@ public class GoClient extends Application
   Image grid_right_image;
   Image grid_bottom_image;
   Image grid_hoshi_image;
+  
+  Image horizSgfLabelsImage;
+  Image horizLabelsOff;
    
   Image grid_cross_image;
    
@@ -177,6 +180,8 @@ public class GoClient extends Application
   Stage stage;
   boolean localFile=false;
   HBox hGridLabels;
+  ImageView horizLabelView;
+  String labelsStatus="off";
   
   
   public void start(final Stage stage) throws Exception  
@@ -185,7 +190,6 @@ public class GoClient extends Application
     setQuit();
     importImages();
     getResources();
-    setHgridLabels();
     
     Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
    // System.out.println("screen: "+primaryScreenBounds.getHeight()+" x "+primaryScreenBounds.getWidth());
@@ -210,11 +214,20 @@ public class GoClient extends Application
      mainBox.setSpacing(5);
      mainBox.setStyle("-fx-background-color: DAE6F3;");
 
+     horizLabelView=new ImageView(horizLabelsOff);
      
      VBox vBox = new VBox();
-     vBox.getChildren().add(hGridLabels);
+     /*
+     String style = "-fx-border-color: red;"
+             + "-fx-border-width: 1;"
+             + "-fx-border-style: dotted;";
+   
+     horizLabelView.setStyle(style);
+     */
+    
+     vBox.getChildren().add(horizLabelView);
      vBox.getChildren().add(getBoardGroup());
-     
+    
      mainBox.getChildren().add(vBox);
      mainBox.getChildren().add(getRightPane());
      
@@ -250,34 +263,7 @@ public class GoClient extends Application
       
   } // end of start method
 
-  void setHgridLabels()
-  {
-	  hGridLabels=new HBox(28.47);
-	  hGridLabels.setPadding(new Insets(0, 0, 0, 15));
-	  
-	  Text aText = new Text("a");
-	  hGridLabels.getChildren().add(aText);
-	  hGridLabels.getChildren().add(new Text("b"));
-	  hGridLabels.getChildren().add(new Text("c"));
-	  hGridLabels.getChildren().add(new Text("d"));
-	  hGridLabels.getChildren().add(new Text("e"));
-	  hGridLabels.getChildren().add(new Text("f"));
-	  hGridLabels.getChildren().add(new Text("g"));
-	  hGridLabels.getChildren().add(new Text("h"));
-	  hGridLabels.getChildren().add(new Text("i"));
-	  hGridLabels.getChildren().add(new Text("j"));
-	  hGridLabels.getChildren().add(new Text("k"));
-	  hGridLabels.getChildren().add(new Text("l"));
-	  hGridLabels.getChildren().add(new Text("m"));
-	  hGridLabels.getChildren().add(new Text("n"));
-	  hGridLabels.getChildren().add(new Text("o"));
-	  hGridLabels.getChildren().add(new Text("p"));
-	  hGridLabels.getChildren().add(new Text("q"));
-	  hGridLabels.getChildren().add(new Text("r"));
-	  hGridLabels.getChildren().add(new Text("s"));
-
-  }
-  
+ 
   
   public void stop()
   {
@@ -658,14 +644,14 @@ private GridPane getButtonBox()
       
 	    
         Group userButtonGroup = new Group();
-        userButtonGroup.getChildren().add(bx);
+     //   userButtonGroup.getChildren().add(bx);
         Button userButton = getUserButton();
         
         userButtonGroup.getChildren().add(userButton);
 	    
 	    
     //  buttonBox.getChildren().add(getUserButton());
-        gridPane.add(bx, 3, 0);
+        gridPane.add(getLabelsButton(), 3, 0);
       gridPane.add(userButton, 4, 0);
       gridPane.setHalignment(userButton, HPos.RIGHT);
       
@@ -785,7 +771,6 @@ private Group getInfoGroup()
         gridPane.setHalignment(moveNoLabel, HPos.RIGHT);
         gridPane.setHalignment(gameNoLabel, HPos.RIGHT);
         gridPane.setHalignment(turnLabel, HPos.RIGHT);
-        
         
         
         infoGroup.getChildren().add(bx);
@@ -1213,6 +1198,31 @@ void restoreMoveMap(int[][] savedMoveMap)
     return deleteLastMoveButton; 
   }
   
+  private Button getLabelsButton() 
+  {
+    Button button = new Button("a/1");
+    EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
+    {
+      toggleLabels(); 
+    }};
+    button.setOnAction(bHandler2);
+    return button; 
+  }
+  
+  void toggleLabels()
+  {
+	 if ("off".equals(labelsStatus))
+	 {
+	   horizLabelView.setImage(horizSgfLabelsImage);
+	   labelsStatus="sgf";
+	 }
+	 else
+	 {
+	   horizLabelView.setImage(horizLabelsOff);
+	   labelsStatus="off";
+	 }
+  }
+  
   boolean checkForKo()
   {
 	int historySize=positionHistory.size();
@@ -1327,7 +1337,9 @@ void restoreMoveMap(int[][] savedMoveMap)
 	    smallerBlackStoneImage = new Image(Stone.class.getResourceAsStream("/images/smaller_b.gif")); 
 	    smallerWhiteStoneImage = new Image(Stone.class.getResourceAsStream("/images/smaller_w.gif")); 
 	   
-	 
+	    horizSgfLabelsImage = new Image(Stone.class.getResourceAsStream("/images/horizLabels.png")); 
+	    horizLabelsOff = new Image(Stone.class.getResourceAsStream("/images/horizLabelsOff")); 
+		    
 	 
 	// black_stone_image = new Image(GoClient.class.getResourceAsStream("/images/b.gif"));
 	// white_stone_image = new Image(GoClient.class.getResourceAsStream("/images/w.gif"));
