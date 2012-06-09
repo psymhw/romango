@@ -41,6 +41,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -174,8 +175,9 @@ public class GoClient extends Application
   SimpleDateFormat df = new SimpleDateFormat("h:mm:ss MM-dd-yy");
   Text timedUpdateText;
   Stage stage;
-String Test;
-boolean localFile=false;
+  boolean localFile=false;
+  HBox hGridLabels;
+  
   
   public void start(final Stage stage) throws Exception  
   {  
@@ -183,8 +185,10 @@ boolean localFile=false;
     setQuit();
     importImages();
     getResources();
+    setHgridLabels();
+    
     Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-    System.out.println("screen: "+primaryScreenBounds.getHeight()+" x "+primaryScreenBounds.getWidth());
+   // System.out.println("screen: "+primaryScreenBounds.getHeight()+" x "+primaryScreenBounds.getWidth());
     
     
     stoneSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/stone.wav"));
@@ -206,7 +210,12 @@ boolean localFile=false;
      mainBox.setSpacing(5);
      mainBox.setStyle("-fx-background-color: DAE6F3;");
 
-     mainBox.getChildren().add(getBoardGroup());
+     
+     VBox vBox = new VBox();
+     vBox.getChildren().add(hGridLabels);
+     vBox.getChildren().add(getBoardGroup());
+     
+     mainBox.getChildren().add(vBox);
      mainBox.getChildren().add(getRightPane());
      
      ScrollPane scrollPane = new ScrollPane();
@@ -241,6 +250,35 @@ boolean localFile=false;
       
   } // end of start method
 
+  void setHgridLabels()
+  {
+	  hGridLabels=new HBox(28.47);
+	  hGridLabels.setPadding(new Insets(0, 0, 0, 15));
+	  
+	  Text aText = new Text("a");
+	  hGridLabels.getChildren().add(aText);
+	  hGridLabels.getChildren().add(new Text("b"));
+	  hGridLabels.getChildren().add(new Text("c"));
+	  hGridLabels.getChildren().add(new Text("d"));
+	  hGridLabels.getChildren().add(new Text("e"));
+	  hGridLabels.getChildren().add(new Text("f"));
+	  hGridLabels.getChildren().add(new Text("g"));
+	  hGridLabels.getChildren().add(new Text("h"));
+	  hGridLabels.getChildren().add(new Text("i"));
+	  hGridLabels.getChildren().add(new Text("j"));
+	  hGridLabels.getChildren().add(new Text("k"));
+	  hGridLabels.getChildren().add(new Text("l"));
+	  hGridLabels.getChildren().add(new Text("m"));
+	  hGridLabels.getChildren().add(new Text("n"));
+	  hGridLabels.getChildren().add(new Text("o"));
+	  hGridLabels.getChildren().add(new Text("p"));
+	  hGridLabels.getChildren().add(new Text("q"));
+	  hGridLabels.getChildren().add(new Text("r"));
+	  hGridLabels.getChildren().add(new Text("s"));
+
+  }
+  
+  
   public void stop()
   {
 	//.cancel();
