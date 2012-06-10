@@ -102,6 +102,8 @@ public class GoClient extends Application
   Image horizSgfLabelsImage;
   Image horizLabelsOff;
    
+  Image vertSgfLabelsImage;
+  Image vertLabelsOff;
   Image grid_cross_image;
    
   //ArrayList <String>moveLine = new ArrayList<>();
@@ -181,6 +183,7 @@ public class GoClient extends Application
   boolean localFile=false;
   HBox hGridLabels;
   ImageView horizLabelView;
+  ImageView vertLabelView;
   String labelsStatus="off";
   
   
@@ -215,6 +218,7 @@ public class GoClient extends Application
      mainBox.setStyle("-fx-background-color: DAE6F3;");
 
      horizLabelView=new ImageView(horizLabelsOff);
+     vertLabelView=new ImageView(vertLabelsOff);
      
      VBox vBox = new VBox();
      /*
@@ -227,8 +231,12 @@ public class GoClient extends Application
     
      vBox.getChildren().add(horizLabelView);
      vBox.getChildren().add(getBoardGroup());
+     
+     HBox hBox = new HBox();
+     hBox.getChildren().add(vertLabelView);
+     hBox.getChildren().add(vBox);
     
-     mainBox.getChildren().add(vBox);
+     mainBox.getChildren().add(hBox);
      mainBox.getChildren().add(getRightPane());
      
      ScrollPane scrollPane = new ScrollPane();
@@ -1214,11 +1222,13 @@ void restoreMoveMap(int[][] savedMoveMap)
 	 if ("off".equals(labelsStatus))
 	 {
 	   horizLabelView.setImage(horizSgfLabelsImage);
+	   vertLabelView.setImage(vertSgfLabelsImage);
 	   labelsStatus="sgf";
 	 }
 	 else
 	 {
 	   horizLabelView.setImage(horizLabelsOff);
+	   vertLabelView.setImage(vertLabelsOff);
 	   labelsStatus="off";
 	 }
   }
@@ -1339,6 +1349,8 @@ void restoreMoveMap(int[][] savedMoveMap)
 	   
 	    horizSgfLabelsImage = new Image(Stone.class.getResourceAsStream("/images/horizLabels.png")); 
 	    horizLabelsOff = new Image(Stone.class.getResourceAsStream("/images/horizLabelsOff")); 
+	    vertSgfLabelsImage = new Image(Stone.class.getResourceAsStream("/images/vertSgfLabels.png")); 
+	    vertLabelsOff = new Image(Stone.class.getResourceAsStream("/images/vertLabelsOff")); 
 		    
 	 
 	// black_stone_image = new Image(GoClient.class.getResourceAsStream("/images/b.gif"));
