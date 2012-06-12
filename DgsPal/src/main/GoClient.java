@@ -117,6 +117,7 @@ public class GoClient extends Application
   
  // int[][] groupMap = new int[19][19];
   int lastMoveColor=WHITE;
+  int thisPlayerColor=BLACK;
   int moveNumber=0;
 
   AudioClip stoneSound;
@@ -173,9 +174,9 @@ public class GoClient extends Application
  // Refresh refresh;
   int cycleCount=0;
   int level=0;
-  int cycles[] = new int[]{                6,           10,         30,           30,       100 };
-  long interval[] = new long[]{           10,           30,         60,          120,       300};
-  String[] timeStr = new String[]{"10 seconds", "30 seconds", "1 minute", "2 minutes", "5 minutes" };
+  int cycles[] = new int[]{                1,           1,         1,           1,       100 };
+  long interval[] = new long[]{          60,          120,       240,         480,         960};
+  String[] timeStr = new String[]{"1 minute", "2 minutes", "4 minutes", "8 minutes", "16 minutes" };
 
   SimpleDateFormat df = new SimpleDateFormat("h:mm:ss MM-dd-yy");
   Text timedUpdateText;
@@ -396,7 +397,7 @@ public class GoClient extends Application
     
     deleteLastMoveButton.setDisable(true);
     //System.out.println("local File: "+localFile);
-    if ((!localFile)&&(!gameFound)) startAutoRefresh();
+    if (!gameFound) startAutoRefresh();
 	}
   }
   
@@ -470,6 +471,11 @@ public class GoClient extends Application
 	  receiveMessageArea.setText(dragonAccess.getMessage());
 	  gameLabel.setText(dragonAccess.getPlayerBlack()+" vs "+dragonAccess.getplayerWhite());
 	  localFile=dragonAccess.isLocalFile();
+	  if (userId!=null)
+	  {
+		if (userId.equals(dragonAccess.getLoginNameBlack())) thisPlayerColor=BLACK;
+		else thisPlayerColor=WHITE;
+	  }
 	}
 	else
 	{
@@ -679,6 +685,7 @@ private GridPane getButtonBox()
 	    
     //  buttonBox.getChildren().add(getUserButton());
         gridPane.add(getLabelsButton(), 3, 0);
+     //   gridPane.add(getTestButton(), 3, 0);
       gridPane.add(userButton, 4, 0);
       gridPane.setHalignment(userButton, HPos.RIGHT);
       
@@ -917,8 +924,7 @@ private Group getInfoGroup()
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) 
 	          {
-	        	dragonAccess.login();  
-	        	dragonAccess.getSgf(currentGameNo);
+	        	dragonAccess.checkForMove2();
 	          } };
 	  
      commitTestButton.setOnMouseClicked(bHandler);
@@ -1673,6 +1679,7 @@ private void setQuit()
       stoneSound.play();
       //unmarkStones();
       markLocalMove();
+      if ((localMoves==1)&&(thisPlayerColor==move.color))
       commitButton.setDisable(false);
     }
     

@@ -32,6 +32,8 @@ public class DragonAccess
   StringBuffer feedback = new StringBuffer();
   String playerWhite="";
   String playerBlack="";
+  String loginNameBlack;
+  String loginNameWhite;
   boolean localFile=false;
   String lastMoveColor="black";
 
@@ -122,7 +124,27 @@ public void setComments(ArrayList comments) {
 
 
 
-  public DragonAccess(String userId, String password) 
+  public String getLoginNameBlack() {
+	return loginNameBlack;
+}
+
+
+public void setLoginNameBlack(String loginNameBlack) {
+	this.loginNameBlack = loginNameBlack;
+}
+
+
+public String getLoginNameWhite() {
+	return loginNameWhite;
+}
+
+
+public void setLoginNameWhite(String loginNameWhite) {
+	this.loginNameWhite = loginNameWhite;
+}
+
+
+public DragonAccess(String userId, String password) 
   {
 	manager = new CookieManager();
     manager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
@@ -171,6 +193,68 @@ public void setComments(ArrayList comments) {
     }
     */
   }
+
+public long checkForMove2()
+{
+	 //String surl = "http://www.dragongoserver.net/quick_status.php?&quick_mode=1&user=" + userId;
+	 String surl = "http://www.dragongoserver.net/quick_do.php?obj=game&cmd=list&view=status&lstyle=table&uid="+userId;
+
+	 String secondLine="";    
+	 String gameStr="";
+	 StringBuffer rawMessage = new StringBuffer();
+	 rawMessage.append("checkForMove: "); 
+	 boolean emptyList = false;
+	 long gameLong=0;
+	 feedback=new StringBuffer();
+	 System.out.println(surl);
+	 try
+	 {
+	   URL url;
+	   url = new URL(surl);
+	   URLConnection con = url.openConnection();
+	   con = url.openConnection();
+	   
+	   InputStream is = con.getInputStream();
+	   InputStreamReader isr = new InputStreamReader(is);
+	   BufferedReader br = new BufferedReader(isr);
+	   String line = null;
+	   
+	   int count=0;
+	   while ( (line = br.readLine()) != null)
+	   {
+		  System.out.println("check for move 2: " + line);
+	      rawMessage.append(line+"\n");
+	      count++;
+	      if (count==2) secondLine=line;
+	   }
+	 } catch (Exception e)  {  feedback.append(e.getMessage()); return 0; }
+	 
+	 if (secondLine.contains("empty list")) emptyList=true;
+	 
+	 
+	 if (emptyList)
+	 {
+	    feedback.append("no moves waiting"); 
+	 }
+	 else 
+	 {	 
+	   try
+	   {
+	     gameStr=secondLine.substring(4,11);
+	   } catch ( Exception e) {feedback.append("error parsing gameStr: "); feedback.append(rawMessage); }
+	   
+	   if (gameStr.length()>0)
+	   {
+	     try { gameLong = Long.parseLong(gameStr.trim()); } catch (Exception e) {}
+	     if (gameLong>0) feedback.append("Game Found: #"+gameStr.trim());
+	     else feedback.append(rawMessage);
+	   }
+	 }
+	 
+	 
+	 return gameLong;
+}
+
    
    public long checkForMove()
    {
@@ -199,7 +283,7 @@ public void setComments(ArrayList comments) {
 	   int count=0;
 	   while ( (line = br.readLine()) != null)
 	   {
-		 //System.out.println("line: " + line);
+		  System.out.println("check for move: " + line);
 	      rawMessage.append(line+"\n");
 	      count++;
 	      if (count==2) secondLine=line;
@@ -328,12 +412,19 @@ public void setComments(ArrayList comments) {
 	 {
 	   int i = line.indexOf('(');
 	   if (i>0) playerWhite = line.substring(3,i);
+	   
+	   int j=line.indexOf(')');
+	   loginNameWhite=line.substring(i+1,j);
+	   System.out.println("login name white: "+loginNameWhite);
 	   return;
 	 }
 	 if (line.startsWith("PB["))  // get black player
 	 {
 	   int i = line.indexOf('(');
 	   if (i>0) playerBlack = line.substring(3,i);
+	   int j=line.indexOf(')');
+	   loginNameBlack=line.substring(i+1,j);
+	   System.out.println("login name black: "+loginNameBlack);
 	   return;
 	 }
 	 if (line.startsWith(";MN"))  // get first white move
