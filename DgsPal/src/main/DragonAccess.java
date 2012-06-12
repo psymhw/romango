@@ -1,8 +1,10 @@
 package main;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,7 +33,7 @@ public class DragonAccess
   String playerWhite="";
   String playerBlack="";
   boolean localFile=false;
-  
+  String lastMoveColor="black";
 
 public boolean isLocalFile() {
 	return localFile;
@@ -256,27 +258,36 @@ public void setComments(ArrayList comments) {
 	   while ( (line = br.readLine()) != null)
 	   {
 		   moveLine.add(line);
+		   if ("C[]".equals(line)) continue;
+		   if (")".equals(line)) continue;
 		   sgfFileString.append(line+"\n");
-	     // System.out.println("line: " + line);
+	      //System.out.println("line: " + line);
 	   }
 	 } catch (Throwable t)  {  t.printStackTrace(); }
 	 
 	 Iterator it = moveLine.iterator();
      String sgfPosition="";
      String line="";
+     File resourceFile=null;
+	  File directory = new File (".");
 	  
-     while(it.hasNext())  // get handicap count
-     {
-       line=(String)it.next();
-       parseLine(line);
-     }
-     
-     if (sgfMoves.size()==0) 
-     {	 
-    	 localFile=true;
-    	 getLocalSgfFile(currentGameNo);
-     } else localFile=false;
-     
+	  try{
+			resourceFile= new File(directory.getCanonicalPath()+"\\"+currentGameNo+".sgf");
+		    FileWriter fstream=null;
+		
+			fstream = new FileWriter(resourceFile);
+		    BufferedWriter out = new BufferedWriter(fstream);
+		    out.write(sgfFileString.toString());
+		    out.close();
+	 } catch (IOException e) { e.printStackTrace();	}
+	  
+        while(it.hasNext())  // get handicap count
+        {
+          line=(String)it.next();
+          parseLine(line);
+        }
+	  
+         
      if (sgfMoves.size()==0) return false;
      return true;
    }
@@ -284,9 +295,9 @@ public void setComments(ArrayList comments) {
    public void parseLine(String line)
    {
      Move move=null;
-	 lastSgfMoveNumber=0;
+	 //lastSgfMoveNumber=0;
 	 String sgfPosition="";
-	 String lastMoveColor="black";
+	 
 	 
 	 if (line.startsWith("HA"))
 	 {
@@ -356,8 +367,9 @@ public void setComments(ArrayList comments) {
 	   lastMoveColor="white";
 	   return;
 	 }
-	 if (line.startsWith("C["))  // white move
+	 if (line.startsWith("C["))  // comment
 	 {
+	   if (line.startsWith("C[]")) return;
 	   message=line.substring(line.indexOf(':')+1); 
 	   message=message.replaceAll("_", " ");
 	   message=message.substring(0,message.length()-1);
@@ -367,7 +379,7 @@ public void setComments(ArrayList comments) {
 	       
 	}
    
-   private void getLocalSgfFile(String currentGameNo) 
+   public boolean getLocalSgfFile(String currentGameNo) 
    {
      File resourceFile=null;
      File directory = new File (".");
@@ -400,7 +412,14 @@ public void setComments(ArrayList comments) {
       }
     }
      
-    if (count>0) feedback.append("SGF file loaded from local copy.\n");
+    if (count>0) 
+    {
+      feedback.append("SGF file loaded from local copy.\n"); 
+      localFile=true;
+      System.out.println("local file loaded");
+      return true; 
+    }
+    else return false;
   }
    
    public boolean makeMove(String gameNo, String lastMove, String thisMove, int color, String message)
