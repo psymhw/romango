@@ -292,10 +292,11 @@ public class GoClient extends Application
 	
     if (gameFound)
     {
+    	System.out.println("timed refresh: game found "+gameNo);
       stopAutoRefresh();
       deleteLastMoveButton.setDisable(true);
       clear();
-      if (refreshCommon())
+      if (refreshCommon(false))
       {
   	    playAllSgfMoves();
         feedbackArea.insertText(0, df.format(new Date())+" "+lastSgfMove.getColor()+": "+lastSgfMove.getSgfPosition()+"\n");
@@ -356,10 +357,21 @@ public class GoClient extends Application
 	
 	gameNoVal.setText(currentGameNo);
 	
-	if (refreshCommon())
+	boolean success=false;
+	if (gameFound) 
+	{
+		success=refreshCommon(false);
+		System.out.println("game loaded from server");
+	}
+	else
+	{
+		success= refreshCommon(true);
+		System.out.println("local game found");
+	}
+	
+	if (success)
 	{	 
-		System.out.println("game found");
-	 ArrayList comments = dragonAccess.getComments();
+	    ArrayList comments = dragonAccess.getComments();
 		Iterator it = comments.iterator();
 		String comment;
 		while(it.hasNext())
@@ -383,8 +395,8 @@ public class GoClient extends Application
     }
     
     deleteLastMoveButton.setDisable(true);
-    System.out.println("local File: "+localFile);
-    if (!localFile) startAutoRefresh();
+    //System.out.println("local File: "+localFile);
+    if ((!localFile)&&(!gameFound)) startAutoRefresh();
 	}
   }
   
@@ -419,7 +431,12 @@ public class GoClient extends Application
 		 * 
 		 */
 		clear();
-		if (refreshCommon())
+		
+		boolean success=false;
+		if (gameFound) success=refreshCommon(false);
+		else success= refreshCommon(false);
+		
+		if (success)
         {
 		  playAllSgfMoves();
 	      if (lastSgfMove.color==BLACK)  
@@ -439,12 +456,14 @@ public class GoClient extends Application
         }
   }
   
-  private boolean refreshCommon()
+  private boolean refreshCommon(boolean local)
   {
-	boolean success= dragonAccess.getSgf(currentGameNo); 
+	boolean success=false;
+	if (local) success=dragonAccess.getLocalSgfFile(currentGameNo);
+	else success= dragonAccess.getSgf(currentGameNo); 
 	if (success)
 	{	
-		sgfMoves=dragonAccess.getSgfMoves();
+	  sgfMoves=dragonAccess.getSgfMoves();
 	  lastSgfMove=dragonAccess.getLastSgfMove();
 	  lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
 	  handicap=dragonAccess.getHandicap();
@@ -826,6 +845,7 @@ private Group getInfoGroup()
 	            
 	            if (success) 
 	            { 
+	            	writeMoveToLocalSgfFile(firstLocalMove);
 	            	feedbackArea.insertText(0, df.format(new Date())+" "+firstLocalMove.getColor()+": "+firstLocalMove.getSgfPosition()+"\n");
 	            	commitButton.setDisable(true); 
 	                if (sendMessageArea.getText()!=null)
@@ -867,6 +887,27 @@ private Group getInfoGroup()
      commitButton.setOnMouseClicked(bHandler);
      return commitButton;
   }
+  
+  private void writeMoveToLocalSgfFile(Move move)
+  {
+	String sgfFile=dragonAccess.getSgfFile();
+	String colorLetter="";
+	if (move.color==1) colorLetter="B"; else colorLetter="W";
+	sgfFile=sgfFile+";"+colorLetter+"["+move.getSgfPosition()+"]\n";
+	
+	File resourceFile=null;
+	  File directory = new File (".");
+	try{
+		resourceFile= new File(directory.getCanonicalPath()+"\\"+currentGameNo+".sgf");
+	    FileWriter fstream=null;
+	
+		fstream = new FileWriter(resourceFile);
+	    BufferedWriter out = new BufferedWriter(fstream);
+	    out.write(sgfFile);
+	    out.close();
+ } catch (IOException e) { e.printStackTrace();	}
+  }
+  
   
   private Button getTestButton() 
   {
@@ -1632,7 +1673,10 @@ private void setQuit()
       stoneSound.play();
       //unmarkStones();
       markLocalMove();
+      commitButton.setDisable(false);
     }
+    
+    
   }
 
   
