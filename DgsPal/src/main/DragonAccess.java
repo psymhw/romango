@@ -35,7 +35,7 @@ public class DragonAccess
   String loginNameBlack;
   String loginNameWhite;
   boolean localFile=false;
-  String lastMoveColor="black";
+  String lastMoveColor="b";
 
 public boolean isLocalFile() {
 	return localFile;
@@ -258,6 +258,11 @@ public long checkForMove2()
    
    public long checkForMove()
    {
+	 return checkForMove("");
+   }
+
+   public long checkForMove(String timeStr)
+   {
 	 String surl = "http://www.dragongoserver.net/quick_status.php?&quick_mode=1&user=" + userId;
 	 
 	 String secondLine="";    
@@ -283,14 +288,14 @@ public long checkForMove2()
 	   int count=0;
 	   while ( (line = br.readLine()) != null)
 	   {
-		  System.out.println("check for move: " + line);
+		  System.out.println(count+") "+timeStr+" check for move: " + line);
 	      rawMessage.append(line+"\n");
+	      if (line.contains("empty list")) emptyList=true;
 	      count++;
 	      if (count==2) secondLine=line;
 	   }
 	 } catch (Exception e)  {  feedback.append(e.getMessage()); return 0; }
 	 
-	 if (secondLine.contains("empty list")) emptyList=true;
 	 
 	 
 	 if (emptyList)
@@ -307,12 +312,12 @@ public long checkForMove2()
 	   if (gameStr.length()>0)
 	   {
 	     try { gameLong = Long.parseLong(gameStr.trim()); } catch (Exception e) {}
-	     if (gameLong>0) feedback.append("Game Found: #"+gameStr.trim());
+	     if (gameLong>0) feedback.append("Move Found, game #"+gameStr.trim());
 	     else feedback.append(rawMessage);
 	   }
 	 }
 	 
-	 
+	 System.out.println();
 	 return gameLong;
    }
    
@@ -325,7 +330,7 @@ public long checkForMove2()
 	 Move move=null;
 	 lastSgfMoveNumber=0;
 	 comments=new ArrayList();
-	 String lastMoveColor="black";
+	// String lastMoveColor="B";
 	 
 	 try
 	 {
@@ -415,7 +420,6 @@ public long checkForMove2()
 	   
 	   int j=line.indexOf(')');
 	   loginNameWhite=line.substring(i+1,j);
-	   System.out.println("login name white: "+loginNameWhite);
 	   return;
 	 }
 	 if (line.startsWith("PB["))  // get black player
@@ -424,7 +428,6 @@ public long checkForMove2()
 	   if (i>0) playerBlack = line.substring(3,i);
 	   int j=line.indexOf(')');
 	   loginNameBlack=line.substring(i+1,j);
-	   System.out.println("login name black: "+loginNameBlack);
 	   return;
 	 }
 	 if (line.startsWith(";MN"))  // get first white move
@@ -443,7 +446,7 @@ public long checkForMove2()
 	   lastSgfMove = move;
 	   lastSgfMoveNumber++;
 	   currentMessage=false;
-	   lastMoveColor="black";
+	   lastMoveColor="b";
 	   return;
 	 }
 	      
@@ -455,7 +458,7 @@ public long checkForMove2()
 	   lastSgfMove = move;
 	   lastSgfMoveNumber++;
 	   currentMessage=false;
-	   lastMoveColor="white";
+	   lastMoveColor="w";
 	   return;
 	 }
 	 if (line.startsWith("C["))  // comment
@@ -464,7 +467,7 @@ public long checkForMove2()
 	   message=line.substring(line.indexOf(':')+1); 
 	   message=message.replaceAll("_", " ");
 	   message=message.substring(0,message.length()-1);
-	   comments.add("move "+lastSgfMoveNumber +"("+lastMoveColor+") - "+message );
+	   comments.add("* "+lastMoveColor+" "+lastSgfMoveNumber +"\t"+message );
 	   currentMessage=true;
 	 }
 	       
@@ -507,7 +510,7 @@ public long checkForMove2()
     {
       feedback.append("SGF file loaded from local copy.\n"); 
       localFile=true;
-      System.out.println("local file loaded");
+      //System.out.println("local file loaded");
       return true; 
     }
     else return false;

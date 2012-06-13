@@ -174,8 +174,8 @@ public class GoClient extends Application
  // Refresh refresh;
   int cycleCount=0;
   int level=0;
-  int cycles[] = new int[]{                1,           1,         1,           1,       100 };
-  long interval[] = new long[]{          60,          120,       240,         480,         960};
+  int cycles[] = new int[]{                1,           2,         4,          8,        100 };
+  long interval[] = new long[]{          70,          130,       250,         490,         970};
   String[] timeStr = new String[]{"1 minute", "2 minutes", "4 minutes", "8 minutes", "16 minutes" };
 
   SimpleDateFormat df = new SimpleDateFormat("h:mm:ss MM-dd-yy");
@@ -285,7 +285,7 @@ public class GoClient extends Application
   {
 	boolean gameFound=false;
 		 
-	long gameNo= dragonAccess.checkForMove();
+	long gameNo= dragonAccess.checkForMove(timeStr[level]);
 
 	if (gameNo>0) gameFound=true;	
   
@@ -331,7 +331,7 @@ public class GoClient extends Application
 	
 	long gameNo= dragonAccess.checkForMove();
 	
-	feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
+	//feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
 	
 	if (gameNo>0) gameFound=true;	
 	  
@@ -362,12 +362,12 @@ public class GoClient extends Application
 	if (gameFound) 
 	{
 		success=refreshCommon(false);
-		System.out.println("game loaded from server");
+		feedbackArea.insertText(0, "game loaded from server\n");
 	}
 	else
 	{
 		success= refreshCommon(true);
-		System.out.println("local game found");
+		feedbackArea.insertText(0, "game loaded from local file\n");
 	}
 	
 	if (success)
@@ -1482,7 +1482,7 @@ void restoreMoveMap(int[][] savedMoveMap)
      
     //System.out.println("Last Move: "+lastSgfMoveNumber+", "+colorStr(lastSgfMove.color)+" position: "+lastSgfMove.getSgfPosition());
      
-    System.out.println("local moves: "+localMoves);
+    //System.out.println("local moves: "+localMoves);
      
    }
    
