@@ -322,6 +322,7 @@ public long checkForMove2()
 		   if (line.startsWith("M")) { lineCount++; continue; };
 		   
 		   dataLine=line;
+		   dataCount++;
 		  
 		   st = new StringTokenizer(line, ",");
 		   
@@ -356,7 +357,7 @@ public long checkForMove2()
 	   }
 	
 	 
-	 System.out.println();
+	 //System.out.println();
 	 return gameLong;
    }
    
