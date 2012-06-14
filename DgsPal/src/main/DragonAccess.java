@@ -18,9 +18,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 public class DragonAccess 
 {
@@ -36,6 +39,7 @@ public class DragonAccess
   String loginNameWhite;
   boolean localFile=false;
   String lastMoveColor="b";
+  boolean excessive_usage=false;
 
 public boolean isLocalFile() {
 	return localFile;
@@ -67,7 +71,17 @@ ArrayList <Move>sgfMoves = new ArrayList<>();
 		this.playerBlack = playerBlack;
 	}
   
-  public String getMessage() 
+  public boolean isExcessive_usage() {
+		return excessive_usage;
+	}
+
+
+	public void setExcessive_usage(boolean excessive_usage) {
+		this.excessive_usage = excessive_usage;
+	}
+
+
+public String getMessage() 
   {
 	  if (currentMessage) return message;
 	 
@@ -263,7 +277,93 @@ public long checkForMove2()
 
    public long checkForMove(String timeStr)
    {
-	 String surl = "http://www.dragongoserver.net/quick_status.php?&quick_mode=1&user=" + userId;
+	 String surl = "http://www.dragongoserver.net/quick_status.php?version=2&quick_mode=1&user=" + userId;
+	 SimpleDateFormat df = new SimpleDateFormat("h:mm:ss MM-dd-yy");
+	 
+	 StringTokenizer st;
+	 String token;
+     
+	 
+	 String secondLine="";    
+	 String gameStr="";
+	 StringBuffer rawMessage = new StringBuffer();
+	 rawMessage.append("checkForMove: "); 
+	 boolean emptyList = false;
+	 long gameLong=0;
+	 feedback=new StringBuffer();
+	   int lineCount=0;
+	   int tokenCount=0;
+	   int commentCount=0;
+	   int dataCount=0;
+	   String dataLine="";
+	   excessive_usage=false;
+
+	 
+	 try
+	 {
+	   URL url;
+	   url = new URL(surl);
+	   URLConnection con = url.openConnection();
+	   con = url.openConnection();
+	   
+	   InputStream is = con.getInputStream();
+	   InputStreamReader isr = new InputStreamReader(is);
+	   BufferedReader br = new BufferedReader(isr);
+	   String line = null;
+	   
+	   while ( (line = br.readLine()) != null)
+	   {
+		   rawMessage.append(line+"\n");
+		   //System.out.println(line);
+		   if (line.contains("excessive_usage")) excessive_usage=true;
+		   
+		   if (line.startsWith("#")) { commentCount++; lineCount++; continue; };
+		   if (line.startsWith("B")) { lineCount++; continue; };
+		   if (line.startsWith("M")) { lineCount++; continue; };
+		   
+		   dataLine=line;
+		  
+		   st = new StringTokenizer(line, ",");
+		   
+		   tokenCount=0;
+		   while (st.hasMoreTokens()) 
+		   {
+			 token=st.nextToken();
+			// System.out.println("token: "+token);
+		     if (tokenCount==1) gameStr=token;
+		     tokenCount++;
+		   }
+	      lineCount++;
+	   }
+	 } catch (Exception e)  {  feedback.append(e.getMessage()); return 0; }
+	 System.out.println(timeStr+" move check: "+df.format(new Date())
+			 +" lines: "+lineCount
+			 +" comments: "+commentCount
+			 +" data: "+dataCount
+			 +" excessive usage: "+excessive_usage
+			 );
+	 if (dataCount>0) System.out.println(dataLine);
+
+	   if (gameStr.length()>0)
+	   {
+	     try { gameLong = Long.parseLong(gameStr.trim()); } catch (Exception e) {}
+	     if (gameLong>0) feedback.append("Move Found, game #"+gameStr.trim());
+	     else feedback.append(rawMessage);
+	   }
+	   else
+	   {
+		    feedback.append("no moves waiting"); 
+	   }
+	
+	 
+	 System.out.println();
+	 return gameLong;
+   }
+   
+   /*
+   public long checkForMove(String timeStr)
+   {
+	 String surl = "http://www.dragongoserver.net/quick_status.php?version=2&quick_mode=1&user=" + userId;
 	 
 	 String secondLine="";    
 	 String gameStr="";
@@ -320,6 +420,7 @@ public long checkForMove2()
 	 System.out.println();
 	 return gameLong;
    }
+   */
    
    public boolean getSgf(String currentGameNo)
    {

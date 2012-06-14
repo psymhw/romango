@@ -98,12 +98,7 @@ public class GoClient extends Application
   Image grid_right_image;
   Image grid_bottom_image;
   Image grid_hoshi_image;
-  
-  Image horizSgfLabelsImage;
-  Image horizLabelsOff;
-   
-  Image vertSgfLabelsImage;
-  Image vertLabelsOff;
+ 
   Image grid_cross_image;
    
   //ArrayList <String>moveLine = new ArrayList<>();
@@ -174,7 +169,7 @@ public class GoClient extends Application
  // Refresh refresh;
   int cycleCount=0;
   int level=0;
-  int cycles[] = new int[]{                1,           2,         4,          8,        100 };
+  int cycles[] = new int[]{                1,           5,        10,          1,        100 };
   long interval[] = new long[]{          70,          130,       250,         490,         970};
   String[] timeStr = new String[]{"1 minute", "2 minutes", "4 minutes", "8 minutes", "16 minutes" };
 
@@ -183,9 +178,20 @@ public class GoClient extends Application
   Stage stage;
   boolean localFile=false;
   HBox hGridLabels;
+  
+  
+  String labelsStatus="off";
+  Image horizLabelsOff;
+  Image vertLabelsOff;
   ImageView horizLabelView;
   ImageView vertLabelView;
-  String labelsStatus="off";
+   
+  Image horizSgfLabelsImage;
+  Image vertSgfLabelsImage;
+  Image vertRegularLabelsImage;
+  Image horizRegularLabelsImage;
+ 
+  
   
   
   public void start(final Stage stage) throws Exception  
@@ -286,6 +292,9 @@ public class GoClient extends Application
 	boolean gameFound=false;
 		 
 	long gameNo= dragonAccess.checkForMove(timeStr[level]);
+	boolean excessive_usage=dragonAccess.isExcessive_usage();
+	if (excessive_usage) feedbackArea.insertText(0, "DGS server complaining about excessive usage\n");
+
 
 	if (gameNo>0) gameFound=true;	
   
@@ -329,7 +338,9 @@ public class GoClient extends Application
 	
 	login();
 	
-	long gameNo= dragonAccess.checkForMove();
+	long gameNo= dragonAccess.checkForMove("startup");
+	boolean excessive_usage=dragonAccess.isExcessive_usage();
+	if (excessive_usage) feedbackArea.insertText(0, "DGS server complaining about excessive usage\n");
 	
 	//feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
 	
@@ -417,6 +428,10 @@ public class GoClient extends Application
 	  return;
 	}
 	long gameNo= dragonAccess.checkForMove();
+	boolean excessive_usage=dragonAccess.isExcessive_usage();
+	if (excessive_usage) feedbackArea.insertText(0, "DGS server complaining about excessive usage\n");
+
+	
 	feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
 		
 		if (gameNo>0) gameFound=true;	
@@ -1268,11 +1283,17 @@ void restoreMoveMap(int[][] savedMoveMap)
   {
 	 if ("off".equals(labelsStatus))
 	 {
-	   horizLabelView.setImage(horizSgfLabelsImage);
-	   vertLabelView.setImage(vertSgfLabelsImage);
-	   labelsStatus="sgf";
+	   horizLabelView.setImage(horizRegularLabelsImage);
+	   vertLabelView.setImage(vertRegularLabelsImage);
+	   labelsStatus="reg";
 	 }
-	 else
+	 else if ("reg".equals(labelsStatus))
+	 {
+		   horizLabelView.setImage(horizSgfLabelsImage);
+		   vertLabelView.setImage(vertSgfLabelsImage);
+		   labelsStatus="sgf";
+	}
+	else 
 	 {
 	   horizLabelView.setImage(horizLabelsOff);
 	   vertLabelView.setImage(vertLabelsOff);
@@ -1398,15 +1419,11 @@ void restoreMoveMap(int[][] savedMoveMap)
 	    horizLabelsOff = new Image(Stone.class.getResourceAsStream("/images/horizLabelsOff")); 
 	    vertSgfLabelsImage = new Image(Stone.class.getResourceAsStream("/images/vertSgfLabels.png")); 
 	    vertLabelsOff = new Image(Stone.class.getResourceAsStream("/images/vertLabelsOff")); 
-		    
+		 
+	    vertRegularLabelsImage = new Image(Stone.class.getResourceAsStream("/images/vertNumbLabels.png")); 
+	    horizRegularLabelsImage = new Image(Stone.class.getResourceAsStream("/images/horizRegLabels.png")); 
+		
 	 
-	// black_stone_image = new Image(GoClient.class.getResourceAsStream("/images/b.gif"));
-	// white_stone_image = new Image(GoClient.class.getResourceAsStream("/images/w.gif"));
-	// black_move_image = new Image(GoClient.class.getResourceAsStream("/images/bm.gif"));
-	// white_move_image = new Image(GoClient.class.getResourceAsStream("/images/wm.gif"));
-	 
-	 
-	// File sgfFile = new File(GoClient.class.getResourceAsStream("/sgf/test.sgf"));
    }
    
    private TextArea getFeedbackBox()
