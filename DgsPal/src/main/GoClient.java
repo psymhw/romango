@@ -856,7 +856,7 @@ private GridPane getRightPane()
 	          public void handle(MouseEvent event) 
 	          {
 	        	boolean success=false;  
-	        	
+	        	unmarkGroup();
 	        	Move firstLocalMove = moves.get(lastSgfMoveNumber);   
 	            success=dragonAccess.makeMove(currentGameNo, 
 	            		                      lastSgfMove.sgfPosition,
@@ -1112,7 +1112,7 @@ private GridPane getRightPane()
   
   private void markGroup(List<SimplePosition> groupPositions) 
   {
-	unmarkStones();  
+	unmarkGroup();  
 	Iterator it = groupPositions.iterator();
 	SimplePosition position;
 	Stone stone;
@@ -1130,7 +1130,7 @@ private GridPane getRightPane()
 		
   }
 	
-  private void unmarkStones()
+  private void unmarkGroup()
   {
 	if (markedStones.size()==0) return;
 	
@@ -1150,7 +1150,7 @@ private GridPane getRightPane()
 	
 	markedStones = new ArrayList<>();
 	//markLastSgfStone();
-	markLastStone();
+	markLastSgfStone();
   }
   
   private Stone getStone(SimplePosition position) 
@@ -1256,6 +1256,7 @@ void restoreMoveMap(int[][] savedMoveMap)
     deleteLastMoveButton = new Button("< x");
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
     {
+      unmarkGroup();
       deleteLastStone(); 
     }};
     deleteLastMoveButton.setOnAction(bHandler2);
@@ -1873,7 +1874,7 @@ void markLocalMove()
      if ((stone.x==m.x)&&(stone.y==m.y)) 
      { 
        if (localMoves==1) stone.setCheckImage(); else stone.setMarkImage();
-       markedStones.add(m.getSimplePosition());
+       //markedStones.add(m.getSimplePosition());
        break; 
      }
      i--;
@@ -1883,7 +1884,7 @@ void markLocalMove()
 
 
 
-/*
+
 void markLastSgfStone()
 {
   if (moves==null) return;	
@@ -1898,7 +1899,6 @@ void markLastSgfStone()
    while(it.hasPrevious())
    {
      stone=(Stone)it.previous();
-   //  bp=stone.getBoardPosition();
      if ((stone.x==lastSgfMove.x)&&(stone.y==lastSgfMove.y)) 
      { 
        stone.setMoveImage();
@@ -1908,7 +1908,6 @@ void markLastSgfStone()
      i--;
     }
 }
-*/
 
 void markLastStone()
 {
