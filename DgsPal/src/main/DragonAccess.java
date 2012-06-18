@@ -40,122 +40,13 @@ public class DragonAccess
   boolean localFile=false;
   String lastMoveColor="b";
   boolean excessive_usage=false;
-
-public boolean isLocalFile() {
-	return localFile;
-}
-
-
-public void setLocalFile(boolean localFile) {
-	this.localFile = localFile;
-}
-
-ArrayList comments = new ArrayList();
+  ArrayList comments = new ArrayList();
   int lastSgfMoveNumber=0;
   int handicap=0;
   int loginAttempts=0;
   String message;
   boolean currentMessage=false;
-  public ArrayList<Move> getSgfMoves() {
-	return sgfMoves;
-}
-
-ArrayList <Move>sgfMoves = new ArrayList<>();
   
-  public String getPlayerBlack() {
-		return playerBlack;
-	}
-
-
-	public void setPlayerBlack(String playerBlack) {
-		this.playerBlack = playerBlack;
-	}
-  
-  public boolean isExcessive_usage() {
-		return excessive_usage;
-	}
-
-
-	public void setExcessive_usage(boolean excessive_usage) {
-		this.excessive_usage = excessive_usage;
-	}
-
-
-public String getMessage() 
-  {
-	  if (currentMessage) return message;
-	 
-	  else return "";
-    }
-
-  
-  public String getplayerWhite() {
-		return playerWhite;
-	}
-
-	public void setplayerWhite(String playerWhite) {
-		this.playerWhite = playerWhite;
-	}
-public void setMessage(String message) {
-	this.message = message;
-}
-
-public int getHandicap() {
-	return handicap;
-}
-
-public void setHandicap(int handicap) {
-	this.handicap = handicap;
-}
-
-Move lastSgfMove;
-  boolean loggedIn=false;
-  
-  public Move getLastSgfMove() {
-	return lastSgfMove;
-}
-
-public void setLastSgfMove(Move lastSgfMove) {
-	this.lastSgfMove = lastSgfMove;
-}
-
-public int getLastSgfMoveNumber() {
-	return lastSgfMoveNumber;
-}
-
-public void setLastSgfMoveNumber(int lastSgfMoveNumber) {
-	this.lastSgfMoveNumber = lastSgfMoveNumber;
-}
-
-public ArrayList getComments() {
-	return comments;
-}
-
-
-public void setComments(ArrayList comments) {
-	this.comments = comments;
-}
-
-
-
-  public String getLoginNameBlack() {
-	return loginNameBlack;
-}
-
-
-public void setLoginNameBlack(String loginNameBlack) {
-	this.loginNameBlack = loginNameBlack;
-}
-
-
-public String getLoginNameWhite() {
-	return loginNameWhite;
-}
-
-
-public void setLoginNameWhite(String loginNameWhite) {
-	this.loginNameWhite = loginNameWhite;
-}
 
 
 public DragonAccess(String userId, String password) 
@@ -287,6 +178,11 @@ public long checkForMove2()
 	 String secondLine="";    
 	 String gameStr="";
 	 StringBuffer rawMessage = new StringBuffer();
+	 if (!loggedIn) 
+	 {	 
+		 //System.out.println("DragonAccess:checkForMove("+timeStr+") not logged in");
+		 return 0;
+	 }
 	 rawMessage.append("checkForMove: "); 
 	 boolean emptyList = false;
 	 long gameLong=0;
@@ -361,67 +257,7 @@ public long checkForMove2()
 	 return gameLong;
    }
    
-   /*
-   public long checkForMove(String timeStr)
-   {
-	 String surl = "http://www.dragongoserver.net/quick_status.php?version=2&quick_mode=1&user=" + userId;
-	 
-	 String secondLine="";    
-	 String gameStr="";
-	 StringBuffer rawMessage = new StringBuffer();
-	 rawMessage.append("checkForMove: "); 
-	 boolean emptyList = false;
-	 long gameLong=0;
-	 feedback=new StringBuffer();
-	 
-	 try
-	 {
-	   URL url;
-	   url = new URL(surl);
-	   URLConnection con = url.openConnection();
-	   con = url.openConnection();
-	   
-	   InputStream is = con.getInputStream();
-	   InputStreamReader isr = new InputStreamReader(is);
-	   BufferedReader br = new BufferedReader(isr);
-	   String line = null;
-	   
-	   int count=0;
-	   while ( (line = br.readLine()) != null)
-	   {
-		  System.out.println(count+") "+timeStr+" check for move: " + line);
-	      rawMessage.append(line+"\n");
-	      if (line.contains("empty list")) emptyList=true;
-	      count++;
-	      if (count==2) secondLine=line;
-	   }
-	 } catch (Exception e)  {  feedback.append(e.getMessage()); return 0; }
-	 
-	 
-	 
-	 if (emptyList)
-	 {
-	    feedback.append("no moves waiting"); 
-	 }
-	 else 
-	 {	 
-	   try
-	   {
-	     gameStr=secondLine.substring(4,11);
-	   } catch ( Exception e) {feedback.append("error parsing gameStr: "); feedback.append(rawMessage); }
-	   
-	   if (gameStr.length()>0)
-	   {
-	     try { gameLong = Long.parseLong(gameStr.trim()); } catch (Exception e) {}
-	     if (gameLong>0) feedback.append("Move Found, game #"+gameStr.trim());
-	     else feedback.append(rawMessage);
-	   }
-	 }
-	 
-	 System.out.println();
-	 return gameLong;
-   }
-   */
+   
    
    public boolean getSgf(String currentGameNo)
    {
@@ -582,6 +418,8 @@ public long checkForMove2()
      boolean returnVal=false;
    //  System.out.println("trying local file");
      int count=0;
+     lastSgfMoveNumber=0;
+     sgfMoves = new ArrayList<>();
      try 
      {
    	   resourceFile= new File(directory.getCanonicalPath()+"\\"+currentGameNo+".sgf");
@@ -687,9 +525,9 @@ public long checkForMove2()
    }
    
    
-   public void login()
+   public boolean login()
    {
-	 loggedIn=true;  
+	 loggedIn=false;  
 	 String secondLine="";
 	 StringBuffer rawMessage = new StringBuffer();
 	 rawMessage.append("login(): ");
@@ -738,24 +576,19 @@ public long checkForMove2()
          count++;
          if (count==2) secondLine=line;
        }
-	 } catch (Throwable t)  {  t.printStackTrace(); } 
+	 } catch (Throwable t)  { return false; } 
        
 	  if (secondLine.contains("Ok")) 
 	  {	  
 		  feedback.append("login: ok\n");
 	  }
 	  else { feedback.append(rawMessage); feedback.append("\n"); }
+	  
+	  loggedIn=true;
+	  return true;
    }
    
-   public String getSgfFile()
-   {
-	  return sgfFileString.toString(); 
-   }
    
-   public String getFeedback()
-   {
-	  return feedback.toString(); 
-   }
    
    public void testNotes()
    {
@@ -785,75 +618,139 @@ public long checkForMove2()
 	       
 		 
    }
-   
-   /*
-   public void Stuff()
-   {
-	   // get an HTTP connection to POST to
-   	String username="romango", password="smegma";
-   	//String loginUrl = "http://www.dragongoserver.net/login.php";
-   	//String redirectUrl = "http://www.dragongoserver.net/wap/status.php";
-   //	String getSgf = "http://www.dragongoserver.net/sgf.php?gid=732698&quick_mode=1&userid=" + username + "&passwd=" + password;
-   	String getSgf = "http://www.dragongoserver.net/sgf.php?gid=732698&quick_mode=1";
-       
-   	String getStatus = "http://www.dragongoserver.net/quick_status.php?&quick_mode=1&user=" + username + "&passwd=" + password;
-   	String makePlay="http://www.dragongoserver.net/quick_play.php?gid=732698&handle=romango&sgf_prev=en&sgf_move=ef&color=B";
-       String login="http://www.dragongoserver.net/login.php?quick_mode=1&userid=" + username + "&passwd=" + password;
-   	try
-       {
-           // LOGIN
-           String surl = login;
-           URL url = new URL(surl);
-           
-           CookieManager manager = new CookieManager();
-           manager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
-           CookieHandler.setDefault(manager);
-         
-           URLConnection con = url.openConnection();
-           Object obj = con.getContent();
-          
-           con= url.openConnection();
-           obj = con.getContent();
-           CookieStore cookieJar = manager.getCookieStore();
-           List cookies = cookieJar.getCookies();
-           System.out.println("cookies: "+cookies.size());
-           Iterator it = cookies.iterator();
-           HttpCookie cookie;
-           while(it.hasNext()) 
-           {
-             cookie = (HttpCookie)it.next();
-             System.out.println("Cookie: "+ cookie.getName()+" value: "+cookie.getValue());
-           }
-          
-           InputStream is = con.getInputStream();
-           InputStreamReader isr = new InputStreamReader(is);
-           BufferedReader br = new BufferedReader(isr);
-           String line = null;
-           while ( (line = br.readLine()) != null)
-           {
-               System.out.println("line: " + line);
-           }
-           
-           
-           // MAKE PLAY
-           surl = makePlay;
-           url = new URL(surl);
-           
-           con = url.openConnection();
-           is = con.getInputStream();
-           isr = new InputStreamReader(is);
-           br = new BufferedReader(isr);
-           
-           line = null;
-           while ( (line = br.readLine()) != null)
-           {
-               System.out.println("line: " + line);
-           }
-          
-       } catch (Throwable t)  {  t.printStackTrace(); }
-   }
-   */
-   
-   
+   public boolean isLocalFile() {
+		return localFile;
+	}
+
+
+	public void setLocalFile(boolean localFile) {
+		this.localFile = localFile;
+	}
+
+
+	  
+	  
+	  public ArrayList<Move> getSgfMoves() {
+		return sgfMoves;
+	}
+
+	ArrayList <Move>sgfMoves = new ArrayList<>();
+	  
+	  public String getPlayerBlack() {
+			return playerBlack;
+		}
+
+
+		public void setPlayerBlack(String playerBlack) {
+			this.playerBlack = playerBlack;
+		}
+	  
+	  public boolean isExcessive_usage() {
+			return excessive_usage;
+		}
+
+
+		public void setExcessive_usage(boolean excessive_usage) {
+			this.excessive_usage = excessive_usage;
+		}
+
+
+	public String getMessage() 
+	  {
+		  if (currentMessage) return message;
+		 
+		  else return "";
+	    }
+
+	  
+	  public String getplayerWhite() {
+			return playerWhite;
+		}
+
+		public void setplayerWhite(String playerWhite) {
+			this.playerWhite = playerWhite;
+		}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public int getHandicap() {
+		return handicap;
+	}
+
+	public void setHandicap(int handicap) {
+		this.handicap = handicap;
+	}
+
+	Move lastSgfMove;
+	  boolean loggedIn=false;
+	  
+	  public boolean isLoggedIn() {
+		return loggedIn;
+	}
+
+
+	public void setLoggedIn(boolean loggedIn) {
+		this.loggedIn = loggedIn;
+	}
+
+
+	public Move getLastSgfMove() {
+		return lastSgfMove;
+	}
+
+	public void setLastSgfMove(Move lastSgfMove) {
+		this.lastSgfMove = lastSgfMove;
+	}
+
+	public int getLastSgfMoveNumber() {
+		return lastSgfMoveNumber;
+	}
+
+	public void setLastSgfMoveNumber(int lastSgfMoveNumber) {
+		this.lastSgfMoveNumber = lastSgfMoveNumber;
+	}
+
+	public ArrayList getComments() {
+		return comments;
+	}
+
+
+	public void setComments(ArrayList comments) {
+		this.comments = comments;
+	}
+
+
+
+	  public String getLoginNameBlack() {
+		return loginNameBlack;
+	}
+
+
+	public void setLoginNameBlack(String loginNameBlack) {
+		this.loginNameBlack = loginNameBlack;
+	}
+
+
+	public String getLoginNameWhite() {
+		return loginNameWhite;
+	}
+
+
+	public void setLoginNameWhite(String loginNameWhite) {
+		this.loginNameWhite = loginNameWhite;
+	}
+	
+	public String getSgfFile()
+	   {
+		  return sgfFileString.toString(); 
+	   }
+	   
+	   public String getFeedback()
+	   {
+		  return feedback.toString(); 
+	   }
+
+
 
 }

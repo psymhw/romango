@@ -12,15 +12,19 @@ public class Move
 {
   public int x;
   public int y;
+ 
   public int color;
   public String sgfPosition;
   public double sceneX;
   public double  sceneY;
+  final static char[] xLabels = new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't'};
+  
   
   public Move(double sceneX, double sceneY, int color)
   {
 	this.color=color;
-  
+   
+	
     double xxx = sceneX+23;
     double yyy = sceneY+23;
 	  
@@ -38,6 +42,7 @@ public class Move
     this.color = color;
   }
   
+  /*
   public Move(int x, int y, int color)
   {
     this.x=x;
@@ -45,15 +50,16 @@ public class Move
     this.color=color;
     sgfPosition=calcSgfPosition();
   }
-    
+    */
   public Move(String sgfPosition, int color)
   {
 	this.sgfPosition=sgfPosition;
 	this.color=color;
+	
 	this.x=calcX();
 	this.y=calcY();
   }
-  
+ 
   public String calcSgfPosition()
   {
     String pos = new String();
@@ -104,6 +110,11 @@ public class Move
   public SimplePosition getSimplePosition()
   {
 	 return new SimplePosition(x,y); 
+  }
+  
+  public String getBoardPosition()
+  {
+	  return xLabels[x]+"-"+(19-y);
   }
   
 }
