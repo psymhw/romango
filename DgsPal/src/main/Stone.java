@@ -1,5 +1,6 @@
 package main;
 
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -17,9 +18,6 @@ public class Stone extends ImageView
  
   private static Image bx=null;
   private static Image bcheck=null;
-  
- 
-  
   private static Image wx=null;
   private static Image wcheck=null;
   
@@ -33,6 +31,8 @@ public class Stone extends ImageView
   int style=0;
   
   public boolean forget=false;
+  final static char[] xLabels = new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't'};
+  
   
   public Stone(Move move)
   {
@@ -45,6 +45,9 @@ public class Stone extends ImageView
    
     this.stoneColor=move.color;
     createStone();
+    
+    Tooltip t = new Tooltip(xLabels[x]+"-"+(19-y)+"    ");
+    Tooltip.install(this, t);
   }
   
   /*

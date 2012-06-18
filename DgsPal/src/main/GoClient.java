@@ -31,10 +31,13 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextAreaBuilder;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -53,7 +56,6 @@ import javafx.util.Duration;
 
 public class GoClient extends Application  
 {  
-  final static boolean feedback_refresh_rate=false;
    	
   final static int OPEN = 0;
   final static int BLACK = 1;
@@ -73,6 +75,8 @@ public class GoClient extends Application
   final static int STYLE_LAST_MOVE=11;
   final static boolean TRIAL=true;
   final static boolean LIVE=false;
+  final static int FROM_SERVER = 0;
+  final static int FROM_LOCAL_FILE = 1;
   
   private ImageView quit;
   
@@ -149,6 +153,9 @@ public class GoClient extends Application
   String currentGameNo="noset";
   
   Button commitButton;
+  Button deleteLastMoveButton;
+  Button reviewForwardButton;
+  Button reviewBackwardButton;
 
   TextArea feedbackArea;
   TextArea sendMessageArea;
@@ -164,7 +171,7 @@ public class GoClient extends Application
   private Timeline timeline;
   private KeyFrame keyFrame;
   
-  Button deleteLastMoveButton;
+  
   
  // Refresh refresh;
   int cycleCount=0;
@@ -190,9 +197,8 @@ public class GoClient extends Application
   Image vertSgfLabelsImage;
   Image vertRegularLabelsImage;
   Image horizRegularLabelsImage;
- 
-  
-  
+  Date lastTimedUpdate=null;
+  int reviewPosition=0;  
   
   public void start(final Stage stage) throws Exception  
   {  
@@ -235,16 +241,31 @@ public class GoClient extends Application
    
      horizLabelView.setStyle(style);
      */
+     
+     /*
+     final Menu menu1 = new Menu("File");
+     final Menu menu2 = new Menu("Options");
+     final Menu menu3 = new Menu("Help");
+     
+     MenuBar menuBar = new MenuBar();
+     menuBar.getMenus().addAll(menu1, menu2, menu3);
+     
+     vBox.getChildren().add(menuBar);
+     */
     
      vBox.getChildren().add(horizLabelView);
      vBox.getChildren().add(getBoardGroup());
      
+    
      HBox hBox = new HBox();
      hBox.getChildren().add(vertLabelView);
      hBox.getChildren().add(vBox);
     
      mainBox.getChildren().add(hBox);
      mainBox.getChildren().add(getRightPane());
+     
+   
+     
      
      ScrollPane scrollPane = new ScrollPane();
      scrollPane.setContent(mainBox);
@@ -255,8 +276,12 @@ public class GoClient extends Application
     
      scene.setFill(null);
   
+     
+     
+     
     //   stage.initStyle(StageStyle.TRANSPARENT);
     stage.setScene(scene);  
+    
     stage.getIcons().add(smallerBlackStoneImage);
     stage.setTitle("DGS Pal");
     stage.show();  
@@ -289,7 +314,25 @@ public class GoClient extends Application
   
   private void refreshTimed()
   {
-	boolean gameFound=false;
+	boolean gameFound=false; 
+	Date now = new Date();
+	long elapsedMillis=0;
+	
+	// check for rapid refresh calls because computer has been in sleep mode
+	if (lastTimedUpdate!=null)
+	{
+	  elapsedMillis=now.getTime()-lastTimedUpdate.getTime();
+	  if (elapsedMillis<3000) // 3 sec
+	  {
+		// System.out.println("Stopping autoRefresh") ; 
+		stopAutoRefresh();
+		lastTimedUpdate=null;
+		feedbackArea.insertText(0, "restarting auto refresh\n");
+		// System.out.println("Starting autoRefresh") ; 
+		startAutoRefresh();
+		return;
+	  }
+	}
 		 
 	long gameNo= dragonAccess.checkForMove(timeStr[level]);
 	boolean excessive_usage=dragonAccess.isExcessive_usage();
@@ -302,11 +345,12 @@ public class GoClient extends Application
 	
     if (gameFound)
     {
-    	System.out.println("timed refresh: game found "+gameNo);
+      //System.out.println("timed refresh: game found "+gameNo);
       stopAutoRefresh();
       deleteLastMoveButton.setDisable(true);
+      reviewForwardButton.setDisable(true);
       clear();
-      if (refreshCommon(false))
+      if (refreshCommon(FROM_SERVER))
       {
   	    playAllSgfMoves();
         feedbackArea.insertText(0, df.format(new Date())+" "+lastSgfMove.getColor()+": "+lastSgfMove.getSgfPosition()+"\n");
@@ -324,25 +368,28 @@ public class GoClient extends Application
 	  }
     }
   }
+  lastTimedUpdate=new Date();  
 }
   
-  private void login()
+  private boolean login()
   {
 	dragonAccess=new DragonAccess(userId, password);
-	dragonAccess.login(); 
+	return dragonAccess.login(); 
   }
   
   private void refreshStartup()
   {
 	boolean gameFound=false;
+	long gameNo=0;
+	boolean loginSuccess=login();
 	
-	login();
+	if (loginSuccess)
+	{
+  	   gameNo= dragonAccess.checkForMove("startup");
+	   boolean excessive_usage=dragonAccess.isExcessive_usage();
+	   if (excessive_usage) feedbackArea.insertText(0, "DGS server complaining about excessive usage\n");
+	}
 	
-	long gameNo= dragonAccess.checkForMove("startup");
-	boolean excessive_usage=dragonAccess.isExcessive_usage();
-	if (excessive_usage) feedbackArea.insertText(0, "DGS server complaining about excessive usage\n");
-	
-	//feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
 	
 	if (gameNo>0) gameFound=true;	
 	  
@@ -372,12 +419,12 @@ public class GoClient extends Application
 	boolean success=false;
 	if (gameFound) 
 	{
-		success=refreshCommon(false);
+		success=refreshCommon(FROM_SERVER);
 		feedbackArea.insertText(0, "game loaded from server\n");
 	}
 	else
 	{
-		success= refreshCommon(true);
+		success= refreshCommon(FROM_LOCAL_FILE); 
 		feedbackArea.insertText(0, "game loaded from local file\n");
 	}
 	
@@ -407,9 +454,15 @@ public class GoClient extends Application
     }
     
     deleteLastMoveButton.setDisable(true);
+    reviewForwardButton.setDisable(true);
     //System.out.println("local File: "+localFile);
-    if (!gameFound) startAutoRefresh();
+    
+     if ((!gameFound)&&(loginSuccess)) startAutoRefresh();
+    // startAutoRefresh(); // temporary for testing
+    if (!loginSuccess) feedbackArea.insertText(0, "LOGIN FAILED - network down?"+"\n");
 	}
+	
+	//showVars("refreshStartup");
   }
   
   private void refreshLocal()
@@ -449,8 +502,8 @@ public class GoClient extends Application
 		clear();
 		
 		boolean success=false;
-		if (gameFound) success=refreshCommon(false);
-		else success= refreshCommon(false);
+		if (gameFound) success=refreshCommon(FROM_SERVER);
+		else success= refreshCommon(FROM_LOCAL_FILE);
 		
 		if (success)
         {
@@ -467,15 +520,32 @@ public class GoClient extends Application
 	        turnImageView.setImage(blackStoneImage);
 	        stage.getIcons().add(smallerBlackStoneImage);
 	      }
-	      if (!gameFound) startAutoRefresh();
+	      //if (!gameFound) startAutoRefresh();
+	      if ((!gameFound)&&(dragonAccess.isLoggedIn())) startAutoRefresh();
 	      deleteLastMoveButton.setDisable(true);
+	      reviewForwardButton.setDisable(true);
+	      reviewBackwardButton.setDisable(false);
         }
+	//	showVars("refreshLocal");
   }
   
-  private boolean refreshCommon(boolean local)
+  void showVars(String call)
+  {
+	System.out.println("call: "+call);
+	System.out.println("lastSgfMoveNumber: "+lastSgfMoveNumber);
+	System.out.println("sgfMoves.size(): "+sgfMoves.size());
+	System.out.println("colorToPlay: "+colorToPlay);
+	System.out.println("reviewPosition: "+reviewPosition);
+	System.out.println("moveNumber: "+moveNumber);
+	
+  }
+  
+  private boolean refreshCommon(int location)
   {
 	boolean success=false;
-	if (local) success=dragonAccess.getLocalSgfFile(currentGameNo);
+	//System.out.println("Setting moveNumber to 0");
+	moveNumber=0;
+	if (location==FROM_LOCAL_FILE) success=dragonAccess.getLocalSgfFile(currentGameNo);
 	else success= dragonAccess.getSgf(currentGameNo); 
 	if (success)
 	{	
@@ -565,6 +635,25 @@ private void writeResources()
 	} catch (IOException e) { e.printStackTrace();}
 }
 
+private VBox getRightPane() 
+{
+  VBox vBox = new VBox(); 
+  vBox.setPadding(new Insets(10, 10, 10, 10));
+  vBox.setPadding(new Insets(3,5,3,5));
+    
+  vBox.getChildren().add(getButtonBox());
+  vBox.getChildren().add(getIdentBox());
+  vBox.getChildren().add(getInfoGroup());
+  vBox.getChildren().add(timedUpdateText);
+  vBox.getChildren().add(getFeedbackLabel());
+  vBox.getChildren().add(getFeedbackBox());
+  vBox.getChildren().add(getMessageLabel());
+  vBox.getChildren().add(getReceiveMessageBox());
+  vBox.getChildren().add(getSendMessageBox());
+  return vBox;
+}
+
+/*
 private GridPane getRightPane() 
 {
 	GridPane gridPane = new GridPane(); 
@@ -584,13 +673,9 @@ private GridPane getRightPane()
     gridPane.add(getReceiveMessageBox(), 0, 7);
     gridPane.add(getSendMessageBox(), 0, 8);
     
- //   gridPane.add(getControlButtons2(), 0, 5);
-  //  gridPane.add(getRefreshButton(), 0, 5);
-  //  gridPane.add(getCommitButton(), 0, 6);
-  //  gridPane.add(getCommitTestButton(), 0, 7);
 	return gridPane;
 }
-
+*/
   Group getFeedbackLabel()
   {
 	  
@@ -639,19 +724,7 @@ private GridPane getRightPane()
 	   return labelGroup;
   }
 
-  /*
-  HBox getControlButtons2()
-  {
-	  HBox buttonBox = new HBox();
-      buttonBox.setPadding(new Insets(3, 3, 3, 3));
-      buttonBox.setSpacing(5);
- 
-      buttonBox.getChildren().add(getRefreshButton());
-      buttonBox.getChildren().add(getCommitButton());
-    
-	return buttonBox;  
-  }
-   */
+  
   private Group getBoardGroup()
   {
 	  Group boardGroup = new Group();
@@ -665,188 +738,115 @@ private GridPane getRightPane()
 	  return boardGroup;
   }
   
-private GridPane getButtonBox() 
-{
-	GridPane gridPane = new GridPane(); 
-    gridPane.setPadding(new Insets(3, 3, 3, 3));
-    gridPane.setVgap(5);
-    gridPane.setHgap(5);
-    
-	//HBox buttonBox = new HBox();
-    //  buttonBox.setPadding(new Insets(3, 3, 3, 3));
-   //   buttonBox.setSpacing(5);
- 
-    gridPane.add(getDeleteLastMoveButton(), 0 ,0);
-    gridPane.add(getRefreshButton(), 1 ,0);
-    gridPane.add(getCommitButton(), 2, 0);
-    //  buttonBox.getChildren().add(getBlankButton());
-      
-      
-      Rectangle bx = new Rectangle();
-	    bx.setWidth(73);
-	    bx.setHeight(30);
-	    bx.setArcWidth(2);
-	    bx.setArcHeight(2); 
-	    Color c =  Color.web("DAE6F3");
-	    bx.setFill(c);
-      
-	    
-        Group userButtonGroup = new Group();
-     //   userButtonGroup.getChildren().add(bx);
-        Button userButton = getUserButton();
-        
-        userButtonGroup.getChildren().add(userButton);
-	    
-	    
-    //  buttonBox.getChildren().add(getUserButton());
-        gridPane.add(getLabelsButton(), 3, 0);
-     //   gridPane.add(getTestButton(), 3, 0);
-      gridPane.add(userButton, 4, 0);
-      gridPane.setHalignment(userButton, HPos.RIGHT);
-      
-	return gridPane;
-}
-
-private HBox getIdentBox() 
-{
-   HBox identBox = new HBox();
-   identBox.setPadding(new Insets(3, 3, 3, 3));
-   identBox.setSpacing(5);
-   
-   gameLabel = new Text("");
-   gameLabel.setFont(Font.font("Serif", 18));
-   
-  // Label userIdLinkLabel = new Label("User ID: ");
-  // userIdLinkLabel.setFont(Font.font("Serif", 18));
-  // userIdLinkLabel.setPrefHeight(30);
- //  userIdLinkLabel.setAlignment(Pos.CENTER_RIGHT);
-   
-  // opponentVal = new Text("");
-  // opponentVal.setFont(Font.font("Serif", 18));
-     
- //  identBox.getChildren().add(userIdLinkLabel);
-  // userNameLink=loginButton();
- //  userNameLink.setPrefHeight(30);
- //  userNameLink.setAlignment(Pos.CENTER_RIGHT);
-   
-   
-   identBox.getChildren().add(gameLabel);
- //  identBox.getChildren().add(opponentVal);
-  // identBox.getChildren().add(getCommitButton());
-   return identBox;
-}
-   
-private Group getInfoGroup()
-{
-	Group infoGroup = new Group();
-	  //  infoGroup.getChildren().add(r);
-	 //   infoGroup.getChildren().add(buttonFlowPane);
-	  //  infoGroup.getChildren().add(identityFlowPane);
-	//    
-	Rectangle bx = new Rectangle();
-	    bx.setWidth(300);
-	    bx.setHeight(200);
-	    bx.setArcWidth(20);
-	    bx.setArcHeight(20); 
-	    bx.setFill(Color.GRAY);
-	    
-	    
-	    
-	    Text gameNoLabel = new Text("Game #:");
-	    gameNoLabel.setFont(Font.font("Serif", 20));
-	    
-	    gameNoVal.setFont(Font.font("Serif", 20));
-	    
-	    Text moveNoLabel = new Text("Move #:");
-	    moveNoLabel.setFont(Font.font("Serif", 20));
-	      
-	    moveNoVal.setFont(Font.font("Serif", 20));
-	      
-	    Text handicapLabel = new Text("Handicap:");
-	    handicapLabel.setFont(Font.font("Serif", 20));
-	    
-	    //handicapVal.setText(""+handicapInt);
-	    handicapVal.setFont(Font.font("Serif", 20));
-	    
-	    Text capturedBlackLabel = new Text("Captured Black:");
-	    capturedBlackLabel.setFont(Font.font("Serif", 20));
-	    
-	    capturedBlackVal.setFont(Font.font("Serif", 20));
-	    
-	    Text capturedWhiteLabel = new Text("Captured White:");
-	    capturedWhiteLabel.setFont(Font.font("Serif", 20));
-	    
-	    capturedWhiteVal.setFont(Font.font("Serif", 20));
-	    
-	    Text localMovesLabel = new Text("Local Moves:");
-	    localMovesLabel.setFont(Font.font("Serif", 20));
-	    
-	    localMovesVal.setFont(Font.font("Serif", 20));
-	    
-	    Text turnLabel = new Text("Turn: ");
-	    turnLabel.setFont(Font.font("Serif", 20));
-	    
-	    GridPane gridPane = new GridPane();
-        gridPane.setPadding(new Insets(10, 10, 10, 10));
-        gridPane.setVgap(2);
-        gridPane.setHgap(15);
-        
-        int row=0;
-        gridPane.add(gameNoLabel, 0, row);
-        gridPane.add(gameNoVal, 1, row++);
-        
-        gridPane.add(handicapLabel, 0, row);
-        gridPane.add(handicapVal, 1, row++);
-        
-        gridPane.add(capturedBlackLabel, 0, row);
-        gridPane.add(capturedBlackVal, 1, row++);
-        
-        gridPane.add(capturedWhiteLabel, 0, row);
-        gridPane.add(capturedWhiteVal, 1, row++);
-        
-        gridPane.add(moveNoLabel, 0, row);
-        gridPane.add(moveNoVal, 1, row++);
-        
-        gridPane.add(localMovesLabel, 0, row);
-        gridPane.add(localMovesVal, 1, row++);
-        
-        gridPane.add(turnLabel,0,row);
-        gridPane.add(turnImageView,1,row++);
-        
-        gridPane.setHalignment(handicapLabel, HPos.RIGHT);
-        gridPane.setHalignment(capturedBlackLabel, HPos.RIGHT);
-        gridPane.setHalignment(capturedWhiteLabel, HPos.RIGHT);
-        gridPane.setHalignment(localMovesLabel, HPos.RIGHT);
-        gridPane.setHalignment(moveNoLabel, HPos.RIGHT);
-        gridPane.setHalignment(gameNoLabel, HPos.RIGHT);
-        gridPane.setHalignment(turnLabel, HPos.RIGHT);
-        
-        
-        infoGroup.getChildren().add(bx);
-	    infoGroup.getChildren().add(gridPane);
-	    
-	    
-	    return infoGroup;
-}
-
-/*
-  private Button getSgfButton() 
+  private HBox getButtonBox() 
   {
-    Button b = new Button("Get SGF");
-    // b.setLayoutX(10);
-    // b.setLayoutY(10);
-    EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
-	          public void handle(MouseEvent event) {
-	            //  System.out.println("Hello World!"); 
-	        	  
-	        	  
-	        	  playAllSgfMoves();
-	          } };
-	  
-     b.setOnMouseClicked(bHandler);
-     return b;
+	HBox buttonBox = new HBox(); 
+	buttonBox.setPadding(new Insets(3, 3, 3, 3));
+	buttonBox.setSpacing(3);
+ 
+	buttonBox.getChildren().add(getDeleteLastMoveButton());
+	buttonBox.getChildren().add(getReviewBackwardButton());
+	buttonBox.getChildren().add(getRefreshButton());
+	buttonBox.getChildren().add(getReviewForwardButton());
+	buttonBox.getChildren().add(getCommitButton());
+	buttonBox.getChildren().add(getLabelsButton());
+	buttonBox.getChildren().add(getUserButton());
+	return buttonBox;
   }
-  */
+
+
+  private HBox getIdentBox() 
+  {
+    HBox identBox = new HBox();
+    identBox.setPadding(new Insets(3, 3, 3, 3));
+    identBox.setSpacing(5);
+   
+    gameLabel = new Text("");
+    gameLabel.setFont(Font.font("Serif", 18));
+   
+    identBox.getChildren().add(gameLabel);
+    return identBox;
+  }
+   
+  private Group getInfoGroup()
+  {
+	Group infoGroup = new Group();
+	Rectangle bx = new Rectangle();
+	bx.setWidth(300);
+	bx.setHeight(200);
+	bx.setArcWidth(20);
+	bx.setArcHeight(20); 
+	bx.setFill(Color.GRAY);
+	    
+	Text gameNoLabel = new Text("Game #:");
+	gameNoLabel.setFont(Font.font("Serif", 20));
+	gameNoVal.setFont(Font.font("Serif", 20));
+	    
+	Text moveNoLabel = new Text("Move #:");
+	moveNoLabel.setFont(Font.font("Serif", 20));
+	moveNoVal.setFont(Font.font("Serif", 20));
+	      
+	Text handicapLabel = new Text("Handicap:");
+	handicapLabel.setFont(Font.font("Serif", 20));
+    handicapVal.setFont(Font.font("Serif", 20));
+	    
+	Text capturedBlackLabel = new Text("Captured Black:");
+	capturedBlackLabel.setFont(Font.font("Serif", 20));
+    capturedBlackVal.setFont(Font.font("Serif", 20));
+	    
+    Text capturedWhiteLabel = new Text("Captured White:");
+    capturedWhiteLabel.setFont(Font.font("Serif", 20));
+    capturedWhiteVal.setFont(Font.font("Serif", 20));
+	    
+    Text localMovesLabel = new Text("Local Moves:");
+    localMovesLabel.setFont(Font.font("Serif", 20));
+    localMovesVal.setFont(Font.font("Serif", 20));
+	    
+    Text turnLabel = new Text("Turn: ");
+    turnLabel.setFont(Font.font("Serif", 20));
+	    
+    GridPane gridPane = new GridPane();
+    gridPane.setPadding(new Insets(10, 10, 10, 10));
+    gridPane.setVgap(2);
+    gridPane.setHgap(15);
+        
+    int row=0;
+    gridPane.add(gameNoLabel, 0, row);
+    gridPane.add(gameNoVal, 1, row++);
+        
+    gridPane.add(handicapLabel, 0, row);
+    gridPane.add(handicapVal, 1, row++);
+        
+    gridPane.add(capturedBlackLabel, 0, row);
+    gridPane.add(capturedBlackVal, 1, row++);
+        
+    gridPane.add(capturedWhiteLabel, 0, row);
+    gridPane.add(capturedWhiteVal, 1, row++);
+        
+    gridPane.add(moveNoLabel, 0, row);
+    gridPane.add(moveNoVal, 1, row++);
+        
+    gridPane.add(localMovesLabel, 0, row);
+    gridPane.add(localMovesVal, 1, row++);
+        
+    gridPane.add(turnLabel,0,row);
+    gridPane.add(turnImageView,1,row++);
+        
+    GridPane.setHalignment(handicapLabel, HPos.RIGHT);
+    GridPane.setHalignment(capturedBlackLabel, HPos.RIGHT);
+    GridPane.setHalignment(capturedWhiteLabel, HPos.RIGHT);
+    GridPane.setHalignment(localMovesLabel, HPos.RIGHT);
+    GridPane.setHalignment(moveNoLabel, HPos.RIGHT);
+    GridPane.setHalignment(gameNoLabel, HPos.RIGHT);
+    GridPane.setHalignment(turnLabel, HPos.RIGHT);
+        
+    infoGroup.getChildren().add(bx);
+	infoGroup.getChildren().add(gridPane);
+	    
+	return infoGroup;
+  }
+
+
 
   private Button getCommitButton() 
   {
@@ -868,7 +868,7 @@ private Group getInfoGroup()
 	            if (success) 
 	            { 
 	            	writeMoveToLocalSgfFile(firstLocalMove);
-	            	feedbackArea.insertText(0, df.format(new Date())+" "+firstLocalMove.getColor()+": "+firstLocalMove.getSgfPosition()+"\n");
+	            	feedbackArea.insertText(0, df.format(new Date())+" "+firstLocalMove.getColor()+": "+firstLocalMove.getBoardPosition()+"\n");
 	            	commitButton.setDisable(true); 
 	                if (sendMessageArea.getText()!=null)
 	                {	
@@ -907,6 +907,8 @@ private Group getInfoGroup()
 	          } };
 	  
      commitButton.setOnMouseClicked(bHandler);
+     commitButton.setTooltip(new Tooltip("Commit Move"));
+     commitButton.setPrefHeight(28);
      return commitButton;
   }
   
@@ -1013,38 +1015,29 @@ private Group getInfoGroup()
 	  
      userButton.setOnMouseClicked(bHandler);
      userButton.setGraphic(new ImageView(userImage));
+     userButton.setPrefHeight(28);
+     userButton.setTooltip(new Tooltip("Set DGS username and password"));
      return userButton;
   }
   
-  private Button getBlankButton() 
-  {
-    Button blankButton = new Button("     ");
-    // b.setLayoutX(10);
-    // b.setLayoutY(10);
-  //  EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
-	//          public void handle(MouseEvent event) 
-	//          {
-	//        	dragonAccess.login();  
-	////        	dragonAccess.getSgf(currentGameNo);
-	//          } };
-	  
-     //commitTestButton.setOnMouseClicked(bHandler);
-     blankButton.setDisable(true);
-     return blankButton;
-  }
 
   private Button getRefreshButton() 
   {
-    Button refreshButton = new Button("Refresh");
+    Button refreshButton = new Button("*");
     // b.setLayoutX(10);
     // b.setLayoutY(10);
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) 
 	          {
+	        	reviewPosition=0;
+	        	commitButton.setDisable(true);
+	        	reviewForwardButton.setDisable(true);
 	        	refreshLocal();
 	          } };
 	  
      refreshButton.setOnMouseClicked(bHandler);
+     refreshButton.setTooltip(new Tooltip("Go to Current Game Position"));
+     refreshButton.setPrefHeight(28);
      return refreshButton;
   }
 
@@ -1156,7 +1149,8 @@ private Group getInfoGroup()
 	}
 	
 	markedStones = new ArrayList<>();
-	markLastSgfStone();
+	//markLastSgfStone();
+	markLastStone();
   }
   
   private Stone getStone(SimplePosition position) 
@@ -1262,9 +1256,11 @@ void restoreMoveMap(int[][] savedMoveMap)
     deleteLastMoveButton = new Button("< x");
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
     {
-      removeLastStone(); 
+      deleteLastStone(); 
     }};
     deleteLastMoveButton.setOnAction(bHandler2);
+    deleteLastMoveButton.setPrefHeight(28);
+    deleteLastMoveButton.setTooltip(new Tooltip("Delete Last Move"));
     return deleteLastMoveButton; 
   }
   
@@ -1276,7 +1272,49 @@ void restoreMoveMap(int[][] savedMoveMap)
       toggleLabels(); 
     }};
     button.setOnAction(bHandler2);
+    button.setPrefHeight(28);
+    button.setTooltip(new Tooltip("Toggle board coordinates on/off"));
     return button; 
+  }
+  
+  private Button getReviewForwardButton() 
+  {
+    reviewForwardButton = new Button(">");
+    EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
+    {
+      // review forward
+      reviewPosition++;
+      playNextStone();
+     // System.out.println("reviewPosition: "+reviewPosition);
+      if (reviewPosition==0)
+      {
+    	reviewForwardButton.setDisable(true);
+    	
+      }
+    }};
+    reviewForwardButton.setOnAction(bHandler2);
+    reviewForwardButton.setPrefHeight(28);
+    reviewForwardButton.setTooltip(new Tooltip("Play Moves Forward"));
+    return reviewForwardButton; 
+  }
+  
+  private Button getReviewBackwardButton() 
+  {
+    reviewBackwardButton = new Button("<");
+    EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
+    {
+      // review backward 
+      reviewPosition--;	
+      reviewForwardButton.setDisable(false);
+      rewindLastStone();
+     
+     // System.out.println("reviewPosition: "+reviewPosition);
+    
+    }};
+    reviewBackwardButton.setOnAction(bHandler2);
+    reviewBackwardButton.setTooltip(new Tooltip("Rewind Moves"));
+    reviewBackwardButton.setPrefHeight(28);
+    return reviewBackwardButton; 
   }
   
   void toggleLabels()
@@ -1287,12 +1325,12 @@ void restoreMoveMap(int[][] savedMoveMap)
 	   vertLabelView.setImage(vertRegularLabelsImage);
 	   labelsStatus="reg";
 	 }
-	 else if ("reg".equals(labelsStatus))
-	 {
-		   horizLabelView.setImage(horizSgfLabelsImage);
-		   vertLabelView.setImage(vertSgfLabelsImage);
-		   labelsStatus="sgf";
-	}
+	// else if ("reg".equals(labelsStatus))
+	// {
+	//	   horizLabelView.setImage(horizSgfLabelsImage);
+	//	   vertLabelView.setImage(vertSgfLabelsImage);
+	//	   labelsStatus="sgf";
+	//}
 	else 
 	 {
 	   horizLabelView.setImage(horizLabelsOff);
@@ -1492,7 +1530,8 @@ void restoreMoveMap(int[][] savedMoveMap)
      handicapVal.setText(""+handicap);
      moveNoVal.setText(""+lastSgfMoveNumber);
      //putMoveImageOnLastStone();
-     markLastSgfStone();
+     //markLastSgfStone();
+     markLastStone();
      stoneSound.play();
      
      lastSgfMove = dragonAccess.getLastSgfMove();
@@ -1698,6 +1737,7 @@ private void setQuit()
       markLocalMove();
       if ((localMoves==1)&&(thisPlayerColor==move.color))
       commitButton.setDisable(false);
+      reviewBackwardButton.setDisable(true);
     }
     
     
@@ -1840,6 +1880,10 @@ void markLocalMove()
     }
 }
 
+
+
+
+/*
 void markLastSgfStone()
 {
   if (moves==null) return;	
@@ -1864,6 +1908,57 @@ void markLastSgfStone()
      i--;
     }
 }
+*/
+
+void markLastStone()
+{
+  Move lastMove=moves.get(moves.size()-1);
+  ObservableList visibleStoneList  = visibleMoves.getChildren();
+  ListIterator it = visibleStoneList.listIterator(visibleStoneList.size());
+  
+  int i=visibleStoneList.size()-1;
+  Stone stone;
+  while(it.hasPrevious())
+  {
+    stone=(Stone)it.previous();
+  //  bp=stone.getBoardPosition();
+    if ((stone.x==lastMove.x)&&(stone.y==lastMove.y)) 
+    { 
+      stone.setMoveImage();
+      //markedStones.add(lastSgfMove.getSimplePosition());
+      break; 
+    }
+    i--;
+   }
+  
+  
+}
+
+void unmarkPreviousStone()
+{
+	  Move lastMove=moves.get(moves.size()-2);
+	  ObservableList visibleStoneList  = visibleMoves.getChildren();
+	  ListIterator it = visibleStoneList.listIterator(visibleStoneList.size());
+	  
+	  int i=visibleStoneList.size()-1;
+	  Stone stone;
+	  while(it.hasPrevious())
+	  {
+	    stone=(Stone)it.previous();
+	  //  bp=stone.getBoardPosition();
+	    if ((stone.x==lastMove.x)&&(stone.y==lastMove.y)) 
+	    { 
+	      stone.setRegularImage();
+	      //markedStones.add(lastSgfMove.getSimplePosition());
+	      break; 
+	    }
+	    i--;
+	   }
+	  
+	  
+}
+
+
 
 void putMoveImageOnCommittedStone()
 {
@@ -1889,44 +1984,115 @@ void putMoveImageOnCommittedStone()
     }
 }
   
-
-
-void removeLastStone()  // NOT capture
+void playNextStone()
 {
+   //System.out.println("number of moves: "+lastSgfMoveNumber);
+   int moveToReplay=lastSgfMoveNumber+reviewPosition;
+   //System.out.println("move to replay: "+moveToReplay);
+   Iterator it = sgfMoves.iterator();
+   String sgfPosition="";
+   String moveLine="";
+   Move move;
+	   
+   int counter=1;
+   while(it.hasNext())
+   {
+     move=(Move)it.next();
+     if (counter==moveToReplay)
+     {
+       placeStone(move,  true);
+       break;
+     }
+     counter++;
+   }
+	
+   unmarkPreviousStone();
+   markLastStone();
+}
+
+
+void deleteLastStone()  // NOT capture
+{
+	removeLastStone();
+	/*
   int color;
-  
   int size = moves.size();
-  
-  if (size<=lastSgfMoveNumber) return;
   if (moveNumber==0) return;
   if (size>0)
   {
     Move m = (Move) moves.get(size-1);
-    
     color = moveMap[m.x][m.y];
     moveMap[m.x][m.y]=OPEN;
     if (color==BLACK) lastMoveColor=WHITE;
     else lastMoveColor=BLACK;
-   
     removeStone(m.x, m.y);
     moves.remove(size-1);
   }
   
   size = moves.size();
- // if (size>0)
- // {
- //   restoreMoveImageToPrevousStone((Move)moves.get(size-1));
- // }
-  
   restoreCapturedPieces();
   moveNumber--;
+  */
   moveNoVal.setText(""+moveNumber);
-  localMoves--;
-  localMovesVal.setText(""+localMoves);
-  if (localMoves==0) deleteLastMoveButton.setDisable(true);
+  if (localMoves>0)
+  {
+    localMoves--;
+    localMovesVal.setText(""+localMoves);
+    if (localMoves==0) 
+    {	
+      reviewBackwardButton.setDisable(false);
+      deleteLastMoveButton.setDisable(true);
+    }
+  }
 }
 
+void rewindLastStone()  // NOT capture
+{
+  removeLastStone();	
+  /*
+  int color;
+  int size = moves.size();
+  if (moveNumber==0) return;
+  if (size>0)
+  {
+    Move m = (Move) moves.get(size-1);
+    color = moveMap[m.x][m.y];
+    moveMap[m.x][m.y]=OPEN;
+    if (color==BLACK) lastMoveColor=WHITE;
+    else lastMoveColor=BLACK;
+    removeStone(m.x, m.y);
+    moves.remove(size-1);
+  }
+  
+  size = moves.size();
+  restoreCapturedPieces();
+  moveNumber--;
+  */
+  moveNoVal.setText(""+moveNumber);
+  if (reviewPosition<=0) deleteLastMoveButton.setDisable(true);
+  markLastStone();
+}
 
+void removeLastStone()
+{
+	int color;
+	  int size = moves.size();
+	  if (moveNumber==0) return;
+	  if (size>0)
+	  {
+	    Move m = (Move) moves.get(size-1);
+	    color = moveMap[m.x][m.y];
+	    moveMap[m.x][m.y]=OPEN;
+	    if (color==BLACK) lastMoveColor=WHITE;
+	    else lastMoveColor=BLACK;
+	    removeStone(m.x, m.y);
+	    moves.remove(size-1);
+	  }
+	  
+	  size = moves.size();
+	  restoreCapturedPieces();
+	  moveNumber--;
+}
 
 void removeStone(int x, int y)  // remove a stone... NOT capture
 {
@@ -1953,67 +2119,13 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
      i--;
     }
   }
-   /** 
-    * Main function used to run JavaFX 2.0 example. 
-    *  
-    * @param arguments Command-line arguments: none expected. 
-    */  
+  
    public static void main(final String[] arguments)  
    {  
       Application.launch(arguments);  
    }
 
-   /*
-    private Neighbors countLiberties(int x, int y, int color, int noCheck) 
-    {
-        boolean debug=false;
-        
-        Neighbors n = new Neighbors(x, y, color);
-        if (noCheck==START) clearGroupMap();
-        
-        // check if been here already
-       if (groupMap[x][y]==GROUP_MEMBER) return null;
-       groupMap[x][y]=GROUP_MEMBER;
-        
-       
-       if (noCheck!=NORTH) directionCheck(x,y,color, n, NORTH); 
-       if (noCheck!=SOUTH) directionCheck(x,y,color, n, SOUTH);
-       if (noCheck!=WEST)  directionCheck(x,y,color, n, WEST);
-       if (noCheck!=EAST)  directionCheck(x,y,color, n, EAST);
-        
-       return n;
-    }
-    */
-    
-   /*
-    void directionCheck(int x, int y, int color, Neighbors n, int direction)
-    {
-      boolean debug=false;  
-      int checkX=x, checkY=y;
-      int oppositeDirection=0;
-      
-      if (direction==NORTH) { if (y==0) return;  checkY=y-1; oppositeDirection=SOUTH; }
-      if (direction==SOUTH) { if (y==18) return; checkY=y+1; oppositeDirection=NORTH; }
-      if (direction==EAST)  { if (x==18) return; checkX=x+1; oppositeDirection=WEST;  }
-      if (direction==WEST)  { if (x==0) return;  checkX=x-1; oppositeDirection=EAST;  }
-      
-      if (moveMap[checkX][checkY]==OPEN) 
-      {
-        if (groupMap[checkX][checkY]!=LIBERTY)
-        {    
-          groupMap[checkX][checkY]=LIBERTY;   
-          n.liberties++;
-          n.libertyPositions.add(new SimplePosition(checkX,checkY));
-          if (debug) System.out.println("  liberty Soutn");
-        }
-      }
-      else if (moveMap[checkX][checkY]==color) 
-      {
-        if (debug) System.out.println("  moving South");
-        n.accumulate(countLiberties(checkX, checkY, color, oppositeDirection));
-      }
-    }
-*/
+   
    
     private void checkLibertiesOfNeighbors(int x, int y) 
     {
@@ -2219,13 +2331,13 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
    
      
    int count=0;
-   void startAutoRefresh()
+   @SuppressWarnings({ "rawtypes", "unchecked" })
+void startAutoRefresh()
    {
 	  level=0; 
 	  cycleCount=0;
 	  timedUpdateText.setText("update every "+timeStr[level]);
 	 // feedbackArea.insertText(0, "refresh rate: "+timeStr[level]+"\n"); 
-	  if (feedback_refresh_rate) feedbackArea.insertText(0, "refresh rate: "+timeStr[level]+"\n"); 
 	  timedUpdateText.setText("refresh rate: "+timeStr[level]);
 	  timeline = new Timeline();
       timeline.setCycleCount(Timeline.INDEFINITE);
@@ -2246,7 +2358,6 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
                     	level=4;
                       else
                       {
-                    	if (feedback_refresh_rate) feedbackArea.insertText(0, "refresh rate: "+timeStr[level]+"\n"); 
                         timedUpdateText.setText("refresh rate: "+timeStr[level]);
                       }
                       cycleCount=0;
