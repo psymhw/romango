@@ -270,8 +270,8 @@ public class GoClient extends Application
      ScrollPane scrollPane = new ScrollPane();
      scrollPane.setContent(mainBox);
      
-     int height = 680;
-     if (primaryScreenBounds.getHeight()<680) height=(int)(primaryScreenBounds.getHeight()-30);
+     int height = 700;
+     if (primaryScreenBounds.getHeight()<700) height=(int)(primaryScreenBounds.getHeight()-30);
      final Scene scene = new Scene(scrollPane, 1005, height);
     
      scene.setFill(null);
@@ -879,7 +879,7 @@ private GridPane getRightPane()
 	               
 	                removeMoveImageFromLastSgfMove();
 	                putMoveImageOnCommittedStone();
-	             
+	                deleteLastMoveButton.setDisable(true);
 	                
 	                startAutoRefresh();  
 	                
