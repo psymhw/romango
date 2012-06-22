@@ -31,8 +31,6 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextAreaBuilder;
@@ -41,7 +39,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -176,7 +173,8 @@ public class GoClient extends Application
  // Refresh refresh;
   int cycleCount=0;
   int level=0;
-  int cycles[] = new int[]{                1,           5,        10,          1,        100 };
+  int secondCounter=0;
+  int cycles[] = new int[]{                1,           5,       100,         100,        100 };
   long interval[] = new long[]{          70,          130,       250,         490,         970};
   String[] timeStr = new String[]{"1 minute", "2 minutes", "4 minutes", "8 minutes", "16 minutes" };
 
@@ -336,8 +334,11 @@ public class GoClient extends Application
 		 
 	long gameNo= dragonAccess.checkForMove(timeStr[level]);
 	boolean excessive_usage=dragonAccess.isExcessive_usage();
-	if (excessive_usage) feedbackArea.insertText(0, "DGS server complaining about excessive usage\n");
-
+	if (excessive_usage) 
+	{
+	  level++;
+	  feedbackArea.insertText(0, "DGS server complaining about excessive usage\n");
+	}
 
 	if (gameNo>0) gameFound=true;	
   
@@ -430,8 +431,8 @@ public class GoClient extends Application
 	
 	if (success)
 	{	 
-	    ArrayList comments = dragonAccess.getComments();
-		Iterator it = comments.iterator();
+	    ArrayList<String> comments = dragonAccess.getComments();
+		Iterator<String> it = comments.iterator();
 		String comment;
 		while(it.hasNext())
 		{
@@ -483,13 +484,12 @@ public class GoClient extends Application
 	long gameNo= dragonAccess.checkForMove();
 	boolean excessive_usage=dragonAccess.isExcessive_usage();
 	if (excessive_usage) feedbackArea.insertText(0, "DGS server complaining about excessive usage\n");
-
 	
 	feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
 		
-		if (gameNo>0) gameFound=true;	
+	if (gameNo>0) gameFound=true;	
 		  
-		if (gameFound) commitButton.setDisable(false); else commitButton.setDisable(true);
+	if (gameFound) commitButton.setDisable(false); else commitButton.setDisable(true);
 		
 		
 		
@@ -499,11 +499,11 @@ public class GoClient extends Application
 		 * I'll get the current game.
 		 * 
 		 */
-		clear();
+	clear();
 		
-		boolean success=false;
-		if (gameFound) success=refreshCommon(FROM_SERVER);
-		else success= refreshCommon(FROM_LOCAL_FILE);
+	boolean success=false;
+	if (gameFound) success=refreshCommon(FROM_SERVER);
+	else success= refreshCommon(FROM_LOCAL_FILE);
 		
 		if (success)
         {
@@ -846,65 +846,66 @@ private GridPane getRightPane()
 	return infoGroup;
   }
 
-
+ private void commit()
+ {
+   boolean success=false;  
+   unmarkGroup();
+   Move firstLocalMove = moves.get(lastSgfMoveNumber);   
+   success=dragonAccess.makeMove(currentGameNo, 
+     		                      lastSgfMove.sgfPosition,
+     		                      firstLocalMove.getSgfPosition(), 
+     		                      firstLocalMove.color,
+     		                      sendMessageArea.getText()
+     		                      );
+     
+   if (success) 
+   { 
+     writeMoveToLocalSgfFile(firstLocalMove);
+     feedbackArea.insertText(0, df.format(new Date())+" "+firstLocalMove.getColor()+": "+firstLocalMove.getBoardPosition()+"\n");
+     commitButton.setDisable(true); 
+     if (sendMessageArea.getText()!=null)
+     {	
+       if (sendMessageArea.getText().length()>0) feedbackArea.insertText(0, "message sent:\n"+sendMessageArea.getText()+"\n");
+     }
+     
+     sendMessageArea.setText(""); 
+        
+     removeMoveImageFromLastSgfMove();
+     putMoveImageOnCommittedStone();
+     deleteLastMoveButton.setDisable(true);
+     reviewBackwardButton.setDisable(false);
+           
+     startAutoRefresh();  
+         
+        
+     if (firstLocalMove.color==BLACK)  
+     { 
+       colorToPlay=WHITE; 
+       turnImageView.setImage(whiteStoneImage);
+       stage.getIcons().add(smallerWhiteStoneImage);
+     } 
+     else 
+     {
+       colorToPlay=BLACK;
+       turnImageView.setImage(blackStoneImage);
+       stage.getIcons().add(smallerBlackStoneImage);
+     }
+        
+     lastSgfMoveNumber++;
+     lastSgfMove=firstLocalMove;
+     localMoves=0;
+     localMovesVal.setText("0");
+   }
+   else feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
+	 
+ }
 
   private Button getCommitButton() 
   {
 	
     commitButton = new Button("Commit");
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
-	          public void handle(MouseEvent event) 
-	          {
-	        	boolean success=false;  
-	        	unmarkGroup();
-	        	Move firstLocalMove = moves.get(lastSgfMoveNumber);   
-	            success=dragonAccess.makeMove(currentGameNo, 
-	            		                      lastSgfMove.sgfPosition,
-	            		                      firstLocalMove.getSgfPosition(), 
-	            		                      firstLocalMove.color,
-	            		                      sendMessageArea.getText()
-	            		                      );
-	            
-	            if (success) 
-	            { 
-	            	writeMoveToLocalSgfFile(firstLocalMove);
-	            	feedbackArea.insertText(0, df.format(new Date())+" "+firstLocalMove.getColor()+": "+firstLocalMove.getBoardPosition()+"\n");
-	            	commitButton.setDisable(true); 
-	                if (sendMessageArea.getText()!=null)
-	                {	
-	            	  if (sendMessageArea.getText().length()>0) 
-	                	feedbackArea.insertText(0, "message sent:\n"+sendMessageArea.getText()+"\n");
-	                }
-	                sendMessageArea.setText(""); 
-	               
-	                removeMoveImageFromLastSgfMove();
-	                putMoveImageOnCommittedStone();
-	                deleteLastMoveButton.setDisable(true);
-	                
-	                startAutoRefresh();  
-	                
-	               
-	               if (firstLocalMove.color==BLACK)  
-	               { 
-	                 colorToPlay=WHITE; 
-	                 turnImageView.setImage(whiteStoneImage);
-	                 stage.getIcons().add(smallerWhiteStoneImage);
-	               } 
-	               else 
-	               {
-	                 colorToPlay=BLACK;
-	                 turnImageView.setImage(blackStoneImage);
-	                 stage.getIcons().add(smallerBlackStoneImage);
-	               }
-	               
-	               lastSgfMoveNumber++;
-	               lastSgfMove=firstLocalMove;
-	               localMoves=0;
-	               localMovesVal.setText("0");
-	            }
-	            else feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
-	             
-	          } };
+	          public void handle(MouseEvent event)  { commit(); }};
 	  
      commitButton.setOnMouseClicked(bHandler);
      commitButton.setTooltip(new Tooltip("Commit Move"));
@@ -932,12 +933,10 @@ private GridPane getRightPane()
  } catch (IOException e) { e.printStackTrace();	}
   }
   
-  
+  /*
   private Button getTestButton() 
   {
     Button commitTestButton = new Button("Test");
-    // b.setLayoutX(10);
-    // b.setLayoutY(10);
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) 
 	          {
@@ -947,6 +946,7 @@ private GridPane getRightPane()
      commitTestButton.setOnMouseClicked(bHandler);
      return commitTestButton;
   }
+  */
   
   private Button getUserButton() 
   {
@@ -955,14 +955,12 @@ private GridPane getRightPane()
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
     	public void handle(MouseEvent event) {
             final Stage myDialog = new Stage();
-         //   myDialog.initModality(Modality.WINDOW_MODAL);
          myDialog.initModality(Modality.APPLICATION_MODAL);
             Button okButton = new Button("SAVE");
             okButton.setOnAction(new EventHandler<ActionEvent>(){
 
                 public void handle(ActionEvent arg0) {
                	  userId=userIdField.getText();
-               	 // userNameLink.setText(userId);
                	  password=passwordField.getText();
         			  System.out.println("userId: "+userId);
         			  System.out.println("password: "+password);
@@ -970,22 +968,13 @@ private GridPane getRightPane()
                      myDialog.close();
                      login();
                 }
-
-				
-             
             });
       
-            
             userIdField = new TextField();
             userIdField.setText(userId);
             userIdField.setPrefColumnCount(30);
-            
-            
             Text userIdLabel = new Text("User ID: ");
             userIdLabel.setFont(Font.font("Serif", 20));
-           
-            
-            
             Text passwordLabel = new Text("Password: ");
             passwordLabel.setFont(Font.font("Serif", 20));
             passwordField = new TextField();
@@ -1002,10 +991,7 @@ private GridPane getRightPane()
             gridPane.add(passwordField, 1, 1);
             gridPane.add(okButton, 1, 2);
             
-            
             Scene myDialogScene = new Scene(gridPane, 300, 100);
-                    
-         
             myDialog.setScene(myDialogScene);
             myDialog.show();
         }
@@ -1043,17 +1029,11 @@ private GridPane getRightPane()
 
   private void setupMouse(Group boardGroup) 
   {
-     
     boardGroup.setOnMouseClicked(new EventHandler<MouseEvent>() {public void handle(MouseEvent t) 
     { 
       int thisMoveColor=0;
       if (lastMoveColor==BLACK) thisMoveColor=WHITE;  else thisMoveColor=BLACK;
       Move move = new Move(t.getX(),t.getY(), thisMoveColor);
-     // Stone s = new Stone(thisMoveColor, t.getX(),t.getY(), STYLE_LAST_MOVE);
-      
-      
-      
-      // show group liberties on occupied position
       if (moveMap[move.x][move.y]!=OPEN) 
       { 
       	StoneGroup stoneGroup = new StoneGroup(move.x, move.y, moveMap);
@@ -1061,7 +1041,6 @@ private GridPane getRightPane()
         markGroup(stoneGroup.groupPositions);
   	    return;        
       }
-      
       
       boolean testForIllegalMoves=true;
 
@@ -1113,7 +1092,7 @@ private GridPane getRightPane()
   private void markGroup(List<SimplePosition> groupPositions) 
   {
 	unmarkGroup();  
-	Iterator it = groupPositions.iterator();
+	Iterator<SimplePosition> it = groupPositions.iterator();
 	SimplePosition position;
 	Stone stone;
 	
@@ -1134,7 +1113,7 @@ private GridPane getRightPane()
   {
 	if (markedStones.size()==0) return;
 	
-	Iterator it = markedStones.iterator();
+	Iterator<SimplePosition> it = markedStones.iterator();
 	SimplePosition position;
 	Stone stone;
 	
@@ -1153,14 +1132,13 @@ private GridPane getRightPane()
 	markLastSgfStone();
   }
   
+  @SuppressWarnings("rawtypes")
   private Stone getStone(SimplePosition position) 
   {
-	  ObservableList moveList  = visibleMoves.getChildren();
-	  ListIterator it = moveList.listIterator(moveList.size());
-	  int color=0;
+	ObservableList moveList  = visibleMoves.getChildren();
+	ListIterator it = moveList.listIterator(moveList.size());
 	              
 	   Stone stone;
-	   int i=moveList.size()-1;
 	   while(it.hasPrevious())
 	   {
 	     stone=(Stone)it.previous();
@@ -1168,7 +1146,6 @@ private GridPane getRightPane()
 	     { 
 	       return stone;
 	     }
-	     i--;
 	   }
 	   return null;
   } 
@@ -1185,71 +1162,6 @@ void restoreMoveMap(int[][] savedMoveMap)
 	  
   }
 
-  Hyperlink loginButton()
-  {
-    Hyperlink hyperlink = new Hyperlink();
-    hyperlink.setFont(Font.font("Serif", 20));
-    hyperlink.setText(userId);
-     
-    hyperlink.setOnAction(new EventHandler<ActionEvent>() {
-         public void handle(ActionEvent event) {
-             final Stage myDialog = new Stage();
-          //   myDialog.initModality(Modality.WINDOW_MODAL);
-          myDialog.initModality(Modality.APPLICATION_MODAL);
-             Button okButton = new Button("SAVE");
-             okButton.setOnAction(new EventHandler<ActionEvent>(){
-
-                 public void handle(ActionEvent arg0) {
-                	  userId=userIdField.getText();
-                	  userNameLink.setText(userId);
-                	  password=passwordField.getText();
-         			  System.out.println("userId: "+userId);
-         			  System.out.println("password: "+password);
-         			  writeResources();
-                      myDialog.close();
-                 }
-
-				
-              
-             });
-       
-             
-             userIdField = new TextField();
-             userIdField.setText(userId);
-             userIdField.setPrefColumnCount(30);
-             
-             
-             Text userIdLabel = new Text("User ID: ");
-             userIdLabel.setFont(Font.font("Serif", 20));
-            
-             
-             
-             Text passwordLabel = new Text("Password: ");
-             passwordLabel.setFont(Font.font("Serif", 20));
-             passwordField = new TextField();
-            // passwordField.setText(userId);
-             passwordField.setPrefColumnCount(30);
-             
-             GridPane gridPane = new GridPane();
-             gridPane.setPadding(new Insets(10, 10, 10, 10));
-             gridPane.setVgap(2);
-             gridPane.setHgap(5);
-             gridPane.add(userIdLabel, 0, 0);
-             gridPane.add(userIdField, 1, 0);
-             gridPane.add(passwordLabel, 0, 1);
-             gridPane.add(passwordField, 1, 1);
-             gridPane.add(okButton, 1, 2);
-             
-             
-             Scene myDialogScene = new Scene(gridPane, 300, 100);
-                     
-          
-             myDialog.setScene(myDialogScene);
-             myDialog.show();
-         }
-     });
-     return hyperlink;
-}
   
   private Button getDeleteLastMoveButton() 
   {
@@ -1265,6 +1177,7 @@ void restoreMoveMap(int[][] savedMoveMap)
     return deleteLastMoveButton; 
   }
   
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   private Button getLabelsButton() 
   {
     Button button = new Button("a/1");
@@ -1343,8 +1256,6 @@ void restoreMoveMap(int[][] savedMoveMap)
   boolean checkForKo()
   {
 	int historySize=positionHistory.size();
-	//System.out.println("position History: "+  historySize);
-	//System.out.println("checking history: "+ (historySize-2));
 	
 	if (historySize>2)
 	{
@@ -1354,24 +1265,6 @@ void restoreMoveMap(int[][] savedMoveMap)
 	return false;
   }
   
-  
-  
-  private Button getClearButton() 
-  {
-    Button b = new Button("Clear");
-    EventHandler bHandler = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
-    {
-      clear(); 
-    }
-
-           
-
-        };
-    b.setOnAction(bHandler);
-    return b; 
-  }
-
-
   private void initiallizeMoveMap() 
   {
     for(int i=0; i<19; i++)
@@ -1383,44 +1276,7 @@ void restoreMoveMap(int[][] savedMoveMap)
     }
   }
   
-  
-	
-	private void printMoveMap() 
-	   {
-		for(int j=0; j<19; j++)
-		{
-		  for(int i=0; i<19; i++)
-		  {
-			System.out.print(moveMap[i][j]+" ");
-		  }
-		  System.out.println();
-		}
-    }
-	
-	
-	
-	
-
-        /*
-  static void findStone(Group moves, String boardPosition)
-  {
-	List movesList = moves.getChildren();
-	Iterator it = movesList.iterator();
-	Stone s;
-	while(it.hasNext())
-	{
-	  s = (Stone)it.next();
-	  if (s.getBoardPosition().equals(boardPosition))
-	  {
-		System.out.println("Found Stone... Color: "+s.getStoneColor());
-		s.setVisible(false);
-	  }
-	}
-  }
-
-*/
-   
-   
+ 
    private void importImages()
    {
 	 board_ul_corner_image = new Image(GoClient.class.getResourceAsStream("/images/wood4_ul.gif"));
@@ -1461,8 +1317,6 @@ void restoreMoveMap(int[][] savedMoveMap)
 		 
 	    vertRegularLabelsImage = new Image(Stone.class.getResourceAsStream("/images/vertNumbLabels.png")); 
 	    horizRegularLabelsImage = new Image(Stone.class.getResourceAsStream("/images/horizRegLabels.png")); 
-		
-	 
    }
    
    private TextArea getFeedbackBox()
@@ -1474,16 +1328,6 @@ void restoreMoveMap(int[][] savedMoveMap)
                .build();
        
 	   return feedbackArea;
-	   /*
-       ScrollPane scrollPane = new ScrollPane();
-       scrollPane.getStyleClass().add("noborder-scroll-pane");
-       scrollPane.setContent(feedbackArea);
-       scrollPane.setFitToWidth(true);
-       scrollPane.setPrefWidth(200);
-       scrollPane.setPrefHeight(100);
-       
-       return scrollPane;
-       */
    }
    
    private TextArea getSendMessageBox()
@@ -1514,7 +1358,6 @@ void restoreMoveMap(int[][] savedMoveMap)
    private void playAllSgfMoves()
    {
      clear();
-   // System.out.println("play all Sgf moves: "+sgfMoves.size());
      Iterator it = sgfMoves.iterator();
      String sgfPosition="";
      String moveLine="";
@@ -1523,24 +1366,15 @@ void restoreMoveMap(int[][] savedMoveMap)
      while(it.hasNext())
      {
        move=(Move)it.next();
-   //    System.out.println(move.x+"-"+move.y);
        placeStone(move,  true);
        
      }
 		      
      handicapVal.setText(""+handicap);
      moveNoVal.setText(""+lastSgfMoveNumber);
-     //putMoveImageOnLastStone();
-     //markLastSgfStone();
      markLastStone();
      stoneSound.play();
-     
      lastSgfMove = dragonAccess.getLastSgfMove();
-     
-    //System.out.println("Last Move: "+lastSgfMoveNumber+", "+colorStr(lastSgfMove.color)+" position: "+lastSgfMove.getSgfPosition());
-     
-    //System.out.println("local moves: "+localMoves);
-     
    }
    
    public String colorStr(int color)
@@ -1760,9 +1594,9 @@ private void setQuit()
   }
 
 
-
-void removeMoveImageFromPreviousMove()
-{
+  @SuppressWarnings("rawtypes")
+  void removeMoveImageFromPreviousMove()
+  {
   if (moveNumber==0) return;
   if (moveNumber>=moves.size()) return; 
   
@@ -1788,10 +1622,6 @@ void removeMoveImageFromPreviousMove()
 
 void removeMoveImageFromLastSgfMove()
 {
- // if (moveNumber==0) return;
- // if (moveNumber>=moves.size()) return; 
- // System.out.println("last SGF move: "+lastSgfMove.sgfPosition);
- // Move m = (Move) moves.get(moveNumber-1);
   ObservableList moveList  =visibleMoves.getChildren();
   ListIterator it = moveList.listIterator(moveList.size());
   int color=0;
@@ -2010,112 +1840,71 @@ void playNextStone()
 }
 
 
-void deleteLastStone()  // NOT capture
-{
-	removeLastStone();
-	/*
-  int color;
-  int size = moves.size();
-  if (moveNumber==0) return;
-  if (size>0)
+  void deleteLastStone()  // NOT capture
   {
-    Move m = (Move) moves.get(size-1);
-    color = moveMap[m.x][m.y];
-    moveMap[m.x][m.y]=OPEN;
-    if (color==BLACK) lastMoveColor=WHITE;
-    else lastMoveColor=BLACK;
-    removeStone(m.x, m.y);
-    moves.remove(size-1);
-  }
-  
-  size = moves.size();
-  restoreCapturedPieces();
-  moveNumber--;
-  */
-  moveNoVal.setText(""+moveNumber);
-  if (localMoves>0)
-  {
-    localMoves--;
-    localMovesVal.setText(""+localMoves);
-    if (localMoves==0) 
-    {	
-      reviewBackwardButton.setDisable(false);
-      deleteLastMoveButton.setDisable(true);
+    removeLastStone();
+	
+    moveNoVal.setText(""+moveNumber);
+    if (localMoves>0)
+    {
+      localMoves--;
+      localMovesVal.setText(""+localMoves);
+      if (localMoves==0) 
+      {	
+        reviewBackwardButton.setDisable(false);
+        deleteLastMoveButton.setDisable(true);
+      }
     }
   }
-}
 
-void rewindLastStone()  // NOT capture
-{
-  removeLastStone();	
-  /*
-  int color;
-  int size = moves.size();
-  if (moveNumber==0) return;
-  if (size>0)
+  void rewindLastStone()  // NOT capture
   {
-    Move m = (Move) moves.get(size-1);
-    color = moveMap[m.x][m.y];
-    moveMap[m.x][m.y]=OPEN;
-    if (color==BLACK) lastMoveColor=WHITE;
-    else lastMoveColor=BLACK;
-    removeStone(m.x, m.y);
-    moves.remove(size-1);
+    removeLastStone();	
+    moveNoVal.setText(""+moveNumber);
+    if (reviewPosition<=0) deleteLastMoveButton.setDisable(true);
+    markLastStone();
   }
-  
-  size = moves.size();
-  restoreCapturedPieces();
-  moveNumber--;
-  */
-  moveNoVal.setText(""+moveNumber);
-  if (reviewPosition<=0) deleteLastMoveButton.setDisable(true);
-  markLastStone();
-}
 
-void removeLastStone()
-{
+  void removeLastStone()
+  {
 	int color;
-	  int size = moves.size();
-	  if (moveNumber==0) return;
-	  if (size>0)
-	  {
-	    Move m = (Move) moves.get(size-1);
-	    color = moveMap[m.x][m.y];
-	    moveMap[m.x][m.y]=OPEN;
-	    if (color==BLACK) lastMoveColor=WHITE;
-	    else lastMoveColor=BLACK;
-	    removeStone(m.x, m.y);
-	    moves.remove(size-1);
-	  }
+	int size = moves.size();
+	if (moveNumber==0) return;
+	if (size>0)
+	{
+	  Move m = (Move) moves.get(size-1);
+	  color = moveMap[m.x][m.y];
+	  moveMap[m.x][m.y]=OPEN;
+	  if (color==BLACK) lastMoveColor=WHITE;
+	  else lastMoveColor=BLACK;
+	  removeStone(m.x, m.y);
+	  moves.remove(size-1);
+	}
 	  
-	  size = moves.size();
-	  restoreCapturedPieces();
-	  moveNumber--;
-}
+	size = moves.size();
+	restoreCapturedPieces();
+	moveNumber--;
+  }
 
-void removeStone(int x, int y)  // remove a stone... NOT capture
-{
-  ObservableList moveList  =visibleMoves.getChildren();
-  ListIterator it = moveList.listIterator(moveList.size());
-  int color=0;
+  @SuppressWarnings("rawtypes")
+  void removeStone(int x, int y)  // remove a stone... NOT capture
+  {
+    ObservableList moveList  =visibleMoves.getChildren();
+    ListIterator it = moveList.listIterator(moveList.size());
               
-   Stone stone;
-   int i=moveList.size()-1;
-   while(it.hasPrevious())
-   {
-     stone=(Stone)it.previous();
-    // bp=stone.getBoardPosition();
-    // sp=bp.getSimplePosition();
-     if ((stone.x==x)&&(stone.y==y)) 
-     { 
-        // System.out.println("found "+i);
-       moveMap[x][y]=OPEN; 
-       moveList.remove(i); 
-       int historySize=positionHistory.size();
-       if (historySize>0) positionHistory.remove(historySize-1);
-       break; 
-     }
-     i--;
+    Stone stone;
+    int i=moveList.size()-1;
+    while(it.hasPrevious())
+    {
+      stone=(Stone)it.previous();
+      if ((stone.x==x)&&(stone.y==y)) 
+      { 
+        moveMap[x][y]=OPEN; 
+        moveList.remove(i); 
+        int historySize=positionHistory.size();
+        if (historySize>0) positionHistory.remove(historySize-1);
+        break; 
+      }
     }
   }
   
@@ -2124,8 +1913,6 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
       Application.launch(arguments);  
    }
 
-   
-   
     private void checkLibertiesOfNeighbors(int x, int y) 
     {
       checkLibertiesOfNeighbors(x, y, LIVE);
@@ -2133,15 +1920,11 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
 
     private boolean checkLibertiesOfNeighbors(int x, int y, boolean trial) 
     {
-      boolean debug=true;
       boolean capture = false;
       boolean nCapture=false;
       boolean sCapture=false;
       boolean eCapture=false;
       boolean wCapture=false;
-      int startColor=0;
-      
-      startColor = moveMap[x][y];
       
       nCapture=checkDirection(x,y,NORTH, trial);
       sCapture=checkDirection(x,y,SOUTH, trial);
@@ -2329,48 +2112,39 @@ void removeStone(int x, int y)  // remove a stone... NOT capture
    }
    
      
-   int count=0;
+   
    @SuppressWarnings({ "rawtypes", "unchecked" })
-void startAutoRefresh()
+   void startAutoRefresh()
    {
-	  level=0; 
-	  cycleCount=0;
-	  timedUpdateText.setText("update every "+timeStr[level]);
-	 // feedbackArea.insertText(0, "refresh rate: "+timeStr[level]+"\n"); 
-	  timedUpdateText.setText("refresh rate: "+timeStr[level]);
-	  timeline = new Timeline();
-      timeline.setCycleCount(Timeline.INDEFINITE);
-      keyFrame= new KeyFrame(Duration.seconds(1), new EventHandler() 
-              {
-                public void handle(Event event) 
-                {
-                 // System.out.println("level: "+timeStr[level]+" cycle: "+cycleCount+ " second: "+count++);
-                  //timedUpdateText.setText("  update: "+(interval[level]-count)+"     "+dragonAccess.getFeedback());
-                  if (count>=interval[level]) 
-                  {
-                    count=0;
-                    cycleCount++;
-                    if (cycleCount==cycles[level])
-                    {
-                      level++;
-                      if (level>4)
-                    	level=4;
-                      else
-                      {
-                        timedUpdateText.setText("refresh rate: "+timeStr[level]);
-                      }
-                      cycleCount=0;
-                    }
-                    refreshTimed();	
-                    //timedUpdateText.setText("Update every "+timeStr[level]);
-                  }
-                count++;  
-                }
-              });
+	 level=0; 
+	 cycleCount=0;
+	 timedUpdateText.setText("update every "+timeStr[level]);
+	 timedUpdateText.setText("refresh rate: "+timeStr[level]);
+	 timeline = new Timeline();
+     timeline.setCycleCount(Timeline.INDEFINITE);
+     keyFrame= new KeyFrame(Duration.seconds(1), new EventHandler() 
+     {
+       public void handle(Event event) 
+       {
+         if (secondCounter>=interval[level]) 
+         {
+           secondCounter=0;
+           cycleCount++;
+           if (cycleCount==cycles[level])
+           {
+             level++;
+             if (level>4) level=4;
+             else timedUpdateText.setText("refresh rate: "+timeStr[level]);
+             cycleCount=0;
+           }
+           refreshTimed();	
+         }
+         secondCounter++;  
+       }});
       
-      timeline.getKeyFrames().add(keyFrame);
-      timeline.playFromStart();
-   }
+       timeline.getKeyFrames().add(keyFrame);
+       timeline.playFromStart();
+    }
       
    void stopAutoRefresh()
    {

@@ -40,13 +40,13 @@ public class DragonAccess
   boolean localFile=false;
   String lastMoveColor="b";
   boolean excessive_usage=false;
-  ArrayList comments = new ArrayList();
+  ArrayList<String> comments = new ArrayList<>();
   int lastSgfMoveNumber=0;
   int handicap=0;
   int loginAttempts=0;
   String message;
   boolean currentMessage=false;
-  
+  Date lastMoveCheck;
 
 
 public DragonAccess(String userId, String password) 
@@ -178,6 +178,19 @@ public long checkForMove2()
 	 String secondLine="";    
 	 String gameStr="";
 	 StringBuffer rawMessage = new StringBuffer();
+	 
+	 if (lastMoveCheck!=null)
+	 {
+	   Date now = new Date();
+	   if (now.getTime()<lastMoveCheck.getTime()+10000)
+	   {
+		   System.out.println("DragonAccess: move frequency violaion");
+		   return 0;
+	   }
+	 }
+	 
+	 lastMoveCheck= new Date();
+	 
 	 if (!loggedIn) 
 	 {	 
 		 //System.out.println("DragonAccess:checkForMove("+timeStr+") not logged in");
@@ -711,7 +724,7 @@ public long checkForMove2()
 		this.lastSgfMoveNumber = lastSgfMoveNumber;
 	}
 
-	public ArrayList getComments() {
+	public ArrayList<String> getComments() {
 		return comments;
 	}
 
