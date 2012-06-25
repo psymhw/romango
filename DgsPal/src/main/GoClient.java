@@ -487,7 +487,10 @@ public class GoClient extends Application
 	
 	feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
 		
-	if (gameNo>0) gameFound=true;	
+	if (gameNo!=0) gameFound=true;	
+	//if (gameNo==-1) gameFound=false;	
+	
+	//System.out.println("game found: "+gameFound);
 		  
 	if (gameFound) commitButton.setDisable(false); else commitButton.setDisable(true);
 		
@@ -521,7 +524,10 @@ public class GoClient extends Application
 	        stage.getIcons().add(smallerBlackStoneImage);
 	      }
 	      //if (!gameFound) startAutoRefresh();
-	      if ((!gameFound)&&(dragonAccess.isLoggedIn())) startAutoRefresh();
+	      if (!gameFound)
+	      {	  
+	    	if (dragonAccess.isLoggedIn()) startAutoRefresh();
+	      }
 	      deleteLastMoveButton.setDisable(true);
 	      reviewForwardButton.setDisable(true);
 	      reviewBackwardButton.setDisable(false);
@@ -1573,7 +1579,9 @@ private void setQuit()
       if ((localMoves==1)&&(thisPlayerColor==move.color))
       commitButton.setDisable(false);
       reviewBackwardButton.setDisable(true);
+      //showMoves();
     }
+    
     
     
   }
@@ -1855,6 +1863,21 @@ void playNextStone()
         deleteLastMoveButton.setDisable(true);
       }
     }
+    //showMoves();
+  }
+  
+  void showMoves()
+  {
+	Iterator it = moves.iterator();
+	Move m;
+	int i=0;
+	while(it.hasNext())
+	{
+	  m = (Move)it.next();
+	  System.out.print(m.getBoardPosition()+" ");
+	  i++;
+	}
+	System.out.println();
   }
 
   void rewindLastStone()  // NOT capture
@@ -1873,6 +1896,7 @@ void playNextStone()
 	if (size>0)
 	{
 	  Move m = (Move) moves.get(size-1);
+	  //System.out.println("removing: "+m.getBoardPosition()+" "+m.x+"-"+m.y);
 	  color = moveMap[m.x][m.y];
 	  moveMap[m.x][m.y]=OPEN;
 	  if (color==BLACK) lastMoveColor=WHITE;
@@ -1905,6 +1929,7 @@ void playNextStone()
         if (historySize>0) positionHistory.remove(historySize-1);
         break; 
       }
+      i--;
     }
   }
   
@@ -2073,7 +2098,7 @@ void playNextStone()
       while(it.hasNext())
       {
         s = (Stone)it.next();
-        if ((s.getCaptureMoveNumber()==moveNumber)&&(s.forget==false))
+        if (s.getCaptureMoveNumber()==moveNumber)
         {
           visibleMoves.getChildren().add(s);
           moveMap[s.x][s.y]=s.getStoneColor();

@@ -182,10 +182,13 @@ public long checkForMove2()
 	 if (lastMoveCheck!=null)
 	 {
 	   Date now = new Date();
-	   if (now.getTime()<lastMoveCheck.getTime()+10000)
+	   
+	   long elapsedTime=now.getTime()-lastMoveCheck.getTime();
+	   
+	   if (elapsedTime<60000)  
 	   {
-		   System.out.println("DragonAccess: move frequency violaion");
-		   return 0;
+		  System.out.println("elapsed since last refresh: "+elapsedTime);
+		  return -1;
 	   }
 	 }
 	 

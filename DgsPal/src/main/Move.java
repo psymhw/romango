@@ -117,4 +117,6 @@ public class Move
 	  return xLabels[x]+"-"+(19-y);
   }
   
+  
+  
 }
