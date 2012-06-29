@@ -340,7 +340,7 @@ public class GoClient extends Application
 	  feedbackArea.insertText(0, "DGS server complaining about excessive usage\n");
 	}
 
-	if (gameNo>0) gameFound=true;	
+	if (gameNo!=0) gameFound=true;	
   
 	if (gameFound) commitButton.setDisable(false); else commitButton.setDisable(true);
 	
@@ -524,8 +524,9 @@ public class GoClient extends Application
 	        stage.getIcons().add(smallerBlackStoneImage);
 	      }
 	      //if (!gameFound) startAutoRefresh();
-	      if (!gameFound)
-	      {	  
+	      
+	      if (colorToPlay!=thisPlayerColor)
+	      { 
 	    	if (dragonAccess.isLoggedIn()) startAutoRefresh();
 	      }
 	      deleteLastMoveButton.setDisable(true);
