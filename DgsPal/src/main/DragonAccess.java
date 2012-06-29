@@ -389,6 +389,7 @@ public long checkForMove2()
 	   sgfPosition = line.substring(8,10);
 	   move=new Move(sgfPosition,GoClient.WHITE);
 	   sgfMoves.add(move);
+	   lastSgfMove = move;
 	   lastSgfMoveNumber++;
 	   return;
 	 }
