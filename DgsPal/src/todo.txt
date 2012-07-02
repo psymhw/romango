@@ -2,3 +2,4 @@
 - pass capability 
 - resign recognition ;W[]
 - substring error handling on sgf
+- move images to resources
