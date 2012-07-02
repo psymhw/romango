@@ -3,3 +3,4 @@
 - resign recognition ;W[]
 - substring error handling on sgf
 - move images to resources
+- laptop svn credential check
