@@ -164,7 +164,6 @@ public class GoClient extends Application
   Image smallerBlackStoneImage;
   Image smallerWhiteStoneImage;
   
-  
   private Timeline timeline;
   private KeyFrame keyFrame;
   
@@ -197,6 +196,7 @@ public class GoClient extends Application
   Image horizRegularLabelsImage;
   Date lastTimedUpdate=null;
   int reviewPosition=0;  
+  long lastMouseClick=0;
   
   public void start(final Stage stage) throws Exception  
   {  
@@ -344,7 +344,7 @@ public class GoClient extends Application
   
 	if (gameFound) commitButton.setDisable(false); else commitButton.setDisable(true);
 	
-    if (gameFound)
+    if (gameFound&&(gameNo!=-1))
     {
       //System.out.println("timed refresh: game found "+gameNo);
       stopAutoRefresh();
@@ -354,7 +354,7 @@ public class GoClient extends Application
       if (refreshCommon(FROM_SERVER))
       {
   	    playAllSgfMoves();
-        feedbackArea.insertText(0, df.format(new Date())+" "+lastSgfMove.getColor()+": "+lastSgfMove.getSgfPosition()+"\n");
+        feedbackArea.insertText(0, df.format(new Date())+" "+lastSgfMove.getColor()+": "+lastSgfMove.getBoardPosition()+"\n");
  	  if (lastSgfMove.color==BLACK)  
 	  { 
 	    colorToPlay=WHITE; 
@@ -1038,6 +1038,11 @@ private GridPane getRightPane()
   {
     boardGroup.setOnMouseClicked(new EventHandler<MouseEvent>() {public void handle(MouseEvent t) 
     { 
+      // de-bounce	
+      long thisMouseClick=new Date().getTime();	
+      if (thisMouseClick<lastMouseClick+500) return;
+      lastMouseClick=new Date().getTime();
+      
       int thisMoveColor=0;
       if (lastMoveColor==BLACK) thisMoveColor=WHITE;  else thisMoveColor=BLACK;
       Move move = new Move(t.getX(),t.getY(), thisMoveColor);
