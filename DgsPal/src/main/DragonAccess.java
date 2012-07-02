@@ -285,6 +285,7 @@ public long checkForMove2()
 	 Move move=null;
 	 lastSgfMoveNumber=0;
 	 comments=new ArrayList();
+	 int count=0;
 	// String lastMoveColor="B";
 	 
 	 try
@@ -301,10 +302,12 @@ public long checkForMove2()
 	          
 	   while ( (line = br.readLine()) != null)
 	   {
+		   if (count==0) if (!line.startsWith("(")) return false;  // if the first line is not "(" it'ds not a valid SGF
 		   moveLine.add(line);
 		   if ("C[]".equals(line)) continue;
 		   if (")".equals(line)) continue;
 		   sgfFileString.append(line+"\n");
+		   count++;
 	      //System.out.println("line: " + line);
 	   }
 	 } catch (Throwable t)  {  t.printStackTrace(); }
@@ -457,6 +460,7 @@ public long checkForMove2()
    	       while ((line = br.readLine()) != null) 
    	      { 
    	        parseLine(line);
+   	        if (count==0) if (!line.startsWith("(")) return false;  // if the first line is not "(" it'ds not a valid SGF
    	        count++;
    	       // System.out.println(line);
    	      }
