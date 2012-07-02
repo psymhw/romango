@@ -226,7 +226,7 @@ public long checkForMove2()
 	   while ( (line = br.readLine()) != null)
 	   {
 		   rawMessage.append(line+"\n");
-		   //System.out.println(line);
+		   System.out.println(line);
 		   if (line.contains("excessive_usage")) excessive_usage=true;
 		   
 		   if (line.startsWith("#")) { commentCount++; lineCount++; continue; };
@@ -249,13 +249,14 @@ public long checkForMove2()
 	      lineCount++;
 	   }
 	 } catch (Exception e)  {  feedback.append(e.getMessage()); return 0; }
+	
 	 System.out.println(timeStr+" move check: "+df.format(new Date())
 			 +" lines: "+lineCount
 			 +" comments: "+commentCount
 			 +" data: "+dataCount
 			 +" excessive usage: "+excessive_usage
 			 );
-	 if (dataCount>0) System.out.println(dataLine);
+	// if (dataCount>0) System.out.println(dataLine);
 
 	   if (gameStr.length()>0)
 	   {
@@ -265,9 +266,9 @@ public long checkForMove2()
 	   }
 	   else
 	   {
-		    feedback.append("no moves waiting"); 
+		  feedback.append("no moves waiting\n"); 
 	   }
-	
+	   if (dataCount>0) feedback.append(dataLine+"\n");
 	 
 	 //System.out.println();
 	 return gameLong;
