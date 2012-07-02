@@ -1,0 +1,4 @@
+- move number on mouseover of stone
+- pass capability 
+- resign recognition ;W[]
+- substring error handling on sgf
