@@ -351,7 +351,7 @@ public class GoClient extends Application
       deleteLastMoveButton.setDisable(true);
       reviewForwardButton.setDisable(true);
       clear();
-      if (refreshCommon(FROM_SERVER))
+      if (getSgfFile(FROM_SERVER))
       {
   	    playAllSgfMoves();
         feedbackArea.insertText(0, df.format(new Date())+" "+lastSgfMove.getColor()+": "+lastSgfMove.getBoardPosition()+"\n");
@@ -383,17 +383,21 @@ public class GoClient extends Application
 	boolean gameFound=false;
 	long gameNo=0;
 	boolean loginSuccess=login();
+	boolean debug=true;
 	
 	if (loginSuccess)
 	{
+	   if (debug) System.out.println("login -ok");	
   	   gameNo= dragonAccess.checkForMove("startup");
 	   boolean excessive_usage=dragonAccess.isExcessive_usage();
 	   if (excessive_usage) feedbackArea.insertText(0, "DGS server complaining about excessive usage\n");
 	}
 	
-	
-	if (gameNo>0) gameFound=true;	
-	  
+	if (gameNo>0) 
+	{	
+	  if (debug) System.out.println("move found on server: "+gameNo);
+	  gameFound=true;	
+	} 
 	if (gameFound) commitButton.setDisable(false); else commitButton.setDisable(true);
 	
 	if (gameFound)
@@ -420,17 +424,20 @@ public class GoClient extends Application
 	boolean success=false;
 	if (gameFound) 
 	{
-		success=refreshCommon(FROM_SERVER);
+		if (debug) System.out.println("getting sgf file from server");
+		success=getSgfFile(FROM_SERVER);
 		feedbackArea.insertText(0, "game loaded from server\n");
 	}
 	else
 	{
-		success= refreshCommon(FROM_LOCAL_FILE); 
+		if (debug) System.out.println("getting sgf file from locally");
+		success= getSgfFile(FROM_LOCAL_FILE); 
 		feedbackArea.insertText(0, "game loaded from local file\n");
 	}
 	
 	if (success)
 	{	 
+		if (debug) System.out.println("number of moves in sgf file: "+dragonAccess.getLastSgfMoveNumber());
 	    ArrayList<String> comments = dragonAccess.getComments();
 		Iterator<String> it = comments.iterator();
 		String comment;
@@ -505,8 +512,8 @@ public class GoClient extends Application
 	clear();
 		
 	boolean success=false;
-	if (gameFound) success=refreshCommon(FROM_SERVER);
-	else success= refreshCommon(FROM_LOCAL_FILE);
+	if (gameFound) success=getSgfFile(FROM_SERVER);
+	else success= getSgfFile(FROM_LOCAL_FILE);
 		
 		if (success)
         {
@@ -547,7 +554,7 @@ public class GoClient extends Application
 	
   }
   
-  private boolean refreshCommon(int location)
+  private boolean getSgfFile(int location)
   {
 	boolean success=false;
 	//System.out.println("Setting moveNumber to 0");
@@ -1755,7 +1762,9 @@ void markLastSgfStone()
 
 void markLastStone()
 {
-  Move lastMove=moves.get(moves.size()-1);
+  int numberOfMoves=moves.size()-1;
+  if (numberOfMoves<0) return;
+  Move lastMove=moves.get(numberOfMoves);
   ObservableList visibleStoneList  = visibleMoves.getChildren();
   ListIterator it = visibleStoneList.listIterator(visibleStoneList.size());
   
