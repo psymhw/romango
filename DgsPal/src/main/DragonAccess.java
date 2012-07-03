@@ -47,7 +47,12 @@ public class DragonAccess
   String message;
   boolean currentMessage=false;
   Date lastMoveCheck;
+  long currentGame=0;
 
+
+public long getCurrentGame() {
+	return currentGame;
+}
 
 public DragonAccess(String userId, String password) 
   {
@@ -166,14 +171,13 @@ public long checkForMove2()
 	 return checkForMove("");
    }
 
-   public long checkForMove(String timeStr)
+   public int checkForMove(String timeStr)
    {
 	 String surl = "http://www.dragongoserver.net/quick_status.php?version=2&quick_mode=1&user=" + userId;
 	 SimpleDateFormat df = new SimpleDateFormat("h:mm:ss MM-dd-yy");
 	 
 	 StringTokenizer st;
 	 String token;
-     
 	 
 	 String secondLine="";    
 	 String gameStr="";
@@ -188,17 +192,13 @@ public long checkForMove2()
 	   if (elapsedTime<60000)  
 	   {
 		  System.out.println("elapsed since last refresh: "+elapsedTime);
-		  return -1;
+		  return GoClient.MIN_RETRY_TIME;
 	   }
 	 }
-	 
 	 lastMoveCheck= new Date();
 	 
-	 if (!loggedIn) 
-	 {	 
-		 //System.out.println("DragonAccess:checkForMove("+timeStr+") not logged in");
-		 return 0;
-	 }
+	 if (!loggedIn) return GoClient.NOT_LOGGED_IN;
+	 
 	 rawMessage.append("checkForMove: "); 
 	 boolean emptyList = false;
 	 long gameLong=0;
@@ -248,7 +248,7 @@ public long checkForMove2()
 		   }
 	      lineCount++;
 	   }
-	 } catch (Exception e)  {  feedback.append(e.getMessage()); return 0; }
+	 } catch (Exception e)  {  feedback.append(e.getMessage()); return GoClient.EXCEPTION; }
 	
 	 System.out.println(timeStr+" move check: "+df.format(new Date())
 			 +" lines: "+lineCount
@@ -270,8 +270,13 @@ public long checkForMove2()
 	   }
 	   if (dataCount>0) feedback.append(dataLine+"\n");
 	 
-	 //System.out.println();
-	 return gameLong;
+	 if (gameLong==0) 
+		 return GoClient.NO_MOVE_WAITING;
+	 else
+	 {
+		 currentGame=gameLong;
+	 return GoClient.GAME_FOUND;
+	 }
    }
    
    
@@ -310,7 +315,7 @@ public long checkForMove2()
 		   count++;
 	      //System.out.println("line: " + line);
 	   }
-	 } catch (Throwable t)  {  t.printStackTrace(); }
+	 } catch (Throwable t)  {  t.printStackTrace(); return false; }
 	 
 	 Iterator it = moveLine.iterator();
      String sgfPosition="";

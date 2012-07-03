@@ -75,6 +75,12 @@ public class GoClient extends Application
   final static int FROM_SERVER = 0;
   final static int FROM_LOCAL_FILE = 1;
   
+  final static int MIN_RETRY_TIME =-1;
+  final static int NOT_LOGGED_IN =-2;
+  final static int NO_MOVE_WAITING=-3;
+  final static int GAME_FOUND=-4;
+  final static int EXCEPTION=-5;
+  
   private ImageView quit;
   
   Image board_top_image;
@@ -312,7 +318,7 @@ public class GoClient extends Application
   
   private void refreshTimed()
   {
-	boolean gameFound=false; 
+	//boolean gameFound=false; 
 	Date now = new Date();
 	long elapsedMillis=0;
 	
@@ -332,7 +338,7 @@ public class GoClient extends Application
 	  }
 	}
 		 
-	long gameNo= dragonAccess.checkForMove(timeStr[level]);
+	int status = dragonAccess.checkForMove(timeStr[level]);
 	boolean excessive_usage=dragonAccess.isExcessive_usage();
 	if (excessive_usage) 
 	{
@@ -340,11 +346,10 @@ public class GoClient extends Application
 	  feedbackArea.insertText(0, "DGS server complaining about excessive usage\n");
 	}
 
-	if (gameNo!=0) gameFound=true;	
   
-	if (gameFound) commitButton.setDisable(false); else commitButton.setDisable(true);
+	if (status==GAME_FOUND) commitButton.setDisable(false); else commitButton.setDisable(true);
 	
-    if (gameFound&&(gameNo!=-1))
+    if (status==GAME_FOUND)
     {
       //System.out.println("timed refresh: game found "+gameNo);
       stopAutoRefresh();
@@ -380,32 +385,36 @@ public class GoClient extends Application
   
   private void refreshStartup()
   {
-	boolean gameFound=false;
-	long gameNo=0;
-	boolean loginSuccess=login();
+	//boolean gameFound=false;
+	//long gameNo=0;
+	int status=0;
+	boolean loginSuccess=false;
 	boolean debug=true;
+
+	String loginSuccessStr="";
+	String excessiveUsageStr="";
+	String loadFromStr="";
+	String commentsStr="";
 	
+	loginSuccess=login();
 	if (loginSuccess)
 	{
 	   if (debug) System.out.println("login -ok");	
-  	   gameNo= dragonAccess.checkForMove("startup");
+  	   status = dragonAccess.checkForMove("startup");
 	   boolean excessive_usage=dragonAccess.isExcessive_usage();
-	   if (excessive_usage) feedbackArea.insertText(0, "DGS server complaining about excessive usage\n");
+	   if (excessive_usage) excessiveUsageStr="DGS server complaining about excessive usage\n";
 	}
 	
-	if (gameNo>0) 
-	{	
-	  if (debug) System.out.println("move found on server: "+gameNo);
-	  gameFound=true;	
-	} 
-	if (gameFound) commitButton.setDisable(false); else commitButton.setDisable(true);
-	
-	if (gameFound)
+		
+	if ((dragonAccess.isLoggedIn())&&(colorToPlay==thisPlayerColor))
+	  	  commitButton.setDisable(false); else commitButton.setDisable(true);
+
+	if (status==GAME_FOUND)
 	{
 	  stopAutoRefresh();
-	  if (!currentGameNo.equals(""+gameNo))  // if the current game number is not equal to that number, make it so and save it
+	  if (!currentGameNo.equals(""+dragonAccess.getCurrentGame()))  // if the current game number is not equal to that number, make it so and save it
 	  {
-		currentGameNo=""+gameNo;
+		currentGameNo=""+dragonAccess.getCurrentGame();
 		writeResources();
 	  }
 	}
@@ -422,31 +431,22 @@ public class GoClient extends Application
 	gameNoVal.setText(currentGameNo);
 	
 	boolean success=false;
-	if (gameFound) 
+	if (status==GAME_FOUND) 
 	{
 		if (debug) System.out.println("getting sgf file from server");
 		success=getSgfFile(FROM_SERVER);
-		feedbackArea.insertText(0, "game loaded from server\n");
+		loadFromStr="game loaded from server\n";
 	}
 	else
 	{
-		if (debug) System.out.println("getting sgf file from locally");
+		if (debug) System.out.println("getting sgf file from local copy");
 		success= getSgfFile(FROM_LOCAL_FILE); 
-		feedbackArea.insertText(0, "game loaded from local file\n");
+		loadFromStr="game loaded from local file\n";
 	}
 	
 	if (success)
 	{	 
-		if (debug) System.out.println("number of moves in sgf file: "+dragonAccess.getLastSgfMoveNumber());
-	    ArrayList<String> comments = dragonAccess.getComments();
-		Iterator<String> it = comments.iterator();
-		String comment;
-		while(it.hasNext())
-		{
-		  comment=(String)it.next();
-		  feedbackArea.insertText(0, comment+"\n");
-		}
-	
+	commentsStr=getComments();
 	playAllSgfMoves();
     if (lastSgfMove.color==BLACK)  
     { 
@@ -465,17 +465,39 @@ public class GoClient extends Application
     reviewForwardButton.setDisable(true);
     //System.out.println("local File: "+localFile);
     
-     if ((!gameFound)&&(loginSuccess)) startAutoRefresh();
-    // startAutoRefresh(); // temporary for testing
-    if (!loginSuccess) feedbackArea.insertText(0, "LOGIN FAILED - network down?"+"\n");
+     if ((status!=GAME_FOUND)&&(loginSuccess)) startAutoRefresh();
+     
+    if (!loginSuccess) loginSuccessStr="LOGIN FAILED - network down?"+"\n";
 	}
 	
 	//showVars("refreshStartup");
+	feedbackArea.insertText(0, commentsStr);
+	feedbackArea.insertText(0, loginSuccessStr);
+	feedbackArea.insertText(0, loadFromStr);
+	feedbackArea.insertText(0, excessiveUsageStr);
+	
+  }
+  
+  private String getComments()
+  {
+	  StringBuffer commentsBuffer = new StringBuffer();
+	  ArrayList<String> comments = dragonAccess.getComments();
+		ListIterator<String> it = comments.listIterator(comments.size());
+		String comment;
+		while(it.hasPrevious())
+		{
+		  comment=(String)it.previous();
+		  commentsBuffer.append(comment+"\n");
+		}
+	 return "\n"+commentsBuffer.toString();
   }
   
   private void refreshLocal()
   {
-	boolean gameFound=false;
+	//boolean gameFound=false;
+	String excessiveUsageStr="";
+	String loadFromStr="";
+	String dragonFeedback="";
 	
 	/*
 	 * Always stop the  on a local refresh.
@@ -485,35 +507,38 @@ public class GoClient extends Application
 	
 	if ("noset".equals(currentGameNo)) 
 	{	
-	  feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
+	  dragonFeedback=dragonAccess.getFeedback()+"\n";
 	  return;
 	}
-	long gameNo= dragonAccess.checkForMove();
+	
+	long status= dragonAccess.checkForMove();
+	long gameNo=0;
+	if (status>0) gameNo=status;
+	
 	boolean excessive_usage=dragonAccess.isExcessive_usage();
-	if (excessive_usage) feedbackArea.insertText(0, "DGS server complaining about excessive usage\n");
+	if (excessive_usage) excessiveUsageStr="DGS server complaining about excessive usage\n";
 	
-	feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
-		
-	if (gameNo!=0) gameFound=true;	
-	//if (gameNo==-1) gameFound=false;	
-	
-	//System.out.println("game found: "+gameFound);
-		  
-	if (gameFound) commitButton.setDisable(false); else commitButton.setDisable(true);
-		
-		
-		
-		/*
-		 * for local refresh, I don't care if a game was found. 
-		 * Unless there is no game number set
-		 * I'll get the current game.
-		 * 
-		 */
+	if ((dragonAccess.isLoggedIn())&&(colorToPlay==thisPlayerColor))
+  	  commitButton.setDisable(false); else commitButton.setDisable(true);
+
 	clear();
 		
 	boolean success=false;
-	if (gameFound) success=getSgfFile(FROM_SERVER);
-	else success= getSgfFile(FROM_LOCAL_FILE);
+	
+	if ((status==MIN_RETRY_TIME)||(status==NOT_LOGGED_IN)||(status==EXCEPTION))
+	{
+	  success= getSgfFile(FROM_LOCAL_FILE); 
+	  loadFromStr="game loaded from local file\n";
+	}
+	else if ((status==GAME_FOUND)||(status==NO_MOVE_WAITING))
+	{
+	  success=getSgfFile(FROM_SERVER);
+	  loadFromStr="game loaded from server\n";
+	}
+	/*
+	 * (above) I want to get the game from the server unless
+	 * there is an error condition. This will get the most recent version
+	 */
 		
 		if (success)
         {
@@ -540,6 +565,10 @@ public class GoClient extends Application
 	      reviewForwardButton.setDisable(true);
 	      reviewBackwardButton.setDisable(false);
         }
+		
+		feedbackArea.insertText(0, dragonFeedback);
+		feedbackArea.insertText(0, excessiveUsageStr);
+		feedbackArea.insertText(0, loadFromStr);
 	//	showVars("refreshLocal");
   }
   
@@ -763,8 +792,10 @@ private GridPane getRightPane()
 	buttonBox.getChildren().add(getRefreshButton());
 	buttonBox.getChildren().add(getReviewForwardButton());
 	buttonBox.getChildren().add(getCommitButton());
-	buttonBox.getChildren().add(getLabelsButton());
-	buttonBox.getChildren().add(getUserButton());
+	//buttonBox.getChildren().add(getLabelsButton());
+	//buttonBox.getChildren().add(getUserButton());
+	buttonBox.getChildren().add(getPassButton());
+	buttonBox.getChildren().add(getResignButton());
 	return buttonBox;
   }
 
@@ -779,6 +810,8 @@ private GridPane getRightPane()
     gameLabel.setFont(Font.font("Serif", 18));
    
     identBox.getChildren().add(gameLabel);
+    identBox.getChildren().add(getUserButton());
+    identBox.getChildren().add(getLabelsButton());
     return identBox;
   }
    
@@ -1056,7 +1089,7 @@ private GridPane getRightPane()
       if (moveMap[move.x][move.y]!=OPEN) 
       { 
       	StoneGroup stoneGroup = new StoneGroup(move.x, move.y, moveMap);
-        System.out.println("Liberties of group: "+stoneGroup.liberties);
+        feedbackArea.insertText(0,"group liberties: "+stoneGroup.liberties+"\n");
         markGroup(stoneGroup.groupPositions);
   	    return;        
       }
@@ -1203,6 +1236,32 @@ void restoreMoveMap(int[][] savedMoveMap)
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
     {
       toggleLabels(); 
+    }};
+    button.setOnAction(bHandler2);
+    button.setPrefHeight(28);
+    button.setTooltip(new Tooltip("Toggle board coordinates on/off"));
+    return button; 
+  }
+  
+  private Button getPassButton() 
+  {
+    Button button = new Button("pass");
+    EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
+    {
+      System.out.println("pass button");
+    }};
+    button.setOnAction(bHandler2);
+    button.setPrefHeight(28);
+    button.setTooltip(new Tooltip("Toggle board coordinates on/off"));
+    return button; 
+  }
+  
+  private Button getResignButton() 
+  {
+    Button button = new Button("resign");
+    EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
+    {
+      System.out.println("resign button");
     }};
     button.setOnAction(bHandler2);
     button.setPrefHeight(28);
