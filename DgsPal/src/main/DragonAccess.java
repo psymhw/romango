@@ -342,10 +342,9 @@ public long checkForMove2()
    public void parseLine(String line)
    {
      Move move=null;
-	 //lastSgfMoveNumber=0;
 	 String sgfPosition="";
 	 
-	 
+	 try {
 	 if (line.startsWith("HA"))
 	 {
 	   handicap=line.charAt(3)-48;  
@@ -397,6 +396,19 @@ public long checkForMove2()
 	   lastSgfMoveNumber++;
 	   return;
 	 }
+	 
+	 if (line.startsWith(";W[]"))  // white resign
+	 {
+	   feedback.append("\nWHITE RESIGNED\n");
+	   return;
+	 }
+	 if (line.startsWith(";B[]"))  // white resign
+	 {
+	   feedback.append("\nBLACK RESIGNED\n");
+	   return;
+	 }
+	 
+	 
 	 if (line.startsWith(";B"))  // black move
 	 {
        sgfPosition=line.substring(3,5);
@@ -428,6 +440,12 @@ public long checkForMove2()
 	   message=message.substring(0,message.length()-1);
 	   comments.add("* "+lastMoveColor+" "+lastSgfMoveNumber +"\t"+message );
 	   currentMessage=true;
+	 }
+	 } 
+	 catch (Exception e) 
+	 { 
+	   feedback.append("\nerror parsing sgf line: "+line+"\n");
+	   return;
 	 }
 	       
 	}
