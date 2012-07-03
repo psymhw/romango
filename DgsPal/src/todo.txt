@@ -1,6 +1,6 @@
 - move number on mouseover of stone
 - pass capability 
-- resign recognition ;W[]
-- substring error handling on sgf
+- resign recognition ;W[] X?
+- substring error handling on sgf X?
 - move images to resources
-- laptop svn credential check
+- rewind after commit doesn't work right

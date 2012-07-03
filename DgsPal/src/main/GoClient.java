@@ -431,7 +431,7 @@ public class GoClient extends Application
 	gameNoVal.setText(currentGameNo);
 	
 	boolean success=false;
-	if (status==GAME_FOUND) 
+	if ((status==GAME_FOUND)||(status==NO_MOVE_WAITING)) 
 	{
 		if (debug) System.out.println("getting sgf file from server");
 		success=getSgfFile(FROM_SERVER);
@@ -441,7 +441,7 @@ public class GoClient extends Application
 	{
 		if (debug) System.out.println("getting sgf file from local copy");
 		success= getSgfFile(FROM_LOCAL_FILE); 
-		loadFromStr="game loaded from local file\n";
+		loadFromStr="game loaded from local file"+getErrorString(status)+"\n";
 	}
 	
 	if (success)
@@ -478,7 +478,20 @@ public class GoClient extends Application
 	
   }
   
-  private String getComments()
+  
+  private String getErrorString(int status) 
+  {
+	  if (status==MIN_RETRY_TIME) return ": too soon for server refresh";
+	  if (status==NOT_LOGGED_IN) return ": not logged in";
+	  if (status==NO_MOVE_WAITING) return ": no move waiting";
+	 
+	  if (status==EXCEPTION) return ": unknown exception";
+	return ": unhandled error";
+  }
+
+
+
+private String getComments()
   {
 	  StringBuffer commentsBuffer = new StringBuffer();
 	  ArrayList<String> comments = dragonAccess.getComments();
@@ -511,9 +524,9 @@ public class GoClient extends Application
 	  return;
 	}
 	
-	long status= dragonAccess.checkForMove();
-	long gameNo=0;
-	if (status>0) gameNo=status;
+	int status= dragonAccess.checkForMove();
+	//long gameNo=0;
+	//if (status>0) gameNo=status;
 	
 	boolean excessive_usage=dragonAccess.isExcessive_usage();
 	if (excessive_usage) excessiveUsageStr="DGS server complaining about excessive usage\n";
@@ -528,7 +541,7 @@ public class GoClient extends Application
 	if ((status==MIN_RETRY_TIME)||(status==NOT_LOGGED_IN)||(status==EXCEPTION))
 	{
 	  success= getSgfFile(FROM_LOCAL_FILE); 
-	  loadFromStr="game loaded from local file\n";
+	  loadFromStr="game loaded from local file"+getErrorString(status)+"\n";
 	}
 	else if ((status==GAME_FOUND)||(status==NO_MOVE_WAITING))
 	{
