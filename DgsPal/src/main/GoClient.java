@@ -435,7 +435,7 @@ public class GoClient extends Application
 	{
 		if (debug) System.out.println("getting sgf file from server");
 		success=getSgfFile(FROM_SERVER);
-		loadFromStr="game loaded from server\n";
+		loadFromStr="game loaded from server"+getErrorString(status)+"\n";
 	}
 	else
 	{
@@ -484,7 +484,7 @@ public class GoClient extends Application
 	  if (status==MIN_RETRY_TIME) return ": too soon for server refresh";
 	  if (status==NOT_LOGGED_IN) return ": not logged in";
 	  if (status==NO_MOVE_WAITING) return ": no move waiting";
-	 
+	  if (status==GAME_FOUND) return ": game found";
 	  if (status==EXCEPTION) return ": unknown exception";
 	return ": unhandled error";
   }
@@ -546,7 +546,7 @@ private String getComments()
 	else if ((status==GAME_FOUND)||(status==NO_MOVE_WAITING))
 	{
 	  success=getSgfFile(FROM_SERVER);
-	  loadFromStr="game loaded from server\n";
+	  loadFromStr="game loaded from server"+getErrorString(status)+"\n";
 	}
 	/*
 	 * (above) I want to get the game from the server unless
