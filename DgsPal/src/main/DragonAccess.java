@@ -18,6 +18,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -166,7 +167,7 @@ public long checkForMove2()
 }
 
    
-   public long checkForMove()
+   public int checkForMove()
    {
 	 return checkForMove("");
    }
@@ -522,8 +523,13 @@ public long checkForMove2()
 	 {
 		 if (message.length()>0)
 		 {
-		   message=message.replaceAll(" ", "_");	 
-		   surl=surl+"&message="+message;
+		  // message=message.replaceAll(" ", "_");
+		   String text="";
+		   try
+		   {
+		   text = URLEncoder.encode(message,"UTF-8");
+		   } catch (Exception e) { e.printStackTrace();}
+		   surl=surl+"&message="+text;
 		 }
 	 }
 	 try
