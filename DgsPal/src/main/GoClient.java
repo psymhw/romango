@@ -879,7 +879,7 @@ private GridPane getRightPane()
      commitButton.setDisable(true); 
      if (sendMessageArea.getText()!=null)
      {	
-       if (sendMessageArea.getText().length()>0) feedbackArea.insertText(0, "message sent:\n"+sendMessageArea.getText()+"\n");
+       if (sendMessageArea.getText().length()>0) feedbackArea.insertText(0, "* "+sendMessageArea.getText()+"\n");
      }
      
      sendMessageArea.setText(""); 
