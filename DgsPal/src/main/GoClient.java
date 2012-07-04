@@ -205,6 +205,8 @@ public class GoClient extends Application
   Date lastTimedUpdate=null;
   int reviewPosition=0;  
   long lastMouseClick=0;
+  int consecutivePasses=0;
+  boolean gameOver=false;
   
   public void start(final Stage stage) throws Exception  
   {  
@@ -224,9 +226,9 @@ public class GoClient extends Application
 	  
     timedUpdateText = new Text("update Off");
 	timedUpdateText.setFont(Font.font("Serif", 18));
-	gameStatusText = new Text("game running");
-	gameStatusText.setFont(Font.font("Serif", 18));
-	
+	gameStatusText = new Text("");
+	gameStatusText.setFont(Font.font("Serif", 22));
+	gameStatusText.setFill(Color.RED);
     
     initiallizeMoveMap();
     captured[BLACK]=0;
@@ -1134,6 +1136,8 @@ private GridPane getRightPane()
   	    return;        
       }
       
+      if (gameOver) return;
+      
       boolean testForIllegalMoves=true;
 
       if (testForIllegalMoves)
@@ -1442,7 +1446,7 @@ void restoreMoveMap(int[][] savedMoveMap)
    {
 	   feedbackArea = TextAreaBuilder.create()
                .prefWidth(200)
-               .prefHeight(140)
+               .prefHeight(200)
                .wrapText(true)
                .build();
        
@@ -1673,9 +1677,20 @@ private void setQuit()
   
   private void placeStone(Move move, boolean fromSgf) 
   {
+	String gameOverText="";  
+	  
 	if (move.isPass())  
 	{
-	  gameStatusText.setText(colorStr(move.color)+" PASSED");
+	  consecutivePasses++;
+	  if (consecutivePasses==2) 
+	  { 
+		gameOver=true; 
+		gameOverText=" - Game Over"; 
+		passButton.setDisable(true);
+		resignButton.setDisable(true);
+		deleteLastMoveButton.setDisable(true);
+	  }
+	  gameStatusText.setText(colorStr(move.color)+" PASSED"+gameOverText);
 	}
 	else
 	{
@@ -1683,6 +1698,7 @@ private void setQuit()
       Stone stone = new Stone(move);
 	  visibleMoves.getChildren().add(stone);
 	  checkLibertiesOfNeighbors(move.x, move.y);
+	  consecutivePasses=0;
 	}
 	lastMoveColor=move.color;
 	moves.add(move);
