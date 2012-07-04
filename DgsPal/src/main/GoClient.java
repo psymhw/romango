@@ -351,7 +351,7 @@ public class GoClient extends Application
 	}
 
   
-	if (status==GAME_FOUND) enableCommit(); else commitButton.setDisable(true);
+	//if (status==GAME_FOUND) enableCommit(); else commitButton.setDisable(true);
 	
     if (status==GAME_FOUND)
     {
@@ -1981,6 +1981,7 @@ void playNextStone()
       {	
         reviewBackwardButton.setDisable(false);
         deleteLastMoveButton.setDisable(true);
+        commitButton.setDisable(true);
       }
     }
     //showMoves();
