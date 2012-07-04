@@ -1,6 +1,7 @@
 - move number on mouseover of stone
 - pass capability 
-- resign recognition ;W[] X?
+- pass! recognition ;W[] X?
 - substring error handling on sgf X?
 - move images to resources
 - rewind after commit doesn't work right
+- what is resign code?
