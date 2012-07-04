@@ -53,7 +53,6 @@ import javafx.util.Duration;
 
 public class GoClient extends Application  
 {  
-   	
   final static int OPEN = 0;
   final static int BLACK = 1;
   final static int WHITE = 2;
@@ -159,6 +158,8 @@ public class GoClient extends Application
   Button deleteLastMoveButton;
   Button reviewForwardButton;
   Button reviewBackwardButton;
+  Button passButton;
+  Button resignButton;
 
   TextArea feedbackArea;
   TextArea sendMessageArea;
@@ -184,7 +185,8 @@ public class GoClient extends Application
   String[] timeStr = new String[]{"1 minute", "2 minutes", "4 minutes", "8 minutes", "16 minutes" };
 
   SimpleDateFormat df = new SimpleDateFormat("h:mm:ss MM-dd-yy");
-  Text timedUpdateText;
+  Text timedUpdateText; 
+  Text gameStatusText;
   Stage stage;
   boolean localFile=false;
   HBox hGridLabels;
@@ -222,6 +224,8 @@ public class GoClient extends Application
 	  
     timedUpdateText = new Text("update Off");
 	timedUpdateText.setFont(Font.font("Serif", 18));
+	gameStatusText = new Text("game running");
+	gameStatusText.setFont(Font.font("Serif", 18));
 	
     
     initiallizeMoveMap();
@@ -347,7 +351,7 @@ public class GoClient extends Application
 	}
 
   
-	if (status==GAME_FOUND) commitButton.setDisable(false); else commitButton.setDisable(true);
+	if (status==GAME_FOUND) enableCommit(); else commitButton.setDisable(true);
 	
     if (status==GAME_FOUND)
     {
@@ -387,7 +391,7 @@ public class GoClient extends Application
   {
 	//boolean gameFound=false;
 	//long gameNo=0;
-	int status=0;
+	int status=NOT_LOGGED_IN;
 	boolean loginSuccess=false;
 	boolean debug=true;
 
@@ -406,9 +410,19 @@ public class GoClient extends Application
 	}
 	
 		
-	if ((dragonAccess.isLoggedIn())&&(colorToPlay==thisPlayerColor))
-	  	  commitButton.setDisable(false); else commitButton.setDisable(true);
-
+	if (colorToPlay==thisPlayerColor)
+	{
+	  enableCommit();
+	  passButton.setDisable(false);
+	  resignButton.setDisable(false);
+	}
+	else 
+	{
+	  commitButton.setDisable(true);
+	  passButton.setDisable(true);
+	  resignButton.setDisable(true);
+	}
+	
 	if (status==GAME_FOUND)
 	{
 	  stopAutoRefresh();
@@ -531,8 +545,18 @@ private String getComments()
 	boolean excessive_usage=dragonAccess.isExcessive_usage();
 	if (excessive_usage) excessiveUsageStr="DGS server complaining about excessive usage\n";
 	
-	if ((dragonAccess.isLoggedIn())&&(colorToPlay==thisPlayerColor))
-  	  commitButton.setDisable(false); else commitButton.setDisable(true);
+	if (colorToPlay==thisPlayerColor)
+	{
+	  enableCommit();
+	  passButton.setDisable(false);
+	  resignButton.setDisable(false);
+	}
+	else 
+	{
+	  commitButton.setDisable(true);
+	  passButton.setDisable(true);
+	  resignButton.setDisable(true);
+	}
 
 	clear();
 		
@@ -609,7 +633,8 @@ private String getComments()
 	  lastSgfMove=dragonAccess.getLastSgfMove();
 	  lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
 	  handicap=dragonAccess.getHandicap();
-	  receiveMessageArea.setText(dragonAccess.getMessage());
+	  //receiveMessageArea.setText(dragonAccess.getMessage());
+	  feedbackArea.insertText(0, dragonAccess.getMessage());
 	  gameLabel.setText(dragonAccess.getPlayerBlack()+" vs "+dragonAccess.getplayerWhite());
 	  localFile=dragonAccess.isLocalFile();
 	  if (userId!=null)
@@ -620,7 +645,8 @@ private String getComments()
 	}
 	else
 	{
-	   receiveMessageArea.setText(dragonAccess.getMessage());
+	   //receiveMessageArea.setText(dragonAccess.getMessage());
+	   feedbackArea.insertText(0, dragonAccess.getMessage());
 	   gameLabel.setText("no game found");
 	   feedbackArea.insertText(0, "No game SGF file Found\n");
 	}
@@ -700,11 +726,12 @@ private VBox getRightPane()
   vBox.getChildren().add(getButtonBox());
   vBox.getChildren().add(getIdentBox());
   vBox.getChildren().add(getInfoGroup());
+  vBox.getChildren().add(gameStatusText);
   vBox.getChildren().add(timedUpdateText);
   vBox.getChildren().add(getFeedbackLabel());
   vBox.getChildren().add(getFeedbackBox());
   vBox.getChildren().add(getMessageLabel());
-  vBox.getChildren().add(getReceiveMessageBox());
+ // vBox.getChildren().add(getReceiveMessageBox());
   vBox.getChildren().add(getSendMessageBox());
   return vBox;
 }
@@ -1011,7 +1038,7 @@ private GridPane getRightPane()
   private Button getUserButton() 
   {
     Button userButton = new Button("");
-    Image userImage  = new Image(GoClient.class.getResourceAsStream("/images/user.png"));
+    Image userImage  = new Image(GoClient.class.getResourceAsStream("/resources/images/user.png"));
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
     	public void handle(MouseEvent event) {
             final Stage myDialog = new Stage();
@@ -1258,28 +1285,28 @@ void restoreMoveMap(int[][] savedMoveMap)
   
   private Button getPassButton() 
   {
-    Button button = new Button("pass");
+    passButton = new Button("pass");
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
     {
       System.out.println("pass button");
     }};
-    button.setOnAction(bHandler2);
-    button.setPrefHeight(28);
-    button.setTooltip(new Tooltip("Toggle board coordinates on/off"));
-    return button; 
+    passButton.setOnAction(bHandler2);
+    passButton.setPrefHeight(28);
+    passButton.setTooltip(new Tooltip("Toggle board coordinates on/off"));
+    return passButton; 
   }
   
   private Button getResignButton() 
   {
-    Button button = new Button("resign");
+    resignButton = new Button("resign");
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
     {
       System.out.println("resign button");
     }};
-    button.setOnAction(bHandler2);
-    button.setPrefHeight(28);
-    button.setTooltip(new Tooltip("Toggle board coordinates on/off"));
-    return button; 
+    resignButton.setOnAction(bHandler2);
+    resignButton.setPrefHeight(28);
+    resignButton.setTooltip(new Tooltip("Toggle board coordinates on/off"));
+    return resignButton; 
   }
   
   private Button getReviewForwardButton() 
@@ -1370,44 +1397,45 @@ void restoreMoveMap(int[][] savedMoveMap)
  
    private void importImages()
    {
-	 board_ul_corner_image = new Image(GoClient.class.getResourceAsStream("/images/wood4_ul.gif"));
-	 board_ur_corner_image = new Image(GoClient.class.getResourceAsStream("/images/wood4_ur.gif"));
-	 board_ll_corner_image = new Image(GoClient.class.getResourceAsStream("/images/wood4_dl.gif"));
-	 board_lr_corner_image = new Image(GoClient.class.getResourceAsStream("/images/wood4_dr.gif"));
+	 String src="/resources";  
+	 board_ul_corner_image = new Image(GoClient.class.getResourceAsStream(src+"/images/wood4_ul.gif"));
+	 board_ur_corner_image = new Image(GoClient.class.getResourceAsStream(src+"/images/wood4_ur.gif"));
+	 board_ll_corner_image = new Image(GoClient.class.getResourceAsStream(src+"/images/wood4_dl.gif"));
+	 board_lr_corner_image = new Image(GoClient.class.getResourceAsStream(src+"/images/wood4_dr.gif"));
 	 
-	 board_top_image = new Image(GoClient.class.getResourceAsStream("/images/wood4_u.gif"));
-	 board_left_image = new Image(GoClient.class.getResourceAsStream("/images/wood4_l.gif"));
-	 board_right_image = new Image(GoClient.class.getResourceAsStream("/images/wood4_r.gif"));
-	 board_bottom_image = new Image(GoClient.class.getResourceAsStream("/images/wood4_d.gif"));
+	 board_top_image = new Image(GoClient.class.getResourceAsStream(src+"/images/wood4_u.gif"));
+	 board_left_image = new Image(GoClient.class.getResourceAsStream(src+"/images/wood4_l.gif"));
+	 board_right_image = new Image(GoClient.class.getResourceAsStream(src+"/images/wood4_r.gif"));
+	 board_bottom_image = new Image(GoClient.class.getResourceAsStream(src+"/images/wood4_d.gif"));
 	
-	 board_fill_image = new Image(GoClient.class.getResourceAsStream("/images/wood4.gif"));
+	 board_fill_image = new Image(GoClient.class.getResourceAsStream(src+"/images/wood4.gif"));
 	 
-	 grid_ul_corner_image = new Image(GoClient.class.getResourceAsStream("/images/ul.gif"));
-	 grid_ur_corner_image = new Image(GoClient.class.getResourceAsStream("/images/ur.gif"));
-	 grid_ll_corner_image = new Image(GoClient.class.getResourceAsStream("/images/dl.gif"));
-	 grid_lr_corner_image = new Image(GoClient.class.getResourceAsStream("/images/dr.gif"));
+	 grid_ul_corner_image = new Image(GoClient.class.getResourceAsStream(src+"/images/ul.gif"));
+	 grid_ur_corner_image = new Image(GoClient.class.getResourceAsStream(src+"/images/ur.gif"));
+	 grid_ll_corner_image = new Image(GoClient.class.getResourceAsStream(src+"/images/dl.gif"));
+	 grid_lr_corner_image = new Image(GoClient.class.getResourceAsStream(src+"/images/dr.gif"));
 	 
-	 grid_top_image = new Image(GoClient.class.getResourceAsStream("/images/u.gif"));
-	 grid_left_image = new Image(GoClient.class.getResourceAsStream("/images/el.gif"));
-	 grid_right_image = new Image(GoClient.class.getResourceAsStream("/images/er.gif"));
-	 grid_bottom_image = new Image(GoClient.class.getResourceAsStream("/images/d.gif"));
+	 grid_top_image = new Image(GoClient.class.getResourceAsStream(src+"/images/u.gif"));
+	 grid_left_image = new Image(GoClient.class.getResourceAsStream(src+"/images/el.gif"));
+	 grid_right_image = new Image(GoClient.class.getResourceAsStream(src+"/images/er.gif"));
+	 grid_bottom_image = new Image(GoClient.class.getResourceAsStream(src+"/images/d.gif"));
 	 
-	 grid_cross_image = new Image(GoClient.class.getResourceAsStream("/images/e.gif"));
-	 grid_hoshi_image = new Image(GoClient.class.getResourceAsStream("/images/h.gif"));
+	 grid_cross_image = new Image(GoClient.class.getResourceAsStream(src+"/images/e.gif"));
+	 grid_hoshi_image = new Image(GoClient.class.getResourceAsStream(src+"/images/h.gif"));
 	 
 	    
-	    blackStoneImage = new Image(Stone.class.getResourceAsStream("/images/b.gif")); 
-	    whiteStoneImage = new Image(Stone.class.getResourceAsStream("/images/w.gif")); 
-	    smallerBlackStoneImage = new Image(Stone.class.getResourceAsStream("/images/smaller_b.gif")); 
-	    smallerWhiteStoneImage = new Image(Stone.class.getResourceAsStream("/images/smaller_w.gif")); 
+	    blackStoneImage = new Image(Stone.class.getResourceAsStream(src+"/images/b.gif")); 
+	    whiteStoneImage = new Image(Stone.class.getResourceAsStream(src+"/images/w.gif")); 
+	    smallerBlackStoneImage = new Image(Stone.class.getResourceAsStream(src+"/images/smaller_b.gif")); 
+	    smallerWhiteStoneImage = new Image(Stone.class.getResourceAsStream(src+"/images/smaller_w.gif")); 
 	   
-	    horizSgfLabelsImage = new Image(Stone.class.getResourceAsStream("/images/horizLabels.png")); 
-	    horizLabelsOff = new Image(Stone.class.getResourceAsStream("/images/horizLabelsOff")); 
-	    vertSgfLabelsImage = new Image(Stone.class.getResourceAsStream("/images/vertSgfLabels.png")); 
-	    vertLabelsOff = new Image(Stone.class.getResourceAsStream("/images/vertLabelsOff")); 
+	    horizSgfLabelsImage = new Image(Stone.class.getResourceAsStream(src+"/images/horizLabels.png")); 
+	    horizLabelsOff = new Image(Stone.class.getResourceAsStream(src+"/images/horizLabelsOff")); 
+	    vertSgfLabelsImage = new Image(Stone.class.getResourceAsStream(src+"/images/vertSgfLabels.png")); 
+	    vertLabelsOff = new Image(Stone.class.getResourceAsStream(src+"/images/vertLabelsOff")); 
 		 
-	    vertRegularLabelsImage = new Image(Stone.class.getResourceAsStream("/images/vertNumbLabels.png")); 
-	    horizRegularLabelsImage = new Image(Stone.class.getResourceAsStream("/images/horizRegLabels.png")); 
+	    vertRegularLabelsImage = new Image(Stone.class.getResourceAsStream(src+"/images/vertNumbLabels.png")); 
+	    horizRegularLabelsImage = new Image(Stone.class.getResourceAsStream(src+"/images/horizRegLabels.png")); 
    }
    
    private TextArea getFeedbackBox()
@@ -1628,7 +1656,7 @@ void restoreMoveMap(int[][] savedMoveMap)
 
 private void setQuit() 
 {
-  quit = new ImageView(new Image(GoClient.class.getResourceAsStream("/images/x1.png"))); 
+  quit = new ImageView(new Image(GoClient.class.getResourceAsStream("/resources/images/x1.png"))); 
   quit.setFitHeight(25);
   quit.setFitWidth(25);
   quit.setX(970);
@@ -1645,26 +1673,31 @@ private void setQuit()
   
   private void placeStone(Move move, boolean fromSgf) 
   {
-	moveMap[move.x][move.y]=move.color;	
-	Stone stone = new Stone(move);
-	visibleMoves.getChildren().add(stone);
+	if (move.isPass())  
+	{
+	  gameStatusText.setText(colorStr(move.color)+" PASSED");
+	}
+	else
+	{
+	  moveMap[move.x][move.y]=move.color;	
+      Stone stone = new Stone(move);
+	  visibleMoves.getChildren().add(stone);
+	  checkLibertiesOfNeighbors(move.x, move.y);
+	}
 	lastMoveColor=move.color;
 	moves.add(move);
 	moveNumber++;
 	moveNoVal.setText(""+moveNumber);
-	checkLibertiesOfNeighbors(move.x, move.y);
 	positionHistory.add(new BoardMap(moveMap));
 	
     if (!fromSgf) 
     {	
       localMoves++;
       stoneSound.play();
-      //unmarkStones();
       markLocalMove();
       if ((localMoves==1)&&(thisPlayerColor==move.color))
-      commitButton.setDisable(false);
+      enableCommit();
       reviewBackwardButton.setDisable(true);
-      //showMoves();
     }
     
     
@@ -2264,6 +2297,12 @@ void playNextStone()
 	 level=0;
 	 cycleCount=0;
 	 if (timeline!=null) timeline.stop();
+   }
+   
+   
+   private void enableCommit()
+   {
+	 if (dragonAccess.isLoggedIn()) commitButton.setDisable(false);
    }
     
 }  

@@ -127,16 +127,17 @@ public class Stone extends ImageView
     */
     void createStone()
     {
-      if (black_stone_image==null)  black_stone_image = new Image(Stone.class.getResourceAsStream("/images/b.gif")); 
-      if (white_stone_image==null)  white_stone_image = new Image(Stone.class.getResourceAsStream("/images/w.gif"));
-      if (black_move_image==null)   black_move_image = new Image(Stone.class.getResourceAsStream("/images/bm.gif"));
-      if (white_move_image==null)   white_move_image = new Image(Stone.class.getResourceAsStream("/images/wm.gif"));
+      String src="/resources";
+      if (black_stone_image==null)  black_stone_image = new Image(Stone.class.getResourceAsStream(src+"/images/b.gif")); 
+      if (white_stone_image==null)  white_stone_image = new Image(Stone.class.getResourceAsStream(src+"/images/w.gif"));
+      if (black_move_image==null)   black_move_image = new Image(Stone.class.getResourceAsStream(src+"/images/bm.gif"));
+      if (white_move_image==null)   white_move_image = new Image(Stone.class.getResourceAsStream(src+"/images/wm.gif"));
       
      
-      if (bx==null) bx = new Image(Stone.class.getResourceAsStream("/images/bx.gif"));
-      if (bcheck==null) bcheck = new Image(Stone.class.getResourceAsStream("/images/bcheck.gif"));
-      if (wx==null) wx = new Image(Stone.class.getResourceAsStream("/images/wx.gif"));
-      if (wcheck==null) wcheck = new Image(Stone.class.getResourceAsStream("/images/wcheck.gif"));
+      if (bx==null) bx = new Image(Stone.class.getResourceAsStream(src+"/images/bx.gif"));
+      if (bcheck==null) bcheck = new Image(Stone.class.getResourceAsStream(src+"/images/bcheck.gif"));
+      if (wx==null) wx = new Image(Stone.class.getResourceAsStream(src+"/images/wx.gif"));
+      if (wcheck==null) wcheck = new Image(Stone.class.getResourceAsStream(src+"/images/wcheck.gif"));
        
       
       if (stoneColor==GoClient.WHITE)

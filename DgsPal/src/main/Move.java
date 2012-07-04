@@ -12,8 +12,10 @@ public class Move
 {
   public int x;
   public int y;
+  private boolean pass=false;
  
-  public int color;
+  
+public int color;
   public String sgfPosition;
   public double sceneX;
   public double  sceneY;
@@ -59,6 +61,13 @@ public class Move
 	this.x=calcX();
 	this.y=calcY();
   }
+  
+  public Move(int color)
+  {
+	this.color=color;
+	pass=true;
+  }
+  
  
   public String calcSgfPosition()
   {
@@ -117,6 +126,14 @@ public class Move
 	  return xLabels[x]+"-"+(19-y);
   }
   
+  public boolean isPass() {
+		return pass;
+	}
+
+	public void setPass(boolean pass) {
+		this.pass = pass;
+	}
+
   
   
 }

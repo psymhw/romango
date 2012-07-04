@@ -105,66 +105,6 @@ public DragonAccess(String userId, String password)
     */
   }
 
-public long checkForMove2()
-{
-	 //String surl = "http://www.dragongoserver.net/quick_status.php?&quick_mode=1&user=" + userId;
-	 String surl = "http://www.dragongoserver.net/quick_do.php?obj=game&cmd=list&view=status&lstyle=table&uid="+userId;
-
-	 String secondLine="";    
-	 String gameStr="";
-	 StringBuffer rawMessage = new StringBuffer();
-	 rawMessage.append("checkForMove: "); 
-	 boolean emptyList = false;
-	 long gameLong=0;
-	 feedback=new StringBuffer();
-	 System.out.println(surl);
-	 try
-	 {
-	   URL url;
-	   url = new URL(surl);
-	   URLConnection con = url.openConnection();
-	   con = url.openConnection();
-	   
-	   InputStream is = con.getInputStream();
-	   InputStreamReader isr = new InputStreamReader(is);
-	   BufferedReader br = new BufferedReader(isr);
-	   String line = null;
-	   
-	   int count=0;
-	   while ( (line = br.readLine()) != null)
-	   {
-		  System.out.println("check for move 2: " + line);
-	      rawMessage.append(line+"\n");
-	      count++;
-	      if (count==2) secondLine=line;
-	   }
-	 } catch (Exception e)  {  feedback.append(e.getMessage()); return 0; }
-	 
-	 if (secondLine.contains("empty list")) emptyList=true;
-	 
-	 
-	 if (emptyList)
-	 {
-	    feedback.append("no moves waiting"); 
-	 }
-	 else 
-	 {	 
-	   try
-	   {
-	     gameStr=secondLine.substring(4,11);
-	   } catch ( Exception e) {feedback.append("error parsing gameStr: "); feedback.append(rawMessage); }
-	   
-	   if (gameStr.length()>0)
-	   {
-	     try { gameLong = Long.parseLong(gameStr.trim()); } catch (Exception e) {}
-	     if (gameLong>0) feedback.append("Game Found: #"+gameStr.trim());
-	     else feedback.append(rawMessage);
-	   }
-	 }
-	 
-	 
-	 return gameLong;
-}
 
    
    public int checkForMove()
@@ -184,6 +124,8 @@ public long checkForMove2()
 	 String gameStr="";
 	 StringBuffer rawMessage = new StringBuffer();
 	 
+	 if (!loggedIn) return GoClient.NOT_LOGGED_IN;
+	 
 	 if (lastMoveCheck!=null)
 	 {
 	   Date now = new Date();
@@ -198,7 +140,7 @@ public long checkForMove2()
 	 }
 	 lastMoveCheck= new Date();
 	 
-	 if (!loggedIn) return GoClient.NOT_LOGGED_IN;
+	 
 	 
 	 rawMessage.append("checkForMove: "); 
 	 boolean emptyList = false;
@@ -403,14 +345,24 @@ public long checkForMove2()
 	   return;
 	 }
 	 
-	 if (line.startsWith(";W[]"))  // white resign
+	 if (line.startsWith(";W[]"))  // white pass
 	 {
-	   feedback.append("\nWHITE RESIGNED\n");
+	   move=new Move(GoClient.WHITE); //PASS
+	   sgfMoves.add(move);
+	   lastSgfMove = move;
+	   lastSgfMoveNumber++;
+	   currentMessage=false;
+	   lastMoveColor="w";
 	   return;
 	 }
-	 if (line.startsWith(";B[]"))  // white resign
+	 if (line.startsWith(";B[]"))  // black pass
 	 {
-	   feedback.append("\nBLACK RESIGNED\n");
+	   move=new Move(GoClient.BLACK); //PASS
+	   sgfMoves.add(move);
+	   lastSgfMove = move;
+	   lastSgfMoveNumber++;
+	   currentMessage=false;
+	   lastMoveColor="b";
 	   return;
 	 }
 	 
