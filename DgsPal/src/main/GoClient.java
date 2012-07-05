@@ -207,6 +207,7 @@ public class GoClient extends Application
   long lastMouseClick=0;
   int consecutivePasses=0;
   boolean gameOver=false;
+  boolean passPlayed=false;
   
   public void start(final Stage stage) throws Exception  
   {  
@@ -412,18 +413,7 @@ public class GoClient extends Application
 	}
 	
 		
-	if (colorToPlay==thisPlayerColor)
-	{
-	  enableCommit();
-	  passButton.setDisable(false);
-	  resignButton.setDisable(false);
-	}
-	else 
-	{
-	  commitButton.setDisable(true);
-	  passButton.setDisable(true);
-	  resignButton.setDisable(true);
-	}
+	
 	
 	if (status==GAME_FOUND)
 	{
@@ -477,11 +467,24 @@ public class GoClient extends Application
       stage.getIcons().add(smallerBlackStoneImage);
     }
     
+    if (colorToPlay==thisPlayerColor)
+	{
+	  enableCommit();
+	  passButton.setDisable(false);
+	  resignButton.setDisable(false);
+	}
+	else 
+	{
+	  commitButton.setDisable(true);
+	  passButton.setDisable(true);
+	  resignButton.setDisable(true);
+	}
+    
     deleteLastMoveButton.setDisable(true);
     reviewForwardButton.setDisable(true);
     //System.out.println("local File: "+localFile);
     
-     if ((status!=GAME_FOUND)&&(loginSuccess)) startAutoRefresh();
+     if ((status!=GAME_FOUND)&&(loginSuccess)&&(colorToPlay!=thisPlayerColor)) startAutoRefresh();
      
     if (!loginSuccess) loginSuccessStr="LOGIN FAILED - network down?"+"\n";
 	}
@@ -547,19 +550,7 @@ private String getComments()
 	boolean excessive_usage=dragonAccess.isExcessive_usage();
 	if (excessive_usage) excessiveUsageStr="DGS server complaining about excessive usage\n";
 	
-	if (colorToPlay==thisPlayerColor)
-	{
-	  enableCommit();
-	  passButton.setDisable(false);
-	  resignButton.setDisable(false);
-	}
-	else 
-	{
-	  commitButton.setDisable(true);
-	  passButton.setDisable(true);
-	  resignButton.setDisable(true);
-	}
-
+	
 	clear();
 		
 	boolean success=false;
@@ -596,10 +587,22 @@ private String getComments()
 	      }
 	      //if (!gameFound) startAutoRefresh();
 	      
-	      if (colorToPlay!=thisPlayerColor)
-	      { 
-	    	if (dragonAccess.isLoggedIn()) startAutoRefresh();
-	      }
+	      if (colorToPlay==thisPlayerColor)
+	  	{
+	  	  enableCommit();
+	  	  passButton.setDisable(false);
+	  	  resignButton.setDisable(false);
+	  	if (dragonAccess.isLoggedIn()) startAutoRefresh();
+	  	}
+	  	else 
+	  	{
+	  	  commitButton.setDisable(true);
+	  	  passButton.setDisable(true);
+	  	  resignButton.setDisable(true);
+	  	}
+
+	      
+	     
 	      deleteLastMoveButton.setDisable(true);
 	      reviewForwardButton.setDisable(true);
 	      reviewBackwardButton.setDisable(false);
@@ -1265,6 +1268,14 @@ void restoreMoveMap(int[][] savedMoveMap)
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
     {
       unmarkGroup();
+      if (passPlayed)
+      {
+    	  moves.remove(moves.size()-1);
+    	  localMoves--;
+    	  localMovesVal.setText(""+localMoves);
+    	  passPlayed=false;
+      }
+      else
       deleteLastStone(); 
     }};
     deleteLastMoveButton.setOnAction(bHandler2);
@@ -1293,6 +1304,9 @@ void restoreMoveMap(int[][] savedMoveMap)
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
     {
       System.out.println("pass button");
+      placeStone(new Move(thisPlayerColor));
+      passPlayed=true;
+      deleteLastMoveButton.setDisable(false);
     }};
     passButton.setOnAction(bHandler2);
     passButton.setPrefHeight(28);
@@ -1686,9 +1700,6 @@ private void setQuit()
 	  { 
 		gameOver=true; 
 		gameOverText=" - Game Over"; 
-		passButton.setDisable(true);
-		resignButton.setDisable(true);
-		deleteLastMoveButton.setDisable(true);
 	  }
 	  gameStatusText.setText(colorStr(move.color)+" PASSED"+gameOverText);
 	}
@@ -1714,8 +1725,11 @@ private void setQuit()
       if ((localMoves==1)&&(thisPlayerColor==move.color))
       enableCommit();
       reviewBackwardButton.setDisable(true);
-    }
+   }
     
+	passButton.setDisable(true);
+	resignButton.setDisable(true);
+
     
     
   }
@@ -2320,6 +2334,7 @@ void playNextStone()
    private void enableCommit()
    {
 	 if (dragonAccess.isLoggedIn()) commitButton.setDisable(false);
+	 else commitButton.setDisable(true);
    }
     
 }  
