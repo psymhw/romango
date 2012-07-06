@@ -454,18 +454,20 @@ public class GoClient extends Application
 	{	 
 	commentsStr=getComments();
 	playAllSgfMoves();
-    if (lastSgfMove.color==BLACK)  
-    { 
-      colorToPlay=WHITE; 
-      turnImageView.setImage(whiteStoneImage);
-      stage.getIcons().add(smallerWhiteStoneImage);
-    } 
-    else 
-    {
-      colorToPlay=BLACK;
-      turnImageView.setImage(blackStoneImage);
-      stage.getIcons().add(smallerBlackStoneImage);
-    }
+	/*
+	 if (lastSgfMove.color==BLACK)  
+	    { 
+	      colorToPlay=WHITE; 
+	      turnImageView.setImage(whiteStoneImage);
+	      stage.getIcons().add(smallerWhiteStoneImage);
+	    } 
+	    else 
+	    {
+	      colorToPlay=BLACK;
+	      turnImageView.setImage(blackStoneImage);
+	      stage.getIcons().add(smallerBlackStoneImage);
+	    }
+    
     
     if (colorToPlay==thisPlayerColor)
 	{
@@ -482,6 +484,8 @@ public class GoClient extends Application
     
     deleteLastMoveButton.setDisable(true);
     reviewForwardButton.setDisable(true);
+    */
+    updateControls();
     //System.out.println("local File: "+localFile);
     
      if ((status!=GAME_FOUND)&&(loginSuccess)&&(colorToPlay!=thisPlayerColor)) startAutoRefresh();
@@ -1188,12 +1192,15 @@ private GridPane getRightPane()
 	  localMoves++;
 	  stoneSound.play();
 	  markLocalMove();
+	  updateControls();
+	  /*
 	  if ((localMoves==1)&&(thisPlayerColor==move.color))
 	  enableCommit();
 	  reviewBackwardButton.setDisable(true);
 
       deleteLastMoveButton.setDisable(false);
       localMovesVal.setText(""+localMoves);  
+      */
     }
 
 	
@@ -1715,11 +1722,7 @@ private void setQuit()
 	lastMoveColor=move.color;
 	moves.add(move);
 	moveNumber++;
-	moveNoVal.setText(""+moveNumber);
 	positionHistory.add(new BoardMap(moveMap));
-    
-	passButton.setDisable(true);
-	resignButton.setDisable(true);
   }
 
   private void playPass(Move move) 
@@ -1732,11 +1735,7 @@ private void setQuit()
 	lastMoveColor=move.color;
 	moves.add(move);
 	moveNumber++;
-	moveNoVal.setText(""+moveNumber);
 	positionHistory.add(new BoardMap(moveMap));
-    
-	passButton.setDisable(true);
-	resignButton.setDisable(true);
   }
 
   
@@ -2338,7 +2337,7 @@ void playNextStone()
    
    private void enableCommit()
    {
-	 if (dragonAccess.isLoggedIn()) commitButton.setDisable(false);
+	 if (dragonAccess.isLoggedIn()&&(thisPlayerColor==colorToPlay)) commitButton.setDisable(false);
 	 else commitButton.setDisable(true);
    }
    
@@ -2372,6 +2371,22 @@ void playNextStone()
 		reviewBackwardButton.setDisable(false);
 		reviewForwardButton.setDisable(false);
 	 }
+	 
+	 if (lastSgfMove.color==BLACK)  
+	    { 
+	      colorToPlay=WHITE; 
+	      turnImageView.setImage(whiteStoneImage);
+	      stage.getIcons().add(smallerWhiteStoneImage);
+	    } 
+	    else 
+	    {
+	      colorToPlay=BLACK;
+	      turnImageView.setImage(blackStoneImage);
+	      stage.getIcons().add(smallerBlackStoneImage);
+	    }
+	 
+	 localMovesVal.setText(""+localMoves);
+	 moveNoVal.setText(""+moveNumber);
    }
     
 }  
