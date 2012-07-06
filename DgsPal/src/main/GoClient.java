@@ -955,6 +955,12 @@ private GridPane getRightPane()
      writeMoveToLocalSgfFile(firstLocalMove);
      feedbackArea.insertText(0, df.format(new Date())+" "+firstLocalMove.getColor()+": "+firstLocalMove.getBoardPosition()+"\n");
      commitButton.setDisable(true); 
+     if (consecutivePasses==2) 
+	  { 
+		gameOver=true; 
+	  }
+	  
+	 gameStatusText.setText(colorStr(firstLocalMove.color)+" GAME OVER");
      if (sendMessageArea.getText()!=null)
      {	
        if (sendMessageArea.getText().length()>0) feedbackArea.insertText(0, "* "+sendMessageArea.getText()+"\n");
@@ -1179,6 +1185,13 @@ private GridPane getRightPane()
       }  // end of testing illegal moves
       
       placeStone(move);
+	  localMoves++;
+	  stoneSound.play();
+	  markLocalMove();
+	  if ((localMoves==1)&&(thisPlayerColor==move.color))
+	  enableCommit();
+	  reviewBackwardButton.setDisable(true);
+
       deleteLastMoveButton.setDisable(false);
       localMovesVal.setText(""+localMoves);  
     }
@@ -1274,6 +1287,8 @@ void restoreMoveMap(int[][] savedMoveMap)
     	  localMoves--;
     	  localMovesVal.setText(""+localMoves);
     	  passPlayed=false;
+    	  gameStatusText.setText("");
+    	  passButton.setDisable(false);
       }
       else
       deleteLastStone(); 
@@ -1304,13 +1319,15 @@ void restoreMoveMap(int[][] savedMoveMap)
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
     {
       System.out.println("pass button");
-      placeStone(new Move(thisPlayerColor));
+      playPass(new Move(thisPlayerColor));
+      localMoves++;
       passPlayed=true;
       deleteLastMoveButton.setDisable(false);
+      localMovesVal.setText(""+localMoves);  
     }};
     passButton.setOnAction(bHandler2);
     passButton.setPrefHeight(28);
-    passButton.setTooltip(new Tooltip("Toggle board coordinates on/off"));
+    passButton.setTooltip(new Tooltip("Pass"));
     return passButton; 
   }
   
@@ -1503,7 +1520,8 @@ void restoreMoveMap(int[][] savedMoveMap)
      while(it.hasNext())
      {
        move=(Move)it.next();
-       placeStone(move,  true);
+       if (move.isPass()) playPass(move);
+       else placeStone(move);
        
      }
 		      
@@ -1686,52 +1704,39 @@ private void setQuit()
 
   private void placeStone(Move move) 
   {
-    placeStone(move, false);;
-  }
-  
-  private void placeStone(Move move, boolean fromSgf) 
-  {
-	String gameOverText="";  
-	  
-	if (move.isPass())  
-	{
-	  consecutivePasses++;
-	  if (consecutivePasses==2) 
-	  { 
-		gameOver=true; 
-		gameOverText=" - Game Over"; 
-	  }
-	  gameStatusText.setText(colorStr(move.color)+" PASSED"+gameOverText);
-	}
-	else
-	{
-	  moveMap[move.x][move.y]=move.color;	
-      Stone stone = new Stone(move);
-	  visibleMoves.getChildren().add(stone);
-	  checkLibertiesOfNeighbors(move.x, move.y);
-	  consecutivePasses=0;
-	}
+    gameStatusText.setText("");
+    consecutivePasses=0;
+    
+    moveMap[move.x][move.y]=move.color;	
+    Stone stone = new Stone(move);
+	visibleMoves.getChildren().add(stone);
+	checkLibertiesOfNeighbors(move.x, move.y);
+			
 	lastMoveColor=move.color;
 	moves.add(move);
 	moveNumber++;
 	moveNoVal.setText(""+moveNumber);
 	positionHistory.add(new BoardMap(moveMap));
-	
-    if (!fromSgf) 
-    {	
-      localMoves++;
-      stoneSound.play();
-      markLocalMove();
-      if ((localMoves==1)&&(thisPlayerColor==move.color))
-      enableCommit();
-      reviewBackwardButton.setDisable(true);
-   }
     
 	passButton.setDisable(true);
 	resignButton.setDisable(true);
+  }
 
+  private void playPass(Move move) 
+  {
+	consecutivePasses++;
+	gameStatusText.setText(colorStr(move.color)+" PASSED");
+	  
+      if ((localMoves==1)&&(thisPlayerColor==move.color))  enableCommit();
+	      reviewBackwardButton.setDisable(true);
+	lastMoveColor=move.color;
+	moves.add(move);
+	moveNumber++;
+	moveNoVal.setText(""+moveNumber);
+	positionHistory.add(new BoardMap(moveMap));
     
-    
+	passButton.setDisable(true);
+	resignButton.setDisable(true);
   }
 
   
@@ -1987,7 +1992,7 @@ void playNextStone()
      move=(Move)it.next();
      if (counter==moveToReplay)
      {
-       placeStone(move,  true);
+       placeStone(move);
        break;
      }
      counter++;
@@ -2335,6 +2340,38 @@ void playNextStone()
    {
 	 if (dragonAccess.isLoggedIn()) commitButton.setDisable(false);
 	 else commitButton.setDisable(true);
+   }
+   
+   private void updateControls()
+   {
+	 if (localMoves==0)
+	 {
+	   commitButton.setDisable(true);
+	   deleteLastMoveButton.setDisable(true);
+	   passButton.setDisable(false);
+	   resignButton.setDisable(false);
+	   reviewBackwardButton.setDisable(false);
+	   reviewForwardButton.setDisable(true);
+	 }
+	 if (localMoves>0)
+	 {
+	   enableCommit(); 
+	   deleteLastMoveButton.setDisable(false);
+	   passButton.setDisable(true);
+	   resignButton.setDisable(true);
+	   reviewBackwardButton.setDisable(true);
+	   reviewForwardButton.setDisable(true);
+
+	 }
+	 if (localMoves<0)
+	 {
+		commitButton.setDisable(true);
+		deleteLastMoveButton.setDisable(true);
+		passButton.setDisable(true);
+		resignButton.setDisable(true);
+		reviewBackwardButton.setDisable(false);
+		reviewForwardButton.setDisable(false);
+	 }
    }
     
 }  
