@@ -64,8 +64,11 @@ public int color;
   
   public Move(int color)
   {
-	this.color=color;
+	//this.color=color;
+	this("'pass'" +
+			"", color); //pass
 	pass=true;
+	
   }
   
  
