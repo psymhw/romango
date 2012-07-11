@@ -169,7 +169,7 @@ public DragonAccess(String userId, String password)
 	   while ( (line = br.readLine()) != null)
 	   {
 		   rawMessage.append(line+"\n");
-		   System.out.println(line);
+		  // System.out.println(line);
 		   if (line.contains("excessive_usage")) excessive_usage=true;
 		   
 		   if (line.startsWith("#")) { commentCount++; lineCount++; continue; };
@@ -199,7 +199,7 @@ public DragonAccess(String userId, String password)
 			 +" data: "+dataCount
 			 +" excessive usage: "+excessive_usage
 			 );
-	// if (dataCount>0) System.out.println(dataLine);
+	 if (dataCount>0) System.out.println(dataLine);
 
 	   if (gameStr.length()>0)
 	   {
@@ -355,7 +355,27 @@ public DragonAccess(String userId, String password)
 	   lastMoveColor="w";
 	   return;
 	 }
+	 if (line.startsWith(";W[tt]"))  // white pass
+	 {
+	   move=new Move(GoClient.WHITE); //PASS
+	   sgfMoves.add(move);
+	   lastSgfMove = move;
+	   lastSgfMoveNumber++;
+	   currentMessage=false;
+	   lastMoveColor="w";
+	   return;
+	 }
 	 if (line.startsWith(";B[]"))  // black pass
+	 {
+	   move=new Move(GoClient.BLACK); //PASS
+	   sgfMoves.add(move);
+	   lastSgfMove = move;
+	   lastSgfMoveNumber++;
+	   currentMessage=false;
+	   lastMoveColor="b";
+	   return;
+	 }
+	 if (line.startsWith(";B[tt]"))  // black pass
 	 {
 	   move=new Move(GoClient.BLACK); //PASS
 	   sgfMoves.add(move);
@@ -486,6 +506,7 @@ public DragonAccess(String userId, String password)
 	 }
 	 try
 	 {
+		 System.out.println("move cmd: " + surl);
 	   URL url;
 	   url = new URL(surl);
 	           

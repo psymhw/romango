@@ -208,6 +208,7 @@ public class GoClient extends Application
   int consecutivePasses=0;
   boolean gameOver=false;
   boolean passPlayed=false;
+  boolean stoneSoundActive=true;
   
   public void start(final Stage stage) throws Exception  
   {  
@@ -581,7 +582,7 @@ private String getComments()
         {
 		  playAllSgfMoves();
 		  updateControls();
-		  if (colorToPlay==thisPlayerColor) startAutoRefresh();
+		  if (!(colorToPlay==thisPlayerColor)) startAutoRefresh();
 		  /*
 	      if (lastSgfMove.color==BLACK)  
 	      { 
@@ -965,6 +966,7 @@ private GridPane getRightPane()
    if (success) 
    { 
      writeMoveToLocalSgfFile(firstLocalMove);
+     
      feedbackArea.insertText(0, df.format(new Date())+" "+firstLocalMove.getColor()+": "+firstLocalMove.getBoardPosition()+"\n");
      //commitButton.setDisable(true); 
      if (consecutivePasses==2) 
@@ -972,7 +974,7 @@ private GridPane getRightPane()
 		gameOver=true; 
 	  }
 	  
-	 gameStatusText.setText(colorStr(firstLocalMove.color)+" GAME OVER");
+	 //gameStatusText.setText(colorStr(firstLocalMove.color)+" GAME OVER");
      if (sendMessageArea.getText()!=null)
      {	
        if (sendMessageArea.getText().length()>0) feedbackArea.insertText(0, "* "+sendMessageArea.getText()+"\n");
@@ -984,8 +986,11 @@ private GridPane getRightPane()
      putMoveImageOnCommittedStone();
      //deleteLastMoveButton.setDisable(true);
     // reviewBackwardButton.setDisable(false);
-           
-     startAutoRefresh();  
+     getSgfFile(FROM_LOCAL_FILE);
+     stoneSoundActive=false;
+     playAllSgfMoves();
+     //updateControls();
+    
          
        /* 
      if (firstLocalMove.color==BLACK)  
@@ -1004,9 +1009,19 @@ private GridPane getRightPane()
      
      lastSgfMoveNumber++;
      lastSgfMove=firstLocalMove;
+     
+     /*
+     if (localMoves>1)
+     {
+       for(int i=0; i<localMoves; i++)
+       {
+    	  deleteLastStone();
+       }
+     }
+    	*/ 
      localMoves=0;
     // localMovesVal.setText("0");
-     
+     startAutoRefresh();
      updateControls();
    }
    else feedbackArea.insertText(0, dragonAccess.getFeedback()+"\n");
@@ -1547,8 +1562,13 @@ void restoreMoveMap(int[][] savedMoveMap)
      handicapVal.setText(""+handicap);
      moveNoVal.setText(""+lastSgfMoveNumber);
      markLastStone();
-     stoneSound.play();
+     if (stoneSoundActive) stoneSound.play();
+     stoneSoundActive=true;
      lastSgfMove = dragonAccess.getLastSgfMove();
+     if (lastSgfMove.color==BLACK)  
+	      colorToPlay=WHITE; 
+	    else 
+	      colorToPlay=BLACK;
    }
    
    public String colorStr(int color)
@@ -2308,6 +2328,7 @@ void playNextStone()
    @SuppressWarnings({ "rawtypes", "unchecked" })
    void startAutoRefresh()
    {
+	 System.out.println("Starting Auto Refresh");  
 	 if (!dragonAccess.isLoggedIn())  return;
 	 level=0; 
 	 cycleCount=0;
@@ -2341,6 +2362,7 @@ void playNextStone()
       
    void stopAutoRefresh()
    {
+	 System.out.println("Stop Auto Refresh");  
 	 timedUpdateText.setText("update OFF ");  
 	 level=0;
 	 cycleCount=0;
@@ -2356,6 +2378,7 @@ void playNextStone()
    
    private void enableEndgameControls()
    {
+	   System.out.println("end game controls ");
 	   if (colorToPlay==thisPlayerColor) 
 	   {
 	     passButton.setDisable(false);
@@ -2386,12 +2409,18 @@ void playNextStone()
 	   reviewForwardButton.setDisable(true);
 	 }
 	 
+	 if (localMoves>0)
+     {
+       reviewForwardButton.setDisable(true);
+       reviewBackwardButton.setDisable(true);
+     }
 	 
-	 if (reviewPosition==0)
+	 if ((reviewPosition==0)&&(localMoves==0))
      {
        reviewForwardButton.setDisable(true);
        reviewBackwardButton.setDisable(false);
      }
+	 
 	 if (reviewPosition<0)
      {
        reviewForwardButton.setDisable(false);
