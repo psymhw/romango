@@ -653,7 +653,7 @@ private String getComments()
 	  handicap=dragonAccess.getHandicap();
 	  //receiveMessageArea.setText(dragonAccess.getMessage());
 	  feedbackArea.insertText(0, dragonAccess.getMessage());
-	  gameLabel.setText(dragonAccess.getPlayerBlack()+" vs "+dragonAccess.getplayerWhite());
+	  gameLabel.setText(dragonAccess.getPlayerBlack()+" vs "+dragonAccess.getPlayerWhite());
 	  localFile=dragonAccess.isLocalFile();
 	  if (userId!=null)
 	  {
@@ -852,8 +852,8 @@ private GridPane getRightPane()
 	buttonBox.getChildren().add(getCommitButton());
 	//buttonBox.getChildren().add(getLabelsButton());
 	//buttonBox.getChildren().add(getUserButton());
-	buttonBox.getChildren().add(getPassButton());
-	buttonBox.getChildren().add(getResignButton());
+	//buttonBox.getChildren().add(getPassButton());
+	//buttonBox.getChildren().add(getResignButton());
 	return buttonBox;
   }
 
@@ -988,7 +988,10 @@ private GridPane getRightPane()
     // reviewBackwardButton.setDisable(false);
      getSgfFile(FROM_LOCAL_FILE);
      stoneSoundActive=false;
+     String commentsStr=getComments();
      playAllSgfMoves();
+     feedbackArea.clear();
+     feedbackArea.setText(commentsStr);
      //updateControls();
     
          
@@ -1047,7 +1050,13 @@ private GridPane getRightPane()
 	String colorLetter="";
 	if (move.color==1) colorLetter="B"; else colorLetter="W";
 	sgfFile=sgfFile+";"+colorLetter+"["+move.getSgfPosition()+"]\n";
-	
+	if (sendMessageArea.getText().length()>0) 
+	{	
+		if (move.color==1)
+		sgfFile+="C["+dragonAccess.getPlayerBlack()+" ("+dragonAccess.getLoginNameBlack()+"): "+sendMessageArea.getText()+"]\n";
+		else
+			sgfFile+="C["+dragonAccess.getPlayerWhite()+" ("+dragonAccess.getLoginNameWhite()+"): "+sendMessageArea.getText()+"]\n";	
+	}
 	File resourceFile=null;
 	  File directory = new File (".");
 	try{
@@ -2328,7 +2337,8 @@ void playNextStone()
    @SuppressWarnings({ "rawtypes", "unchecked" })
    void startAutoRefresh()
    {
-	 System.out.println("Starting Auto Refresh");  
+	 System.out.println("Starting Auto Refresh"); 
+	 secondCounter=0;
 	 if (!dragonAccess.isLoggedIn())  return;
 	 level=0; 
 	 cycleCount=0;
@@ -2351,6 +2361,7 @@ void playNextStone()
              else timedUpdateText.setText("refresh rate: "+timeStr[level]);
              cycleCount=0;
            }
+           
            refreshTimed();	
          }
          secondCounter++;  
@@ -2378,7 +2389,7 @@ void playNextStone()
    
    private void enableEndgameControls()
    {
-	   System.out.println("end game controls ");
+	   //System.out.println("end game controls ");
 	   if (colorToPlay==thisPlayerColor) 
 	   {
 	     passButton.setDisable(false);
@@ -2397,14 +2408,14 @@ void playNextStone()
 	 {
 	   commitButton.setDisable(true);
 	   deleteLastMoveButton.setDisable(true);
-	   enableEndgameControls();
+	  // enableEndgameControls();
 	 }
 	 if (localMoves>0)
 	 {
 	   enableCommit(); 
 	   deleteLastMoveButton.setDisable(false);
-	   passButton.setDisable(true);
-	   resignButton.setDisable(true);
+	  // passButton.setDisable(true);
+	 //  resignButton.setDisable(true);
 	   reviewBackwardButton.setDisable(true);
 	   reviewForwardButton.setDisable(true);
 	 }

@@ -460,10 +460,14 @@ public DragonAccess(String userId, String password)
    	        count++;
    	       // System.out.println(line);
    	      }
+   	       
+   	       br.close();
+   	       isr.close();
+   	       in.close();
    	    } catch (IOException io) { System.out.println("Ooops");  }
       }
     }
-     
+    
     if (count>0) 
     {
       feedback.append("SGF file loaded from local copy.\n"); 
@@ -687,11 +691,11 @@ public DragonAccess(String userId, String password)
 	    }
 
 	  
-	  public String getplayerWhite() {
+	  public String getPlayerWhite() {
 			return playerWhite;
 		}
 
-		public void setplayerWhite(String playerWhite) {
+		public void setPlayerWhite(String playerWhite) {
 			this.playerWhite = playerWhite;
 		}
 	public void setMessage(String message) {
