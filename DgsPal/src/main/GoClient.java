@@ -652,7 +652,7 @@ private String getComments()
 	  lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
 	  handicap=dragonAccess.getHandicap();
 	  //receiveMessageArea.setText(dragonAccess.getMessage());
-	  feedbackArea.insertText(0, dragonAccess.getMessage());
+	 // feedbackArea.insertText(0, dragonAccess.getMessage());
 	  gameLabel.setText(dragonAccess.getPlayerBlack()+" vs "+dragonAccess.getPlayerWhite());
 	  localFile=dragonAccess.isLocalFile();
 	  if (userId!=null)
@@ -664,7 +664,7 @@ private String getComments()
 	else
 	{
 	   //receiveMessageArea.setText(dragonAccess.getMessage());
-	   feedbackArea.insertText(0, dragonAccess.getMessage());
+	  // feedbackArea.insertText(0, dragonAccess.getMessage());
 	   gameLabel.setText("no game found");
 	   feedbackArea.insertText(0, "No game SGF file Found\n");
 	}
@@ -2321,6 +2321,8 @@ void playNextStone()
      initiallizeMoveMap();
      moves = new ArrayList();
      capturedStonesArray = new ArrayList();
+     positionHistory = new ArrayList<>();
+     markedStones = new ArrayList<>();
      moveNumber=0;
      captured[BLACK]=0;
      captured[WHITE]=0;

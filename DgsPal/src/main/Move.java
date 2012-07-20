@@ -126,6 +126,7 @@ public int color;
   
   public String getBoardPosition()
   {
+	  if (pass) return "";
 	  return xLabels[x]+"-"+(19-y);
   }
   

@@ -437,6 +437,7 @@ public DragonAccess(String userId, String password)
      int count=0;
      lastSgfMoveNumber=0;
      sgfMoves = new ArrayList<>();
+     comments=new ArrayList();
      try 
      {
    	   resourceFile= new File(directory.getCanonicalPath()+"\\"+currentGameNo+".sgf");
