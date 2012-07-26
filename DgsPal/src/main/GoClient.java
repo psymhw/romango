@@ -46,6 +46,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -850,6 +851,7 @@ private GridPane getRightPane()
 	buttonBox.getChildren().add(getRefreshButton());
 	buttonBox.getChildren().add(getReviewForwardButton());
 	buttonBox.getChildren().add(getCommitButton());
+	buttonBox.getChildren().add(getFileButton());
 	//buttonBox.getChildren().add(getLabelsButton());
 	//buttonBox.getChildren().add(getUserButton());
 	//buttonBox.getChildren().add(getPassButton());
@@ -1042,6 +1044,43 @@ private GridPane getRightPane()
      commitButton.setTooltip(new Tooltip("Commit Move"));
      commitButton.setPrefHeight(28);
      return commitButton;
+  }
+  
+  private Button getFileButton() 
+  {
+	
+    Button fileButton = new Button("File");
+    EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
+	          public void handle(MouseEvent event)  
+	          { 
+	        	  System.out.println("file button"); 
+	        	  File directory = new File (".");
+	        	  FileChooser fileChooser = new FileChooser();
+	                
+	                //Set extension filter
+	        	  
+	        	    File dir2=null;
+					try {
+						dir2 = new File(directory.getCanonicalPath());
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	        	    fileChooser.setInitialDirectory(dir2);
+	                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("SGF files (*.sgf)", "*.sgf");
+	                fileChooser.getExtensionFilters().add(extFilter);
+	                
+	                //Show save file dialog
+	                File file = fileChooser.showOpenDialog(stage);
+	                if(file != null){
+	                   // textArea.setText(readFile(file)); 
+	                    }
+	          }};
+	  
+	          fileButton.setOnMouseClicked(bHandler);
+	          fileButton.setTooltip(new Tooltip("Commit Move"));
+	          fileButton.setPrefHeight(28);
+     return fileButton;
   }
   
   private void writeMoveToLocalSgfFile(Move move)
