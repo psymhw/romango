@@ -263,14 +263,14 @@ public DragonAccess(String userId, String password)
 	 Iterator it = moveLine.iterator();
      String sgfPosition="";
      String line="";
-     File resourceFile=null;
+     File gameFile=null;
 	  File directory = new File (".");
 	  
 	  try{
-			resourceFile= new File(directory.getCanonicalPath()+"\\"+currentGameNo+".sgf");
+			gameFile= new File(directory.getCanonicalPath()+"\\"+currentGameNo+".sgf");
 		    FileWriter fstream=null;
 		
-			fstream = new FileWriter(resourceFile);
+			fstream = new FileWriter(gameFile);
 		    BufferedWriter out = new BufferedWriter(fstream);
 		    out.write(sgfFileString.toString());
 		    out.close();
@@ -430,42 +430,20 @@ public DragonAccess(String userId, String password)
    
    public boolean getLocalSgfFile(String currentGameNo) 
    {
-     File resourceFile=null;
+     File gameFile=null;
      File directory = new File (".");
-     boolean returnVal=false;
-   //  System.out.println("trying local file");
      int count=0;
-     lastSgfMoveNumber=0;
-     sgfMoves = new ArrayList<>();
-     comments=new ArrayList();
+     //System.out.println("get local file - gameNo");
      try 
      {
-   	   resourceFile= new File(directory.getCanonicalPath()+"\\"+currentGameNo+".sgf");
+   	   gameFile= new File(directory.getCanonicalPath()+"\\"+currentGameNo+".sgf");
      } catch (IOException e) { e.printStackTrace(); }
 
-     if (resourceFile!=null)
+     if (gameFile!=null)
      {
-   	   if (resourceFile.exists())
+   	   if (gameFile.exists())
        {
-   	     try 
-   	     {
-   	       InputStream in = new FileInputStream(resourceFile);
-   	       InputStreamReader isr = new InputStreamReader(in);
-   	       BufferedReader br = new BufferedReader(isr);
-   	       String line;
-   	       
-   	       while ((line = br.readLine()) != null) 
-   	      { 
-   	        parseLine(line);
-   	        if (count==0) if (!line.startsWith("(")) return false;  // if the first line is not "(" it'ds not a valid SGF
-   	        count++;
-   	       // System.out.println(line);
-   	      }
-   	       
-   	       br.close();
-   	       isr.close();
-   	       in.close();
-   	    } catch (IOException io) { System.out.println("Ooops");  }
+   		count=getLocalSgfFile(gameFile);
       }
     }
     
@@ -477,6 +455,38 @@ public DragonAccess(String userId, String password)
       return true; 
     }
     else return false;
+  }
+   
+   
+   public int getLocalSgfFile(File gameFile) 
+   {
+     boolean returnVal=false;
+     int count=0;
+     lastSgfMoveNumber=0;
+     sgfMoves = new ArrayList<>();
+     comments=new ArrayList();
+     
+   	     try 
+   	     {
+   	       InputStream in = new FileInputStream(gameFile);
+   	       InputStreamReader isr = new InputStreamReader(in);
+   	       BufferedReader br = new BufferedReader(isr);
+   	       String line;
+   	       
+   	       while ((line = br.readLine()) != null) 
+   	      { 
+   	        parseLine(line);
+   	        if (count==0) if (!line.startsWith("(")) return 0;  // if the first line is not "(" it'ds not a valid SGF
+   	        count++;
+   	       // System.out.println(line);
+   	      }
+   	       
+   	       br.close();
+   	       isr.close();
+   	       in.close();
+   	    } catch (IOException io) { System.out.println("Ooops");  }
+    
+    return count;
   }
    
    public boolean makeMove(String gameNo, String lastMove, String thisMove, int color, String message)

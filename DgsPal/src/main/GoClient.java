@@ -74,6 +74,7 @@ public class GoClient extends Application
   final static boolean LIVE=false;
   final static int FROM_SERVER = 0;
   final static int FROM_LOCAL_FILE = 1;
+  final static int FROM_DISK = 2;
   
   final static int MIN_RETRY_TIME =-1;
   final static int NOT_LOGGED_IN =-2;
@@ -645,27 +646,14 @@ private String getComments()
 	//System.out.println("Setting moveNumber to 0");
 	moveNumber=0;
 	if (location==FROM_LOCAL_FILE) success=dragonAccess.getLocalSgfFile(currentGameNo);
-	else success= dragonAccess.getSgf(currentGameNo); 
+		else success= dragonAccess.getSgf(currentGameNo); 
+	
 	if (success)
 	{	
-	  sgfMoves=dragonAccess.getSgfMoves();
-	  lastSgfMove=dragonAccess.getLastSgfMove();
-	  lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
-	  handicap=dragonAccess.getHandicap();
-	  //receiveMessageArea.setText(dragonAccess.getMessage());
-	 // feedbackArea.insertText(0, dragonAccess.getMessage());
-	  gameLabel.setText(dragonAccess.getPlayerBlack()+" vs "+dragonAccess.getPlayerWhite());
-	  localFile=dragonAccess.isLocalFile();
-	  if (userId!=null)
-	  {
-		if (userId.equals(dragonAccess.getLoginNameBlack())) thisPlayerColor=BLACK;
-		else thisPlayerColor=WHITE;
-	  }
+	  updateVariables();
 	}
 	else
 	{
-	   //receiveMessageArea.setText(dragonAccess.getMessage());
-	  // feedbackArea.insertText(0, dragonAccess.getMessage());
 	   gameLabel.setText("no game found");
 	   feedbackArea.insertText(0, "No game SGF file Found\n");
 	}
@@ -673,7 +661,20 @@ private String getComments()
   }
  
   
- 
+ private void updateVariables()
+ {
+	 sgfMoves=dragonAccess.getSgfMoves();
+	  lastSgfMove=dragonAccess.getLastSgfMove();
+	  lastSgfMoveNumber=dragonAccess.getLastSgfMoveNumber();
+	  handicap=dragonAccess.getHandicap();
+	  gameLabel.setText(dragonAccess.getPlayerBlack()+" vs "+dragonAccess.getPlayerWhite());
+	  localFile=dragonAccess.isLocalFile();
+	  if (userId!=null)
+	  {
+		if (userId.equals(dragonAccess.getLoginNameBlack())) thisPlayerColor=BLACK;
+		else thisPlayerColor=WHITE;
+	  }
+ }
   
  
 private void getResources() 
@@ -1072,9 +1073,12 @@ private GridPane getRightPane()
 	                
 	                //Show save file dialog
 	                File file = fileChooser.showOpenDialog(stage);
-	                if(file != null){
-	                   // textArea.setText(readFile(file)); 
-	                    }
+	                if(file != null)
+	                {
+	                   dragonAccess.getLocalSgfFile(file);
+	                   updateVariables();
+	                   playAllSgfMoves();
+	                }
 	          }};
 	  
 	          fileButton.setOnMouseClicked(bHandler);
