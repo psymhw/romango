@@ -1078,6 +1078,7 @@ private GridPane getRightPane()
 	                   dragonAccess.getLocalSgfFile(file);
 	                   updateVariables();
 	                   playAllSgfMoves();
+	                   updateControls();
 	                }
 	          }};
 	  
