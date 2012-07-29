@@ -295,7 +295,7 @@ public DragonAccess(String userId, String password)
 	 try {
 	 if (line.startsWith("GC["))
 	 {
-	   String strGameNo = line.substring(line.indexOf(':')+1); 
+	   String strGameNo = line.substring(line.indexOf(':')+1).trim(); 
 	   try
 	   {
 		   currentGame=Long.parseLong(strGameNo);

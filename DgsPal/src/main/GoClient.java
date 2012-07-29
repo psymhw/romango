@@ -669,6 +669,7 @@ private String getComments()
 	  handicap=dragonAccess.getHandicap();
 	  gameLabel.setText(dragonAccess.getPlayerBlack()+" vs "+dragonAccess.getPlayerWhite());
 	  localFile=dragonAccess.isLocalFile();
+	  gameNoVal.setText(""+dragonAccess.getCurrentGame());
 	  if (userId!=null)
 	  {
 		if (userId.equals(dragonAccess.getLoginNameBlack())) thisPlayerColor=BLACK;
@@ -1079,7 +1080,7 @@ private GridPane getRightPane()
 	                   updateVariables();
 	                   playAllSgfMoves();
 	                   updateControls();
-	                   gameNoVal.setText(""+dragonAccess.getCurrentGame());
+	                   
 	                }
 	          }};
 	  
