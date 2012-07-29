@@ -113,10 +113,15 @@ public int color;
 	return (yInt-97)*35;
   }
   
-  public String getColor()
+  public String getColorStr()
   {
 	if (color==1) return "B";
 	else return "W";
+  }
+  
+  public int getColor()
+  {
+	return color;
   }
   
   public SimplePosition getSimplePosition()
