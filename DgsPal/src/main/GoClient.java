@@ -369,7 +369,7 @@ public class GoClient extends Application
       if (getSgfFile(FROM_SERVER))
       {
   	    playAllSgfMoves();
-         feedbackArea.insertText(0, df.format(new Date())+" "+lastSgfMove.getColor()+": "+lastSgfMove.getBoardPosition()+"\n");
+         feedbackArea.insertText(0, df.format(new Date())+" "+lastSgfMove.getColorStr()+": "+lastSgfMove.getBoardPosition()+"\n");
  	  updateControls();
         /*
         if (lastSgfMove.color==BLACK)  
@@ -970,7 +970,7 @@ private GridPane getRightPane()
    { 
      writeMoveToLocalSgfFile(firstLocalMove);
      
-     feedbackArea.insertText(0, df.format(new Date())+" "+firstLocalMove.getColor()+": "+firstLocalMove.getBoardPosition()+"\n");
+     feedbackArea.insertText(0, df.format(new Date())+" "+firstLocalMove.getColorStr()+": "+firstLocalMove.getBoardPosition()+"\n");
      //commitButton.setDisable(true); 
      if (consecutivePasses==2) 
 	  { 
@@ -1054,7 +1054,7 @@ private GridPane getRightPane()
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event)  
 	          { 
-	        	  System.out.println("file button"); 
+	        	  //System.out.println("file button"); 
 	        	  File directory = new File (".");
 	        	  FileChooser fileChooser = new FileChooser();
 	                
@@ -1079,6 +1079,7 @@ private GridPane getRightPane()
 	                   updateVariables();
 	                   playAllSgfMoves();
 	                   updateControls();
+	                   gameNoVal.setText(""+dragonAccess.getCurrentGame());
 	                }
 	          }};
 	  
@@ -1799,10 +1800,13 @@ private void setQuit()
     gameStatusText.setText("");
     consecutivePasses=0;
     
-    moveMap[move.x][move.y]=move.color;	
-    Stone stone = new Stone(move);
-	visibleMoves.getChildren().add(stone);
-	checkLibertiesOfNeighbors(move.x, move.y);
+    if (!move.isPass())
+    {
+      moveMap[move.x][move.y]=move.color;	
+      Stone stone = new Stone(move);
+	  visibleMoves.getChildren().add(stone);
+	  checkLibertiesOfNeighbors(move.x, move.y);
+    }
 			
 	lastMoveColor=move.color;
 	moves.add(move);
@@ -2133,15 +2137,25 @@ void playNextStone()
 	int color;
 	int size = moves.size();
 	if (moveNumber==0) return;
+	gameStatusText.setText("");
 	if (size>0)
 	{
 	  Move m = (Move) moves.get(size-1);
+	    
 	  //System.out.println("removing: "+m.getBoardPosition()+" "+m.x+"-"+m.y);
-	  color = moveMap[m.x][m.y];
-	  moveMap[m.x][m.y]=OPEN;
+	 // color = moveMap[m.x][m.y];
+	  color=m.getColor();
+	  
 	  if (color==BLACK) lastMoveColor=WHITE;
 	  else lastMoveColor=BLACK;
-	  removeStone(m.x, m.y);
+	  
+	  if (!m.isPass())
+	  {
+	    moveMap[m.x][m.y]=OPEN;
+	    removeStone(m.x, m.y);
+	  }
+	  
+	 
 	  moves.remove(size-1);
 	}
 	  

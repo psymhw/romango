@@ -293,6 +293,15 @@ public DragonAccess(String userId, String password)
 	 String sgfPosition="";
 	 
 	 try {
+	 if (line.startsWith("GC["))
+	 {
+	   String strGameNo = line.substring(line.indexOf(':')+1); 
+	   try
+	   {
+		   currentGame=Long.parseLong(strGameNo);
+	   } catch(Exception e) { System.out.println("can't parse "+strGameNo);}
+	   return;
+	 }
 	 if (line.startsWith("HA"))
 	 {
 	   handicap=line.charAt(3)-48;  
