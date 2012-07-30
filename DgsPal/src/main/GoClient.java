@@ -741,8 +741,8 @@ private void writeResources()
 private VBox getRightPane() 
 {
   VBox vBox = new VBox(); 
-  vBox.setPadding(new Insets(10, 10, 10, 10));
-  vBox.setPadding(new Insets(3,5,3,5));
+  vBox.setPadding(new Insets(5,5,5,5)); // the border around the whole thing
+  vBox.setSpacing(4); // the spacing between rows
     
   vBox.getChildren().add(getButtonBox());
   vBox.getChildren().add(getIdentBox());
@@ -885,7 +885,9 @@ private GridPane getRightPane()
 	bx.setHeight(200);
 	bx.setArcWidth(20);
 	bx.setArcHeight(20); 
-	bx.setFill(Color.GRAY);
+//	kjkj
+	bx.setFill(Color.AZURE);
+	// bx.setStyle("-fx-background-color: DAE6F3;");
 	    
 	Text gameNoLabel = new Text("Game #:");
 	gameNoLabel.setFont(Font.font("Serif", 20));
@@ -1566,7 +1568,7 @@ void restoreMoveMap(int[][] savedMoveMap)
    {
 	   feedbackArea = TextAreaBuilder.create()
                .prefWidth(200)
-               .prefHeight(200)
+               .prefHeight(180)
                .wrapText(true)
                .build();
        
