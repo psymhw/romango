@@ -32,7 +32,7 @@ public class DragonAccess
   CookieStore cookieJar;
   String userId;
   String password;
-  StringBuffer sgfFileString = new StringBuffer();
+ // StringBuffer sgfFileString = new StringBuffer();
   StringBuffer feedback = new StringBuffer();
   String playerWhite="";
   String playerBlack="";
@@ -42,6 +42,7 @@ public class DragonAccess
   String lastMoveColor="b";
   boolean excessive_usage=false;
   ArrayList<String> comments = new ArrayList<>();
+  ArrayList<String> sgfFileLine = null; 
   int lastSgfMoveNumber=0;
   int handicap=0;
   int loginAttempts=0;
@@ -227,9 +228,9 @@ public DragonAccess(String userId, String password)
    public boolean getSgf(String currentGameNo)
    {
 	 sgfMoves = new ArrayList<>();
-	 sgfFileString= new StringBuffer(); 
+//	 sgfFileString= new StringBuffer(); 
 	 String surl = "http://www.dragongoserver.net/sgf.php?gid="+currentGameNo+"&owned_comments=1";
-	 ArrayList <String>moveLine= new ArrayList<>();
+	 ArrayList <String>sgfFileLine= new ArrayList<>();
 	 Move move=null;
 	 lastSgfMoveNumber=0;
 	 comments=new ArrayList();
@@ -251,16 +252,16 @@ public DragonAccess(String userId, String password)
 	   while ( (line = br.readLine()) != null)
 	   {
 		   if (count==0) if (!line.startsWith("(")) return false;  // if the first line is not "(" it'ds not a valid SGF
-		   moveLine.add(line);
+		   sgfFileLine.add(line);
 		   if ("C[]".equals(line)) continue;
-		   if (")".equals(line)) continue;
-		   sgfFileString.append(line+"\n");
+		   if (")".equals(line)) continue; 
+		//   sgfFileString.append(line+"\n");
 		   count++;
 	      //System.out.println("line: " + line);
 	   }
 	 } catch (Throwable t)  {  t.printStackTrace(); return false; }
 	 
-	 Iterator it = moveLine.iterator();
+	 Iterator it = sgfFileLine.iterator();
      String sgfPosition="";
      String line="";
      File gameFile=null;
@@ -272,11 +273,16 @@ public DragonAccess(String userId, String password)
 		
 			fstream = new FileWriter(gameFile);
 		    BufferedWriter out = new BufferedWriter(fstream);
-		    out.write(sgfFileString.toString());
+		    
+		    while(it.hasNext())
+		    {
+		      out.write((String)it.next()+"\n");
+		    }
 		    out.close();
 	 } catch (IOException e) { e.printStackTrace();	}
 	  
-        while(it.hasNext())  // get handicap count
+	  it  = sgfFileLine.iterator();
+        while(it.hasNext())  
         {
           line=(String)it.next();
           parseLine(line);
@@ -287,7 +293,11 @@ public DragonAccess(String userId, String password)
      return true;
    }
    
-   public void parseLine(String line)
+   public ArrayList<String> getSgfFileLine() {
+	return sgfFileLine;
+}
+
+public void parseLine(String line)
    {
      Move move=null;
 	 String sgfPosition="";
@@ -789,11 +799,7 @@ public DragonAccess(String userId, String password)
 		this.loginNameWhite = loginNameWhite;
 	}
 	
-	public String getSgfFile()
-	   {
-		  return sgfFileString.toString(); 
-	   }
-	   
+	
 	   public String getFeedback()
 	   {
 		  return feedback.toString(); 
