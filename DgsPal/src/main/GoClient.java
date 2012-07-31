@@ -1094,6 +1094,45 @@ private GridPane getRightPane()
   
   private void writeMoveToLocalSgfFile(Move move)
   {
+	ArrayList<String>  sgfFileLine=dragonAccess.getSgfFileLine();
+	String colorLetter="";
+	String newLine="";
+	String commentLine=null;
+	
+	if (move.color==1) colorLetter="B"; else colorLetter="W";
+	newLine=";"+colorLetter+"["+move.getSgfPosition()+"]\n";
+	
+	if (sendMessageArea.getText().length()>0) 
+	{	
+		if (move.color==1)
+		commentLine="C["+dragonAccess.getPlayerBlack()+" ("+dragonAccess.getLoginNameBlack()+"): "+sendMessageArea.getText()+"]\n";
+		else
+			commentLine="C["+dragonAccess.getPlayerWhite()+" ("+dragonAccess.getLoginNameWhite()+"): "+sendMessageArea.getText()+"]\n";	
+	}
+	File resourceFile=null;
+	  File directory = new File (".");
+	try{
+		resourceFile= new File(directory.getCanonicalPath()+"\\"+currentGameNo+".sgf");
+	    FileWriter fstream=null;
+	
+		fstream = new FileWriter(resourceFile);
+	    BufferedWriter out = new BufferedWriter(fstream);
+	    
+	    Iterator it = sgfFileLine.iterator();
+	    
+	    while(it.hasNext())
+	    {
+	    	out.write((String)it.next()+"\n");
+	    }
+	    out.write(")\n");  // add the last bracket
+	    
+	    out.close();
+ } catch (IOException e) { e.printStackTrace();	}
+  }
+  
+  /*
+  private void writeMoveToLocalSgfFile(Move move)
+  {
 	String sgfFile=dragonAccess.getSgfFile();
 	String colorLetter="";
 	if (move.color==1) colorLetter="B"; else colorLetter="W";
@@ -1117,7 +1156,7 @@ private GridPane getRightPane()
 	    out.close();
  } catch (IOException e) { e.printStackTrace();	}
   }
-  
+  */
   /*
   private Button getTestButton() 
   {
