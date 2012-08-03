@@ -854,7 +854,7 @@ private GridPane getRightPane()
 	buttonBox.getChildren().add(getReviewForwardButton());
 	buttonBox.getChildren().add(getCommitButton());
 	buttonBox.getChildren().add(getFileButton());
-	//buttonBox.getChildren().add(getLabelsButton());
+	buttonBox.getChildren().add(getTestButton());
 	//buttonBox.getChildren().add(getUserButton());
 	//buttonBox.getChildren().add(getPassButton());
 	//buttonBox.getChildren().add(getResignButton());
@@ -961,13 +961,20 @@ private GridPane getRightPane()
  {
    boolean success=false;  
    unmarkGroup();
-   Move firstLocalMove = moves.get(lastSgfMoveNumber);   
-   success=dragonAccess.makeMove(currentGameNo, 
-     		                      lastSgfMove.sgfPosition,
-     		                      firstLocalMove.getSgfPosition(), 
-     		                      firstLocalMove.color,
-     		                      sendMessageArea.getText()
-     		                      );
+   Move firstLocalMove = moves.get(lastSgfMoveNumber);  
+   
+   //success=dragonAccess.makeMove(currentGameNo, 
+   //  		                      lastSgfMove.sgfPosition,
+    // 		                      firstLocalMove.getSgfPosition(), 
+   //  		                      firstLocalMove.color,
+    // 		                      sendMessageArea.getText()
+    // 		                      );
+   
+   success=dragonAccess.makeMove2(currentGameNo, 
+            lastSgfMoveNumber,
+            firstLocalMove.getSgfPosition(), 
+            sendMessageArea.getText()
+            );
      
    if (success) 
    { 
@@ -1096,14 +1103,16 @@ private GridPane getRightPane()
   {
 	ArrayList<String>  sgfFileLine=dragonAccess.getSgfFileLine();
 	String colorLetter="";
-	String newLine="";
+	String moveLine="";
 	String commentLine=null;
+	boolean comment=false;
 	
 	if (move.color==1) colorLetter="B"; else colorLetter="W";
-	newLine=";"+colorLetter+"["+move.getSgfPosition()+"]\n";
+	moveLine=";"+colorLetter+"["+move.getSgfPosition()+"]\n";
 	
 	if (sendMessageArea.getText().length()>0) 
 	{	
+		comment=true;
 		if (move.color==1)
 		commentLine="C["+dragonAccess.getPlayerBlack()+" ("+dragonAccess.getLoginNameBlack()+"): "+sendMessageArea.getText()+"]\n";
 		else
@@ -1118,14 +1127,20 @@ private GridPane getRightPane()
 		fstream = new FileWriter(resourceFile);
 	    BufferedWriter out = new BufferedWriter(fstream);
 	    
+	    if (sgfFileLine!=null)
+	    {
 	    Iterator it = sgfFileLine.iterator();
 	    
 	    while(it.hasNext())
 	    {
 	    	out.write((String)it.next()+"\n");
 	    }
+	    out.write(moveLine);
+	    if (comment) out.write(commentLine);
 	    out.write(")\n");  // add the last bracket
-	    
+	    }
+	    else System.out.println("sgfFileLine is null!");
+	    	
 	    out.close();
  } catch (IOException e) { e.printStackTrace();	}
   }
@@ -1157,20 +1172,20 @@ private GridPane getRightPane()
  } catch (IOException e) { e.printStackTrace();	}
   }
   */
-  /*
+  
   private Button getTestButton() 
   {
     Button commitTestButton = new Button("Test");
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) 
 	          {
-	        	dragonAccess.checkForMove2();
+	        	dragonAccess.testNotes();
 	          } };
 	  
      commitTestButton.setOnMouseClicked(bHandler);
      return commitTestButton;
   }
-  */
+  
   
   private Button getUserButton() 
   {
