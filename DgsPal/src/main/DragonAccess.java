@@ -230,7 +230,7 @@ public DragonAccess(String userId, String password)
 	 sgfMoves = new ArrayList<>();
 //	 sgfFileString= new StringBuffer(); 
 	 String surl = "http://www.dragongoserver.net/sgf.php?gid="+currentGameNo+"&owned_comments=1";
-	 ArrayList <String>sgfFileLine= new ArrayList<>();
+	 sgfFileLine= new ArrayList<>();
 	 Move move=null;
 	 lastSgfMoveNumber=0;
 	 comments=new ArrayList();
@@ -329,6 +329,7 @@ public void parseLine(String line)
 		   sgfPosition=  line.substring(xPos,yPos);
 		   move=new Move(sgfPosition,GoClient.BLACK);
 		   sgfMoves.add(move);
+		   lastSgfMove = move;
 		   lastSgfMoveNumber++;
 		   xPos+=4;
 		   yPos+=4;
@@ -582,6 +583,78 @@ public void parseLine(String line)
 	 return success;
    }
    
+   public boolean makeMove2(String gameNo, int moveNo, String thisMove, String message)
+   {
+	 StringBuffer rawMessage = new StringBuffer();
+	 String secondLine="";
+     String colorString;
+     boolean loginError=false;
+     boolean success=false;
+     
+     if (!loggedIn) login(); else feedback = new StringBuffer();
+    // feedback.append("Dragon move\n");
+     
+    String surl = "http://www.dragongoserver.net/quick_do.php?obj=game&cmd=move&gid="+gameNo+"&move_id="+moveNo
+			 +"&move="+thisMove;
+	 
+	 if (message!=null)
+	 {
+		 if (message.length()>0)
+		 {
+		  // message=message.replaceAll(" ", "_");
+		   String text="";
+		   try
+		   {
+		   text = URLEncoder.encode(message,"UTF-8");
+		   } catch (Exception e) { e.printStackTrace();}
+		   surl=surl+"&msg="+text;
+		 }
+	 }
+	 try
+	 {
+		 
+	   URL url;
+	   url = new URL(surl);
+	           
+	   URLConnection con = url.openConnection();
+	   con = url.openConnection();
+	   con.setDoOutput(true);  // triggers POST method
+	   InputStream is = con.getInputStream();
+	   InputStreamReader isr = new InputStreamReader(is);
+	   BufferedReader br = new BufferedReader(isr);
+	   String line = null;
+	   
+	  // boolean success=false;
+	          
+	   int count=0;
+	  System.out.println("move2 cmd: " + surl);
+	   while ( (line = br.readLine()) != null)
+	   {
+	     System.out.println("move2 line: " + line);
+	      if (line.contains("#Error: not_logged_in")) loginError=true;
+	      rawMessage.append(line);
+	      count++;
+	      secondLine=line;
+	   }
+	 } catch (Throwable t)  {  t.printStackTrace(); }
+	 
+	 if (secondLine.contains(",\"error\":\"\",")) { success=true; feedback.append("move: ok"); }
+	  else { feedback.append(rawMessage); feedback.append("\n"); }
+	 
+	 if (loginError)
+	 {
+		if (loginAttempts<2)
+		{	
+		  login();
+		  loginAttempts++;
+		  success=makeMove2(gameNo, moveNo ,thisMove, message);
+		}
+	 }
+	 
+	 return success;
+   }
+   
+   
    
    public boolean login()
    {
@@ -650,7 +723,7 @@ public void parseLine(String line)
    
    public void testNotes()
    {
-		 String surl = "http://www.dragongoserver.net/do_quicl.php?obj=game&cmd=get_notes&gid=736429";
+		 String surl = "http://www.dragongoserver.net/quick_do.php?obj=game&cmd=get_notes&gid=736429";
 		 try
 		 {
 		   URL url;
