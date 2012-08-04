@@ -50,7 +50,10 @@ public class DragonAccess
   boolean currentMessage=false;
   Date lastMoveCheck;
   long currentGame=0;
-
+  String liveServer="www.dragongoserver.net";
+  String testServer="dragongoserver.sourceforge.net";
+  String server=liveServer;
+  boolean testMode=true;
 
 public long getCurrentGame() {
 	return currentGame;
@@ -58,6 +61,7 @@ public long getCurrentGame() {
 
 public DragonAccess(String userId, String password) 
   {
+	if (testMode) server=testServer;
 	manager = new CookieManager();
     manager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
     CookieHandler.setDefault(manager);
@@ -67,12 +71,12 @@ public DragonAccess(String userId, String password)
     
     
     HttpCookie cookie_handle = new HttpCookie("cookie_handle", userId);
-    cookie_handle.setDomain("www.dragongoserver.net");
+    cookie_handle.setDomain(server);
     cookie_handle.setPath("/");
     cookie_handle.setSecure(false);
     
     HttpCookie cookie_sessioncode = new HttpCookie("cookie_sessioncode", "9009AB8583A63AC6A66A2C6914A98E7BFA2601C93");
-    cookie_sessioncode.setDomain("www.dragongoserver.net");               
+    cookie_sessioncode.setDomain(server);               
     cookie_sessioncode.setPath("/");
     cookie_sessioncode.setSecure(false);
     
@@ -80,7 +84,7 @@ public DragonAccess(String userId, String password)
     
    
     try {
-		dragonURI = new URI("www.dragongoserver.net");
+		dragonURI = new URI(server);
 	} catch (URISyntaxException e) {e.printStackTrace();}
    
     
@@ -115,7 +119,7 @@ public DragonAccess(String userId, String password)
 
    public int checkForMove(String timeStr)
    {
-	 String surl = "http://www.dragongoserver.net/quick_status.php?version=2&quick_mode=1&user=" + userId;
+	 String surl = "http://"+server+"/quick_status.php?version=2&quick_mode=1&user=" + userId;
 	 SimpleDateFormat df = new SimpleDateFormat("h:mm:ss MM-dd-yy");
 	 
 	 StringTokenizer st;
@@ -229,7 +233,7 @@ public DragonAccess(String userId, String password)
    {
 	 sgfMoves = new ArrayList<>();
 //	 sgfFileString= new StringBuffer(); 
-	 String surl = "http://www.dragongoserver.net/sgf.php?gid="+currentGameNo+"&owned_comments=1";
+	 String surl = "http://"+server+"/sgf.php?gid="+currentGameNo+"&owned_comments=1";
 	 sgfFileLine= new ArrayList<>();
 	 Move move=null;
 	 lastSgfMoveNumber=0;
@@ -521,7 +525,7 @@ public void parseLine(String line)
     // feedback.append("Dragon move\n");
      
      if (color==GoClient.BLACK) colorString="B"; else colorString="W";
-	 String surl = "http://www.dragongoserver.net/quick_play.php?gid="+gameNo+"&handle="+userId
+	 String surl = "http://"+server+"/quick_play.php?gid="+gameNo+"&handle="+userId
 			 +"&sgf_prev="+lastMove
 			 +"&sgf_move="+thisMove
 			 +"&color="+colorString;
@@ -594,7 +598,7 @@ public void parseLine(String line)
      if (!loggedIn) login(); else feedback = new StringBuffer();
     // feedback.append("Dragon move\n");
      
-    String surl = "http://www.dragongoserver.net/quick_do.php?obj=game&cmd=move&gid="+gameNo+"&move_id="+moveNo
+    String surl = "http://"+server+"/quick_do.php?obj=game&cmd=move&gid="+gameNo+"&move_id="+moveNo
 			 +"&move="+thisMove;
 	 
 	 if (message!=null)
@@ -666,7 +670,7 @@ public void parseLine(String line)
 	 
 	// feedback.append("Dragon Login\n");
 	 
-	 String surl = "http://www.dragongoserver.net/login.php?quick_mode=1&userid=" + userId + "&passwd=" + password;
+	 String surl = "http://"+server+"/login.php?quick_mode=1&userid=" + userId + "&passwd=" + password;
 	 try
 	 {
 	   URL url;
@@ -723,7 +727,7 @@ public void parseLine(String line)
    
    public void testNotes()
    {
-		 String surl = "http://www.dragongoserver.net/quick_do.php?obj=game&cmd=get_notes&gid=736429";
+		 String surl = "http://"+server+"/quick_do.php?obj=game&cmd=get_notes&gid=736429";
 		 try
 		 {
 		   URL url;
