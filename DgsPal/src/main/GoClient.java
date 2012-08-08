@@ -1179,7 +1179,7 @@ private GridPane getRightPane()
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) 
 	          {
-	        	dragonAccess.testNotes();
+	        	dragonAccess.testNotes(currentGameNo);
 	          } };
 	  
      commitTestButton.setOnMouseClicked(bHandler);

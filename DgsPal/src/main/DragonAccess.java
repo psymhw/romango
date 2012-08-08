@@ -28,6 +28,7 @@ import java.util.StringTokenizer;
 
 public class DragonAccess 
 {
+  boolean testMode=false;
   CookieManager manager; 
   CookieStore cookieJar;
   String userId;
@@ -53,7 +54,7 @@ public class DragonAccess
   String liveServer="www.dragongoserver.net";
   String testServer="dragongoserver.sourceforge.net";
   String server=liveServer;
-  boolean testMode=true;
+  
 
 public long getCurrentGame() {
 	return currentGame;
@@ -725,9 +726,10 @@ public void parseLine(String line)
    
    
    
-   public void testNotes()
+   public void testNotes(String currentGameNo)
    {
-		 String surl = "http://"+server+"/quick_do.php?obj=game&cmd=get_notes&gid=736429";
+		 String surl = "http://"+server+"/quick_do.php?obj=game&cmd=list&view=status&uid="+userId;
+		 		//"&gid="+currentGameNo;
 		 try
 		 {
 		   URL url;
