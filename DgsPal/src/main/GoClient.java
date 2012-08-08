@@ -854,9 +854,9 @@ private GridPane getRightPane()
 	buttonBox.getChildren().add(getReviewForwardButton());
 	buttonBox.getChildren().add(getCommitButton());
 	buttonBox.getChildren().add(getFileButton());
-	buttonBox.getChildren().add(getTestButton());
+	//buttonBox.getChildren().add(getTestButton());
 	//buttonBox.getChildren().add(getUserButton());
-	//buttonBox.getChildren().add(getPassButton());
+	buttonBox.getChildren().add(getPassButton());
 	//buttonBox.getChildren().add(getResignButton());
 	return buttonBox;
   }
@@ -970,11 +970,22 @@ private GridPane getRightPane()
     // 		                      sendMessageArea.getText()
     // 		                      );
    
+   if (passPlayed)
+   {
    success=dragonAccess.makeMove2(currentGameNo, 
             lastSgfMoveNumber,
-            firstLocalMove.getSgfPosition(), 
+            "pass", 
             sendMessageArea.getText()
             );
+   }
+   else
+   {
+	   success=dragonAccess.makeMove2(currentGameNo, 
+	            lastSgfMoveNumber,
+	            firstLocalMove.getSgfPosition(), 
+	            sendMessageArea.getText()
+	            );
+	   }  
      
    if (success) 
    { 
@@ -1463,7 +1474,7 @@ void restoreMoveMap(int[][] savedMoveMap)
     passButton = new Button("pass");
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
     {
-      System.out.println("pass button");
+      System.out.println("pass button "+thisPlayerColor);
       playPass(new Move(thisPlayerColor));
       localMoves++;
       passPlayed=true;
@@ -1661,7 +1672,7 @@ void restoreMoveMap(int[][] savedMoveMap)
      String sgfPosition="";
      String moveLine="";
      Move move;
-	   
+	   System.out.println("play all sgf moves");
      while(it.hasNext())
      {
        move=(Move)it.next();
