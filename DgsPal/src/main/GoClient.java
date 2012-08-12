@@ -1016,6 +1016,7 @@ private GridPane getRightPane()
      playAllSgfMoves();
      feedbackArea.clear();
      feedbackArea.setText(commentsStr);
+     passPlayed=false;
      //updateControls();
     
          
@@ -1119,7 +1120,8 @@ private GridPane getRightPane()
 	boolean comment=false;
 	
 	if (move.color==1) colorLetter="B"; else colorLetter="W";
-	moveLine=";"+colorLetter+"["+move.getSgfPosition()+"]\n";
+	if (move.isPass()) moveLine=";"+colorLetter+"[]\n";
+	else moveLine=";"+colorLetter+"["+move.getSgfPosition()+"]\n";
 	
 	if (sendMessageArea.getText().length()>0) 
 	{	
@@ -1673,9 +1675,12 @@ void restoreMoveMap(int[][] savedMoveMap)
      String moveLine="";
      Move move;
 	   System.out.println("play all sgf moves");
+	   int count=1;
      while(it.hasNext())
      {
        move=(Move)it.next();
+      // System.out.println("move "+count+move.getSgfPosition()+", pass: "+move.isPass());
+       count++;
        if (move.isPass()) playPass(move);
        else placeStone(move);
        
@@ -1886,7 +1891,7 @@ private void setQuit()
   {
 	consecutivePasses++;
 	gameStatusText.setText(colorStr(move.color)+" PASSED");
-	  
+	  move.setPass(true);
       if ((localMoves==1)&&(thisPlayerColor==move.color))  enableCommit();
 	      reviewBackwardButton.setDisable(true);
 	lastMoveColor=move.color;
