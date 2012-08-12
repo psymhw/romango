@@ -2521,12 +2521,12 @@ void playNextStone()
 	   if (colorToPlay==thisPlayerColor) 
 	   {
 	     passButton.setDisable(false);
-	     resignButton.setDisable(false);
+	    // resignButton.setDisable(false);
 	   }
 	   else
 	   {
 		 passButton.setDisable(true);
-		 resignButton.setDisable(true);
+		// resignButton.setDisable(true);
 	   }
    }
    
@@ -2536,14 +2536,14 @@ void playNextStone()
 	 {
 	   commitButton.setDisable(true);
 	   deleteLastMoveButton.setDisable(true);
-	  // enableEndgameControls();
+	   enableEndgameControls();
 	 }
 	 if (localMoves>0)
 	 {
 	   enableCommit(); 
 	   deleteLastMoveButton.setDisable(false);
-	  // passButton.setDisable(true);
-	 //  resignButton.setDisable(true);
+	   passButton.setDisable(true);
+	  // resignButton.setDisable(true);
 	   reviewBackwardButton.setDisable(true);
 	   reviewForwardButton.setDisable(true);
 	 }
