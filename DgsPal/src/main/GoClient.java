@@ -1674,7 +1674,7 @@ void restoreMoveMap(int[][] savedMoveMap)
      String sgfPosition="";
      String moveLine="";
      Move move;
-	   System.out.println("play all sgf moves");
+	 //  System.out.println("play all sgf moves");
 	   int count=1;
      while(it.hasNext())
      {
@@ -1683,7 +1683,6 @@ void restoreMoveMap(int[][] savedMoveMap)
        count++;
        if (move.isPass()) playPass(move);
        else placeStone(move);
-       
      }
 		      
      handicapVal.setText(""+handicap);
@@ -1890,9 +1889,16 @@ private void setQuit()
   private void playPass(Move move) 
   {
 	consecutivePasses++;
-	gameStatusText.setText(colorStr(move.color)+" PASSED");
+	
+    if (consecutivePasses==2)
+    {
+      gameStatusText.setText("GAME OVER");
+      gameOver=true;
+    }
+      else
+	  gameStatusText.setText(colorStr(move.color)+" PASSED");
 	  move.setPass(true);
-      if ((localMoves==1)&&(thisPlayerColor==move.color))  enableCommit();
+      if ((localMoves==1)&&(thisPlayerColor==move.color)) enableCommit();
 	      reviewBackwardButton.setDisable(true);
 	lastMoveColor=move.color;
 	moves.add(move);
@@ -2537,6 +2543,29 @@ void playNextStone()
    
    private void updateControls()
    {
+	   
+	 if (gameOver)
+	 {
+		// System.out.println("game over controls");
+		 passButton.setDisable(true); 
+		// resignButton.setDisable(true);// resignButton.setDisable(true);
+		 commitButton.setDisable(true);
+		 deleteLastMoveButton.setDisable(true);
+		 
+		 if ((reviewPosition==0))
+	     {
+	       reviewForwardButton.setDisable(true);
+	       reviewBackwardButton.setDisable(false);
+	     }
+		 
+		 if (reviewPosition<0)
+	     {
+	       reviewForwardButton.setDisable(false);
+	       reviewBackwardButton.setDisable(false);
+	     }
+		 return;
+	 }
+	 
 	 if (localMoves==0)
 	 {
 	   commitButton.setDisable(true);
