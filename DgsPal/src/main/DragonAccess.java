@@ -28,7 +28,7 @@ import java.util.StringTokenizer;
 
 public class DragonAccess 
 {
-  boolean testMode=true;
+  boolean testMode=false;
   CookieManager manager; 
   CookieStore cookieJar;
   String userId;
