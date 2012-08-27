@@ -180,6 +180,8 @@ public class GoClient extends Application
   
  // Refresh refresh;
   int cycleCount=0;
+  int totalCycleCount=0;
+  StringBuffer refreshString=new StringBuffer();
   int level=0;
   int secondCounter=0;
   int cycles[] = new int[]{                1,           5,       100,         100,        100 };
@@ -210,7 +212,9 @@ public class GoClient extends Application
   int consecutivePasses=0;
   boolean gameOver=false;
   boolean passPlayed=false;
+  boolean resignPlayed=false;
   boolean stoneSoundActive=true;
+  String resourcesFileName="resources.properties";
   
   public void start(final Stage stage) throws Exception  
   {  
@@ -358,7 +362,14 @@ public class GoClient extends Application
 
   
 	//if (status==GAME_FOUND) enableCommit(); else commitButton.setDisable(true);
-	
+	refreshString = new StringBuffer();
+	totalCycleCount++;
+	refreshString.append("refresh rate: "+timeStr[level]+" ");
+	 for(int i=0; i<totalCycleCount; i++)
+	 {
+	   refreshString.append(".");	 // dots show how many refreshes.
+	 }
+	 timedUpdateText.setText(refreshString.toString());
     if (status==GAME_FOUND)
     {
       //System.out.println("timed refresh: game found "+gameNo);
@@ -393,6 +404,7 @@ public class GoClient extends Application
   private boolean login()
   {
 	dragonAccess=new DragonAccess(userId, password);
+	if (dragonAccess.isTestMode()) resourcesFileName="test_resources.properties";
 	return dragonAccess.login(); 
   }
   
@@ -684,7 +696,7 @@ private void getResources()
   File directory = new File (".");
   try 
   {
-	resourceFile= new File(directory.getCanonicalPath()+"\\resources.properties");
+	resourceFile= new File(directory.getCanonicalPath()+"\\"+resourcesFileName);
   } catch (IOException e) { e.printStackTrace(); }
 
   if (resourceFile!=null)
@@ -723,7 +735,7 @@ private void writeResources()
 	  File directory = new File (".");
 	  try 
 	  {
-		resourceFile= new File(directory.getCanonicalPath()+"\\resources.properties");
+		resourceFile= new File(directory.getCanonicalPath()+"\\"+resourcesFileName);
 	  } catch (IOException e) { e.printStackTrace(); }
 
 	FileWriter fstream;
@@ -745,6 +757,7 @@ private VBox getRightPane()
   vBox.setSpacing(4); // the spacing between rows
     
   vBox.getChildren().add(getButtonBox());
+  vBox.getChildren().add(getButtonBox2());
   vBox.getChildren().add(getIdentBox());
   vBox.getChildren().add(getInfoGroup());
   vBox.getChildren().add(gameStatusText);
@@ -853,13 +866,28 @@ private GridPane getRightPane()
 	buttonBox.getChildren().add(getRefreshButton());
 	buttonBox.getChildren().add(getReviewForwardButton());
 	buttonBox.getChildren().add(getCommitButton());
-	buttonBox.getChildren().add(getFileButton());
+	
 	//buttonBox.getChildren().add(getTestButton());
 	//buttonBox.getChildren().add(getUserButton());
-	buttonBox.getChildren().add(getPassButton());
-	//buttonBox.getChildren().add(getResignButton());
+	
+	//
 	return buttonBox;
   }
+  
+  private HBox getButtonBox2() 
+  {
+	HBox buttonBox = new HBox(); 
+	buttonBox.setPadding(new Insets(3, 3, 3, 3));
+	buttonBox.setSpacing(3);
+	
+	buttonBox.getChildren().add(getPassButton());
+	buttonBox.getChildren().add(getResignButton());
+	buttonBox.getChildren().add(getLabelsButton());
+	buttonBox.getChildren().add(getUserButton());
+	buttonBox.getChildren().add(getFileButton());
+	return buttonBox;
+  }
+ 
 
 
   private HBox getIdentBox() 
@@ -872,8 +900,8 @@ private GridPane getRightPane()
     gameLabel.setFont(Font.font("Serif", 18));
    
     identBox.getChildren().add(gameLabel);
-    identBox.getChildren().add(getUserButton());
-    identBox.getChildren().add(getLabelsButton());
+   // identBox.getChildren().add(getUserButton());
+   // identBox.getChildren().add(getLabelsButton());
     return identBox;
   }
    
@@ -970,7 +998,15 @@ private GridPane getRightPane()
     // 		                      sendMessageArea.getText()
     // 		                      );
    
-   if (passPlayed)
+   if (resignPlayed)
+   {
+   success=dragonAccess.makeMove2(currentGameNo, 
+            lastSgfMoveNumber,
+            "resign", 
+            sendMessageArea.getText()
+            );
+   }
+   else if (passPlayed)
    {
    success=dragonAccess.makeMove2(currentGameNo, 
             lastSgfMoveNumber,
@@ -1017,6 +1053,7 @@ private GridPane getRightPane()
      feedbackArea.clear();
      feedbackArea.setText(commentsStr);
      passPlayed=false;
+     resignPlayed=false;
      //updateControls();
     
          
@@ -1438,14 +1475,19 @@ void restoreMoveMap(int[][] savedMoveMap)
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
     {
       unmarkGroup();
+      if (resignPlayed)
+      {
+    	  moves.remove(moves.size()-1);
+    	  localMoves--;
+    	  resignPlayed=false;
+    	  gameStatusText.setText("");
+      }
       if (passPlayed)
       {
     	  moves.remove(moves.size()-1);
     	  localMoves--;
-    	  //localMovesVal.setText(""+localMoves);
     	  passPlayed=false;
     	  gameStatusText.setText("");
-    	 // passButton.setDisable(false);
       }
       else
       deleteLastStone(); 
@@ -1496,6 +1538,13 @@ void restoreMoveMap(int[][] savedMoveMap)
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
     {
       System.out.println("resign button");
+      System.out.println("pass button "+thisPlayerColor);
+      Move m = new Move(thisPlayerColor);
+      m.setResign(true);
+      
+      playPass(m);
+      localMoves++;
+      resignPlayed=true;
     }};
     resignButton.setOnAction(bHandler2);
     resignButton.setPrefHeight(28);
@@ -1635,7 +1684,7 @@ void restoreMoveMap(int[][] savedMoveMap)
    {
 	   feedbackArea = TextAreaBuilder.create()
                .prefWidth(200)
-               .prefHeight(180)
+               .prefHeight(145)
                .wrapText(true)
                .build();
        
@@ -1892,11 +1941,21 @@ private void setQuit()
 	
     if (consecutivePasses==2)
     {
-      gameStatusText.setText("GAME OVER");
+    	if (move.isResign())
+    		gameStatusText.setText(colorStr(move.color)+" RESIGNED");
+    	else
+    		gameStatusText.setText("GAME OVER");
       gameOver=true;
     }
       else
-	  gameStatusText.setText(colorStr(move.color)+" PASSED");
+      {  
+	    if (move.isResign())
+	    	gameStatusText.setText(colorStr(move.color)+" PASSED");
+	    else
+	    	gameStatusText.setText(colorStr(move.color)+" RESIGNED");
+      }
+    
+    
 	  move.setPass(true);
       if ((localMoves==1)&&(thisPlayerColor==move.color)) enableCommit();
 	      reviewBackwardButton.setDisable(true);
@@ -2481,7 +2540,9 @@ void playNextStone()
 	 if (!dragonAccess.isLoggedIn())  return;
 	 level=0; 
 	 cycleCount=0;
-	 timedUpdateText.setText("update every "+timeStr[level]);
+	 totalCycleCount=0;
+	 
+	
 	 timedUpdateText.setText("refresh rate: "+timeStr[level]);
 	 timeline = new Timeline();
      timeline.setCycleCount(Timeline.INDEFINITE);
@@ -2497,7 +2558,10 @@ void playNextStone()
            {
              level++;
              if (level>4) level=4;
-             else timedUpdateText.setText("refresh rate: "+timeStr[level]);
+             else
+             {
+            	 timedUpdateText.setText("refresh rate: "+timeStr[level]);
+             }
              cycleCount=0;
            }
            

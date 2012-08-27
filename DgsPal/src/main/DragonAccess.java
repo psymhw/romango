@@ -29,6 +29,7 @@ import java.util.StringTokenizer;
 public class DragonAccess 
 {
   boolean testMode=false;
+
   CookieManager manager; 
   CookieStore cookieJar;
   String userId;
@@ -58,6 +59,14 @@ public class DragonAccess
 
 public long getCurrentGame() {
 	return currentGame;
+}
+
+public boolean isTestMode() {
+	return testMode;
+}
+
+public void setTestMode(boolean testMode) {
+	this.testMode = testMode;
 }
 
 public DragonAccess(String userId, String password) 
@@ -400,6 +409,28 @@ public void parseLine(String line)
 	   lastMoveColor="b";
 	   return;
 	 }
+	 if (line.startsWith("Result: B+Resign"))  // white resign
+	 {
+	   move=new Move(GoClient.WHITE); // resign
+	   move.setResign(true);
+	   sgfMoves.add(move);
+	   lastSgfMove = move;
+	   lastSgfMoveNumber++;
+	   currentMessage=false;
+	   lastMoveColor="w";
+	   return;
+	 }
+	 if (line.startsWith("Result: W+Resign"))  // black resign
+	 {
+	   move=new Move(GoClient.BLACK); // resign
+	   move.setResign(true);
+	   sgfMoves.add(move);
+	   lastSgfMove = move;
+	   lastSgfMoveNumber++;
+	   currentMessage=false;
+	   lastMoveColor="b";
+	   return;
+	 }
 	 if (line.startsWith(";B[tt]"))  // black pass
 	 {
 	   move=new Move(GoClient.BLACK); //PASS
@@ -632,10 +663,10 @@ public void parseLine(String line)
 	  // boolean success=false;
 	          
 	   int count=0;
-	  System.out.println("move2 cmd: " + surl);
+	  //System.out.println("move2 cmd: " + surl);
 	   while ( (line = br.readLine()) != null)
 	   {
-	     System.out.println("move2 line: " + line);
+	     //System.out.println("move2 line: " + line);
 	      if (line.contains("#Error: not_logged_in")) loginError=true;
 	      rawMessage.append(line);
 	      count++;
