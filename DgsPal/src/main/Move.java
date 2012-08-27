@@ -13,9 +13,10 @@ public class Move
   public int x;
   public int y;
   private boolean pass=false;
+  private boolean resign=false;
  
   
-public int color;
+  public int color;
   public String sgfPosition;
   public double sceneX;
   public double  sceneY;
@@ -141,6 +142,14 @@ public int color;
 
 	public void setPass(boolean pass) {
 		this.pass = pass;
+	}
+
+	public boolean isResign() {
+		return resign;
+	}
+
+	public void setResign(boolean resign) {
+		this.resign = resign;
 	}
 
   
