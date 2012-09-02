@@ -2628,6 +2628,7 @@ void playNextStone()
    {
 	   if (lastSgfMove==null)  // for first move, no handicap
 		 {
+		   System.out.println("UpdateControls(): lastSgfMove==null");
 			 thisPlayerColor=BLACK;
 			 colorToPlay=BLACK;
 		     turnImageView.setImage(blackStoneImage);
@@ -2693,11 +2694,7 @@ void playNextStone()
 	 
 	 if (lastSgfMove!=null)  // for first move, no handicap
 	 {
-		 thisPlayerColor=BLACK;
-		 colorToPlay=BLACK;
-	     turnImageView.setImage(blackStoneImage);
-	     stage.getIcons().add(smallerBlackStoneImage);
-	
+		
 	 if (lastSgfMove.color==BLACK)  
 	    { 
 	      colorToPlay=WHITE; 
