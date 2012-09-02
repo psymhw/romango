@@ -28,7 +28,7 @@ import java.util.StringTokenizer;
 
 public class DragonAccess 
 {
-  boolean testMode=false;
+  boolean testMode=true;
 
   CookieManager manager; 
   CookieStore cookieJar;
@@ -310,7 +310,94 @@ public DragonAccess(String userId, String password)
    public ArrayList<String> getSgfFileLine() {
 	return sgfFileLine;
 }
-
+   
+   public long getRunningGame()
+   {
+	
+	   long gid=0;
+	
+	 long uid=getUserInfo();
+	 String surl = "http://"+server+"/show_games.php?uid="+uid;
+	 
+	 try
+	 {
+	   URL url;
+	   url = new URL(surl);
+	           
+	   URLConnection con = url.openConnection();
+	   con = url.openConnection();
+	   InputStream is = con.getInputStream();
+	   InputStreamReader isr = new InputStreamReader(is);
+	   BufferedReader br = new BufferedReader(isr);
+	   String line = null;
+	   int pos=0;   
+	   String strId="";
+	   String partLine="";
+	   
+	   
+	   while ( (line = br.readLine()) != null)
+	   {
+	      pos=line.indexOf("?gid=");
+	      if (pos>1)
+	      {
+	    	partLine=line.substring(pos+5);  
+	    	pos=partLine.indexOf("\"");
+	    	strId=partLine.substring(0,pos);
+	    	try { gid=Long.parseLong(strId); } catch (Exception e) {}
+	    	break;
+	      }
+	      
+	   }
+	 } catch (Throwable t)  {  t.printStackTrace(); return 0; }
+	// System.out.println("gid = "+gid);
+	 
+	  
+	 return gid;
+   }
+   
+   
+   public long getUserInfo()
+   {
+	
+	 String surl = "http://"+server+"/quick_do.php?obj=user&cmd=info&user="+userId;
+	 long uid=0;
+	 
+	 try
+	 {
+	   URL url;
+	   url = new URL(surl);
+	           
+	   URLConnection con = url.openConnection();
+	   con = url.openConnection();
+	   InputStream is = con.getInputStream();
+	   InputStreamReader isr = new InputStreamReader(is);
+	   BufferedReader br = new BufferedReader(isr);
+	   String line = null;
+	   int pos=0;   
+	   String strId="";
+	   String partLine="";
+	   
+	   
+	   while ( (line = br.readLine()) != null)
+	   {
+	      pos=line.indexOf(",\"id\":");
+	      if (pos>1)
+	      {
+	    	partLine=line.substring(pos+6);
+	    	pos=partLine.indexOf(',');
+	    	strId=partLine.substring(0,pos);
+	    	try { uid=Long.parseLong(strId); } catch (Exception e) {}
+	      }
+	    //  System.out.println("uid = "+uid);
+	   }
+	 } catch (Throwable t)  {  t.printStackTrace(); return 0; }
+	 
+	 
+	  
+	 return uid;
+   }
+   
+  
 public void parseLine(String line)
    {
      Move move=null;
@@ -738,7 +825,7 @@ public void parseLine(String line)
        int count=0;
        while ( (line = br.readLine()) != null)
        {
-         //System.out.println("login line: " + line);
+        // System.out.println("login line: " + line);
          rawMessage.append(line);
          count++;
          if (count==2) secondLine=line;
