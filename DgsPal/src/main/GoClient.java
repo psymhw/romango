@@ -2628,13 +2628,13 @@ void playNextStone()
    {
 	   if (lastSgfMove==null)  // for first move, no handicap
 		 {
-		   System.out.println("UpdateControls(): lastSgfMove==null");
+		  // System.out.println("UpdateControls(): lastSgfMove==null");
 			 thisPlayerColor=BLACK;
 			 colorToPlay=BLACK;
 		     turnImageView.setImage(blackStoneImage);
 		     stage.getIcons().add(smallerBlackStoneImage);
 		 }
-	   showVars("updateControls()");
+	  // showVars("updateControls()");
 	 if (gameOver)
 	 {
 		// System.out.println("game over controls");
