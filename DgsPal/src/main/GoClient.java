@@ -81,6 +81,7 @@ public class GoClient extends Application
   final static int NO_MOVE_WAITING=-3;
   final static int GAME_FOUND=-4;
   final static int EXCEPTION=-5;
+  final static int LOGGED_IN =-6;
   
   private ImageView quit;
   
@@ -415,6 +416,8 @@ public class GoClient extends Application
 	int status=NOT_LOGGED_IN;
 	boolean loginSuccess=false;
 	boolean debug=true;
+	long runningGameNo=0;
+	
 
 	String loginSuccessStr="";
 	String excessiveUsageStr="";
@@ -425,12 +428,23 @@ public class GoClient extends Application
 	if (loginSuccess)
 	{
 	   if (debug) System.out.println("login -ok");	
-  	   status = dragonAccess.checkForMove("startup");
-	   boolean excessive_usage=dragonAccess.isExcessive_usage();
-	   if (excessive_usage) excessiveUsageStr="DGS server complaining about excessive usage\n";
+	   status=LOGGED_IN;
+	   runningGameNo=dragonAccess.getRunningGame();
+	   if (runningGameNo!=0) 
+	   { 
+		 currentGameNo=""+runningGameNo; 
+		 status=GAME_FOUND; 
+		 
+	   }
+		  
+		  System.out.println("Current Game: "+currentGameNo);
+	   
+  	//   status = dragonAccess.checkForMove("startup");
+	//   boolean excessive_usage=dragonAccess.isExcessive_usage();
+	//   if (excessive_usage) excessiveUsageStr="DGS server complaining about excessive usage\n";
 	}
 	
-		
+	
 	
 	
 	if (status==GAME_FOUND)
@@ -438,7 +452,7 @@ public class GoClient extends Application
 	  stopAutoRefresh();
 	  if (!currentGameNo.equals(""+dragonAccess.getCurrentGame()))  // if the current game number is not equal to that number, make it so and save it
 	  {
-		currentGameNo=""+dragonAccess.getCurrentGame();
+	//	currentGameNo=""+dragonAccess.getCurrentGame();
 		writeResources();
 	  }
 	}
@@ -506,7 +520,8 @@ public class GoClient extends Application
     updateControls();
     //System.out.println("local File: "+localFile);
     
-     if ((status!=GAME_FOUND)&&(colorToPlay!=thisPlayerColor)) startAutoRefresh();
+    // if ((status!=GAME_FOUND)&&(colorToPlay!=thisPlayerColor)) startAutoRefresh();
+     if (colorToPlay!=thisPlayerColor) startAutoRefresh();
      
     if (!loginSuccess) loginSuccessStr="LOGIN FAILED - network down?"+"\n";
 	}
@@ -527,6 +542,7 @@ public class GoClient extends Application
 	  if (status==NO_MOVE_WAITING) return ": no move waiting";
 	  if (status==GAME_FOUND) return ": game found";
 	  if (status==EXCEPTION) return ": unknown exception";
+	  if (status==LOGGED_IN) return ": logged in";
 	return ": unhandled error";
   }
 
@@ -646,6 +662,7 @@ private String getComments()
 	System.out.println("call: "+call);
 	System.out.println("lastSgfMoveNumber: "+lastSgfMoveNumber);
 	System.out.println("sgfMoves.size(): "+sgfMoves.size());
+	System.out.println("thisPlayerColor: "+thisPlayerColor);
 	System.out.println("colorToPlay: "+colorToPlay);
 	System.out.println("reviewPosition: "+reviewPosition);
 	System.out.println("moveNumber: "+moveNumber);
@@ -867,7 +884,7 @@ private GridPane getRightPane()
 	buttonBox.getChildren().add(getReviewForwardButton());
 	buttonBox.getChildren().add(getCommitButton());
 	
-	//buttonBox.getChildren().add(getTestButton());
+	buttonBox.getChildren().add(getTestButton());
 	//buttonBox.getChildren().add(getUserButton());
 	
 	//
@@ -1229,7 +1246,7 @@ private GridPane getRightPane()
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) 
 	          {
-	        	dragonAccess.testNotes(currentGameNo);
+	        	dragonAccess.getRunningGame();
 	          } };
 	  
      commitTestButton.setOnMouseClicked(bHandler);
@@ -1540,8 +1557,9 @@ void restoreMoveMap(int[][] savedMoveMap)
       System.out.println("resign button");
       System.out.println("pass button "+thisPlayerColor);
       Move m = new Move(thisPlayerColor);
+     ////////////////////
       m.setResign(true);
-      
+    /////////////////////  
       playPass(m);
       localMoves++;
       resignPlayed=true;
@@ -1950,9 +1968,9 @@ private void setQuit()
       else
       {  
 	    if (move.isResign())
-	    	gameStatusText.setText(colorStr(move.color)+" PASSED");
-	    else
 	    	gameStatusText.setText(colorStr(move.color)+" RESIGNED");
+	    else
+	    	gameStatusText.setText(colorStr(move.color)+" PASSED");
       }
     
     
@@ -2009,6 +2027,7 @@ private void setQuit()
 
 void removeMoveImageFromLastSgfMove()
 {
+  if (moveNumber<2) return;
   ObservableList moveList  =visibleMoves.getChildren();
   ListIterator it = moveList.listIterator(moveList.size());
   int color=0;
@@ -2607,7 +2626,14 @@ void playNextStone()
    
    private void updateControls()
    {
-	   
+	   if (lastSgfMove==null)  // for first move, no handicap
+		 {
+			 thisPlayerColor=BLACK;
+			 colorToPlay=BLACK;
+		     turnImageView.setImage(blackStoneImage);
+		     stage.getIcons().add(smallerBlackStoneImage);
+		 }
+	   showVars("updateControls()");
 	 if (gameOver)
 	 {
 		// System.out.println("game over controls");
@@ -2664,6 +2690,14 @@ void playNextStone()
        reviewBackwardButton.setDisable(false);
      }
 	 
+	 
+	 if (lastSgfMove!=null)  // for first move, no handicap
+	 {
+		 thisPlayerColor=BLACK;
+		 colorToPlay=BLACK;
+	     turnImageView.setImage(blackStoneImage);
+	     stage.getIcons().add(smallerBlackStoneImage);
+	
 	 if (lastSgfMove.color==BLACK)  
 	    { 
 	      colorToPlay=WHITE; 
@@ -2676,7 +2710,7 @@ void playNextStone()
 	      turnImageView.setImage(blackStoneImage);
 	      stage.getIcons().add(smallerBlackStoneImage);
 	    }
-	 
+	 }
 	 localMovesVal.setText(""+localMoves);
 	 moveNoVal.setText(""+moveNumber);
    }
