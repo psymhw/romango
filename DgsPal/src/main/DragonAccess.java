@@ -28,7 +28,7 @@ import java.util.StringTokenizer;
 
 public class DragonAccess 
 {
-  boolean testMode=true;
+  boolean testMode=false;
 
   CookieManager manager; 
   CookieStore cookieJar;
@@ -184,12 +184,22 @@ public DragonAccess(String userId, String password)
 	   while ( (line = br.readLine()) != null)
 	   {
 		   rawMessage.append(line+"\n");
-		  // System.out.println(line);
+		  // System.out.println("check for move line: "+line);
 		   if (line.contains("excessive_usage")) excessive_usage=true;
 		   
 		   if (line.startsWith("#")) { commentCount++; lineCount++; continue; };
 		   if (line.startsWith("B")) { lineCount++; continue; };
-		   if (line.startsWith("M")) { lineCount++; continue; };
+		   if (line.startsWith("M")) 
+		   { 
+			   lineCount++; 
+			   
+			   if (line.contains("Game result")) 
+			   {	   
+				   System.out.println("Game Over");
+				   return GoClient.GAME_OVER;
+			   }
+			   continue; 
+		   };
 		   
 		   dataLine=line;
 		   dataCount++;
@@ -390,6 +400,41 @@ public DragonAccess(String userId, String password)
 	      }
 	    //  System.out.println("uid = "+uid);
 	   }
+	 } catch (Throwable t)  {  t.printStackTrace(); return 0; }
+	 
+	 
+	  
+	 return uid;
+   }
+   
+   public long getGameInfo(String gid)
+   {
+	
+	 String surl = "http://"+server+"/quick_do.php?obj=game&cmd=info&lstyle=json&gid="+gid;
+	 long uid=0;
+	 System.out.println("call: "+surl);
+	 try
+	 {
+	   URL url;
+	   url = new URL(surl);
+	           
+	   URLConnection con = url.openConnection();
+	   con = url.openConnection();
+	   InputStream is = con.getInputStream();
+	   InputStreamReader isr = new InputStreamReader(is);
+	   BufferedReader br = new BufferedReader(isr);
+	   String line = null;
+	   int pos=0;   
+	   String strId="";
+	   String partLine="";
+	   
+	   
+	   while ( (line = br.readLine()) != null)
+	   {
+		   System.out.println("Game Info line: "+line);
+	      
+	      }
+	   
 	 } catch (Throwable t)  {  t.printStackTrace(); return 0; }
 	 
 	 

@@ -82,6 +82,7 @@ public class GoClient extends Application
   final static int GAME_FOUND=-4;
   final static int EXCEPTION=-5;
   final static int LOGGED_IN =-6;
+  final static int GAME_OVER =-7;
   
   private ImageView quit;
   
@@ -371,6 +372,8 @@ public class GoClient extends Application
 	   refreshString.append(".");	 // dots show how many refreshes.
 	 }
 	 timedUpdateText.setText(refreshString.toString());
+	 
+	if (status==GAME_OVER) gameOver=true; 
     if (status==GAME_FOUND)
     {
       //System.out.println("timed refresh: game found "+gameNo);
@@ -382,7 +385,7 @@ public class GoClient extends Application
       {
   	    playAllSgfMoves();
          feedbackArea.insertText(0, df.format(new Date())+" "+lastSgfMove.getColorStr()+": "+lastSgfMove.getBoardPosition()+"\n");
- 	  updateControls();
+ 	  
         /*
         if (lastSgfMove.color==BLACK)  
 	  { 
@@ -399,6 +402,8 @@ public class GoClient extends Application
         */
     }
   }
+    
+    updateControls();  
   lastTimedUpdate=new Date();  
 }
   
@@ -593,6 +598,7 @@ private String getComments()
 		
 	boolean success=false;
 	
+	if (status==GAME_OVER) gameOver=true;
 	if ((status==MIN_RETRY_TIME)||(status==NOT_LOGGED_IN)||(status==EXCEPTION))
 	{
 	  success= getSgfFile(FROM_LOCAL_FILE); 
@@ -611,7 +617,7 @@ private String getComments()
 		if (success)
         {
 		  playAllSgfMoves();
-		  updateControls();
+		  
 		  if (!(colorToPlay==thisPlayerColor)) startAutoRefresh();
 		  /*
 	      if (lastSgfMove.color==BLACK)  
@@ -654,6 +660,8 @@ private String getComments()
 		feedbackArea.insertText(0, dragonFeedback);
 		feedbackArea.insertText(0, excessiveUsageStr);
 		feedbackArea.insertText(0, loadFromStr);
+		
+		updateControls();
 	//	showVars("refreshLocal");
   }
   
@@ -1245,7 +1253,7 @@ private GridPane getRightPane()
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) 
 	          {
-	        	dragonAccess.getRunningGame();
+	        	dragonAccess.getGameInfo("491217");
 	          } };
 	  
      commitTestButton.setOnMouseClicked(bHandler);
@@ -2320,8 +2328,9 @@ void playNextStone()
 	}
 	  
 	size = moves.size();
-	restoreCapturedPieces();
 	moveNumber--;
+	restoreCapturedPieces();
+	
   }
 
   @SuppressWarnings("rawtypes")
@@ -2629,7 +2638,7 @@ void playNextStone()
    
    private void gameOverControls()
    {
-	   String gameStatusStr="";
+	   String gameStatusStr="GAME OVER";
 	   passButton.setDisable(true); 
 		resignButton.setDisable(true);
 		 commitButton.setDisable(true);
@@ -2654,23 +2663,21 @@ void playNextStone()
    
    private void updateControls()
    {
-	  // System.out.println("UPDATE CONTROLS");
-	   String gameStatusStr="";
-	   gameStatusText.setText(""); 
-	   if (lastSgfMove==null)  // for first move, no handicap
-		 {
-		  // System.out.println("UpdateControls(): lastSgfMove==null");
-			 thisPlayerColor=BLACK;
-			 colorToPlay=BLACK;
-		     turnImageView.setImage(blackStoneImage);
-		     stage.getIcons().add(smallerBlackStoneImage);
-		 }
-	  showVars("updateControls()");
-	 if (gameOver)
+     //System.out.println("UPDATE CONTROLS");
+	 String gameStatusStr="";
+	 gameStatusText.setText(""); 
+	 if (lastSgfMove==null)  // for first move, no handicap
 	 {
-		gameOverControls();
-		return;
+	   // System.out.println("UpdateControls(): lastSgfMove==null");
+	   thisPlayerColor=BLACK;
+	   colorToPlay=BLACK;
+	   turnImageView.setImage(blackStoneImage);
+	   stage.getIcons().add(smallerBlackStoneImage);
 	 }
+	 
+	 // showVars("updateControls()");
+	 
+	 if (gameOver) { gameOverControls(); return; }
 	 
 	 if (localMoves==0)
 	 {
@@ -2705,77 +2712,46 @@ void playNextStone()
        reviewForwardButton.setDisable(false);
        reviewBackwardButton.setDisable(false);
      }
-	 /*
-	    if (consecutivePasses==2)
-	    {
-	    	if (move.isResign())
-	    		gameStatusText.setText(colorStr(move.color)+" RESIGNED");
-	    	else
-	    		gameStatusText.setText("GAME OVER");
-	      gameOver=true;
-	    }
-	      else
-	      {  
-		    if (move.isResign())
-		    	gameStatusText.setText(colorStr(move.color)+" RESIGNED");
-		    else
-		    	gameStatusText.setText(colorStr(move.color)+" PASSED");
-	      }
-	    
-	    */
-	 
-	
-	 
+		 
 	 if (lastSgfMove!=null)  // for first move, no handicap
 	 {
-		
-		// System.out.println("lastsgfmove is not null. ");
-	if (lastSgfMove.isPass())	// an actual committed pass 
-	{
-		if (consecutivePasses==1) gameStatusStr=colorStr(lastSgfMove.color)+" PASSED";
-		//if (consecutivePasses==2) gameStatusStr=colorStr(lastSgfMove.color)+" PASSED, GAME OVER";
-		
-		gameStatusText.setText(gameStatusStr);
-	//	System.out.println("lastsgfmove is PASS. "+consecutivePasses);
-	}
+	   if (lastSgfMove.isPass())	// an actual committed pass 
+	   {
+		 if (consecutivePasses==1) gameStatusStr=colorStr(lastSgfMove.color)+" PASSED";
+		 gameStatusText.setText(gameStatusStr);
+	   }
 	
-	if (lastSgfMove.isResign())	// an actual committed pass 
-	{
-		gameStatusStr=colorStr(lastSgfMove.color)+" RESIGNED";
-		gameStatusText.setText(gameStatusStr);
-	}
+	   if (lastSgfMove.isResign())	// an actual committed pass 
+	   {
+		 gameStatusStr=colorStr(lastSgfMove.color)+" RESIGNED";
+		 gameStatusText.setText(gameStatusStr);
+	   }
 	
-	
-	 if (lastSgfMove.color==BLACK)  
-	    { 
-	      colorToPlay=WHITE; 
-	      turnImageView.setImage(whiteStoneImage);
-	      stage.getIcons().add(smallerWhiteStoneImage);
-	    } 
-	    else 
-	    {
-	      colorToPlay=BLACK;
-	      turnImageView.setImage(blackStoneImage);
-	      stage.getIcons().add(smallerBlackStoneImage);
-	    }
+	   if (lastSgfMove.color==BLACK)  
+	   { 
+	     colorToPlay=WHITE; 
+	     turnImageView.setImage(whiteStoneImage);
+	     stage.getIcons().add(smallerWhiteStoneImage);
+	   } 
+	   else 
+	   {
+	     colorToPlay=BLACK;
+	     turnImageView.setImage(blackStoneImage);
+	     stage.getIcons().add(smallerBlackStoneImage);
+	   }
 	 }
 	 
 	 if (passPlayed) //this local message overrides the one above
 	 {
-		 //System.out.println("updatecontrols, pass played");
-		 gameStatusStr="Pass Played, Commit?"; 
-		 gameStatusText.setText(gameStatusStr);
+	   gameStatusStr="Pass Played, Commit?"; 
+	   gameStatusText.setText(gameStatusStr);
 	 }
 	 
 	 if (resignPlayed) //this local message overrides the one above
 	 {
-		// System.out.println("updatecontrols, pass played");
-		 gameStatusStr="Resign, Commit?"; 
-		 gameStatusText.setText(gameStatusStr);
+	   gameStatusStr="Resign, Commit?"; 
+	   gameStatusText.setText(gameStatusStr);
 	 }
-	 
-		 
-	 
 	 
 	 localMovesVal.setText(""+localMoves);
 	 moveNoVal.setText(""+moveNumber);
