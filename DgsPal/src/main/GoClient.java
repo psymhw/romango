@@ -1018,7 +1018,7 @@ private GridPane getRightPane()
    
    if (resignPlayed)
    {
-   success=dragonAccess.makeMove2(currentGameNo, 
+   success=dragonAccess.resign(currentGameNo, 
             lastSgfMoveNumber,
             "resign", 
             sendMessageArea.getText()
@@ -1267,8 +1267,8 @@ private GridPane getRightPane()
                 public void handle(ActionEvent arg0) {
                	  userId=userIdField.getText();
                	  password=passwordField.getText();
-        			  System.out.println("userId: "+userId);
-        			  System.out.println("password: "+password);
+        			//  System.out.println("userId: "+userId);
+        			//  System.out.println("password: "+password);
         			  writeResources();
                      myDialog.close();
                      login();
@@ -1534,7 +1534,7 @@ void restoreMoveMap(int[][] savedMoveMap)
     passButton = new Button("pass");
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
     {
-      System.out.println("pass button "+thisPlayerColor);
+     // System.out.println("pass button "+thisPlayerColor);
       playPass(new Move(thisPlayerColor));
       localMoves++;
       passPlayed=true;
@@ -1553,15 +1553,14 @@ void restoreMoveMap(int[][] savedMoveMap)
     resignButton = new Button("resign");
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
     {
-      System.out.println("resign button");
-      System.out.println("pass button "+thisPlayerColor);
+     // System.out.println("resign button");
+     // System.out.println("pass button "+thisPlayerColor);
       Move m = new Move(thisPlayerColor);
-     ////////////////////
-      m.setResign(true);
-    /////////////////////  
-      playPass(m);
+     
+      playResign(m);
       localMoves++;
       resignPlayed=true;
+      updateControls();
     }};
     resignButton.setOnAction(bHandler2);
     resignButton.setPrefHeight(28);
@@ -1965,6 +1964,20 @@ private void setQuit()
 	
 	
 	  move.setPass(true);
+      if ((localMoves==1)&&(thisPlayerColor==move.color)) enableCommit();
+	      reviewBackwardButton.setDisable(true);
+	lastMoveColor=move.color;
+	moves.add(move);
+	moveNumber++;
+	positionHistory.add(new BoardMap(moveMap));
+  }
+  
+  private void playResign(Move move) 
+  {
+	
+	
+	  move.setPass(true);
+	  move.setResign(true);
       if ((localMoves==1)&&(thisPlayerColor==move.color)) enableCommit();
 	      reviewBackwardButton.setDisable(true);
 	lastMoveColor=move.color;
@@ -2484,9 +2497,9 @@ void playNextStone()
         while(it.hasNext())
         {
           stone=(Stone)it.next();
-          System.out.print(stone.x+"-"+stone.y+", ");
+         // System.out.print(stone.x+"-"+stone.y+", ");
         }
-        System.out.println();
+       // System.out.println();
     }
 
     private void restoreCapturedPieces() 
@@ -2605,12 +2618,12 @@ void playNextStone()
 	   if (colorToPlay==thisPlayerColor) 
 	   {
 	     passButton.setDisable(false);
-	    // resignButton.setDisable(false);
+	     resignButton.setDisable(false);
 	   }
 	   else
 	   {
 		 passButton.setDisable(true);
-		// resignButton.setDisable(true);
+		 resignButton.setDisable(true);
 	   }
    }
    
@@ -2641,12 +2654,12 @@ void playNextStone()
    
    private void updateControls()
    {
-	   System.out.println("UPDATE CONTROLS");
+	  // System.out.println("UPDATE CONTROLS");
 	   String gameStatusStr="";
 	   gameStatusText.setText(""); 
 	   if (lastSgfMove==null)  // for first move, no handicap
 		 {
-		   System.out.println("UpdateControls(): lastSgfMove==null");
+		  // System.out.println("UpdateControls(): lastSgfMove==null");
 			 thisPlayerColor=BLACK;
 			 colorToPlay=BLACK;
 		     turnImageView.setImage(blackStoneImage);
@@ -2670,7 +2683,7 @@ void playNextStone()
 	   enableCommit(); 
 	   deleteLastMoveButton.setDisable(false);
 	   passButton.setDisable(true);
-	  // resignButton.setDisable(true);
+	   resignButton.setDisable(true);
 	   reviewBackwardButton.setDisable(true);
 	   reviewForwardButton.setDisable(true);
 	 }
@@ -2716,15 +2729,23 @@ void playNextStone()
 	 if (lastSgfMove!=null)  // for first move, no handicap
 	 {
 		
-		 System.out.println("lastsgfmove is not null. ");
+		// System.out.println("lastsgfmove is not null. ");
 	if (lastSgfMove.isPass())	// an actual committed pass 
 	{
 		if (consecutivePasses==1) gameStatusStr=colorStr(lastSgfMove.color)+" PASSED";
 		//if (consecutivePasses==2) gameStatusStr=colorStr(lastSgfMove.color)+" PASSED, GAME OVER";
 		
 		gameStatusText.setText(gameStatusStr);
-		System.out.println("lastsgfmove is PASS. "+consecutivePasses);
+	//	System.out.println("lastsgfmove is PASS. "+consecutivePasses);
 	}
+	
+	if (lastSgfMove.isResign())	// an actual committed pass 
+	{
+		gameStatusStr=colorStr(lastSgfMove.color)+" RESIGNED";
+		gameStatusText.setText(gameStatusStr);
+	}
+	
+	
 	 if (lastSgfMove.color==BLACK)  
 	    { 
 	      colorToPlay=WHITE; 
@@ -2741,8 +2762,15 @@ void playNextStone()
 	 
 	 if (passPlayed) //this local message overrides the one above
 	 {
-		 System.out.println("updatecontrols, pass played");
+		 //System.out.println("updatecontrols, pass played");
 		 gameStatusStr="Pass Played, Commit?"; 
+		 gameStatusText.setText(gameStatusStr);
+	 }
+	 
+	 if (resignPlayed) //this local message overrides the one above
+	 {
+		// System.out.println("updatecontrols, pass played");
+		 gameStatusStr="Resign, Commit?"; 
 		 gameStatusText.setText(gameStatusStr);
 	 }
 	 
