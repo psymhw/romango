@@ -884,7 +884,7 @@ private GridPane getRightPane()
 	buttonBox.getChildren().add(getReviewForwardButton());
 	buttonBox.getChildren().add(getCommitButton());
 	
-	buttonBox.getChildren().add(getTestButton());
+	//buttonBox.getChildren().add(getTestButton());
 	//buttonBox.getChildren().add(getUserButton());
 	
 	//
@@ -1047,10 +1047,7 @@ private GridPane getRightPane()
      
      feedbackArea.insertText(0, df.format(new Date())+" "+firstLocalMove.getColorStr()+": "+firstLocalMove.getBoardPosition()+"\n");
      //commitButton.setDisable(true); 
-     if (consecutivePasses==2) 
-	  { 
-		gameOver=true; 
-	  }
+    
 	  
 	 //gameStatusText.setText(colorStr(firstLocalMove.color)+" GAME OVER");
      if (sendMessageArea.getText()!=null)
@@ -1768,6 +1765,8 @@ void restoreMoveMap(int[][] savedMoveMap)
 	      colorToPlay=WHITE; 
 	    else 
 	      colorToPlay=BLACK;
+     
+     if (consecutivePasses==2) gameOver=true;
    }
    
    public String colorStr(int color)
@@ -2616,6 +2615,7 @@ void playNextStone()
    private void updateControls()
    {
 	   String gameStatusStr="";
+	   gameStatusText.setText(""); 
 	   if (lastSgfMove==null)  // for first move, no handicap
 		 {
 		  // System.out.println("UpdateControls(): lastSgfMove==null");
@@ -2629,7 +2629,7 @@ void playNextStone()
 	 {
 		// System.out.println("game over controls");
 		 passButton.setDisable(true); 
-		// resignButton.setDisable(true);// resignButton.setDisable(true);
+		resignButton.setDisable(true);
 		 commitButton.setDisable(true);
 		 deleteLastMoveButton.setDisable(true);
 		 
@@ -2710,7 +2710,7 @@ void playNextStone()
 		if (consecutivePasses==2) gameStatusStr=colorStr(lastSgfMove.color)+" PASSED, GAME OVER";
 		
 		gameStatusText.setText(gameStatusStr);
-		System.out.println("lastsgfmove is PASS");
+		System.out.println("lastsgfmove is PASS. "+consecutivePasses);
 	}
 	 if (lastSgfMove.color==BLACK)  
 	    { 
@@ -2732,8 +2732,8 @@ void playNextStone()
 		 gameStatusStr="Pass Played, Commit?"; 
 		 gameStatusText.setText(gameStatusStr);
 	 }
-	 else
-		 gameStatusText.setText(""); 
+	 
+		 
 	 
 	 
 	 localMovesVal.setText(""+localMoves);
