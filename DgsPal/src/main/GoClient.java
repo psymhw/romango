@@ -236,7 +236,7 @@ public class GoClient extends Application
     timedUpdateText = new Text("update Off");
 	timedUpdateText.setFont(Font.font("Serif", 18));
 	gameStatusText = new Text("");
-	gameStatusText.setFont(Font.font("Serif", 22));
+	gameStatusText.setFont(Font.font("Serif", 20));
 	gameStatusText.setFill(Color.RED);
     
     initiallizeMoveMap();
@@ -437,7 +437,7 @@ public class GoClient extends Application
 		 
 	   }
 		  
-		  System.out.println("Current Game: "+currentGameNo);
+		  
 	   
   	//   status = dragonAccess.checkForMove("startup");
 	//   boolean excessive_usage=dragonAccess.isExcessive_usage();
@@ -446,7 +446,7 @@ public class GoClient extends Application
 	
 	
 	
-	
+	/*
 	if (status==GAME_FOUND)
 	{
 	  stopAutoRefresh();
@@ -457,7 +457,10 @@ public class GoClient extends Application
 	  }
 	}
 	
+	
 	if ("noset".equals(currentGameNo)) return;
+	
+	*/
 		
 	/*
 	 * for startup, I don't care if a game was found. 
@@ -475,12 +478,7 @@ public class GoClient extends Application
 		success=getSgfFile(FROM_SERVER);
 		loadFromStr="game loaded from server"+getErrorString(status)+"\n";
 	}
-	else
-	{
-		if (debug) System.out.println("getting sgf file from local copy");
-		success= getSgfFile(FROM_LOCAL_FILE); 
-		loadFromStr="game loaded from local file"+getErrorString(status)+"\n";
-	}
+	
 	
 	if (success)
 	{	 
@@ -517,7 +515,7 @@ public class GoClient extends Application
     deleteLastMoveButton.setDisable(true);
     reviewForwardButton.setDisable(true);
     */
-    updateControls();
+    
     //System.out.println("local File: "+localFile);
     
     // if ((status!=GAME_FOUND)&&(colorToPlay!=thisPlayerColor)) startAutoRefresh();
@@ -526,6 +524,8 @@ public class GoClient extends Application
     if (!loginSuccess) loginSuccessStr="LOGIN FAILED - network down?"+"\n";
 	}
 	
+	
+	updateControls();
 	//showVars("refreshStartup");
 	feedbackArea.insertText(0, commentsStr);
 	feedbackArea.insertText(0, loginSuccessStr);
@@ -730,12 +730,12 @@ private void getResources()
 		    
 	    userId="noset";
 	    password="noset";
-	    currentGameNo="noset";
+	    currentGameNo="no game found";
 	    while ((line = br.readLine()) != null) 
 	    { 
 	      if (line.startsWith("username: ")) userId = line.substring(10);
 	      if (line.startsWith("password: ")) password = line.substring(10);
-	      if (line.startsWith("gamenumb: ")) currentGameNo = line.substring(10);
+	    //  if (line.startsWith("gamenumb: ")) currentGameNo = line.substring(10);
 	    }
 	    
 	    //System.out.println("username: "+userId);
@@ -2751,6 +2751,14 @@ void playNextStone()
 	 
 	 localMovesVal.setText(""+localMoves);
 	 moveNoVal.setText(""+moveNumber);
+	 
+	 if ("no game found".equals(currentGameNo)) 
+	 {	 
+	   commitButton.setDisable(true);
+	   passButton.setDisable(true);
+	   resignButton.setDisable(true);
+	   reviewBackwardButton.setDisable(true);
+	 }
    }
    
    
