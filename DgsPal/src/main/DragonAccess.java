@@ -777,6 +777,76 @@ public void parseLine(String line)
 	 return success;
    }
    
+   public boolean resign(String gameNo, int moveNo, String thisMove, String message)
+   {
+	 StringBuffer rawMessage = new StringBuffer();
+	 String secondLine="";
+     String colorString;
+     boolean loginError=false;
+     boolean success=false;
+     
+     if (!loggedIn) login(); else feedback = new StringBuffer();
+    // feedback.append("Dragon move\n");
+     
+    String surl = "http://"+server+"/quick_do.php?obj=game&cmd=resign&gid="+gameNo+"&move_id="+moveNo;
+	 
+	 if (message!=null)
+	 {
+		 if (message.length()>0)
+		 {
+		  // message=message.replaceAll(" ", "_");
+		   String text="";
+		   try
+		   {
+		   text = URLEncoder.encode(message,"UTF-8");
+		   } catch (Exception e) { e.printStackTrace();}
+		   surl=surl+"&msg="+text;
+		 }
+	 }
+	 try
+	 {
+		 
+	   URL url;
+	   url = new URL(surl);
+	           
+	   URLConnection con = url.openConnection();
+	   con = url.openConnection();
+	   con.setDoOutput(true);  // triggers POST method
+	   InputStream is = con.getInputStream();
+	   InputStreamReader isr = new InputStreamReader(is);
+	   BufferedReader br = new BufferedReader(isr);
+	   String line = null;
+	   
+	  // boolean success=false;
+	          
+	   int count=0;
+	  //System.out.println("move2 cmd: " + surl);
+	   while ( (line = br.readLine()) != null)
+	   {
+	     //System.out.println("move2 line: " + line);
+	      if (line.contains("#Error: not_logged_in")) loginError=true;
+	      rawMessage.append(line);
+	      count++;
+	      secondLine=line;
+	   }
+	 } catch (Throwable t)  {  t.printStackTrace(); }
+	 
+	 if (secondLine.contains(",\"error\":\"\",")) { success=true; feedback.append("move: ok"); }
+	  else { feedback.append(rawMessage); feedback.append("\n"); }
+	 
+	 if (loginError)
+	 {
+		if (loginAttempts<2)
+		{	
+		  login();
+		  loginAttempts++;
+		  success=makeMove2(gameNo, moveNo ,thisMove, message);
+		}
+	 }
+	 
+	 return success;
+   }
+   
    
    
    public boolean login()
