@@ -1030,6 +1030,7 @@ private GridPane getRightPane()
             "pass", 
             sendMessageArea.getText()
             );
+     if (success) consecutivePasses++;
    }
    else
    {
@@ -1737,6 +1738,7 @@ void restoreMoveMap(int[][] savedMoveMap)
    private void playAllSgfMoves()
    {
      clear();
+     consecutivePasses=0;
      Iterator it = sgfMoves.iterator();
      String sgfPosition="";
      String moveLine="";
@@ -1748,7 +1750,11 @@ void restoreMoveMap(int[][] savedMoveMap)
        move=(Move)it.next();
       // System.out.println("move "+count+move.getSgfPosition()+", pass: "+move.isPass());
        count++;
-       if (move.isPass()) playPass(move);
+       if (move.isPass()) 
+       {
+    	   playPass(move);
+    	   consecutivePasses++;
+       }
        else placeStone(move);
      }
 		      
@@ -1955,25 +1961,8 @@ private void setQuit()
 
   private void playPass(Move move) 
   {
-	consecutivePasses++;
 	
-    if (consecutivePasses==2)
-    {
-    	if (move.isResign())
-    		gameStatusText.setText(colorStr(move.color)+" RESIGNED");
-    	else
-    		gameStatusText.setText("GAME OVER");
-      gameOver=true;
-    }
-      else
-      {  
-	    if (move.isResign())
-	    	gameStatusText.setText(colorStr(move.color)+" RESIGNED");
-	    else
-	    	gameStatusText.setText(colorStr(move.color)+" PASSED");
-      }
-    
-    
+	
 	  move.setPass(true);
       if ((localMoves==1)&&(thisPlayerColor==move.color)) enableCommit();
 	      reviewBackwardButton.setDisable(true);
@@ -2626,6 +2615,7 @@ void playNextStone()
    
    private void updateControls()
    {
+	   String gameStatusStr="";
 	   if (lastSgfMove==null)  // for first move, no handicap
 		 {
 		  // System.out.println("UpdateControls(): lastSgfMove==null");
@@ -2690,11 +2680,38 @@ void playNextStone()
        reviewForwardButton.setDisable(false);
        reviewBackwardButton.setDisable(false);
      }
+	 /*
+	    if (consecutivePasses==2)
+	    {
+	    	if (move.isResign())
+	    		gameStatusText.setText(colorStr(move.color)+" RESIGNED");
+	    	else
+	    		gameStatusText.setText("GAME OVER");
+	      gameOver=true;
+	    }
+	      else
+	      {  
+		    if (move.isResign())
+		    	gameStatusText.setText(colorStr(move.color)+" RESIGNED");
+		    else
+		    	gameStatusText.setText(colorStr(move.color)+" PASSED");
+	      }
+	    
+	    */
 	 
+	
 	 
 	 if (lastSgfMove!=null)  // for first move, no handicap
 	 {
 		
+	if (lastSgfMove.isPass())	// an actual committed pass 
+	{
+		if (consecutivePasses==1) gameStatusStr=colorStr(lastSgfMove.color)+" PASSED";
+		if (consecutivePasses==2) gameStatusStr=colorStr(lastSgfMove.color)+" PASSED, GAME OVER";
+		
+		gameStatusText.setText(gameStatusStr);
+		System.out.println("lastsgfmove is PASS");
+	}
 	 if (lastSgfMove.color==BLACK)  
 	    { 
 	      colorToPlay=WHITE; 
@@ -2708,8 +2725,21 @@ void playNextStone()
 	      stage.getIcons().add(smallerBlackStoneImage);
 	    }
 	 }
+	 
+	 if (passPlayed) //this local message overrides the one above
+	 {
+		 System.out.println("updatecontrols, pass played");
+		 gameStatusStr="Pass Played, Commit?"; 
+		 gameStatusText.setText(gameStatusStr);
+	 }
+	 else
+		 gameStatusText.setText(""); 
+	 
+	 
 	 localMovesVal.setText(""+localMoves);
 	 moveNoVal.setText(""+moveNumber);
    }
+   
+   
     
 }  
