@@ -666,7 +666,8 @@ private String getComments()
 	System.out.println("colorToPlay: "+colorToPlay);
 	System.out.println("reviewPosition: "+reviewPosition);
 	System.out.println("moveNumber: "+moveNumber);
-	
+	System.out.println("consecutivePasses: "+consecutivePasses);
+	System.out.println("gameOver: "+gameOver);
   }
   
   private boolean getSgfFile(int location)
@@ -1761,6 +1762,7 @@ void restoreMoveMap(int[][] savedMoveMap)
      if (stoneSoundActive) stoneSound.play();
      stoneSoundActive=true;
      lastSgfMove = dragonAccess.getLastSgfMove();
+     
      if (lastSgfMove.color==BLACK)  
 	      colorToPlay=WHITE; 
 	    else 
@@ -2612,23 +2614,10 @@ void playNextStone()
 	   }
    }
    
-   private void updateControls()
+   private void gameOverControls()
    {
 	   String gameStatusStr="";
-	   gameStatusText.setText(""); 
-	   if (lastSgfMove==null)  // for first move, no handicap
-		 {
-		  // System.out.println("UpdateControls(): lastSgfMove==null");
-			 thisPlayerColor=BLACK;
-			 colorToPlay=BLACK;
-		     turnImageView.setImage(blackStoneImage);
-		     stage.getIcons().add(smallerBlackStoneImage);
-		 }
-	  // showVars("updateControls()");
-	 if (gameOver)
-	 {
-		// System.out.println("game over controls");
-		 passButton.setDisable(true); 
+	   passButton.setDisable(true); 
 		resignButton.setDisable(true);
 		 commitButton.setDisable(true);
 		 deleteLastMoveButton.setDisable(true);
@@ -2644,7 +2633,30 @@ void playNextStone()
 	       reviewForwardButton.setDisable(false);
 	       reviewBackwardButton.setDisable(false);
 	     }
-		 return;
+		 
+		 if (consecutivePasses==2) gameStatusStr=colorStr(lastSgfMove.color)+" PASSED, GAME OVER";
+			
+			gameStatusText.setText(gameStatusStr);
+   }
+   
+   private void updateControls()
+   {
+	   System.out.println("UPDATE CONTROLS");
+	   String gameStatusStr="";
+	   gameStatusText.setText(""); 
+	   if (lastSgfMove==null)  // for first move, no handicap
+		 {
+		   System.out.println("UpdateControls(): lastSgfMove==null");
+			 thisPlayerColor=BLACK;
+			 colorToPlay=BLACK;
+		     turnImageView.setImage(blackStoneImage);
+		     stage.getIcons().add(smallerBlackStoneImage);
+		 }
+	  showVars("updateControls()");
+	 if (gameOver)
+	 {
+		gameOverControls();
+		return;
 	 }
 	 
 	 if (localMoves==0)
@@ -2704,10 +2716,11 @@ void playNextStone()
 	 if (lastSgfMove!=null)  // for first move, no handicap
 	 {
 		
+		 System.out.println("lastsgfmove is not null. ");
 	if (lastSgfMove.isPass())	// an actual committed pass 
 	{
 		if (consecutivePasses==1) gameStatusStr=colorStr(lastSgfMove.color)+" PASSED";
-		if (consecutivePasses==2) gameStatusStr=colorStr(lastSgfMove.color)+" PASSED, GAME OVER";
+		//if (consecutivePasses==2) gameStatusStr=colorStr(lastSgfMove.color)+" PASSED, GAME OVER";
 		
 		gameStatusText.setText(gameStatusStr);
 		System.out.println("lastsgfmove is PASS. "+consecutivePasses);
