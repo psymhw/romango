@@ -233,6 +233,7 @@ public class GoClient extends Application
   
   Group infoGroup;
   Group feedbackLabelGroup;
+  Group messageLabelGroup;
   
   public void start(final Stage stage) throws Exception  
   {  
@@ -311,6 +312,9 @@ public class GoClient extends Application
      
      setupInfoGroup();
      setupFeedbackLabel();
+     setupFeedbackArea();
+     setupMessageLabel();
+     setupSendMessageArea();
      
      setupButtonBox();
      setupButtonBox2();
@@ -319,7 +323,7 @@ public class GoClient extends Application
      
      mainBox.getChildren().add(hBox);
      mainBox.getChildren().add(rightPane);
-     getSmallRightPane();  
+   //  setupSmallRightPane();  
    
      
      
@@ -329,6 +333,7 @@ public class GoClient extends Application
      int height = 700;
      if (primaryScreenBounds.getHeight()<700) height=(int)(primaryScreenBounds.getHeight()-30);
      final Scene scene = new Scene(scrollPane, 1005, height);
+     
     
      scene.setFill(null);
   
@@ -825,24 +830,29 @@ private void setupRightPane()
   rightPane.getChildren().add(gameStatusText);
   rightPane.getChildren().add(timedUpdateText);
   rightPane.getChildren().add(feedbackLabelGroup);
-  rightPane.getChildren().add(getFeedbackBox());
-  rightPane.getChildren().add(getMessageLabel());
+  rightPane.getChildren().add(feedbackArea);
+  rightPane.getChildren().add(messageLabelGroup);
  // rightPane.getChildren().add(getReceiveMessageBox());
-  rightPane.getChildren().add(getSendMessageBox());
+  rightPane.getChildren().add(sendMessageArea);
   
 }
 
-private VBox getSmallRightPane() 
+private void setupSmallRightPane() 
 {
   VBox vBox = new VBox(); 
   vBox.setPadding(new Insets(5,5,5,5)); // the border around the whole thing
   vBox.setSpacing(4); // the spacing between rows
     
-  vBox.getChildren().add(getTestButton());
+  vBox.getChildren().add(deleteLastMoveButton);
+  vBox.getChildren().add(reviewBackwardButton);
+  vBox.getChildren().add(refreshButton);
+  vBox.getChildren().add(reviewForwardButton);
+  vBox.getChildren().add(commitButton);
+  vBox.getChildren().add(minMaxButton);
+  
  // vBox.getChildren().add(commitButton);
   
   smallRightPane=vBox;
-  return smallRightPane;
 }
 
 /*
@@ -891,7 +901,7 @@ private GridPane getRightPane()
 	    
   }
   
-  Group getMessageLabel()
+  void setupMessageLabel()
   {
 	  
 	  Rectangle bx = new Rectangle();
@@ -902,17 +912,16 @@ private GridPane getRightPane()
 	    Color c =  Color.web("DAE6F3");
 	    bx.setFill(c);
 	   // new Color("DAE6F3")
-	    Group labelGroup = new Group();
+	    messageLabelGroup = new Group();
 	    
 	    Text dragonInfoLabel = new Text("Message");
 	    dragonInfoLabel.setFont(Font.font("Serif", 20));
 	    dragonInfoLabel.setX(10);
 	    dragonInfoLabel.setY(30);
 	    
-	    labelGroup.getChildren().add(bx);
-	    labelGroup.getChildren().add(dragonInfoLabel);
+	    messageLabelGroup.getChildren().add(bx);
+	    messageLabelGroup.getChildren().add(dragonInfoLabel);
 	    
-	   return labelGroup;
   }
 
   
@@ -939,7 +948,6 @@ private GridPane getRightPane()
 	buttonBox.getChildren().add(reviewBackwardButton);
 	buttonBox.getChildren().add(refreshButton);
 	buttonBox.getChildren().add(reviewForwardButton);
-	System.out.println("adding commit button");
 	buttonBox.getChildren().add(commitButton);
 	
 	buttonBox.getChildren().add(minMaxButton);
@@ -1162,8 +1170,10 @@ private GridPane getRightPane()
 
   private void setupCommitButton() 
   {
-	System.out.println("setting up commit button");
-    commitButton = new Button("Commit");
+    commitButton = new Button("");
+    Image checkImage  = new Image(GoClient.class.getResourceAsStream("/resources/images/check.png"));
+    
+    commitButton.setGraphic(new ImageView(checkImage));
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event)  { commit(); }};
 	  
@@ -1319,18 +1329,26 @@ private GridPane getRightPane()
 	          {
 	        	if (rightPaneOn)  
 	        	{
+	        	  setupSmallRightPane();
 	        	  mainBox.getChildren().remove(rightPane);
 	        	  mainBox.getChildren().add(smallRightPane);
+	        	  minMaxButton.setText("Max");
+	        	  stage.setWidth(765);
 	        	}
 	        	else
 	        	{
+	        		setupButtonBox();
+	        		setupRightPane();
 	        		mainBox.getChildren().remove(smallRightPane);
 		        	  mainBox.getChildren().add(rightPane);
-		        	}	
+		        	  minMaxButton.setText("Min");
+		        	  stage.setWidth(1005);
+		        }	
 	        	rightPaneOn=!rightPaneOn;
 	          } };
 	  
      minMaxButton.setOnMouseClicked(bHandler);
+     minMaxButton.setPrefHeight(28);
   }
   
   private void setupUserButton() 
@@ -1768,7 +1786,7 @@ void restoreMoveMap(int[][] savedMoveMap)
 	    horizRegularLabelsImage = new Image(Stone.class.getResourceAsStream(src+"/images/horizRegLabels.png")); 
    }
    
-   private TextArea getFeedbackBox()
+   private void setupFeedbackArea()
    {
 	   feedbackArea = TextAreaBuilder.create()
                .prefWidth(200)
@@ -1776,10 +1794,9 @@ void restoreMoveMap(int[][] savedMoveMap)
                .wrapText(true)
                .build();
        
-	   return feedbackArea;
    }
    
-   private TextArea getSendMessageBox()
+   private void setupSendMessageArea()
    {
 	   sendMessageArea = TextAreaBuilder.create()
                .prefWidth(200)
@@ -1787,7 +1804,6 @@ void restoreMoveMap(int[][] savedMoveMap)
                .wrapText(true)
                .build();
        
-	   return sendMessageArea;
    }
    
    private TextArea getReceiveMessageBox()
