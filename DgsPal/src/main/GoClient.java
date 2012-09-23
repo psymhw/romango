@@ -217,6 +217,12 @@ public class GoClient extends Application
   boolean resignPlayed=false;
   boolean stoneSoundActive=true;
   String resourcesFileName="resources.properties";
+  HBox mainBox;
+  VBox rightPane;
+  VBox smallRightPane;
+  boolean rightPaneOn=true;
+  Button minMaxButton;
+  Button refreshButton;
   
   public void start(final Stage stage) throws Exception  
   {  
@@ -245,7 +251,7 @@ public class GoClient extends Application
     captured[WHITE]=0;
       
      
-     HBox mainBox = new HBox();
+     mainBox = new HBox();
      mainBox.setPadding(new Insets(3, 3, 3, 3));
      mainBox.setSpacing(5);
      mainBox.setStyle("-fx-background-color: DAE6F3;");
@@ -281,9 +287,16 @@ public class GoClient extends Application
      hBox.getChildren().add(vertLabelView);
      hBox.getChildren().add(vBox);
     
+     setupDeleteLastMoveButton();
+     setupReviewBackwardButton();
+     setupRefreshButton();
+     setupReviewForwardButton();
+     setupCommitButton();
+     setupMinMaxButton();
+     
      mainBox.getChildren().add(hBox);
      mainBox.getChildren().add(getRightPane());
-     
+     getSmallRightPane();  
    
      
      
@@ -793,7 +806,22 @@ private VBox getRightPane()
   vBox.getChildren().add(getMessageLabel());
  // vBox.getChildren().add(getReceiveMessageBox());
   vBox.getChildren().add(getSendMessageBox());
-  return vBox;
+  
+  rightPane=vBox;
+  return rightPane;
+}
+
+private VBox getSmallRightPane() 
+{
+  VBox vBox = new VBox(); 
+  vBox.setPadding(new Insets(5,5,5,5)); // the border around the whole thing
+  vBox.setSpacing(4); // the spacing between rows
+    
+  vBox.getChildren().add(getTestButton());
+  vBox.getChildren().add(commitButton);
+  
+  smallRightPane=vBox;
+  return smallRightPane;
 }
 
 /*
@@ -887,13 +915,13 @@ private GridPane getRightPane()
 	buttonBox.setPadding(new Insets(3, 3, 3, 3));
 	buttonBox.setSpacing(3);
  
-	buttonBox.getChildren().add(getDeleteLastMoveButton());
-	buttonBox.getChildren().add(getReviewBackwardButton());
-	buttonBox.getChildren().add(getRefreshButton());
-	buttonBox.getChildren().add(getReviewForwardButton());
-	buttonBox.getChildren().add(getCommitButton());
+	buttonBox.getChildren().add(deleteLastMoveButton);
+	buttonBox.getChildren().add(reviewBackwardButton);
+	buttonBox.getChildren().add(refreshButton);
+	buttonBox.getChildren().add(reviewForwardButton);
+	buttonBox.getChildren().add(commitButton);
 	
-	//buttonBox.getChildren().add(getTestButton());
+	buttonBox.getChildren().add(minMaxButton);
 	//buttonBox.getChildren().add(getUserButton());
 	
 	//
@@ -1117,7 +1145,7 @@ private GridPane getRightPane()
 	 
  }
 
-  private Button getCommitButton() 
+  private void setupCommitButton() 
   {
 	
     commitButton = new Button("Commit");
@@ -1127,7 +1155,6 @@ private GridPane getRightPane()
      commitButton.setOnMouseClicked(bHandler);
      commitButton.setTooltip(new Tooltip("Commit Move"));
      commitButton.setPrefHeight(28);
-     return commitButton;
   }
   
   private Button getFileButton() 
@@ -1253,13 +1280,44 @@ private GridPane getRightPane()
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) 
 	          {
-	        	dragonAccess.getGameInfo("491217");
+	        	if (rightPaneOn)  
+	        	{
+	        	  mainBox.getChildren().remove(rightPane);
+	        	  mainBox.getChildren().add(smallRightPane);
+	        	}
+	        	else
+	        	{
+	        		mainBox.getChildren().remove(smallRightPane);
+		        	  mainBox.getChildren().add(rightPane);
+		        	}	
+	        	rightPaneOn=!rightPaneOn;
 	          } };
 	  
      commitTestButton.setOnMouseClicked(bHandler);
      return commitTestButton;
   }
   
+  private void setupMinMaxButton() 
+  {
+    minMaxButton = new Button("Min");
+    EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
+	          public void handle(MouseEvent event) 
+	          {
+	        	if (rightPaneOn)  
+	        	{
+	        	  mainBox.getChildren().remove(rightPane);
+	        	  mainBox.getChildren().add(smallRightPane);
+	        	}
+	        	else
+	        	{
+	        		mainBox.getChildren().remove(smallRightPane);
+		        	  mainBox.getChildren().add(rightPane);
+		        	}	
+	        	rightPaneOn=!rightPaneOn;
+	          } };
+	  
+     minMaxButton.setOnMouseClicked(bHandler);
+  }
   
   private Button getUserButton() 
   {
@@ -1320,9 +1378,9 @@ private GridPane getRightPane()
   }
   
 
-  private Button getRefreshButton() 
+  private void setupRefreshButton() 
   {
-    Button refreshButton = new Button("*");
+    refreshButton = new Button("*");
     // b.setLayoutX(10);
     // b.setLayoutY(10);
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
@@ -1337,7 +1395,6 @@ private GridPane getRightPane()
      refreshButton.setOnMouseClicked(bHandler);
      refreshButton.setTooltip(new Tooltip("Go to Current Game Position"));
      refreshButton.setPrefHeight(28);
-     return refreshButton;
   }
 
   private void setupMouse(Group boardGroup) 
@@ -1493,7 +1550,7 @@ void restoreMoveMap(int[][] savedMoveMap)
   }
 
   
-  private Button getDeleteLastMoveButton() 
+  private void setupDeleteLastMoveButton() 
   {
     deleteLastMoveButton = new Button("< x");
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
@@ -1520,7 +1577,6 @@ void restoreMoveMap(int[][] savedMoveMap)
     deleteLastMoveButton.setOnAction(bHandler2);
     deleteLastMoveButton.setPrefHeight(28);
     deleteLastMoveButton.setTooltip(new Tooltip("Delete Last Move"));
-    return deleteLastMoveButton; 
   }
   
   @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1576,7 +1632,7 @@ void restoreMoveMap(int[][] savedMoveMap)
     return resignButton; 
   }
   
-  private Button getReviewForwardButton() 
+  private void setupReviewForwardButton() 
   {
     reviewForwardButton = new Button(">");
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
@@ -1593,10 +1649,9 @@ void restoreMoveMap(int[][] savedMoveMap)
     reviewForwardButton.setOnAction(bHandler2);
     reviewForwardButton.setPrefHeight(28);
     reviewForwardButton.setTooltip(new Tooltip("Play Moves Forward"));
-    return reviewForwardButton; 
   }
   
-  private Button getReviewBackwardButton() 
+  private void setupReviewBackwardButton() 
   {
     reviewBackwardButton = new Button("<");
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
@@ -1612,7 +1667,6 @@ void restoreMoveMap(int[][] savedMoveMap)
     reviewBackwardButton.setOnAction(bHandler2);
     reviewBackwardButton.setTooltip(new Tooltip("Rewind Moves"));
     reviewBackwardButton.setPrefHeight(28);
-    return reviewBackwardButton; 
   }
   
   void toggleLabels()
