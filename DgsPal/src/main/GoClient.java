@@ -223,6 +223,16 @@ public class GoClient extends Application
   boolean rightPaneOn=true;
   Button minMaxButton;
   Button refreshButton;
+  Button labelsButton;
+  Button userButton;
+  Button fileButton;
+  
+  HBox buttonBox;
+  HBox buttonBox2;
+  HBox identBox;
+  
+  Group infoGroup;
+  Group feedbackLabelGroup;
   
   public void start(final Stage stage) throws Exception  
   {  
@@ -293,9 +303,22 @@ public class GoClient extends Application
      setupReviewForwardButton();
      setupCommitButton();
      setupMinMaxButton();
+     setupPassButton();
+     setupResignButton();
+     setupLabelsButton();
+     setupUserButton();
+     setupFileButton();
+     
+     setupInfoGroup();
+     setupFeedbackLabel();
+     
+     setupButtonBox();
+     setupButtonBox2();
+     setupIdentBox();
+     setupRightPane();
      
      mainBox.getChildren().add(hBox);
-     mainBox.getChildren().add(getRightPane());
+     mainBox.getChildren().add(rightPane);
      getSmallRightPane();  
    
      
@@ -789,26 +812,24 @@ private void writeResources()
 	} catch (IOException e) { e.printStackTrace();}
 }
 
-private VBox getRightPane() 
+private void setupRightPane() 
 {
-  VBox vBox = new VBox(); 
-  vBox.setPadding(new Insets(5,5,5,5)); // the border around the whole thing
-  vBox.setSpacing(4); // the spacing between rows
+  rightPane = new VBox(); 
+  rightPane.setPadding(new Insets(5,5,5,5)); // the border around the whole thing
+  rightPane.setSpacing(4); // the spacing between rows
     
-  vBox.getChildren().add(getButtonBox());
-  vBox.getChildren().add(getButtonBox2());
-  vBox.getChildren().add(getIdentBox());
-  vBox.getChildren().add(getInfoGroup());
-  vBox.getChildren().add(gameStatusText);
-  vBox.getChildren().add(timedUpdateText);
-  vBox.getChildren().add(getFeedbackLabel());
-  vBox.getChildren().add(getFeedbackBox());
-  vBox.getChildren().add(getMessageLabel());
- // vBox.getChildren().add(getReceiveMessageBox());
-  vBox.getChildren().add(getSendMessageBox());
+  rightPane.getChildren().add(buttonBox);
+  rightPane.getChildren().add(buttonBox2);
+  rightPane.getChildren().add(identBox);
+  rightPane.getChildren().add(infoGroup);
+  rightPane.getChildren().add(gameStatusText);
+  rightPane.getChildren().add(timedUpdateText);
+  rightPane.getChildren().add(feedbackLabelGroup);
+  rightPane.getChildren().add(getFeedbackBox());
+  rightPane.getChildren().add(getMessageLabel());
+ // rightPane.getChildren().add(getReceiveMessageBox());
+  rightPane.getChildren().add(getSendMessageBox());
   
-  rightPane=vBox;
-  return rightPane;
 }
 
 private VBox getSmallRightPane() 
@@ -818,7 +839,7 @@ private VBox getSmallRightPane()
   vBox.setSpacing(4); // the spacing between rows
     
   vBox.getChildren().add(getTestButton());
-  vBox.getChildren().add(commitButton);
+ // vBox.getChildren().add(commitButton);
   
   smallRightPane=vBox;
   return smallRightPane;
@@ -847,7 +868,7 @@ private GridPane getRightPane()
 	return gridPane;
 }
 */
-  Group getFeedbackLabel()
+  void setupFeedbackLabel()
   {
 	  
 	  Rectangle bx = new Rectangle();
@@ -858,17 +879,16 @@ private GridPane getRightPane()
 	    Color c =  Color.web("DAE6F3");
 	    bx.setFill(c);
 	   // new Color("DAE6F3")
-	    Group labelGroup = new Group();
+	    feedbackLabelGroup = new Group();
 	    
 	    Text dragonInfoLabel = new Text("Dragon Info");
 	    dragonInfoLabel.setFont(Font.font("Serif", 20));
 	    dragonInfoLabel.setX(10);
 	    dragonInfoLabel.setY(25);
 	    
-	    labelGroup.getChildren().add(bx);
-	    labelGroup.getChildren().add(dragonInfoLabel);
+	    feedbackLabelGroup.getChildren().add(bx);
+	    feedbackLabelGroup.getChildren().add(dragonInfoLabel);
 	    
-	   return labelGroup;
   }
   
   Group getMessageLabel()
@@ -909,9 +929,9 @@ private GridPane getRightPane()
 	  return boardGroup;
   }
   
-  private HBox getButtonBox() 
+  private void setupButtonBox() 
   {
-	HBox buttonBox = new HBox(); 
+	buttonBox = new HBox(); 
 	buttonBox.setPadding(new Insets(3, 3, 3, 3));
 	buttonBox.setSpacing(3);
  
@@ -919,34 +939,33 @@ private GridPane getRightPane()
 	buttonBox.getChildren().add(reviewBackwardButton);
 	buttonBox.getChildren().add(refreshButton);
 	buttonBox.getChildren().add(reviewForwardButton);
+	System.out.println("adding commit button");
 	buttonBox.getChildren().add(commitButton);
 	
 	buttonBox.getChildren().add(minMaxButton);
 	//buttonBox.getChildren().add(getUserButton());
 	
 	//
-	return buttonBox;
   }
   
-  private HBox getButtonBox2() 
+  private void setupButtonBox2() 
   {
-	HBox buttonBox = new HBox(); 
-	buttonBox.setPadding(new Insets(3, 3, 3, 3));
-	buttonBox.setSpacing(3);
+	buttonBox2 = new HBox(); 
+	buttonBox2.setPadding(new Insets(3, 3, 3, 3));
+	buttonBox2.setSpacing(3);
 	
-	buttonBox.getChildren().add(getPassButton());
-	buttonBox.getChildren().add(getResignButton());
-	buttonBox.getChildren().add(getLabelsButton());
-	buttonBox.getChildren().add(getUserButton());
-	buttonBox.getChildren().add(getFileButton());
-	return buttonBox;
+	buttonBox2.getChildren().add(passButton);
+	buttonBox2.getChildren().add(resignButton);
+	buttonBox2.getChildren().add(labelsButton);
+	buttonBox2.getChildren().add(userButton);
+	buttonBox2.getChildren().add(fileButton);
   }
  
 
 
-  private HBox getIdentBox() 
+  private void setupIdentBox() 
   {
-    HBox identBox = new HBox();
+    identBox = new HBox();
     identBox.setPadding(new Insets(3, 3, 3, 3));
     identBox.setSpacing(5);
    
@@ -954,14 +973,11 @@ private GridPane getRightPane()
     gameLabel.setFont(Font.font("Serif", 18));
    
     identBox.getChildren().add(gameLabel);
-   // identBox.getChildren().add(getUserButton());
-   // identBox.getChildren().add(getLabelsButton());
-    return identBox;
   }
    
-  private Group getInfoGroup()
+  private void setupInfoGroup()
   {
-	Group infoGroup = new Group();
+	infoGroup = new Group();
 	Rectangle bx = new Rectangle();
 	bx.setWidth(300);
 	bx.setHeight(200);
@@ -1036,7 +1052,6 @@ private GridPane getRightPane()
     infoGroup.getChildren().add(bx);
 	infoGroup.getChildren().add(gridPane);
 	    
-	return infoGroup;
   }
 
  private void commit()
@@ -1147,7 +1162,7 @@ private GridPane getRightPane()
 
   private void setupCommitButton() 
   {
-	
+	System.out.println("setting up commit button");
     commitButton = new Button("Commit");
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event)  { commit(); }};
@@ -1157,10 +1172,10 @@ private GridPane getRightPane()
      commitButton.setPrefHeight(28);
   }
   
-  private Button getFileButton() 
+  private void setupFileButton() 
   {
 	
-    Button fileButton = new Button("File");
+    fileButton = new Button("File");
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event)  
 	          { 
@@ -1196,7 +1211,6 @@ private GridPane getRightPane()
 	          fileButton.setOnMouseClicked(bHandler);
 	          fileButton.setTooltip(new Tooltip("Commit Move"));
 	          fileButton.setPrefHeight(28);
-     return fileButton;
   }
   
   private void writeMoveToLocalSgfFile(Move move)
@@ -1319,9 +1333,9 @@ private GridPane getRightPane()
      minMaxButton.setOnMouseClicked(bHandler);
   }
   
-  private Button getUserButton() 
+  private void setupUserButton() 
   {
-    Button userButton = new Button("");
+    userButton = new Button("");
     Image userImage  = new Image(GoClient.class.getResourceAsStream("/resources/images/user.png"));
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
     	public void handle(MouseEvent event) {
@@ -1374,7 +1388,6 @@ private GridPane getRightPane()
      userButton.setGraphic(new ImageView(userImage));
      userButton.setPrefHeight(28);
      userButton.setTooltip(new Tooltip("Set DGS username and password"));
-     return userButton;
   }
   
 
@@ -1580,20 +1593,19 @@ void restoreMoveMap(int[][] savedMoveMap)
   }
   
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  private Button getLabelsButton() 
+  private void setupLabelsButton() 
   {
-    Button button = new Button("a/1");
+    labelsButton = new Button("a/1");
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
     {
       toggleLabels(); 
     }};
-    button.setOnAction(bHandler2);
-    button.setPrefHeight(28);
-    button.setTooltip(new Tooltip("Toggle board coordinates on/off"));
-    return button; 
+    labelsButton.setOnAction(bHandler2);
+    labelsButton.setPrefHeight(28);
+    labelsButton.setTooltip(new Tooltip("Toggle board coordinates on/off"));
   }
   
-  private Button getPassButton() 
+  private void setupPassButton() 
   {
     passButton = new Button("pass");
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
@@ -1609,10 +1621,9 @@ void restoreMoveMap(int[][] savedMoveMap)
     passButton.setOnAction(bHandler2);
     passButton.setPrefHeight(28);
     passButton.setTooltip(new Tooltip("Pass"));
-    return passButton; 
   }
   
-  private Button getResignButton() 
+  private void setupResignButton() 
   {
     resignButton = new Button("resign");
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
@@ -1629,7 +1640,6 @@ void restoreMoveMap(int[][] savedMoveMap)
     resignButton.setOnAction(bHandler2);
     resignButton.setPrefHeight(28);
     resignButton.setTooltip(new Tooltip("Toggle board coordinates on/off"));
-    return resignButton; 
   }
   
   private void setupReviewForwardButton() 
