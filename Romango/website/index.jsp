@@ -145,7 +145,7 @@
 		<b>Testamonials</b><br/><br/>
 		&quot;
 		The shoes are gorgeous! I've worn them a couple times (including tonight at a wedding, with dancing and such), 
-		and they're incredibly comfortable. No joke, I probably got 10 people asking me about them at the wedding.&quot; - <b>Joe, Portland</b>
+		and they're incredibly comfortable. No joke, I probably got 10 people asking me about them at the wedding.&quot; - <b>Joe, Portland OR</b>
 		<br/>
 		<br/>
 		
@@ -155,7 +155,9 @@
 		
 		&quot;I'm very happy with the shoes. They fit more like a pair of gloves than a pair of shoes. 
 		I'm surprised it feels so effortless to have them on.&quot;  - <b>Marty, Florida</b>
-		
+		<br/><br/>
+		&quot;I wanted to take a moment to let you know I am enjoying the shoes immensely.  The fit is great and the look fabulous.  
+		On August 25th, I was married and I had a really nice, long day in the shoes.  They are super comfortable.&quot; - <b>Hans, Portland OR</b>
 		
 		
 		</p>
