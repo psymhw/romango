@@ -382,6 +382,8 @@ public class GoClient extends Application
   private HBox getMinSizeBottomBox() 
   {
 	minSizeBottomBox = new HBox();
+	messageLabel.setFont(Font.font("Serif", 18));
+	minFeedbackText.setFont(Font.font("Serif", 18));
 	minSizeBottomBox.getChildren().add(messageLabel);
 	minSizeBottomBox.getChildren().add(minFeedbackText);
 	return minSizeBottomBox;
