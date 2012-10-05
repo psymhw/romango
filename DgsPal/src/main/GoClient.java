@@ -28,6 +28,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
@@ -166,6 +167,7 @@ public class GoClient extends Application
   Button resignButton;
 
   TextArea feedbackArea;
+  
   TextArea sendMessageArea;
   TextArea receiveMessageArea;
   
@@ -234,6 +236,13 @@ public class GoClient extends Application
   Group infoGroup;
   Group feedbackLabelGroup;
   Group messageLabelGroup;
+  int windowHeight = 730;
+  int windowWidth =1012;
+  double screenHeight=0;
+  HBox minSizeBottomBox;
+  Text messageLabel = new Text("");
+  Text minFeedbackText = new Text();
+  boolean maximized=true;
   
   public void start(final Stage stage) throws Exception  
   {  
@@ -292,7 +301,7 @@ public class GoClient extends Application
     
      vBox.getChildren().add(horizLabelView);
      vBox.getChildren().add(getBoardGroup());
-     
+     vBox.getChildren().add(getMinSizeBottomBox());
     
      HBox hBox = new HBox();
      hBox.getChildren().add(vertLabelView);
@@ -330,9 +339,12 @@ public class GoClient extends Application
      ScrollPane scrollPane = new ScrollPane();
      scrollPane.setContent(mainBox);
      
-     int height = 700;
-     if (primaryScreenBounds.getHeight()<700) height=(int)(primaryScreenBounds.getHeight()-30);
-     final Scene scene = new Scene(scrollPane, 1005, height);
+     screenHeight= primaryScreenBounds.getHeight();
+     if (screenHeight<windowHeight) windowHeight=(int)screenHeight-30;
+     
+     System.out.println("Ht: "+windowHeight+" wd: "+windowWidth);
+     
+     final Scene scene = new Scene(scrollPane, windowWidth, windowHeight);
      
     
      scene.setFill(null);
@@ -345,6 +357,7 @@ public class GoClient extends Application
     
     stage.getIcons().add(smallerBlackStoneImage);
     stage.setTitle("DGS Pal");
+    
     stage.show();  
     
     
@@ -366,7 +379,17 @@ public class GoClient extends Application
 
  
   
-  public void stop()
+  private HBox getMinSizeBottomBox() 
+  {
+	minSizeBottomBox = new HBox();
+	minSizeBottomBox.getChildren().add(messageLabel);
+	minSizeBottomBox.getChildren().add(minFeedbackText);
+	return minSizeBottomBox;
+}
+
+
+
+public void stop()
   {
 	//.cancel();
     // .purge();
@@ -389,6 +412,7 @@ public class GoClient extends Application
 		stopAutoRefresh();
 		lastTimedUpdate=null;
 		feedbackArea.insertText(0, "restarting auto refresh\n");
+		
 		// System.out.println("Starting autoRefresh") ; 
 		startAutoRefresh();
 		return;
@@ -401,6 +425,7 @@ public class GoClient extends Application
 	{
 	  level++;
 	  feedbackArea.insertText(0, "DGS server complaining about excessive usage\n");
+	 
 	}
 
   
@@ -426,7 +451,7 @@ public class GoClient extends Application
       {
   	    playAllSgfMoves();
          feedbackArea.insertText(0, df.format(new Date())+" "+lastSgfMove.getColorStr()+": "+lastSgfMove.getBoardPosition()+"\n");
- 	  
+         if (maximized) minFeedbackText.setText(dragonAccess.message);
         /*
         if (lastSgfMove.color==BLACK)  
 	  { 
@@ -577,6 +602,7 @@ public class GoClient extends Application
 	feedbackArea.insertText(0, loginSuccessStr);
 	feedbackArea.insertText(0, loadFromStr);
 	feedbackArea.insertText(0, excessiveUsageStr);
+	 if (!maximized) minFeedbackText.setText(dragonAccess.message);
 	
   }
   
@@ -849,6 +875,7 @@ private void setupSmallRightPane()
   vBox.getChildren().add(reviewForwardButton);
   vBox.getChildren().add(commitButton);
   vBox.getChildren().add(minMaxButton);
+  vBox.getChildren().add(turnImageView);
   
  // vBox.getChildren().add(commitButton);
   
@@ -1127,6 +1154,7 @@ private GridPane getRightPane()
      playAllSgfMoves();
      feedbackArea.clear();
      feedbackArea.setText(commentsStr);
+     if (!maximized) minFeedbackText.setText(dragonAccess.message);
      passPlayed=false;
      resignPlayed=false;
      //updateControls();
@@ -1332,17 +1360,33 @@ private GridPane getRightPane()
 	        	  setupSmallRightPane();
 	        	  mainBox.getChildren().remove(rightPane);
 	        	  mainBox.getChildren().add(smallRightPane);
+	        	  
+	        	  messageLabel.setText("Message: ");
+	        	  minFeedbackText.setText(dragonAccess.message);
+	        	  
+	        	  //minSizeBottomBox.getChildren().add(new Text("World"));
 	        	  minMaxButton.setText("Max");
-	        	  stage.setWidth(765);
+	        	  stage.setWidth(windowWidth-250);
+	        	  stage.setHeight(windowHeight+30);
+	        	  maximized=false;
 	        	}
 	        	else
 	        	{
-	        		setupButtonBox();
-	        		setupRightPane();
-	        		mainBox.getChildren().remove(smallRightPane);
-		        	  mainBox.getChildren().add(rightPane);
-		        	  minMaxButton.setText("Min");
-		        	  stage.setWidth(1005);
+	        	  setupButtonBox();
+	        	  setupInfoGroup();
+	        	  setupRightPane();
+	        	  
+	        	  messageLabel.setText("");
+	        	  minFeedbackText.setText("");
+	        	  
+	        	  mainBox.getChildren().remove(smallRightPane);
+		          mainBox.getChildren().add(rightPane);
+		          
+		          minMaxButton.setText("Min");
+		          stage.setWidth(windowWidth);
+		          stage.setHeight(windowHeight);
+		          maximized=true;
+		          
 		        }	
 	        	rightPaneOn=!rightPaneOn;
 	          } };
