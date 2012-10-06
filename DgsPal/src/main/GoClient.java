@@ -20,6 +20,7 @@ import java.util.ListIterator;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -52,6 +53,9 @@ import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+
 
 public class GoClient extends Application  
 {  
@@ -238,11 +242,20 @@ public class GoClient extends Application
   Group messageLabelGroup;
   int windowHeight = 730;
   int windowWidth =1012;
+  
+  int minStageHeight=745;
+  int minStageWidth=761;
+  int maxStageHeight=725;
+  int maxStageWidth=1016;
+  
+		  
   double screenHeight=0;
   HBox minSizeBottomBox;
   Text messageLabel = new Text("");
   Text minFeedbackText = new Text();
   boolean maximized=true;
+  ScrollPane scrollPane = new ScrollPane();
+  VBox mainVBox = new VBox();
   
   public void start(final Stage stage) throws Exception  
   {  
@@ -274,12 +287,14 @@ public class GoClient extends Application
      mainBox = new HBox();
      mainBox.setPadding(new Insets(3, 3, 3, 3));
      mainBox.setSpacing(5);
-     mainBox.setStyle("-fx-background-color: DAE6F3;");
+    //mainBox.setStyle("-fx-background-color: DAE6F3; ");
+     mainBox.setStyle("-fx-background-color:  DAE6F3; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
 
+    
      horizLabelView=new ImageView(horizLabelsOff);
      vertLabelView=new ImageView(vertLabelsOff);
      
-     VBox vBox = new VBox();
+    
      /*
      String style = "-fx-border-color: red;"
              + "-fx-border-width: 1;"
@@ -299,13 +314,13 @@ public class GoClient extends Application
      vBox.getChildren().add(menuBar);
      */
     
-     vBox.getChildren().add(horizLabelView);
-     vBox.getChildren().add(getBoardGroup());
-     vBox.getChildren().add(getMinSizeBottomBox());
+     mainVBox.getChildren().add(horizLabelView);
+     mainVBox.getChildren().add(getBoardGroup());
+     
     
      HBox hBox = new HBox();
      hBox.getChildren().add(vertLabelView);
-     hBox.getChildren().add(vBox);
+     hBox.getChildren().add(mainVBox);
     
      setupDeleteLastMoveButton();
      setupReviewBackwardButton();
@@ -329,20 +344,43 @@ public class GoClient extends Application
      setupButtonBox2();
      setupIdentBox();
      setupRightPane();
+     setupMinSizeBottomBox();
      
      mainBox.getChildren().add(hBox);
      mainBox.getChildren().add(rightPane);
    //  setupSmallRightPane();  
+   mainBox.widthProperty().addListener(new ChangeListener<Number>() 
+   {
+      public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) 
+       {
+        if (rightPaneOn)
+        {
+          stage.setHeight(maxStageHeight);
+          stage.setWidth(maxStageWidth);
+        }
+        else
+        {
+          stage.setHeight(minStageHeight);
+          stage.setWidth(minStageWidth);
+        }	
+       }
+   });
+
+     
+     Rectangle r = new Rectangle();
+     r.setStroke(Color.BLACK);
+     r.setStrokeWidth(3);
    
      
-     
-     ScrollPane scrollPane = new ScrollPane();
      scrollPane.setContent(mainBox);
+    // scrollPane.setFitToHeight(true);
+    // scrollPane.setFitToWidth(true);
+    
      
      screenHeight= primaryScreenBounds.getHeight();
      if (screenHeight<windowHeight) windowHeight=(int)screenHeight-30;
      
-     System.out.println("Ht: "+windowHeight+" wd: "+windowWidth);
+    
      
      final Scene scene = new Scene(scrollPane, windowWidth, windowHeight);
      
@@ -357,10 +395,9 @@ public class GoClient extends Application
     
     stage.getIcons().add(smallerBlackStoneImage);
     stage.setTitle("DGS Pal");
-    
+  
     stage.show();  
-    
-    
+  
 	
     if (!"noset".equals(password)) refreshStartup();
     else
@@ -368,25 +405,18 @@ public class GoClient extends Application
 		feedbackArea.insertText(0, "User ID and password not set. Click on user icon in upper right corner.");
 		return;
 	}
-    
-   // feedbackArea.setText(dragonAccess.getSgfFile());
-    
-   // feedbackArea.setText("HELLO WORLD\n\n"+feedbackArea.getText());
-    //feedbackArea.scrollTopProperty();
-    //feedbackArea.positionCaret(30);
       
   } // end of start method
 
  
   
-  private HBox getMinSizeBottomBox() 
+  private void setupMinSizeBottomBox() 
   {
 	minSizeBottomBox = new HBox();
 	messageLabel.setFont(Font.font("Serif", 18));
 	minFeedbackText.setFont(Font.font("Serif", 18));
 	minSizeBottomBox.getChildren().add(messageLabel);
 	minSizeBottomBox.getChildren().add(minFeedbackText);
-	return minSizeBottomBox;
 }
 
 
@@ -877,6 +907,7 @@ private void setupSmallRightPane()
   vBox.getChildren().add(reviewForwardButton);
   vBox.getChildren().add(commitButton);
   vBox.getChildren().add(minMaxButton);
+  vBox.getChildren().add(getTestButton());
   vBox.getChildren().add(turnImageView);
   
  // vBox.getChildren().add(commitButton);
@@ -980,6 +1011,7 @@ private GridPane getRightPane()
 	buttonBox.getChildren().add(commitButton);
 	
 	buttonBox.getChildren().add(minMaxButton);
+	buttonBox.getChildren().add(getTestButton());
 	//buttonBox.getChildren().add(getUserButton());
 	
 	//
@@ -1334,17 +1366,8 @@ private GridPane getRightPane()
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) 
 	          {
-	        	if (rightPaneOn)  
-	        	{
-	        	  mainBox.getChildren().remove(rightPane);
-	        	  mainBox.getChildren().add(smallRightPane);
-	        	}
-	        	else
-	        	{
-	        		mainBox.getChildren().remove(smallRightPane);
-		        	  mainBox.getChildren().add(rightPane);
-		        	}	
-	        	rightPaneOn=!rightPaneOn;
+	        	  System.out.println(" mainBox height: "+mainBox.getHeight());
+	        	    System.out.println(" mainBox width: "+mainBox.getWidth());
 	          } };
 	  
      commitTestButton.setOnMouseClicked(bHandler);
@@ -1359,17 +1382,14 @@ private GridPane getRightPane()
 	          {
 	        	if (rightPaneOn)  
 	        	{
+	        	  mainVBox.getChildren().add(minSizeBottomBox);	
 	        	  setupSmallRightPane();
 	        	  mainBox.getChildren().remove(rightPane);
 	        	  mainBox.getChildren().add(smallRightPane);
 	        	  
 	        	  messageLabel.setText("Message: ");
 	        	  minFeedbackText.setText(dragonAccess.message);
-	        	  
-	        	  //minSizeBottomBox.getChildren().add(new Text("World"));
 	        	  minMaxButton.setText("Max");
-	        	  stage.setWidth(windowWidth-250);
-	        	  stage.setHeight(windowHeight+30);
 	        	  maximized=false;
 	        	}
 	        	else
@@ -1378,6 +1398,7 @@ private GridPane getRightPane()
 	        	  setupInfoGroup();
 	        	  setupRightPane();
 	        	  
+	        	  mainVBox.getChildren().remove(minSizeBottomBox);
 	        	  messageLabel.setText("");
 	        	  minFeedbackText.setText("");
 	        	  
@@ -1385,12 +1406,11 @@ private GridPane getRightPane()
 		          mainBox.getChildren().add(rightPane);
 		          
 		          minMaxButton.setText("Min");
-		          stage.setWidth(windowWidth);
-		          stage.setHeight(windowHeight);
 		          maximized=true;
 		          
 		        }	
 	        	rightPaneOn=!rightPaneOn;
+	        	
 	          } };
 	  
      minMaxButton.setOnMouseClicked(bHandler);
