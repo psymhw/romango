@@ -1396,7 +1396,7 @@ private GridPane getRightPane()
 	        	  mainBox.getChildren().add(smallRightPane);
 	        	  
 	        	  messageLabel.setText("Message: ");
-	        	  minFeedbackText.setText(dragonAccess.message);
+	        	  if (dragonAccess!=null) minFeedbackText.setText(dragonAccess.message);
 	        	  minMaxButton.setText("Max");
 	        	  maximized=false;
 	        	}
