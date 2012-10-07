@@ -355,12 +355,20 @@ public class GoClient extends Application
        {
         if (rightPaneOn)
         {
+        	if (screenHeight>maxStageHeight)
           stage.setHeight(maxStageHeight);
+        	else
+        	stage.setHeight(screenHeight-30);
+        	
           stage.setWidth(maxStageWidth);
         }
         else
         {
-          stage.setHeight(minStageHeight);
+          if (screenHeight>minStageHeight)
+             stage.setHeight(minStageHeight);
+          else
+        	  stage.setHeight(screenHeight-30);  
+          
           stage.setWidth(minStageWidth);
         }	
        }
