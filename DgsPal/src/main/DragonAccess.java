@@ -48,7 +48,7 @@ public class DragonAccess
   int lastSgfMoveNumber=0;
   int handicap=0;
   int loginAttempts=0;
-  String message;
+  String message="";
   boolean currentMessage=false;
   Date lastMoveCheck;
   long currentGame=0;
