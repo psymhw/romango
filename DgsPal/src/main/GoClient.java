@@ -915,7 +915,7 @@ private void setupSmallRightPane()
   vBox.getChildren().add(reviewForwardButton);
   vBox.getChildren().add(commitButton);
   vBox.getChildren().add(minMaxButton);
-  vBox.getChildren().add(getTestButton());
+ // vBox.getChildren().add(getTestButton());
   vBox.getChildren().add(turnImageView);
   
  // vBox.getChildren().add(commitButton);
@@ -1019,7 +1019,7 @@ private GridPane getRightPane()
 	buttonBox.getChildren().add(commitButton);
 	
 	buttonBox.getChildren().add(minMaxButton);
-	buttonBox.getChildren().add(getTestButton());
+	//buttonBox.getChildren().add(getTestButton());
 	//buttonBox.getChildren().add(getUserButton());
 	
 	//
