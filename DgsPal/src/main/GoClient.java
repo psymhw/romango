@@ -256,6 +256,7 @@ public class GoClient extends Application
   boolean maximized=true;
   ScrollPane scrollPane = new ScrollPane();
   VBox mainVBox = new VBox();
+  Rectangle turnColorBar = new Rectangle(40, 475, Color.BLACK);
   
   public void start(final Stage stage) throws Exception  
   {  
@@ -375,9 +376,8 @@ public class GoClient extends Application
    });
 
      
-     Rectangle r = new Rectangle();
-     r.setStroke(Color.BLACK);
-     r.setStrokeWidth(3);
+     
+    
    
      
      scrollPane.setContent(mainBox);
@@ -916,7 +916,10 @@ private void setupSmallRightPane()
   vBox.getChildren().add(commitButton);
   vBox.getChildren().add(minMaxButton);
  // vBox.getChildren().add(getTestButton());
-  vBox.getChildren().add(turnImageView);
+ // vBox.getChildren().add(turnImageView);
+  turnColorBar.setArcHeight(20);
+  turnColorBar.setArcWidth(20);
+  vBox.getChildren().add(turnColorBar);
   
  // vBox.getChildren().add(commitButton);
   
@@ -2826,6 +2829,7 @@ void playNextStone()
 	   thisPlayerColor=BLACK;
 	   colorToPlay=BLACK;
 	   turnImageView.setImage(blackStoneImage);
+	   turnColorBar.setFill(Color.BLACK);
 	   stage.getIcons().add(smallerBlackStoneImage);
 	 }
 	 
@@ -2885,12 +2889,14 @@ void playNextStone()
 	   { 
 	     colorToPlay=WHITE; 
 	     turnImageView.setImage(whiteStoneImage);
+	     turnColorBar.setFill(Color.WHITE);
 	     stage.getIcons().add(smallerWhiteStoneImage);
 	   } 
 	   else 
 	   {
 	     colorToPlay=BLACK;
 	     turnImageView.setImage(blackStoneImage);
+	     turnColorBar.setFill(Color.BLACK);
 	     stage.getIcons().add(smallerBlackStoneImage);
 	   }
 	 }
