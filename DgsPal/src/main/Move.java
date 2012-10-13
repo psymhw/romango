@@ -14,7 +14,7 @@ public class Move
   public int y;
   private boolean pass=false;
   private boolean resign=false;
- 
+  private int moveNumber=0;
   
   public int color;
   public String sgfPosition;
@@ -45,15 +45,7 @@ public class Move
     this.color = color;
   }
   
-  /*
-  public Move(int x, int y, int color)
-  {
-    this.x=x;
-    this.y=y;
-    this.color=color;
-    sgfPosition=calcSgfPosition();
-  }
-    */
+  
   public Move(String sgfPosition, int color)
   {
 	this.sgfPosition=sgfPosition;
@@ -62,6 +54,7 @@ public class Move
 	this.x=calcX();
 	this.y=calcY();
   }
+  
   
   public Move(int color)
   {
@@ -150,6 +143,16 @@ public class Move
 
 	public void setResign(boolean resign) {
 		this.resign = resign;
+	}
+
+
+	public int getMoveNumber() {
+		return moveNumber;
+	}
+
+
+	public void setMoveNumber(int moveNumber) {
+		this.moveNumber = moveNumber;
 	}
 
   

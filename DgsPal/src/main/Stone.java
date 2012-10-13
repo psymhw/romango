@@ -46,7 +46,7 @@ public class Stone extends ImageView
     this.stoneColor=move.color;
     createStone();
     
-    Tooltip t = new Tooltip(xLabels[x]+"-"+(19-y)+"    ");
+    Tooltip t = new Tooltip(move.getMoveNumber()+" - "+xLabels[x]+"-"+(19-y)+"    ");
     Tooltip.install(this, t);
   }
   

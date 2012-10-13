@@ -915,7 +915,7 @@ private void setupSmallRightPane()
   vBox.getChildren().add(reviewForwardButton);
   vBox.getChildren().add(commitButton);
   vBox.getChildren().add(minMaxButton);
- // vBox.getChildren().add(getTestButton());
+  //vBox.getChildren().add(getTestButton());
  // vBox.getChildren().add(turnImageView);
   turnColorBar.setArcHeight(20);
   turnColorBar.setArcWidth(20);
@@ -1022,7 +1022,7 @@ private GridPane getRightPane()
 	buttonBox.getChildren().add(commitButton);
 	
 	buttonBox.getChildren().add(minMaxButton);
-	//buttonBox.getChildren().add(getTestButton());
+	buttonBox.getChildren().add(getTestButton());
 	//buttonBox.getChildren().add(getUserButton());
 	
 	//
@@ -1377,8 +1377,7 @@ private GridPane getRightPane()
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) 
 	          {
-	        	  System.out.println(" mainBox height: "+mainBox.getHeight());
-	        	    System.out.println(" mainBox width: "+mainBox.getWidth());
+	        	 
 	          } };
 	  
      commitTestButton.setOnMouseClicked(bHandler);
@@ -1517,6 +1516,7 @@ private GridPane getRightPane()
       int thisMoveColor=0;
       if (lastMoveColor==BLACK) thisMoveColor=WHITE;  else thisMoveColor=BLACK;
       Move move = new Move(t.getX(),t.getY(), thisMoveColor);
+      move.setMoveNumber(moveNumber);
       if (moveMap[move.x][move.y]!=OPEN) 
       { 
       	StoneGroup stoneGroup = new StoneGroup(move.x, move.y, moveMap);

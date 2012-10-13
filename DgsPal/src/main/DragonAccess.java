@@ -579,6 +579,7 @@ public void parseLine(String line)
 	 {
        sgfPosition=line.substring(3,5);
 	   move=new Move(sgfPosition,GoClient.BLACK);
+	   move.setMoveNumber(lastSgfMoveNumber);
 	   sgfMoves.add(move);
 	   lastSgfMove = move;
 	   lastSgfMoveNumber++;
@@ -591,6 +592,7 @@ public void parseLine(String line)
 	 {
 	   sgfPosition=line.substring(3,5);
 	   move=new Move(sgfPosition,GoClient.WHITE);
+	   move.setMoveNumber(lastSgfMoveNumber); 
 	   sgfMoves.add(move);
 	   lastSgfMove = move;
 	   lastSgfMoveNumber++;
