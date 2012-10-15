@@ -474,9 +474,11 @@ public void parseLine(String line)
 		 {
 		   sgfPosition=  line.substring(xPos,yPos);
 		   move=new Move(sgfPosition,GoClient.BLACK);
+		   lastSgfMoveNumber++;
+		   move.setMoveNumber(lastSgfMoveNumber);
 		   sgfMoves.add(move);
 		   lastSgfMove = move;
-		   lastSgfMoveNumber++;
+		  
 		   xPos+=4;
 		   yPos+=4;
 		 }
@@ -505,9 +507,11 @@ public void parseLine(String line)
 	 {
 	   sgfPosition = line.substring(8,10);
 	   move=new Move(sgfPosition,GoClient.WHITE);
+	   lastSgfMoveNumber++;
+	   move.setMoveNumber(lastSgfMoveNumber);
 	   sgfMoves.add(move);
 	   lastSgfMove = move;
-	   lastSgfMoveNumber++;
+	   
 	   return;
 	 }
 	 
@@ -579,10 +583,11 @@ public void parseLine(String line)
 	 {
        sgfPosition=line.substring(3,5);
 	   move=new Move(sgfPosition,GoClient.BLACK);
+	   lastSgfMoveNumber++;
 	   move.setMoveNumber(lastSgfMoveNumber);
 	   sgfMoves.add(move);
 	   lastSgfMove = move;
-	   lastSgfMoveNumber++;
+	   
 	   currentMessage=false;
 	   lastMoveColor="b";
 	   return;
@@ -592,10 +597,11 @@ public void parseLine(String line)
 	 {
 	   sgfPosition=line.substring(3,5);
 	   move=new Move(sgfPosition,GoClient.WHITE);
+	   lastSgfMoveNumber++;
 	   move.setMoveNumber(lastSgfMoveNumber); 
 	   sgfMoves.add(move);
 	   lastSgfMove = move;
-	   lastSgfMoveNumber++;
+	   
 	   currentMessage=false;
 	   lastMoveColor="w";
 	   return;

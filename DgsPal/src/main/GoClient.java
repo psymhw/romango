@@ -171,6 +171,7 @@ public class GoClient extends Application
   Button reviewBackwardButton;
   Button passButton;
   Button resignButton;
+  Button pieceNumberButton;
 
   TextArea feedbackArea;
   
@@ -258,7 +259,7 @@ public class GoClient extends Application
   boolean maximized=true;
   ScrollPane scrollPane = new ScrollPane();
   VBox mainVBox = new VBox();
-  Rectangle turnColorBar = new Rectangle(40, 475, Color.BLACK);
+  Rectangle turnColorBar = new Rectangle(40, 440, Color.BLACK);
   private static int OFF = 0;
   private static int ON = 1;
   private static int SUBSET = 2;
@@ -346,6 +347,7 @@ public class GoClient extends Application
      setupLabelsButton();
      setupUserButton();
      setupFileButton();
+     setupPieceNumberButton();
      
      setupInfoGroup();
      setupFeedbackLabel();
@@ -927,6 +929,7 @@ private void setupSmallRightPane()
   vBox.getChildren().add(reviewForwardButton);
   vBox.getChildren().add(commitButton);
   vBox.getChildren().add(minMaxButton);
+  vBox.getChildren().add(pieceNumberButton);
   //vBox.getChildren().add(getTestButton());
  // vBox.getChildren().add(turnImageView);
   turnColorBar.setArcHeight(20);
@@ -1034,7 +1037,7 @@ private GridPane getRightPane()
 	buttonBox.getChildren().add(commitButton);
 	
 	buttonBox.getChildren().add(minMaxButton);
-	buttonBox.getChildren().add(getTestButton());
+	buttonBox.getChildren().add(pieceNumberButton);
 	//buttonBox.getChildren().add(getUserButton());
 	
 	//
@@ -1389,13 +1392,17 @@ private GridPane getRightPane()
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) 
 	          {
-	        	if (pieceNumbering==OFF) pieceNumbering=ON;
-	        	else if (pieceNumbering==ON) pieceNumbering=SUBSET;
+	        	if (pieceNumbering==OFF) pieceNumbering=SUBSET;
+	        	else if (pieceNumbering==SUBSET) pieceNumbering=ON;
 	        	else pieceNumbering=OFF;
 	        	
-	        	System.out.println("piece Numbering: "+pieceNumbering);
+	        	//System.out.println("piece Numbering: "+pieceNumbering);
 	        	if (pieceNumbering==ON) showFullNumbering();
-	          } };
+	        	else if (pieceNumbering==SUBSET) showSubsetNumbering();
+	        	else removePieceNumbers();
+	          }
+
+			};
 
    
 	  
@@ -1403,10 +1410,46 @@ private GridPane getRightPane()
      return commitTestButton;
   }
   
+  private void setupPieceNumberButton() 
+  {
+    pieceNumberButton = new Button("1,2,3");
+    EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
+	          public void handle(MouseEvent event) 
+	          {
+	        	if (pieceNumbering==OFF) pieceNumbering=SUBSET;
+	        	else if (pieceNumbering==SUBSET) pieceNumbering=ON;
+	        	else pieceNumbering=OFF;
+	        	
+	        	//System.out.println("piece Numbering: "+pieceNumbering);
+	        	if (pieceNumbering==ON) showFullNumbering();
+	        	else if (pieceNumbering==SUBSET) showSubsetNumbering();
+	        	else removePieceNumbers();
+	          }
+
+			};
+	  
+			pieceNumberButton.setOnMouseClicked(bHandler);
+			pieceNumberButton.setPrefHeight(28);
+			pieceNumberButton.setTooltip(new Tooltip("Show piece numbers"));
+  }
+  
     
+  private void removePieceNumbers() {
+	  boardGroup.getChildren().remove(stoneNumbers);
+		
+	} 
+  
   private void showFullNumbering() 
   {
+	removePieceNumbers();
     createStoneNumbers();
+    boardGroup.getChildren().add(stoneNumbers);
+  } 
+  
+  private void showSubsetNumbering() 
+  {
+	//removePieceNumbers();  
+    createSubsetStoneNumbers();
     boardGroup.getChildren().add(stoneNumbers);
   } 
     
@@ -1426,6 +1469,7 @@ private GridPane getRightPane()
 	        	  messageLabel.setText("Message: ");
 	        	  if (dragonAccess!=null) minFeedbackText.setText(dragonAccess.message);
 	        	  minMaxButton.setText("Max");
+	        	  minMaxButton.setTooltip(new Tooltip("Maximum Window"));
 	        	  maximized=false;
 	        	}
 	        	else
@@ -1442,6 +1486,7 @@ private GridPane getRightPane()
 		          mainBox.getChildren().add(rightPane);
 		          
 		          minMaxButton.setText("Min");
+		          minMaxButton.setTooltip(new Tooltip("Minimum Window"));
 		          maximized=true;
 		          
 		        }	
@@ -1451,6 +1496,7 @@ private GridPane getRightPane()
 	  
      minMaxButton.setOnMouseClicked(bHandler);
      minMaxButton.setPrefHeight(28);
+     
   }
   
   private void setupUserButton() 
@@ -1685,30 +1731,59 @@ private GridPane getRightPane()
 	   {
 	     stone=(Stone)it.next();
 	     move=stone.getMove();
-	     stoneNumbers.getChildren().add(getStoneNumber(move));
+	     stoneNumbers.getChildren().add(getStoneNumber(move, 0));
+	   }
+	 
+  } 
+  
+  @SuppressWarnings("rawtypes")
+  private void createSubsetStoneNumbers() 
+  {
+	stoneNumbers = new Group();  
+	ObservableList moveList  = visibleMoves.getChildren();
+	int numberOfMoves =moveList.size();
+	int listCount=0;
+	int subsetNumber=0;
+	
+	ListIterator it = moveList.listIterator();
+	stoneNumbers = new Group();
+	
+	   Stone stone;
+	   Move move;
+	   while(it.hasNext())
+	   {
+		 listCount++;  
+		 if (listCount>numberOfMoves-9) subsetNumber++;
+	     stone=(Stone)it.next();
+	     move=stone.getMove();
+	     if (subsetNumber>0) stoneNumbers.getChildren().add(getStoneNumber(move, subsetNumber));
 	   }
 	 
   } 
 
-private Label getStoneNumber(Move move)
+private Label getStoneNumber(Move move, int number)
 {
-   Label stoneNumber = new Label(""+move.getMoveNumber());
-   stoneNumber.setFont(Font.font("Serif", 15));
+   int stoneNumber=0;
+   if (number>0) stoneNumber=number;
+   else stoneNumber=move.getMoveNumber();
+   
+   Label stoneNumberLabel = new Label(""+stoneNumber);
+   stoneNumberLabel.setFont(Font.font("Serif", 15));
    
    
-   if (move.color==WHITE) stoneNumber.setTextFill(Color.BLACK);
-   else stoneNumber.setTextFill(Color.WHITE);
+   if (move.color==WHITE) stoneNumberLabel.setTextFill(Color.BLACK);
+   else stoneNumberLabel.setTextFill(Color.WHITE);
    
-   int numberLength=(""+move.getMoveNumber()).length();
+   int numberLength=(""+stoneNumber).length();
    double x=0;
    
-   if (numberLength==3) stoneNumber.setLayoutX(move.sceneX+5);
-   else if (numberLength==2) stoneNumber.setLayoutX(move.sceneX+9);
-   else  stoneNumber.setLayoutX(move.sceneX+13);
+   if (numberLength==3) stoneNumberLabel.setLayoutX(move.sceneX+5);
+   else if (numberLength==2) stoneNumberLabel.setLayoutX(move.sceneX+9);
+   else  stoneNumberLabel.setLayoutX(move.sceneX+13);
    
-   stoneNumber.setLayoutY(move.sceneY+9);
-   System.out.println("move: "+move.getMoveNumber()+" "+move.sceneX+" - "+move.sceneY);
-   return stoneNumber;
+   stoneNumberLabel.setLayoutY(move.sceneY+9);
+ //  System.out.println("move: "+move.getMoveNumber()+" "+move.sceneX+" - "+move.sceneY);
+   return stoneNumberLabel;
 }
 
 
@@ -1801,7 +1876,7 @@ void restoreMoveMap(int[][] savedMoveMap)
     }};
     resignButton.setOnAction(bHandler2);
     resignButton.setPrefHeight(28);
-    resignButton.setTooltip(new Tooltip("Toggle board coordinates on/off"));
+    resignButton.setTooltip(new Tooltip("resign"));
   }
   
   private void setupReviewForwardButton() 
