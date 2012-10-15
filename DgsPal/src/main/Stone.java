@@ -42,6 +42,9 @@ public class Stone extends ImageView
     sgfPosition = move.getSgfPosition();
     sceneX = calcSceneX();
     sceneY = calcSceneY();
+    move.sceneX=sceneX;
+    move.sceneY=sceneY;
+    
    
     this.stoneColor=move.color;
     createStone();
@@ -209,6 +212,16 @@ public int calcSceneX()
     public void setSgfPosition(String sgfPosition) {
             this.sgfPosition = sgfPosition;
     }
+
+
+	public Move getMove() {
+		return move;
+	}
+
+
+	public void setMove(Move move) {
+		this.move = move;
+	}
   
 
 }

@@ -33,6 +33,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextAreaBuilder;
@@ -134,7 +135,8 @@ public class GoClient extends Application
   AudioClip errorSound;
    
   Group visibleMoves;
-   
+  Group boardGroup; 
+  
   int handicapInt=0;
   int captured[]= new int[3];
    
@@ -257,6 +259,13 @@ public class GoClient extends Application
   ScrollPane scrollPane = new ScrollPane();
   VBox mainVBox = new VBox();
   Rectangle turnColorBar = new Rectangle(40, 475, Color.BLACK);
+  private static int OFF = 0;
+  private static int ON = 1;
+  private static int SUBSET = 2;
+  
+  int pieceNumbering=OFF;
+  
+  Group stoneNumbers;
   
   public void start(final Stage stage) throws Exception  
   {  
@@ -284,7 +293,8 @@ public class GoClient extends Application
     captured[BLACK]=0;
     captured[WHITE]=0;
       
-     
+   
+    
      mainBox = new HBox();
      mainBox.setPadding(new Insets(3, 3, 3, 3));
      mainBox.setSpacing(5);
@@ -316,7 +326,9 @@ public class GoClient extends Application
      */
     
      mainVBox.getChildren().add(horizLabelView);
-     mainVBox.getChildren().add(getBoardGroup());
+     
+     setupBoardGroup();
+     mainVBox.getChildren().add(boardGroup);
      
     
      HBox hBox = new HBox();
@@ -996,9 +1008,9 @@ private GridPane getRightPane()
   }
 
   
-  private Group getBoardGroup()
+  private void setupBoardGroup()
   {
-	  Group boardGroup = new Group();
+	  boardGroup = new Group();
 	  Group board = getBoardBackground();
 	  Group grid = getGrid();
 	  visibleMoves = new Group();
@@ -1006,7 +1018,7 @@ private GridPane getRightPane()
 	  boardGroup.getChildren().add(grid);
 	  boardGroup.getChildren().add(visibleMoves);  
 	  setupMouse(boardGroup);
-	  return boardGroup;
+	  
   }
   
   private void setupButtonBox() 
@@ -1377,13 +1389,27 @@ private GridPane getRightPane()
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) 
 	          {
-	        	 
+	        	if (pieceNumbering==OFF) pieceNumbering=ON;
+	        	else if (pieceNumbering==ON) pieceNumbering=SUBSET;
+	        	else pieceNumbering=OFF;
+	        	
+	        	System.out.println("piece Numbering: "+pieceNumbering);
+	        	if (pieceNumbering==ON) showFullNumbering();
 	          } };
+
+   
 	  
      commitTestButton.setOnMouseClicked(bHandler);
      return commitTestButton;
   }
   
+    
+  private void showFullNumbering() 
+  {
+    createStoneNumbers();
+    boardGroup.getChildren().add(stoneNumbers);
+  } 
+    
   private void setupMinMaxButton() 
   {
     minMaxButton = new Button("Min");
@@ -1644,6 +1670,47 @@ private GridPane getRightPane()
 	   }
 	   return null;
   } 
+  
+  @SuppressWarnings("rawtypes")
+  private void createStoneNumbers() 
+  {
+	stoneNumbers = new Group();  
+	ObservableList moveList  = visibleMoves.getChildren();
+	ListIterator it = moveList.listIterator();
+	stoneNumbers = new Group();
+	
+	   Stone stone;
+	   Move move;
+	   while(it.hasNext())
+	   {
+	     stone=(Stone)it.next();
+	     move=stone.getMove();
+	     stoneNumbers.getChildren().add(getStoneNumber(move));
+	   }
+	 
+  } 
+
+private Label getStoneNumber(Move move)
+{
+   Label stoneNumber = new Label(""+move.getMoveNumber());
+   stoneNumber.setFont(Font.font("Serif", 15));
+   
+   
+   if (move.color==WHITE) stoneNumber.setTextFill(Color.BLACK);
+   else stoneNumber.setTextFill(Color.WHITE);
+   
+   int numberLength=(""+move.getMoveNumber()).length();
+   double x=0;
+   
+   if (numberLength==3) stoneNumber.setLayoutX(move.sceneX+5);
+   else if (numberLength==2) stoneNumber.setLayoutX(move.sceneX+9);
+   else  stoneNumber.setLayoutX(move.sceneX+13);
+   
+   stoneNumber.setLayoutY(move.sceneY+9);
+   System.out.println("move: "+move.getMoveNumber()+" "+move.sceneX+" - "+move.sceneY);
+   return stoneNumber;
+}
+
 
 void restoreMoveMap(int[][] savedMoveMap)
   {
