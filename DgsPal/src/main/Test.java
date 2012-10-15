@@ -19,6 +19,8 @@ public class Test  extends Application
 	public void start(Stage stage) throws Exception 
 	{
 		Group root = new Group();
+		Group stoneGroup = new Group();
+		Group moveNumbersGroup = new Group();
 		int x=30, y=30;
 		String src="/resources";
 		Image white_stone_image = new Image(Stone.class.getResourceAsStream(src+"/images/w.gif"));
@@ -64,13 +66,18 @@ public class Test  extends Application
 	    label3.setLayoutY(y+9);
 
 	    
-	    root.getChildren().add(iv1);
-	    root.getChildren().add(iv2);
-	    root.getChildren().add(iv3);
+	    stoneGroup.getChildren().add(iv1);
+	    stoneGroup.getChildren().add(iv2);
+	    stoneGroup.getChildren().add(iv3);
 	    
-	    root.getChildren().add(label1);
-	    root.getChildren().add(label2);
-	    root.getChildren().add(label3);
+	    moveNumbersGroup.getChildren().add(label1);
+	    moveNumbersGroup.getChildren().add(label2);
+	    moveNumbersGroup.getChildren().add(label3);
+	    
+	    root.getChildren().add(stoneGroup);
+	    root.getChildren().add(moveNumbersGroup);
+	    
+	    moveNumbersGroup.setVisible(false);
 	    
 	    
         Scene scene = new Scene(root, 200, 150);
