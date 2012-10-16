@@ -34,6 +34,7 @@ public class Stone extends Group
   private ImageView stoneImageView = new ImageView();
   private Label stoneNumberLabel = new Label();
   private Label subsetStoneNumberLabel = new Label();
+  private int moveNumber=0;
   
   int style=0;
   
@@ -54,6 +55,7 @@ public class Stone extends Group
     
    
     this.stoneColor=move.color;
+    moveNumber=move.getMoveNumber();
     setupStoneNumberLabel();
     setupSubsetStoneNumberLabel();
     createStone();
@@ -69,9 +71,9 @@ public class Stone extends Group
     private void setupStoneNumberLabel() 
     {
       stoneNumberLabel.setFont(Font.font("Serif", 15));
-      stoneNumberLabel.setText(""+move.getMoveNumber());
+      stoneNumberLabel.setText(""+moveNumber);
     	
-      int numberLength=(""+move.getMoveNumber()).length();
+      int numberLength=(""+moveNumber).length();
       if (numberLength==3) stoneNumberLabel.setLayoutX(move.sceneX+5);
       else if (numberLength==2) stoneNumberLabel.setLayoutX(move.sceneX+9);
       else  stoneNumberLabel.setLayoutX(move.sceneX+13);
@@ -90,6 +92,7 @@ public class Stone extends Group
       if (move.color==GoClient.WHITE) subsetStoneNumberLabel.setTextFill(Color.BLACK);
       else subsetStoneNumberLabel.setTextFill(Color.WHITE);
       
+      subsetStoneNumberLabel.setLayoutX(move.sceneX+13);
       subsetStoneNumberLabel.setLayoutY(move.sceneY+9);
       
       subsetStoneNumberLabel.setVisible(false);
@@ -276,6 +279,11 @@ public int calcSceneX()
 
 	public Label getSubsetStoneNumberLabel() {
 		return subsetStoneNumberLabel;
+	}
+
+
+	public int getMoveNumber() {
+		return moveNumber;
 	}
 
 
