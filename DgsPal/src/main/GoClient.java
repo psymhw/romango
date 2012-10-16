@@ -1728,9 +1728,7 @@ private GridPane getRightPane()
 	  subsetStoneNumberLabel=stone.getSubsetStoneNumberLabel();
 	  subsetStoneNumberLabel.setText(numberString);
 	  
-	  if (numberLength==3) subsetStoneNumberLabel.setLayoutX(stone.getSceneX()+5);
-	   else if (numberLength==2) subsetStoneNumberLabel.setLayoutX(stone.getSceneX()+9);
-	   else  subsetStoneNumberLabel.setLayoutX(stone.getSceneX()+13);
+	 
 	  
 	  
 	  if (subsetNumber>0) subsetStoneNumberLabel.setVisible(true);
@@ -2229,11 +2227,23 @@ private void setQuit()
     gameStatusText.setText("");
     consecutivePasses=0;
     
+    
     if (!move.isPass())
     {
       moveMap[move.x][move.y]=move.color;	
       Stone stone = new Stone(move);
-	  visibleMoves.getChildren().add(stone);
+      if (pieceNumbering==ON) stone.getStoneNumberLabel().setVisible(true);
+      if (pieceNumbering==SUBSET) 
+      {
+    	  int stoneLabelNumber=9+reviewPosition;
+    	  if (stoneLabelNumber>0)
+    	  {
+    	    Label subsetStoneNumberLabel=stone.getSubsetStoneNumberLabel();
+    	    subsetStoneNumberLabel.setText(""+(stoneLabelNumber));
+    	    subsetStoneNumberLabel.setVisible(true);
+    	  }
+      }
+      visibleMoves.getChildren().add(stone);
 	  checkLibertiesOfNeighbors(move.x, move.y);
     }
 			
