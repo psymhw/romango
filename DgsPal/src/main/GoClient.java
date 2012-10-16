@@ -266,7 +266,7 @@ public class GoClient extends Application
   
   int pieceNumbering=OFF;
   
-  Group stoneNumbers;
+ 
   
   public void start(final Stage stage) throws Exception  
   {  
@@ -347,7 +347,7 @@ public class GoClient extends Application
      setupLabelsButton();
      setupUserButton();
      setupFileButton();
-     setupPieceNumberButton();
+     setupStoneNumberButton();
      
      setupInfoGroup();
      setupFeedbackLabel();
@@ -1358,33 +1358,7 @@ private GridPane getRightPane()
  } catch (IOException e) { e.printStackTrace();	}
   }
   
-  /*
-  private void writeMoveToLocalSgfFile(Move move)
-  {
-	String sgfFile=dragonAccess.getSgfFile();
-	String colorLetter="";
-	if (move.color==1) colorLetter="B"; else colorLetter="W";
-	sgfFile=sgfFile+";"+colorLetter+"["+move.getSgfPosition()+"]\n";
-	if (sendMessageArea.getText().length()>0) 
-	{	
-		if (move.color==1)
-		sgfFile+="C["+dragonAccess.getPlayerBlack()+" ("+dragonAccess.getLoginNameBlack()+"): "+sendMessageArea.getText()+"]\n";
-		else
-			sgfFile+="C["+dragonAccess.getPlayerWhite()+" ("+dragonAccess.getLoginNameWhite()+"): "+sendMessageArea.getText()+"]\n";	
-	}
-	File resourceFile=null;
-	  File directory = new File (".");
-	try{
-		resourceFile= new File(directory.getCanonicalPath()+"\\"+currentGameNo+".sgf");
-	    FileWriter fstream=null;
-	
-		fstream = new FileWriter(resourceFile);
-	    BufferedWriter out = new BufferedWriter(fstream);
-	    out.write(sgfFile);
-	    out.close();
- } catch (IOException e) { e.printStackTrace();	}
-  }
-  */
+  
   
   private Button getTestButton() 
   {
@@ -1392,14 +1366,7 @@ private GridPane getRightPane()
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event) 
 	          {
-	        	if (pieceNumbering==OFF) pieceNumbering=SUBSET;
-	        	else if (pieceNumbering==SUBSET) pieceNumbering=ON;
-	        	else pieceNumbering=OFF;
-	        	
-	        	//System.out.println("piece Numbering: "+pieceNumbering);
-	        	if (pieceNumbering==ON) showFullNumbering();
-	        	else if (pieceNumbering==SUBSET) showSubsetNumbering();
-	        	else removePieceNumbers();
+	        	System.out.println("TEST BUTTON");
 	          }
 
 			};
@@ -1410,7 +1377,7 @@ private GridPane getRightPane()
      return commitTestButton;
   }
   
-  private void setupPieceNumberButton() 
+  private void setupStoneNumberButton() 
   {
     pieceNumberButton = new Button("1,2,3");
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
@@ -1421,9 +1388,9 @@ private GridPane getRightPane()
 	        	else pieceNumbering=OFF;
 	        	
 	        	//System.out.println("piece Numbering: "+pieceNumbering);
-	        	if (pieceNumbering==ON) showFullNumbering();
-	        	else if (pieceNumbering==SUBSET) showSubsetNumbering();
-	        	else removePieceNumbers();
+	        	if (pieceNumbering==ON) { removeStoneNumbers(); showStoneNumbers(); }
+	        	else if (pieceNumbering==SUBSET) { removeStoneNumbers(); showSubsetStoneNumbers(); }
+	        	else removeStoneNumbers();
 	          }
 
 			};
@@ -1433,25 +1400,9 @@ private GridPane getRightPane()
 			pieceNumberButton.setTooltip(new Tooltip("Show piece numbers"));
   }
   
-    
-  private void removePieceNumbers() {
-	  boardGroup.getChildren().remove(stoneNumbers);
-		
-	} 
   
-  private void showFullNumbering() 
-  {
-	removePieceNumbers();
-    createStoneNumbers();
-    boardGroup.getChildren().add(stoneNumbers);
-  } 
   
-  private void showSubsetNumbering() 
-  {
-	//removePieceNumbers();  
-    createSubsetStoneNumbers();
-    boardGroup.getChildren().add(stoneNumbers);
-  } 
+  
     
   private void setupMinMaxButton() 
   {
@@ -1718,46 +1669,72 @@ private GridPane getRightPane()
   } 
   
   @SuppressWarnings("rawtypes")
-  private void createStoneNumbers() 
+  private void showStoneNumbers() 
   {
-	stoneNumbers = new Group();  
 	ObservableList moveList  = visibleMoves.getChildren();
 	ListIterator it = moveList.listIterator();
-	stoneNumbers = new Group();
 	
 	   Stone stone;
 	   Move move;
 	   while(it.hasNext())
 	   {
 	     stone=(Stone)it.next();
-	     move=stone.getMove();
-	     stoneNumbers.getChildren().add(getStoneNumber(move, 0));
+	     stone.getStoneNumberLabel().setVisible(true);
 	   }
-	 
   } 
   
   @SuppressWarnings("rawtypes")
-  private void createSubsetStoneNumbers() 
+  private void removeStoneNumbers() 
   {
-	stoneNumbers = new Group();  
+	ObservableList moveList  = visibleMoves.getChildren();
+	ListIterator it = moveList.listIterator();
+	
+	   Stone stone;
+	   Move move;
+	   while(it.hasNext())
+	   {
+	     stone=(Stone)it.next();
+	     stone.getStoneNumberLabel().setVisible(false);
+	     stone.getSubsetStoneNumberLabel().setVisible(false);
+	   }
+  } 
+  
+  
+  
+  @SuppressWarnings("rawtypes")
+  private void showSubsetStoneNumbers() 
+  {
 	ObservableList moveList  = visibleMoves.getChildren();
 	int numberOfMoves =moveList.size();
 	int listCount=0;
 	int subsetNumber=0;
+	String numberString="";
+	int numberLength=0;
+	Label subsetStoneNumberLabel;
 	
 	ListIterator it = moveList.listIterator();
-	stoneNumbers = new Group();
 	
-	   Stone stone;
-	   Move move;
-	   while(it.hasNext())
-	   {
-		 listCount++;  
-		 if (listCount>numberOfMoves-9) subsetNumber++;
-	     stone=(Stone)it.next();
-	     move=stone.getMove();
-	     if (subsetNumber>0) stoneNumbers.getChildren().add(getStoneNumber(move, subsetNumber));
-	   }
+	Stone stone;
+	
+	while(it.hasNext())
+	{
+	  listCount++;  
+	  if (listCount>numberOfMoves-9) subsetNumber++;
+	  stone=(Stone)it.next();
+	  
+	  numberString=""+subsetNumber;
+	  numberLength=numberString.length();
+	  
+	  subsetStoneNumberLabel=stone.getSubsetStoneNumberLabel();
+	  subsetStoneNumberLabel.setText(numberString);
+	  
+	  if (numberLength==3) subsetStoneNumberLabel.setLayoutX(stone.getSceneX()+5);
+	   else if (numberLength==2) subsetStoneNumberLabel.setLayoutX(stone.getSceneX()+9);
+	   else  subsetStoneNumberLabel.setLayoutX(stone.getSceneX()+13);
+	  
+	  
+	  if (subsetNumber>0) subsetStoneNumberLabel.setVisible(true);
+	}
 	 
   } 
 

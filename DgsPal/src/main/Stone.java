@@ -1,10 +1,14 @@
 package main;
 
+import javafx.scene.Group;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
-public class Stone extends ImageView
+public class Stone extends Group
 {
   private int stoneColor;
   //private BoardPosition boardPosition;
@@ -27,6 +31,9 @@ public class Stone extends ImageView
   private double sceneX=0;
   private double sceneY=0;
   private Move move;
+  private ImageView stoneImageView = new ImageView();
+  private Label stoneNumberLabel = new Label();
+  private Label subsetStoneNumberLabel = new Label();
   
   int style=0;
   
@@ -47,14 +54,49 @@ public class Stone extends ImageView
     
    
     this.stoneColor=move.color;
+    setupStoneNumberLabel();
+    setupSubsetStoneNumberLabel();
     createStone();
     
     Tooltip t = new Tooltip(move.getMoveNumber()+" - "+xLabels[x]+"-"+(19-y)+"    ");
-    Tooltip.install(this, t);
+    Tooltip.install(stoneImageView, t);
+    this.getChildren().add(stoneImageView);
+    this.getChildren().add(stoneNumberLabel);
+    this.getChildren().add(subsetStoneNumberLabel);
   }
   
   
-    void createStone()
+    private void setupStoneNumberLabel() 
+    {
+      stoneNumberLabel.setFont(Font.font("Serif", 15));
+      stoneNumberLabel.setText(""+move.getMoveNumber());
+    	
+      int numberLength=(""+move.getMoveNumber()).length();
+      if (numberLength==3) stoneNumberLabel.setLayoutX(move.sceneX+5);
+      else if (numberLength==2) stoneNumberLabel.setLayoutX(move.sceneX+9);
+      else  stoneNumberLabel.setLayoutX(move.sceneX+13);
+    	   
+      stoneNumberLabel.setLayoutY(move.sceneY+9);
+    	   
+      if (move.color==GoClient.WHITE) stoneNumberLabel.setTextFill(Color.BLACK);
+      else stoneNumberLabel.setTextFill(Color.WHITE);
+      stoneNumberLabel.setVisible(false);
+    }
+    
+    private void setupSubsetStoneNumberLabel() 
+    {
+      subsetStoneNumberLabel.setFont(Font.font("Serif", 15));
+         	   
+      if (move.color==GoClient.WHITE) subsetStoneNumberLabel.setTextFill(Color.BLACK);
+      else subsetStoneNumberLabel.setTextFill(Color.WHITE);
+      
+      subsetStoneNumberLabel.setLayoutY(move.sceneY+9);
+      
+      subsetStoneNumberLabel.setVisible(false);
+    }
+
+
+	void createStone()
     {
       String src="/resources";
       if (black_stone_image==null)  black_stone_image = new Image(Stone.class.getResourceAsStream(src+"/images/b.gif")); 
@@ -71,11 +113,11 @@ public class Stone extends ImageView
       
       if (stoneColor==GoClient.WHITE)
       {
-        setImage(white_stone_image);
+    	  stoneImageView.setImage(white_stone_image);
       }
       else
       {
-        setImage(black_stone_image);
+    	  stoneImageView.setImage(black_stone_image);
       }
       
       /*
@@ -92,35 +134,36 @@ public class Stone extends ImageView
       }    
       */
       
-      setX(sceneX);
-      setY(sceneY);   
+      stoneImageView.setX(sceneX);
+      stoneImageView.setY(sceneY);   
+      
     }
     
     void setMoveImage()
     {
-        if (stoneColor==GoClient.WHITE) setImage(white_move_image);
-       else setImage(black_move_image);
+        if (stoneColor==GoClient.WHITE) stoneImageView.setImage(white_move_image);
+       else stoneImageView.setImage(black_move_image);
         
     }
     
     void setMarkImage()
     {
-        if (stoneColor==GoClient.WHITE) setImage(wx);
-       else setImage(bx);
+        if (stoneColor==GoClient.WHITE) stoneImageView.setImage(wx);
+       else stoneImageView.setImage(bx);
         
     }
     
     void setCheckImage()
     {
-        if (stoneColor==GoClient.WHITE) setImage(wcheck);
-       else setImage(bcheck);
+        if (stoneColor==GoClient.WHITE) stoneImageView.setImage(wcheck);
+       else stoneImageView.setImage(bcheck);
         
     }
     
     void setRegularImage()
     {
-        if (stoneColor==GoClient.WHITE) setImage(white_stone_image);
-       else setImage(black_stone_image);
+        if (stoneColor==GoClient.WHITE) stoneImageView.setImage(white_stone_image);
+       else stoneImageView.setImage(black_stone_image);
         
     }
     
@@ -222,6 +265,21 @@ public int calcSceneX()
 	public void setMove(Move move) {
 		this.move = move;
 	}
+
+
+	public Label getStoneNumberLabel() {
+		return stoneNumberLabel;
+	}
+
+
+	
+
+	public Label getSubsetStoneNumberLabel() {
+		return subsetStoneNumberLabel;
+	}
+
+
+	
   
 
 }
