@@ -133,6 +133,7 @@ public class GoClient extends Application
 
   AudioClip stoneSound;
   AudioClip errorSound;
+  AudioClip cuckooSound;
    
   Group visibleMoves;
   Group boardGroup; 
@@ -167,8 +168,10 @@ public class GoClient extends Application
   
   Button commitButton;
   Button deleteLastMoveButton;
+  Button reviewForward_10_Button;
   Button reviewForwardButton;
   Button reviewBackwardButton;
+  Button reviewBackward_10_Button;
   Button passButton;
   Button resignButton;
   Button pieceNumberButton;
@@ -259,7 +262,7 @@ public class GoClient extends Application
   boolean maximized=true;
   ScrollPane scrollPane = new ScrollPane();
   VBox mainVBox = new VBox();
-  Rectangle turnColorBar = new Rectangle(40, 440, Color.BLACK);
+  Rectangle turnColorBar = new Rectangle(40, 375, Color.BLACK);
   private static int OFF = 0;
   private static int ON = 1;
   private static int SUBSET = 2;
@@ -281,6 +284,7 @@ public class GoClient extends Application
     
     stoneSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/stone.wav"));
     errorSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/error.wav"));
+    cuckooSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/cuckoo.wav"));
 
     turnImageView = new ImageView(blackStoneImage);
 	  
@@ -338,7 +342,9 @@ public class GoClient extends Application
     
      setupDeleteLastMoveButton();
      setupReviewBackwardButton();
+     setupReviewBackward_10_Button();
      setupRefreshButton();
+     setupReviewForward_10_Button();
      setupReviewForwardButton();
      setupCommitButton();
      setupMinMaxButton();
@@ -349,14 +355,14 @@ public class GoClient extends Application
      setupFileButton();
      setupStoneNumberButton();
      
-     setupInfoGroup();
+     //setupInfoGroup();
      setupFeedbackLabel();
      setupFeedbackArea();
      setupMessageLabel();
      setupSendMessageArea();
      
-     setupButtonBox();
-     setupButtonBox2();
+    // setupButtonBox();
+   //  setupButtonBox2();
      setupIdentBox();
      setupRightPane();
      setupMinSizeBottomBox();
@@ -437,6 +443,7 @@ public class GoClient extends Application
 	minSizeBottomBox = new HBox();
 	messageLabel.setFont(Font.font("Serif", 18));
 	minFeedbackText.setFont(Font.font("Serif", 18));
+	minFeedbackText.setWrappingWidth(580);
 	minSizeBottomBox.getChildren().add(messageLabel);
 	minSizeBottomBox.getChildren().add(minFeedbackText);
 }
@@ -505,7 +512,7 @@ public void stop()
       {
   	    playAllSgfMoves();
          feedbackArea.insertText(0, df.format(new Date())+" "+lastSgfMove.getColorStr()+": "+lastSgfMove.getBoardPosition()+"\n");
-         if (maximized) minFeedbackText.setText(dragonAccess.message);
+         if (!maximized) minFeedbackText.setText(dragonAccess.message);
         /*
         if (lastSgfMove.color==BLACK)  
 	  { 
@@ -521,6 +528,11 @@ public void stop()
 	  }
         */
     }
+      System.out.println("timed refresh: currentMessage "+dragonAccess.currentMessage);
+      if (dragonAccess.currentMessage) 
+      {  
+    	  cuckooSound.play();
+      }
   }
     
     updateControls();  
@@ -538,6 +550,7 @@ public void stop()
   {
 	//boolean gameFound=false;
 	//long gameNo=0;
+	  System.out.println("startup refresh");
 	int status=NOT_LOGGED_IN;
 	boolean loginSuccess=false;
 	boolean debug=true;
@@ -559,41 +572,9 @@ public void stop()
 	   { 
 		 currentGameNo=""+runningGameNo; 
 		 status=GAME_FOUND; 
-		 
 	   }
-		  
-		  
-	   
-  	//   status = dragonAccess.checkForMove("startup");
-	//   boolean excessive_usage=dragonAccess.isExcessive_usage();
-	//   if (excessive_usage) excessiveUsageStr="DGS server complaining about excessive usage\n";
-	}
-	
-	
-	
-	/*
-	if (status==GAME_FOUND)
-	{
-	  stopAutoRefresh();
-	  if (!currentGameNo.equals(""+dragonAccess.getCurrentGame()))  // if the current game number is not equal to that number, make it so and save it
-	  {
-	//	currentGameNo=""+dragonAccess.getCurrentGame();
-		writeResources();
-	  }
-	}
-	
-	
-	if ("noset".equals(currentGameNo)) return;
-	
-	*/
+ 	}
 		
-	/*
-	 * for startup, I don't care if a game was found. 
-	 * Unless there is no game number set
-	 * I'll get the current game.
-	 * 
-	 */
-	
 	gameNoVal.setText(currentGameNo);
 	
 	boolean success=false;
@@ -609,46 +590,11 @@ public void stop()
 	{	 
 	commentsStr=getComments();
 	playAllSgfMoves();
-	/*
-	 if (lastSgfMove.color==BLACK)  
-	    { 
-	      colorToPlay=WHITE; 
-	      turnImageView.setImage(whiteStoneImage);
-	      stage.getIcons().add(smallerWhiteStoneImage);
-	    } 
-	    else 
-	    {
-	      colorToPlay=BLACK;
-	      turnImageView.setImage(blackStoneImage);
-	      stage.getIcons().add(smallerBlackStoneImage);
-	    }
-    
-    
-    if (colorToPlay==thisPlayerColor)
-	{
-	  enableCommit();
-	  passButton.setDisable(false);
-	  resignButton.setDisable(false);
-	}
-	else 
-	{
-	  commitButton.setDisable(true);
-	  passButton.setDisable(true);
-	  resignButton.setDisable(true);
-	}
-    
-    deleteLastMoveButton.setDisable(true);
-    reviewForwardButton.setDisable(true);
-    */
-    
-    //System.out.println("local File: "+localFile);
-    
-    // if ((status!=GAME_FOUND)&&(colorToPlay!=thisPlayerColor)) startAutoRefresh();
-     if (colorToPlay!=thisPlayerColor) startAutoRefresh();
+	
+    if (colorToPlay!=thisPlayerColor) startAutoRefresh();
      
     if (!loginSuccess) loginSuccessStr="LOGIN FAILED - network down?"+"\n";
 	}
-	
 	
 	updateControls();
 	//showVars("refreshStartup");
@@ -656,8 +602,13 @@ public void stop()
 	feedbackArea.insertText(0, loginSuccessStr);
 	feedbackArea.insertText(0, loadFromStr);
 	feedbackArea.insertText(0, excessiveUsageStr);
-	 if (!maximized) minFeedbackText.setText(dragonAccess.message);
+	if (!maximized) minFeedbackText.setText(dragonAccess.message);
 	
+	System.out.println("startup refresh: currentMessage "+dragonAccess.currentMessage);
+	if (dragonAccess.currentMessage)
+	{	
+	  cuckooSound.play();
+	}
   }
   
   
@@ -788,11 +739,12 @@ private String getComments()
   
   void showVars(String call)
   {
-	System.out.println("call: "+call);
+	System.out.println("============ call: "+call);
 	System.out.println("lastSgfMoveNumber: "+lastSgfMoveNumber);
 	System.out.println("sgfMoves.size(): "+sgfMoves.size());
 	System.out.println("thisPlayerColor: "+thisPlayerColor);
 	System.out.println("colorToPlay: "+colorToPlay);
+	System.out.println("localMoves: "+localMoves);
 	System.out.println("reviewPosition: "+reviewPosition);
 	System.out.println("moveNumber: "+moveNumber);
 	System.out.println("consecutivePasses: "+consecutivePasses);
@@ -902,7 +854,11 @@ private void setupRightPane()
   rightPane = new VBox(); 
   rightPane.setPadding(new Insets(5,5,5,5)); // the border around the whole thing
   rightPane.setSpacing(4); // the spacing between rows
-    
+  
+  setupButtonBox();
+  setupButtonBox2();
+  setupInfoGroup();
+  
   rightPane.getChildren().add(buttonBox);
   rightPane.getChildren().add(buttonBox2);
   rightPane.getChildren().add(identBox);
@@ -924,9 +880,11 @@ private void setupSmallRightPane()
   vBox.setSpacing(4); // the spacing between rows
     
   vBox.getChildren().add(deleteLastMoveButton);
+  vBox.getChildren().add(reviewBackward_10_Button);
   vBox.getChildren().add(reviewBackwardButton);
   vBox.getChildren().add(refreshButton);
   vBox.getChildren().add(reviewForwardButton);
+  vBox.getChildren().add(reviewForward_10_Button);
   vBox.getChildren().add(commitButton);
   vBox.getChildren().add(minMaxButton);
   vBox.getChildren().add(pieceNumberButton);
@@ -1031,13 +989,15 @@ private GridPane getRightPane()
 	buttonBox.setSpacing(3);
  
 	buttonBox.getChildren().add(deleteLastMoveButton);
+	buttonBox.getChildren().add(reviewBackward_10_Button);
 	buttonBox.getChildren().add(reviewBackwardButton);
 	buttonBox.getChildren().add(refreshButton);
 	buttonBox.getChildren().add(reviewForwardButton);
+	buttonBox.getChildren().add(reviewForward_10_Button);
 	buttonBox.getChildren().add(commitButton);
 	
 	buttonBox.getChildren().add(minMaxButton);
-	buttonBox.getChildren().add(pieceNumberButton);
+	
 	//buttonBox.getChildren().add(getUserButton());
 	
 	//
@@ -1054,6 +1014,7 @@ private GridPane getRightPane()
 	buttonBox2.getChildren().add(labelsButton);
 	buttonBox2.getChildren().add(userButton);
 	buttonBox2.getChildren().add(fileButton);
+	buttonBox2.getChildren().add(pieceNumberButton);
   }
  
 
@@ -1425,8 +1386,8 @@ private GridPane getRightPane()
 	        	}
 	        	else
 	        	{
-	        	  setupButtonBox();
-	        	  setupInfoGroup();
+	        	  //setupButtonBox();
+	        	  //setupInfoGroup();
 	        	  setupRightPane();
 	        	  
 	        	  mainVBox.getChildren().remove(minSizeBottomBox);
@@ -1857,10 +1818,11 @@ void restoreMoveMap(int[][] savedMoveMap)
   private void setupReviewForwardButton() 
   {
     reviewForwardButton = new Button(">");
+    reviewForwardButton.setFont(Font.font("Serif", 12));
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
     {
       // review forward
-      reviewPosition++;
+      
       playNextStone();
      // System.out.println("reviewPosition: "+reviewPosition);
       updateControls();
@@ -1873,22 +1835,63 @@ void restoreMoveMap(int[][] savedMoveMap)
     reviewForwardButton.setTooltip(new Tooltip("Play Moves Forward"));
   }
   
+  private void setupReviewForward_10_Button() 
+  {
+    reviewForward_10_Button = new Button(">>");
+    reviewForward_10_Button.setFont(Font.font("Serif", 12));
+    EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
+    {
+      int maxForward=10;
+      if (reviewPosition>(-10))
+    	  maxForward=-reviewPosition; 
+      for(int i=0; i<maxForward; i++)
+      {
+        playNextStone();
+      }
+      // System.out.println("reviewPosition: "+reviewPosition);
+      updateControls();
+      /*
+     
+      */
+    }};
+    reviewForward_10_Button.setOnAction(bHandler2);
+    reviewForward_10_Button.setPrefHeight(28);
+    reviewForward_10_Button.setTooltip(new Tooltip("Play Moves Forward 10"));
+  }
+  
   private void setupReviewBackwardButton() 
   {
     reviewBackwardButton = new Button("<");
+    reviewBackwardButton.setFont(Font.font("Serif", 12));
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
     {
-      // review backward 
-      reviewPosition--;	
-      reviewForwardButton.setDisable(false);
       rewindLastStone();
-     
-     // System.out.println("reviewPosition: "+reviewPosition);
-    
+      updateControls();
     }};
     reviewBackwardButton.setOnAction(bHandler2);
     reviewBackwardButton.setTooltip(new Tooltip("Rewind Moves"));
     reviewBackwardButton.setPrefHeight(28);
+  }
+  
+  private void setupReviewBackward_10_Button() 
+  {
+    reviewBackward_10_Button = new Button("<<");
+    reviewBackward_10_Button.setFont(Font.font("Serif", 12));
+    EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
+    {
+      int maxMove=10;
+      if (moveNumber<10) maxMove=moveNumber;
+      
+      for(int i=0; i<maxMove; i++)
+      {
+        rewindLastStone();
+      }
+ 
+      updateControls();
+    }};
+    reviewBackward_10_Button.setOnAction(bHandler2);
+    reviewBackward_10_Button.setTooltip(new Tooltip("Rewind Moves 10"));
+    reviewBackward_10_Button.setPrefHeight(28);
   }
   
   void toggleLabels()
@@ -2470,7 +2473,9 @@ void markLastStone()
 
 void unmarkPreviousStone()
 {
-	  Move lastMove=moves.get(moves.size()-2);
+	  int moveSize=moves.size()-2;
+	  if (moveSize<0) return;
+	  Move lastMove=moves.get(moveSize);
 	  ObservableList visibleStoneList  = visibleMoves.getChildren();
 	  ListIterator it = visibleStoneList.listIterator(visibleStoneList.size());
 	  
@@ -2528,6 +2533,7 @@ void playNextStone()
    String moveLine="";
    Move move;
 	   
+   reviewPosition++;
    int counter=1;
    while(it.hasNext())
    {
@@ -2580,6 +2586,7 @@ void playNextStone()
 
   void rewindLastStone()  // NOT capture
   {
+	reviewPosition--;	
     removeLastStone();	
     moveNoVal.setText(""+moveNumber);
     if (reviewPosition<=0) deleteLastMoveButton.setDisable(true);
@@ -2962,7 +2969,7 @@ void playNextStone()
 	   stage.getIcons().add(smallerBlackStoneImage);
 	 }
 	 
-	 // showVars("updateControls()");
+	  //showVars("updateControls()");
 	 
 	 if (gameOver) { gameOverControls(); return; }
 	 
@@ -2986,18 +2993,25 @@ void playNextStone()
      {
        reviewForwardButton.setDisable(true);
        reviewBackwardButton.setDisable(true);
+       reviewForward_10_Button.setDisable(true);
+       reviewBackward_10_Button.setDisable(true);
      }
 	 
 	 if ((reviewPosition==0)&&(localMoves==0))
      {
        reviewForwardButton.setDisable(true);
        reviewBackwardButton.setDisable(false);
+       
+       reviewForward_10_Button.setDisable(true);
+       reviewBackward_10_Button.setDisable(false);
      }
 	 
 	 if (reviewPosition<0)
      {
        reviewForwardButton.setDisable(false);
        reviewBackwardButton.setDisable(false);
+       reviewBackward_10_Button.setDisable(false);
+       reviewForward_10_Button.setDisable(false);
      }
 		 
 	 if (lastSgfMove!=null)  // for first move, no handicap
