@@ -462,6 +462,7 @@ public void stop()
 	//boolean gameFound=false; 
 	Date now = new Date();
 	long elapsedMillis=0;
+	minFeedbackText.setFill(Color.BLACK);
 	
 	// check for rapid refresh calls because computer has been in sleep mode
 	if (lastTimedUpdate!=null)
@@ -528,11 +529,13 @@ public void stop()
 	  }
         */
     }
-      System.out.println("timed refresh: currentMessage "+dragonAccess.currentMessage);
+      //System.out.println("timed refresh: currentMessage "+dragonAccess.currentMessage);
       if (dragonAccess.currentMessage) 
       {  
     	  cuckooSound.play();
+    	  minFeedbackText.setFill(Color.RED);
       }
+      else minFeedbackText.setFill(Color.BLACK);
   }
     
     updateControls();  
@@ -550,7 +553,7 @@ public void stop()
   {
 	//boolean gameFound=false;
 	//long gameNo=0;
-	  System.out.println("startup refresh");
+	 // System.out.println("startup refresh");
 	int status=NOT_LOGGED_IN;
 	boolean loginSuccess=false;
 	boolean debug=true;
@@ -604,11 +607,13 @@ public void stop()
 	feedbackArea.insertText(0, excessiveUsageStr);
 	if (!maximized) minFeedbackText.setText(dragonAccess.message);
 	
-	System.out.println("startup refresh: currentMessage "+dragonAccess.currentMessage);
+	//System.out.println("startup refresh: currentMessage "+dragonAccess.currentMessage);
 	if (dragonAccess.currentMessage)
 	{	
 	  cuckooSound.play();
+	  minFeedbackText.setFill(Color.RED);
 	}
+	else minFeedbackText.setFill(Color.BLACK);
   }
   
   
