@@ -41,6 +41,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -1495,6 +1496,7 @@ private GridPane getRightPane()
 
   private void setupMouse(Group boardGroup) 
   {
+	
     boardGroup.setOnMouseClicked(new EventHandler<MouseEvent>() {public void handle(MouseEvent t) 
     { 
       // de-bounce	
@@ -1502,73 +1504,70 @@ private GridPane getRightPane()
       if (thisMouseClick<lastMouseClick+500) return;
       lastMouseClick=new Date().getTime();
       
-      int thisMoveColor=0;
-      if (lastMoveColor==BLACK) thisMoveColor=WHITE;  else thisMoveColor=BLACK;
-      Move move = new Move(t.getX(),t.getY(), thisMoveColor);
-      move.setMoveNumber(moveNumber);
-      if (moveMap[move.x][move.y]!=OPEN) 
-      { 
-      	StoneGroup stoneGroup = new StoneGroup(move.x, move.y, moveMap);
-        feedbackArea.insertText(0,"group liberties: "+stoneGroup.liberties+"\n");
-        markGroup(stoneGroup.groupPositions);
-  	    return;        
-      }
+      MouseButton mb= t.getButton();
       
-      if (gameOver) return;
-      
-      boolean testForIllegalMoves=true;
-
-      if (testForIllegalMoves)
+      if (mb==MouseButton.PRIMARY)
       {
-        BoardMap savedBoardMap = new BoardMap(moveMap);
+        int thisMoveColor=0;
+        if (lastMoveColor==BLACK) thisMoveColor=WHITE;  else thisMoveColor=BLACK;
+        Move move = new Move(t.getX(),t.getY(), thisMoveColor);
+        move.setMoveNumber(moveNumber);
+        if (moveMap[move.x][move.y]!=OPEN) 
+        { 
+      	  StoneGroup stoneGroup = new StoneGroup(move.x, move.y, moveMap);
+          feedbackArea.insertText(0,"group liberties: "+stoneGroup.liberties+"\n");
+          markGroup(stoneGroup.groupPositions);
+  	      return;        
+        }
       
-        moveMap[move.x][move.y]=move.color;	
-        boolean captures = checkLibertiesOfNeighbors(move.x, move.y, TRIAL);
+        if (gameOver) return;
+      
+        boolean testForIllegalMoves=true;
+
+        if (testForIllegalMoves)
+        {
+          BoardMap savedBoardMap = new BoardMap(moveMap);
+      
+          moveMap[move.x][move.y]=move.color;	
+          boolean captures = checkLibertiesOfNeighbors(move.x, move.y, TRIAL);
             
         //System.out.println("captures: "+captures);
-        if (captures==false)
-        {
-        	 StoneGroup stoneGroup = new StoneGroup(move.x, move.y, moveMap);         
-    	  if (stoneGroup.liberties==0) 
-    	  { 
-    		 // System.out.println("liberties 0");  
-    	    errorSound.play(); 
-    	    restoreMoveMap(savedBoardMap.get());
-    	    feedbackArea.insertText(0, "illegal move\n");
-    	    return;  // can't move here... no liberties and nothing captured.
-    	  }
-        }
-        else 
-        {  
-          if (checkForKo()) 
+          if (captures==false)
           {
-      	    errorSound.play(); 
-            restoreMoveMap(savedBoardMap.get());
-    	    feedbackArea.insertText(0, "ko. can't move here.\n");
-    	    return;  // can't move here... ko fight. 
+        	StoneGroup stoneGroup = new StoneGroup(move.x, move.y, moveMap);         
+    	    if (stoneGroup.liberties==0) 
+    	    { 
+    		  // System.out.println("liberties 0");  
+    	      errorSound.play(); 
+    	      restoreMoveMap(savedBoardMap.get());
+    	      feedbackArea.insertText(0, "illegal move\n");
+    	      return;  // can't move here... no liberties and nothing captured.
+    	    }
           }
-         // System.out.println("no ko");
-        }
-        restoreMoveMap(savedBoardMap.get());  // return moveMap to original state.
-        //System.out.println("");
-      }  // end of testing illegal moves
+          else 
+          {  
+            if (checkForKo()) 
+            {
+      	      errorSound.play(); 
+              restoreMoveMap(savedBoardMap.get());
+    	      feedbackArea.insertText(0, "ko. can't move here.\n");
+    	      return;  // can't move here... ko fight. 
+            }
+            // System.out.println("no ko");
+          }
+          restoreMoveMap(savedBoardMap.get());  // return moveMap to original state.
+          //System.out.println("");
+        }  // end of testing illegal moves
       
-      placeStone(move);
-	  localMoves++;
-	  stoneSound.play();
-	  markLocalMove();
-	  updateControls();
-	  /*
-	  if ((localMoves==1)&&(thisPlayerColor==move.color))
-	  enableCommit();
-	  reviewBackwardButton.setDisable(true);
-
-      deleteLastMoveButton.setDisable(false);
-      localMovesVal.setText(""+localMoves);  
-      */
+        placeStone(move);
+	    localMoves++;
+	    stoneSound.play();
+	    markLocalMove();
+	    updateControls();
+      }
+      
+      if (mb==MouseButton.SECONDARY) System.out.println("right click: "+Move.getSgfPosition(t.getX(),t.getY()));
     }
-
-	
     });
      
   }

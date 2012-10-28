@@ -75,9 +75,35 @@ public class Move
     return pos;
   }
   
+  private static String calcSgfPosition(int x, int y)
+  {
+    String pos = new String();
+    char xx = (char)(x+97); 
+    char yy = (char)(y+97);
+    pos=""+xx+""+yy;
+    return pos;
+  }
+  
   public String getSgfPosition()
   {
     return sgfPosition;
+  }
+  
+  public static String getSgfPosition(double sceneX, double sceneY)
+  {
+	  double xxx = sceneX+23;
+	    double yyy = sceneY+23;
+	    int x=0;
+	    int y=0;
+	  int xx = (int)Math.round(xxx/35)-1;
+	    int yy = (int)Math.round(yyy/35)-1;
+		  
+	    if ((xx>=0)&&(xx<20)&&(yy>=0)&&(yy<20))
+	    {
+		x=xx;
+		y=yy;
+	    }
+    return calcSgfPosition(x, y);
   }
   
   
