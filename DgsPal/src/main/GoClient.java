@@ -41,6 +41,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -105,6 +107,7 @@ public class GoClient extends Application
   Image board_ll_corner_image;
   Image board_lr_corner_image;
    
+  /*
   Image grid_ul_corner_image;
   Image grid_ur_corner_image;
   Image grid_ll_corner_image;
@@ -117,7 +120,8 @@ public class GoClient extends Application
   Image grid_hoshi_image;
  
   Image grid_cross_image;
-   
+   */
+  
   //ArrayList <String>moveLine = new ArrayList<>();
   ArrayList <Move>moves = new ArrayList<>();
   ArrayList <Move>sgfMoves = new ArrayList<>();
@@ -269,6 +273,7 @@ public class GoClient extends Application
   private static int SUBSET = 2;
   
   int pieceNumbering=OFF;
+  Group grid = new Group();
   
  
   
@@ -426,6 +431,23 @@ public class GoClient extends Application
     stage.setTitle("DGS Pal");
   
     stage.show();  
+    
+    /*
+    scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+        public void handle(KeyEvent ke) {
+            System.out.println("Key Pressed: " + ke.getCode().toString());
+        }
+    });
+   */
+    
+    scene.setOnKeyReleased(new EventHandler<KeyEvent>() {
+        public void handle(KeyEvent ke) 
+        {
+            if (ke.getCode()==KeyCode.F9) toggleScore();
+        }
+
+		
+    });
   
 	
     if (!"noset".equals(password)) refreshStartup();
@@ -438,6 +460,27 @@ public class GoClient extends Application
   } // end of start method
 
  
+  
+  private void toggleScore() 
+  {
+	 System.out.println("toggle score");
+	 int boardPos=0;
+	 BoardPosition bp;
+	 int piece=0;
+	 
+	 for(int x=0; x<19; x++)
+	 {
+	   for(int y=0; y<19; y++)
+	   {
+		 piece=moveMap[x][y];  
+		// System.out.println("Board Position: "+boardPos+" piece: "+moveMap[x][y]);
+		 bp = (BoardPosition)grid.getChildren().get(boardPos);
+		 if (piece==0) bp.toggleCircle();
+		 boardPos++;
+	   }
+	 }
+		
+  }
   
   private void setupMinSizeBottomBox() 
   {
@@ -979,7 +1022,7 @@ private GridPane getRightPane()
   {
 	  boardGroup = new Group();
 	  Group board = getBoardBackground();
-	  Group grid = getGrid();
+	  getGrid();
 	  visibleMoves = new Group();
 	  boardGroup.getChildren().add(board);
 	  boardGroup.getChildren().add(grid);
@@ -1566,7 +1609,19 @@ private GridPane getRightPane()
 	    updateControls();
       }
       
-      if (mb==MouseButton.SECONDARY) System.out.println("right click: "+Move.getSgfPosition(t.getX(),t.getY()));
+      if (mb==MouseButton.SECONDARY) 
+      {	  
+    	  String sgfPosition=Move.getSgfPosition(t.getX(),t.getY());
+    	  System.out.println("right click: "+sgfPosition);
+    	  
+    	  BoardPosition bp;
+    	  Iterator it = grid.getChildren().iterator();
+    	  while(it.hasNext())
+    	  {
+    		bp=(BoardPosition)it.next();
+    		if (bp.getSgfPosition().equals(sgfPosition)) bp.toggleCircle();
+    	  }
+      }
     }
     });
      
@@ -1959,6 +2014,7 @@ void restoreMoveMap(int[][] savedMoveMap)
 	
 	 board_fill_image = new Image(GoClient.class.getResourceAsStream(src+"/images/wood4.gif"));
 	 
+	 /*
 	 grid_ul_corner_image = new Image(GoClient.class.getResourceAsStream(src+"/images/ul.gif"));
 	 grid_ur_corner_image = new Image(GoClient.class.getResourceAsStream(src+"/images/ur.gif"));
 	 grid_ll_corner_image = new Image(GoClient.class.getResourceAsStream(src+"/images/dl.gif"));
@@ -1971,7 +2027,7 @@ void restoreMoveMap(int[][] savedMoveMap)
 	 
 	 grid_cross_image = new Image(GoClient.class.getResourceAsStream(src+"/images/e.gif"));
 	 grid_hoshi_image = new Image(GoClient.class.getResourceAsStream(src+"/images/h.gif"));
-	 
+	 */
 	    
 	    blackStoneImage = new Image(Stone.class.getResourceAsStream(src+"/images/b.gif")); 
 	    whiteStoneImage = new Image(Stone.class.getResourceAsStream(src+"/images/w.gif")); 
@@ -2082,6 +2138,7 @@ void restoreMoveMap(int[][] savedMoveMap)
    }
    */
    
+   /*
    private Group getGrid()
    {
 	 Group grid = new Group();
@@ -2134,6 +2191,193 @@ void restoreMoveMap(int[][] savedMoveMap)
 	// grid.getChildren().add(getImageView(black_stone_image,grid_origin.x+(3*35),grid_origin.y+40));
 	 
 	 return grid;
+   }
+   */
+   
+   /*
+   private Group getGrid()
+   {
+	 
+	 char sgfX = 'b';
+	 char sgfY = 'b';
+	 String sgfPosition;
+	 
+	 grid.getChildren().add(new BoardPosition("aa", BoardPosition.UL_CORNER, 0, 0));
+	 grid.getChildren().add(new BoardPosition("sa", BoardPosition.UR_CORNER, 630, 0));
+	 grid.getChildren().add(new BoardPosition("as", BoardPosition.LL_CORNER, 0, 630));
+	 grid.getChildren().add(new BoardPosition("ss", BoardPosition.LR_CORNER, 630, 630));
+	 
+	// grid.getChildren().add(getImageView(grid_ul_corner_image,  0,   0));
+	 //grid.getChildren().add(getImageView(grid_ur_corner_image,630,   0));
+	 //grid.getChildren().add(getImageView(grid_ll_corner_image,  0, 630));
+	 //grid.getChildren().add(getImageView(grid_lr_corner_image,630, 630));
+	 
+	 
+	 sgfX = 'b';
+	 for(int i=0; i<17; i++)
+	 {
+	   sgfPosition=sgfX+"a";
+	   //System.out.println("SgfPosition: "+sgfPosition);
+	   grid.getChildren().add(new BoardPosition(sgfPosition, BoardPosition.TOP, ((i+1)*35), 0));
+	   sgfX++;
+	   // grid.getChildren().add(getImageView(grid_top_image,((i+1)*35),0)); 
+	 }
+	 
+	 sgfX = 'b';
+	 for(int i=0; i<17; i++)
+	 {
+	   sgfPosition=sgfX+"s";
+	   grid.getChildren().add(new BoardPosition(sgfPosition, BoardPosition.BOTTOM, ((i+1)*35), 630)); 
+	   //grid.getChildren().add(getImageView(grid_bottom_image,((i+1)*35),630)); 
+	   sgfX++;
+	 }
+	 
+	 sgfY='b';
+	 for(int i=0; i<17; i++)
+	 {
+	   sgfPosition="a"+sgfY;
+	   grid.getChildren().add(new BoardPosition(sgfPosition, BoardPosition.LEFT, 0, ((i+1)*35)));
+	  // grid.getChildren().add(getImageView(grid_left_image,0,((i+1)*35))); 
+	   sgfY++;
+	 }
+	 
+	 sgfY='b';
+	 for(int i=0; i<17; i++)
+	 {
+	   sgfPosition="s"+sgfY;
+	   grid.getChildren().add(new BoardPosition(sgfPosition, BoardPosition.RIGHT, 630, ((i+1)*35))); 
+	   // grid.getChildren().add(getImageView(grid_right_image,630,((i+1)*35))); 
+	   sgfY++;
+	 }
+
+	 
+	 sgfY='b';
+	 sgfX = 'b';
+	 for(int j=0; j<17; j++)
+	 {
+	   for(int i=0; i<17; i++)
+	   {
+		 sgfPosition =""+sgfX+""+sgfY;  
+		 grid.getChildren().add(new BoardPosition(sgfPosition, BoardPosition.FILL, ((i+1)*35), ((j+1)*35)));
+		 sgfX++;
+	    // grid.getChildren().add(getImageView(grid_cross_image,((i+1)*35),((j+1)*35))); 
+	   }
+	   sgfX = 'b';
+	   sgfY++;
+	 }
+	 
+	 grid.getChildren().add(new BoardPosition("dd", BoardPosition.HOSHI, 105, 105));
+	 grid.getChildren().add(new BoardPosition("jd", BoardPosition.HOSHI, 315, 105));
+	 grid.getChildren().add(new BoardPosition("pd", BoardPosition.HOSHI, 525, 105));
+	 grid.getChildren().add(new BoardPosition("dj", BoardPosition.HOSHI, 105, 315));
+	 grid.getChildren().add(new BoardPosition("jj", BoardPosition.HOSHI, 315, 315));
+	 grid.getChildren().add(new BoardPosition("pj", BoardPosition.HOSHI, 525, 315));
+	 grid.getChildren().add(new BoardPosition("dp", BoardPosition.HOSHI, 105, 525));
+	 grid.getChildren().add(new BoardPosition("jp", BoardPosition.HOSHI, 315, 525));
+	 grid.getChildren().add(new BoardPosition("pp", BoardPosition.HOSHI, 525, 525));
+	 
+	 return grid;
+	
+   }
+   */
+   
+   private void getGrid()
+   {
+	 ArrayList<BoardPosition> gridArray = new ArrayList<BoardPosition>();
+	 char sgfX = 'b';
+	 char sgfY = 'b';
+	 String sgfPosition;
+	 
+	 gridArray.add(new BoardPosition("aa", BoardPosition.UL_CORNER, 0, 0));
+	 gridArray.add(new BoardPosition("sa", BoardPosition.UR_CORNER, 630, 0));
+	 gridArray.add(new BoardPosition("as", BoardPosition.LL_CORNER, 0, 630));
+	 gridArray.add(new BoardPosition("ss", BoardPosition.LR_CORNER, 630, 630));
+	 
+	 
+	 sgfX = 'b';
+	 for(int i=0; i<17; i++)
+	 {
+	   sgfPosition=sgfX+"a";
+	   gridArray.add(new BoardPosition(sgfPosition, BoardPosition.TOP, ((i+1)*35), 0));
+	   sgfX++;
+	 }
+	 
+	 sgfX = 'b';
+	 for(int i=0; i<17; i++)
+	 {
+	   sgfPosition=sgfX+"s";
+	   gridArray.add(new BoardPosition(sgfPosition, BoardPosition.BOTTOM, ((i+1)*35), 630)); 
+	   sgfX++;
+	 }
+	 
+	 sgfY='b';
+	 for(int i=0; i<17; i++)
+	 {
+	   sgfPosition="a"+sgfY;
+	   gridArray.add(new BoardPosition(sgfPosition, BoardPosition.LEFT, 0, ((i+1)*35)));
+	   sgfY++;
+	 }
+	 
+	 sgfY='b';
+	 for(int i=0; i<17; i++)
+	 {
+	   sgfPosition="s"+sgfY;
+	   gridArray.add(new BoardPosition(sgfPosition, BoardPosition.RIGHT, 630, ((i+1)*35))); 
+	   sgfY++;
+	 }
+	 
+	 sgfY='b';
+	 sgfX = 'b';
+	 for(int j=0; j<17; j++)
+	 {
+	   for(int i=0; i<17; i++)
+	   {
+		 sgfPosition =""+sgfX+""+sgfY;  
+		 gridArray.add(new BoardPosition(sgfPosition, BoardPosition.FILL, ((i+1)*35), ((j+1)*35)));
+		 sgfX++;
+	   }
+	   sgfX = 'b';
+	   sgfY++;
+	 }
+	 
+	 bubbleSort(gridArray);
+	 
+	 BoardPosition bp;
+	 Iterator it = gridArray.iterator();
+	 while(it.hasNext())
+	 {
+		bp=(BoardPosition)it.next(); 
+		grid.getChildren().add(bp);
+		//System.out.println("position: "+bp.getPosition()+" sgfPosition: "+bp.getSgfPosition());
+	 }
+	 
+	 
+   }
+   
+   
+   
+   static int bubbleSort(ArrayList <BoardPosition> list)
+   {
+     int count = 0;
+     for (int outer = 0; outer < list.size() - 1; outer++)
+     {
+       for (int inner = 0; inner < list.size()-outer-1; inner++)
+       {
+         if (list.get(inner).getPosition() > list.get(inner + 1).getPosition())
+         {
+           swapEm(list, inner);
+           count = count + 1;
+         }
+       }
+     }
+     return count;
+   }
+
+   static void swapEm(ArrayList<BoardPosition>list, int inner)
+   {
+         BoardPosition temp = list.get(inner);
+         list.set(inner, list.get(inner + 1));
+         list.set(inner + 1, temp);
    }
    
    private Group getBoardBackground()
