@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -74,8 +75,21 @@ public class Test  extends Application
 	    moveNumbersGroup.getChildren().add(label2);
 	    moveNumbersGroup.getChildren().add(label3);
 	    
-	    root.getChildren().add(stoneGroup);
-	    root.getChildren().add(moveNumbersGroup);
+	    Move move = new Move(30,30, 1);
+	    Stone stone = new Stone(move);
+	    
+	    Circle circle = new Circle();
+	    circle.setCenterX(move.sceneX+17);
+	    circle.setCenterY(move.sceneY+17);
+	    circle.setRadius(10.0f);
+	    //circle.setVisible(false);
+	    
+	    
+	    stone.getChildren().add(circle);
+	    root.getChildren().add(stone);
+	   // root.getChildren().add(circle);
+	   // root.getChildren().add(stoneGroup);
+	  //  root.getChildren().add(moveNumbersGroup);
 	    
 	    moveNumbersGroup.setVisible(false);
 	    
