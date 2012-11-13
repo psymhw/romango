@@ -42,7 +42,7 @@ public class InfoWindow
   {
 	 loadFonts();
 	 
-	 
+	 Stage infoWindow = new Stage();
 	 artist=massageArtist(artist);
 	 Text artistText = getRandomEffect(artist);
 	 
