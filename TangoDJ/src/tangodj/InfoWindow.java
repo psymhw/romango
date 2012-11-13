@@ -27,7 +27,7 @@ public class InfoWindow
   public ArrayList<Font> fontList = new ArrayList<Font>();
   public ArrayList<FontMeta> fontMeta = new ArrayList<FontMeta>();
   Group root = new Group();
-  String lastArtist;
+  Artist lastArtist;
   int lastFontNumber=0;
   boolean test=false;
  
@@ -43,10 +43,10 @@ public class InfoWindow
 	 loadFonts();
 	 
 	 Stage infoWindow = new Stage();
-	 artist=massageArtist(artist);
+	 Artist currentArtist = massageArtist(artist);
 	 Text artistText = getRandomEffect(artist);
 	 
-	 lastArtist=artist;
+	 lastArtist=currentArtist;
 	
 	 Text trackNameText = new Text(title);
 	  
@@ -87,7 +87,8 @@ public class InfoWindow
   {
 	  int effectChoice=random.nextInt(1);
 	  int fontChoice=0;
-	  if (lastArtist.equals(artist))
+	  Artist currentArtist = massageArtist(artist);
+	  if (lastArtist.lastName.equals(currentArtist.lastName))
 	     fontChoice=lastFontNumber;
 	  else
 		  fontChoice= random.nextInt(10);
@@ -100,7 +101,7 @@ public class InfoWindow
   	Text artistText;
   	Text titleText = new Text(title);
   	
-  	artist=massageArtist(artist);
+  	Artist currentArtist=massageArtist(artist);
   	  	  	
   	  if (effectIndex==1)  artistText = getDropShadow(artist , fontList.get(fontIndex));
   	  else  artistText =  getDistantLight(artist, fontList.get(fontIndex));
@@ -110,7 +111,7 @@ public class InfoWindow
      GridPane.setHalignment(artistText, HPos.CENTER);
      GridPane.setHalignment(titleText, HPos.CENTER);
      
-  	 lastArtist=artist;
+  	 lastArtist=currentArtist;
   	 lastFontNumber=fontIndex;
   	 
      gp.add(artistText, 0, 0);
@@ -204,18 +205,18 @@ public class InfoWindow
 	        return t;
 	}
 
-	public String massageArtist(String inStr)
+	public Artist massageArtist(String inStr)
 	{
-	  if (inStr.toLowerCase().contains("biagi")) return "Rudolfo Biagi";
-	  if (inStr.toLowerCase().contains("calo"))        return "Miguel Calo";
-	  if (inStr.toLowerCase().contains("canaro"))      return "Francisco Canaro";
-	  if (inStr.toLowerCase().contains("rodriguez"))   return "Enrique Rodriguez";
-	  if (inStr.toLowerCase().contains("d'arienzo"))   return "Juan D'Arienzo";
-	  if (inStr.toLowerCase().contains("de angelise")) return "Alfredo De Angelise";
-	  if (inStr.toLowerCase().contains("di sarli"))    return "Caslos Di Sarli";
+	  if (inStr.toLowerCase().contains("biagi"))       return new Artist("Rudolfo", "Biagi");
+	  if (inStr.toLowerCase().contains("calo"))        return new Artist("Miguel", "Calo");
+	  if (inStr.toLowerCase().contains("canaro"))      return new Artist("Francisco", "Canaro");
+	  if (inStr.toLowerCase().contains("rodriguez"))   return new Artist("Enrique", "Rodriguez");
+	  if (inStr.toLowerCase().contains("d'arienzo"))   return new Artist("Juan", "D'Arienzo");
+	  if (inStr.toLowerCase().contains("de angelise")) return new Artist("Alfredo", "De Angelise");
+	  if (inStr.toLowerCase().contains("di sarli"))    return new Artist("Caslos", "Di Sarli");
 	  
 	  
-	  return inStr;
+	  return new Artist("", inStr);
 	}
 	
 }

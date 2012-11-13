@@ -120,7 +120,7 @@ public class ArtistTest extends Application
 	    
 	 private Button getArtistButton(int artistNumber)
 	 {
-		final String artistName= infoWindow.massageArtist(testArtists.get(artistNumber));
+		final String artistName= infoWindow.massageArtist(testArtists.get(artistNumber)).lastName;
 		Button b = new Button(artistName);
 		b.setStyle("-fx-font-size:28;");
 		final int an = artistNumber;
@@ -137,7 +137,7 @@ public class ArtistTest extends Application
 	    
 	 void update()
 	 {
-       String massagedArtist=infoWindow.massageArtist(testArtists.get(testArtistIndex));
+       String massagedArtist=infoWindow.massageArtist(testArtists.get(testArtistIndex)).lastName;
        infoWindow.update(massagedArtist, "some title)", testFontIndex, testEffectIndex);
 	 }
 	 
