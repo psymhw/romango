@@ -31,6 +31,8 @@ public class InfoWindow
   Artist lastArtist;
   int lastFontNumber=0;
   boolean test=false;
+  final int MAX_FONT_WIDTH=1100;
+  final int MAX_FONT_HEIGHT=200;
  
   
   public InfoWindow(String artist, String title, boolean test)
@@ -133,7 +135,36 @@ public class InfoWindow
   	else return getDistantLight(txt, fontList.get(random.nextInt(10)));
   }
   
-  private void loadFonts()
+  private Font getFont(String inStr, FontMeta fontMeta)
+  {
+	Font trialFont;  
+	Text trialText;
+	Bounds bounds;
+	
+	int numberOfChars=inStr.length();
+	int fontSize=200;
+	if (numberOfChars>8) fontSize=160;
+	if (numberOfChars>12) fontSize=140;
+	if (numberOfChars>16) fontSize=120;
+	
+	trialFont = Font.font(fontMeta.name, fontMeta.style, fontSize);
+	
+	trialText = new Text(inStr);
+	trialText.setFont(trialFont);
+	bounds=trialText.getBoundsInLocal();
+	
+	
+	return trialFont;
+	
+  }
+  
+  private Font getSizedFont(String inStr, FontMeta fontMeta, int fontSize) 
+  {
+	Font aFont = Font.font(fontMeta.name, fontMeta.style, fontSize);
+	return null;
+}
+
+private void loadFonts()
   {
     Font.loadFont(Test.class.getResource("/resources/fonts/blackrose.ttf").toExternalForm(), 10  );
 	Font.loadFont(Test.class.getResource("/resources/fonts/Carousel.ttf").toExternalForm(), 10  );
