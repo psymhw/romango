@@ -3,6 +3,7 @@ package tangodj;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javafx.geometry.Bounds;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
@@ -40,60 +41,57 @@ public class InfoWindow
   
   public InfoWindow(String artist, String title)
   {
-	 loadFonts();
+    loadFonts();
 	 
-	 Stage infoWindow = new Stage();
-	 Artist currentArtist = massageArtist(artist);
-	 Text artistText = getRandomEffect(artist);
+	Stage infoWindow = new Stage();
+	Artist currentArtist = massageArtist(artist);
+	Text artistText = getRandomEffect(artist);
 	 
-	 lastArtist=currentArtist;
+	lastArtist=currentArtist;
 	
-	 Text trackNameText = new Text(title);
-	  
+	Text trackNameText = new Text(title);
     	
-    	// TODO
-    	// infoWindow.initStyle(StageStyle.TRANSPARENT);
+    // TODO
+    // infoWindow.initStyle(StageStyle.TRANSPARENT);
     	
-        infoWindow.initModality(Modality.NONE);
+    infoWindow.initModality(Modality.NONE);
         
-        GridPane gp = getGridPane();
-        gp.add(artistText, 0, 0);
-        gp.add(trackNameText, 0, 1);
+    GridPane gp = getGridPane();
+    gp.add(artistText, 0, 0);
+    gp.add(trackNameText, 0, 1);
         
+    final Rectangle r = new Rectangle(1200, 600);
+    r.setFill(Color.DARKGRAY);
         
-        final Rectangle r = new Rectangle(1200, 600);
-        r.setFill(Color.DARKGRAY);
-        
-        root.getChildren().add(r);
-        root.getChildren().add(gp);
-        Scene scene = new Scene(root, 1200, 600);
-        infoWindow.setScene(scene);
-        infoWindow.show();
+    root.getChildren().add(r);
+    root.getChildren().add(gp);
+    Scene scene = new Scene(root, 1200, 600);
+    infoWindow.setScene(scene);
+    infoWindow.show();
   }
   
   private GridPane getGridPane()
   {
-	  GridPane gridPane;  
-	  gridPane = new GridPane(); 
-      gridPane.setPadding(new Insets(10, 10, 10, 10));
-      gridPane.setVgap(2);
-      gridPane.setHgap(5);
-      
-      gridPane.setStyle("-fx-background-color: darkgrey;");
-      return gridPane;
+    GridPane gridPane;  
+	gridPane = new GridPane(); 
+    gridPane.setPadding(new Insets(10, 10, 10, 10));
+    gridPane.setVgap(2);
+    gridPane.setHgap(5);
+    gridPane.setStyle("-fx-background-color: darkgrey;");
+    return gridPane;
   }
   
   public void update(String artist, String title)
   {
-	  int effectChoice=random.nextInt(1);
-	  int fontChoice=0;
-	  Artist currentArtist = massageArtist(artist);
-	  if (lastArtist.lastName.equals(currentArtist.lastName))
-	     fontChoice=lastFontNumber;
-	  else
-		  fontChoice= random.nextInt(10);
+	int effectChoice=random.nextInt(1);
+	int fontChoice=0;
+	Artist currentArtist = massageArtist(artist);
+	if (lastArtist.lastName.equals(currentArtist.lastName))
+	  fontChoice=lastFontNumber;
+	else
+	  fontChoice= random.nextInt(10);
 	  
-	 update(artist, title, fontChoice, effectChoice); 
+	update(artist, title, fontChoice, effectChoice); 
   }
   
   public void update(String artist, String title, int fontIndex, int effectIndex)
@@ -101,11 +99,18 @@ public class InfoWindow
   	Text artistText;
   	Text titleText = new Text(title);
   	
+  	
   	Artist currentArtist=massageArtist(artist);
   	  	  	
-  	  if (effectIndex==1)  artistText = getDropShadow(artist , fontList.get(fontIndex));
-  	  else  artistText =  getDistantLight(artist, fontList.get(fontIndex));
-  	
+  	 // if (effectIndex==1)  artistText = getDropShadow(artist , fontList.get(fontIndex));
+  	//  else  artistText =  getDistantLight(artist, fontList.get(fontIndex));
+  	  
+  	  artistText =  getDistantLight(artist, fontList.get(fontIndex));
+  	  Bounds bounds = artistText.getBoundsInLocal();
+  	  
+  	  System.out.println("bounds- width: "+bounds.getWidth()+" - height: "+bounds.getHeight());
+  	  
+  	  
   	 GridPane gp = getGridPane();
   	 
      GridPane.setHalignment(artistText, HPos.CENTER);
@@ -130,42 +135,42 @@ public class InfoWindow
   
   private void loadFonts()
   {
-      Font.loadFont(Test.class.getResource("/resources/fonts/blackrose.ttf").toExternalForm(), 10  );
-	    Font.loadFont(Test.class.getResource("/resources/fonts/Carousel.ttf").toExternalForm(), 10  );
-	    Font.loadFont(Test.class.getResource("/resources/fonts/Anagram.ttf").toExternalForm(), 10  );
-	    Font.loadFont(Test.class.getResource("/resources/fonts/blackjack.ttf").toExternalForm(), 10  );
-	    Font.loadFont(Test.class.getResource("/resources/fonts/Carrington.ttf").toExternalForm(), 10  );
-	    Font.loadFont(Test.class.getResource("/resources/fonts/DEFTONE.ttf").toExternalForm(), 10  );
-	    Font.loadFont(Test.class.getResource("/resources/fonts/EastMarket.ttf").toExternalForm(), 10  );
-	    Font.loadFont(Test.class.getResource("/resources/fonts/england.ttf").toExternalForm(), 10  );
-	    Font.loadFont(Test.class.getResource("/resources/fonts/FFF_Tusj.ttf").toExternalForm(), 10  );
-	    Font.loadFont(Test.class.getResource("/resources/fonts/PermanentMarker.ttf").toExternalForm(), 10  );
-	    Font.loadFont(Test.class.getResource("/resources/fonts/SEASRN.ttf").toExternalForm(), 10  );
+    Font.loadFont(Test.class.getResource("/resources/fonts/blackrose.ttf").toExternalForm(), 10  );
+	Font.loadFont(Test.class.getResource("/resources/fonts/Carousel.ttf").toExternalForm(), 10  );
+	Font.loadFont(Test.class.getResource("/resources/fonts/Anagram.ttf").toExternalForm(), 10  );
+	Font.loadFont(Test.class.getResource("/resources/fonts/blackjack.ttf").toExternalForm(), 10  );
+	Font.loadFont(Test.class.getResource("/resources/fonts/Carrington.ttf").toExternalForm(), 10  );
+	Font.loadFont(Test.class.getResource("/resources/fonts/DEFTONE.ttf").toExternalForm(), 10  );
+	Font.loadFont(Test.class.getResource("/resources/fonts/EastMarket.ttf").toExternalForm(), 10  );
+	Font.loadFont(Test.class.getResource("/resources/fonts/england.ttf").toExternalForm(), 10  );
+	Font.loadFont(Test.class.getResource("/resources/fonts/FFF_Tusj.ttf").toExternalForm(), 10  );
+	Font.loadFont(Test.class.getResource("/resources/fonts/PermanentMarker.ttf").toExternalForm(), 10  );
+	Font.loadFont(Test.class.getResource("/resources/fonts/SEASRN.ttf").toExternalForm(), 10  );
 
-	    int fontSize=160;
-	    fontList.add(Font.font("Black Rose", FontWeight.BOLD, fontSize));
-	    fontList.add(Font.font("Carousel", FontWeight.BOLD, fontSize));
-	    fontList.add(Font.font("Anagram", FontWeight.NORMAL, fontSize-20));
-	    fontList.add(Font.font("BlackJack", FontWeight.BOLD, fontSize));
-	    fontList.add(Font.font("Carrington", FontWeight.BOLD, fontSize));
-	    fontList.add(Font.font("Deftone Stylus", FontWeight.BOLD, fontSize));
-	    fontList.add(Font.font("EastMarket", FontWeight.BOLD, fontSize));
-	    fontList.add(Font.font("England Hand DB", FontWeight.BOLD, fontSize));
-	    fontList.add(Font.font("FFF Tusj", FontWeight.BOLD, fontSize-10));
-	    fontList.add(Font.font("Permanent Marker", FontWeight.NORMAL, fontSize));
-	    fontList.add(Font.font("SeasideResortNF", FontWeight.NORMAL, fontSize));
+	int fontSize=160;
+	fontList.add(Font.font("Black Rose", FontWeight.BOLD, fontSize));
+	fontList.add(Font.font("Carousel", FontWeight.BOLD, fontSize));
+	fontList.add(Font.font("Anagram", FontWeight.NORMAL, fontSize-20));
+	fontList.add(Font.font("BlackJack", FontWeight.BOLD, fontSize));
+	fontList.add(Font.font("Carrington", FontWeight.BOLD, fontSize));
+	fontList.add(Font.font("Deftone Stylus", FontWeight.BOLD, fontSize));
+	fontList.add(Font.font("EastMarket", FontWeight.BOLD, fontSize));
+	fontList.add(Font.font("England Hand DB", FontWeight.BOLD, fontSize));
+	fontList.add(Font.font("FFF Tusj", FontWeight.BOLD, fontSize-10));
+	fontList.add(Font.font("Permanent Marker", FontWeight.NORMAL, fontSize));
+	fontList.add(Font.font("SeasideResortNF", FontWeight.NORMAL, fontSize));
 	    
-	    fontMeta.add(new FontMeta("Black Rose", FontWeight.BOLD));
-	    fontMeta.add(new FontMeta("Carousel", FontWeight.BOLD));
-	    fontMeta.add(new FontMeta("Anagram", FontWeight.NORMAL));
-	    fontMeta.add(new FontMeta("BlackJack", FontWeight.BOLD));
-	    fontMeta.add(new FontMeta("Carrington", FontWeight.BOLD));
-	    fontMeta.add(new FontMeta("Deftone Stylus", FontWeight.BOLD));
-	    fontMeta.add(new FontMeta("EastMarket", FontWeight.BOLD));
-	    fontMeta.add(new FontMeta("England Hand DB", FontWeight.BOLD));
-	    fontMeta.add(new FontMeta("FFF Tusj", FontWeight.BOLD));
-	    fontMeta.add(new FontMeta("Permanent Marker", FontWeight.NORMAL));
-	    fontMeta.add(new FontMeta("SeasideResortNF", FontWeight.NORMAL));
+	fontMeta.add(new FontMeta("Black Rose", FontWeight.BOLD));
+	fontMeta.add(new FontMeta("Carousel", FontWeight.BOLD));
+	fontMeta.add(new FontMeta("Anagram", FontWeight.NORMAL));
+	fontMeta.add(new FontMeta("BlackJack", FontWeight.BOLD));
+	fontMeta.add(new FontMeta("Carrington", FontWeight.BOLD));
+	fontMeta.add(new FontMeta("Deftone Stylus", FontWeight.BOLD));
+	fontMeta.add(new FontMeta("EastMarket", FontWeight.BOLD));
+	fontMeta.add(new FontMeta("England Hand DB", FontWeight.BOLD));
+	fontMeta.add(new FontMeta("FFF Tusj", FontWeight.BOLD));
+	fontMeta.add(new FontMeta("Permanent Marker", FontWeight.NORMAL));
+	fontMeta.add(new FontMeta("SeasideResortNF", FontWeight.NORMAL));
   }
   
 	private Text getDropShadow(String str, Font f)
@@ -185,24 +190,24 @@ public class InfoWindow
 	
 	private Text getDistantLight(String str, Font f)
 	{
-		 Light.Distant light = new Light.Distant();
-	        light.setAzimuth(-135.0f);
-	        light.setElevation(30.0f);
+	  Light.Distant light = new Light.Distant();
+	  light.setAzimuth(-135.0f);
+	  light.setElevation(30.0f);
 
-	        Lighting l = new Lighting();
-	        l.setLight(light);
-	        l.setSurfaceScale(5.0f);
+	  Lighting l = new Lighting();
+	  l.setLight(light);
+	  l.setSurfaceScale(5.0f);
 
-	        final Text t = new Text();
-	        t.setText(str);
-	        t.setFill(Color.RED);
-	        t.setFont(f);
+	  final Text t = new Text();
+	  t.setText(str);
+	  t.setFill(Color.RED);
+	  t.setFont(f);
 	      
-	      //  t.setTextOrigin(VPos.TOP);
+	  //  t.setTextOrigin(VPos.TOP);
 
-	        t.setEffect(l);
+	  t.setEffect(l);
 	
-	        return t;
+	  return t;
 	}
 
 	public Artist massageArtist(String inStr)
