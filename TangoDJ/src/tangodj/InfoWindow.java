@@ -32,7 +32,7 @@ public class InfoWindow
   int lastFontNumber=0;
   boolean test=false;
   final int MAX_FONT_WIDTH=1100;
-  final int MAX_FONT_HEIGHT=200;
+  final int MAX_FONT_HEIGHT=500;
  
   
   public InfoWindow(String artist, String title, boolean test)
@@ -107,11 +107,10 @@ public class InfoWindow
   	 // if (effectIndex==1)  artistText = getDropShadow(artist , fontList.get(fontIndex));
   	//  else  artistText =  getDistantLight(artist, fontList.get(fontIndex));
   	  
+  	
   	  artistText =  getDistantLight(artist, fontList.get(fontIndex));
-  	  Bounds bounds = artistText.getBoundsInLocal();
-  	  
-  	  System.out.println("bounds- width: "+bounds.getWidth()+" - height: "+bounds.getHeight());
-  	  
+
+  	  getFont(currentArtist.lastName, fontMeta.get(fontIndex));
   	  
   	 GridPane gp = getGridPane();
   	 
@@ -152,6 +151,13 @@ public class InfoWindow
 	trialText = new Text(inStr);
 	trialText.setFont(trialFont);
 	bounds=trialText.getBoundsInLocal();
+	
+	System.out.println("getFont() - str size: "+numberOfChars
+			+" fontSize: "+fontSize
+			+" width: "+(int)bounds.getWidth()
+			+" height: "+(int)bounds.getHeight()
+			);
+	
 	
 	
 	return trialFont;
