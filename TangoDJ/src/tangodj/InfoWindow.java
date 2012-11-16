@@ -24,7 +24,9 @@ import test.Test;
 
 public class InfoWindow 
 {
-  public ArrayList<FontMeta> fontMeta = new ArrayList<FontMeta>();
+//  public ArrayList<FontMeta> fontMeta = new ArrayList<FontMeta>();
+
+  boolean fontsLoaded=false;
   Group root = new Group();
   
   public InfoWindow(String artist, String title, boolean test)
@@ -66,11 +68,12 @@ public class InfoWindow
   
   public void update(String artist, String title)
   {
-  	Artist currentArtist=massageArtist(artist);
+  	 Artist currentArtist=Artist.getArtist(artist);
+  	 SongInfo songInfo = new SongInfo(title);
   	   	  
   	 Text artistLastNameText =  currentArtist.getLastNameText();
   	 Text artistFirstNameText =  currentArtist.getFirstNameText();
-   	 Text titleText = Artist.getDistantLight(title, currentArtist.firstNameFont);
+   	 Text titleText = songInfo.getTitleText();
   	  
   	 GridPane gp = getGridPane();
   	 gp.setAlignment(Pos.CENTER);
@@ -139,26 +142,15 @@ public class InfoWindow
 
 private void loadFonts()
   {
-   
+	if (fontsLoaded) return;
 	Font.loadFont(Test.class.getResource("/resources/fonts/Carousel.ttf").toExternalForm(), 10  );
 	Font.loadFont(Test.class.getResource("/resources/fonts/Anagram.ttf").toExternalForm(), 10  );
-	
 	Font.loadFont(Test.class.getResource("/resources/fonts/Carrington.ttf").toExternalForm(), 10  );
 	Font.loadFont(Test.class.getResource("/resources/fonts/DEFTONE.ttf").toExternalForm(), 10  );
 	Font.loadFont(Test.class.getResource("/resources/fonts/EastMarket.ttf").toExternalForm(), 10  );
 	Font.loadFont(Test.class.getResource("/resources/fonts/england.ttf").toExternalForm(), 10  );
 	Font.loadFont(Test.class.getResource("/resources/fonts/FFF_Tusj.ttf").toExternalForm(), 10  );
-	
-
-		
-	fontMeta.add(new FontMeta("Carousel", FontWeight.BOLD));
-	fontMeta.add(new FontMeta("Anagram", FontWeight.NORMAL));
-	fontMeta.add(new FontMeta("Carrington", FontWeight.BOLD));
-	fontMeta.add(new FontMeta("Deftone Stylus", FontWeight.BOLD));
-	fontMeta.add(new FontMeta("EastMarket", FontWeight.BOLD));
-	fontMeta.add(new FontMeta("England Hand DB", FontWeight.BOLD));
-	fontMeta.add(new FontMeta("FFF Tusj", FontWeight.BOLD));
-	
+	fontsLoaded=true;
   }
 
 /*
@@ -180,18 +172,8 @@ private void loadFonts()
 	
 	*/
 
-	public Artist massageArtist(String inStr)
-	{
-	  if (inStr.toLowerCase().contains("biagi"))       return new Artist("Rudolfo", "Biagi", new FontMeta("Carousel", FontWeight.BOLD), 300);
-	  if (inStr.toLowerCase().contains("calo"))        return new Artist("Miguel", "Calo", new FontMeta("Anagram", FontWeight.NORMAL), 300);
-	  if (inStr.toLowerCase().contains("canaro"))      return new Artist("Francisco", "Canaro", new FontMeta("Carrington", FontWeight.BOLD), 300);
-	  if (inStr.toLowerCase().contains("rodriguez"))   return new Artist("Enrique", "Rodriguez", new FontMeta("Deftone Stylus", FontWeight.BOLD), 300);
-	  if (inStr.toLowerCase().contains("d'arienzo"))   return new Artist("Juan", "D'Arienzo", new FontMeta("EastMarket", FontWeight.BOLD), 250);
-	  if (inStr.toLowerCase().contains("de angelise")) return new Artist("Alfredo", "De Angelise", new FontMeta("England Hand DB", FontWeight.BOLD), 250);
-	  if (inStr.toLowerCase().contains("di sarli"))    return new Artist("Carlos", "Di Sarli", new FontMeta("FFF Tusj", FontWeight.BOLD), 300);
-	  
-	  
-	  return new Artist("", inStr, new FontMeta("Carousel", FontWeight.BOLD), 300);
-	}
+
+
+	
 	
 }
