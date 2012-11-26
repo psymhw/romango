@@ -52,7 +52,7 @@
       <div style="position: relative; left: 1px; top: 1px; ">
         <img name="backgorund" src="image/background.png" id="background" border="0" />
 	  </div>
-	  <!-- large hidden images -->
+	  <!-- large hidden images 
    <div style="position: absolute; left: 175px; top: 175px; ">
     <img id='cowboy_large' src='image/cowboy_large.png' border='0'/>
    </div>
@@ -84,7 +84,7 @@
    <div style="position: absolute; left: 175px; top: 175px; ">
 	<img id='women_dance_large' src='image/women_dance_large.png' border='0'/>
   </div>
-  
+  -->
 	  
 	   <div style="position: absolute; left: 292px; top: 10px; title='Cowboy Boots'">
 	    <a href='cowboy.html'><img id='cowboy_small' src='image/cowboy_small.png' border='0/'></a>
@@ -115,10 +115,12 @@
 	  </div>
 	  
 	   <div style="position: absolute; left: 95px; bottom: 95px; title='Design'">
-	    <img id='women_dance_small' src='image/women_dance_small.png' border='0'/>
+	    <a href='womens_dance.html'><img id='women_dance_small' src='image/women_dance_small.png' border='0'/></a>
 	  </div>
 	 
+	 <!-- 
 	  <div class="text_box" id="center_tip">&nbsp;&nbsp;Western Boots&nbsp;&nbsp;</div>
+	   -->
  
   </div>
   
@@ -133,6 +135,7 @@
 		  <li>Able to fit feet that are long, short, wide, narrow etc. </li>
 		  <li>Can build to accommodate orthopedic inserts</li>
 		  <li>Pricing:  dance shoes & Chelsea boots: $600, men's dress shoes: $800, cowboy & womens boots: $1,200. </li>
+		  <li>Exotic leathers (alligator, python, crocadile, ostrich) available at additional cost. </li>
         </ul>
 		</td>
 		<td width="250px">
@@ -176,6 +179,7 @@
   </div>
 </div>
   
+  <!--  
   <script>
 	 var $center_tip = $('#center_tip');
 	 var $cowboy_small = $('#cowboy_small');
@@ -294,7 +298,7 @@
 		 $center_tip.fadeOut('fast'); 
 		  });	 
     </script>
-	
+	-->
 	
 </body>
 <html>
