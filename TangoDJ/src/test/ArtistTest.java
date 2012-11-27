@@ -2,6 +2,7 @@ package test;
 
 import java.util.ArrayList;
 
+import tangodj.FontMeta;
 import tangodj.InfoWindow;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -43,49 +44,23 @@ public class ArtistTest extends Application
 		 testArtists.add("d'arienzo");
 		 testArtists.add("de angelise");
 		 testArtists.add("di sarli");
-		 				 
-		
-		 
 		 
 		 GridPane gp = new GridPane();
 		 gp.setHgap(3);
 		    gp.setVgap(3);
 		    gp.setPadding(new Insets(10));
 		 infoWindow = new InfoWindow("Hello World", "Some Title", true);
-		 		 		 
-		 for(int i=0; i<infoWindow.fontList.size(); i++)
+		/* 		 		 
+		 for(int i=0; i<infoWindow.fontMeta.size(); i++)
 		 {
 		   gp.add(getFontButton(i), 0, i);
 		 }
-		 
+		 */
 		 for(int j=0; j<testArtists.size(); j++)
 		 {
 		   gp.add(getArtistButton(j), 1, j);
 		 }
 		 
-		 Button effectButton1 = new Button("Drop Shadow");
-		 effectButton1.setStyle("-fx-font-size:28;");
-		 effectButton1.setOnAction(new EventHandler<ActionEvent>() {
-		      @Override
-		      public void handle(ActionEvent event) {
-		        testEffectIndex=1;
-		        update();
-		      }
-		    });
-		 
-		 Button effectButton2 = new Button("Distant Light");
-		 effectButton2.setStyle("-fx-font-size:28;");
-		 effectButton2.setOnAction(new EventHandler<ActionEvent>() {
-		      @Override
-		      public void handle(ActionEvent event) {
-		        testEffectIndex=0;
-		        update();
-		      }
-		    });
-		 
-		 gp.add(effectButton1, 2, 0);
-		 gp.add(effectButton2, 2, 1);
-		
 		 
 		 root.getChildren().add(gp);
 		
@@ -96,9 +71,12 @@ public class ArtistTest extends Application
 			
 	}
 	
+	/*
 	 private Button getFontButton(int fontNumber)
 	 {
-		Font f = infoWindow.fontList.get(fontNumber);
+		 FontMeta fm = infoWindow.fontMeta.get(fontNumber);
+		Font f = Font.font(fm.name, fm.style, 70);
+		
 		
 		final String fontName= f.getName();
 		final String fontFamily=f.getFamily();
@@ -117,10 +95,11 @@ public class ArtistTest extends Application
 		
 		return b;
 	 }
-	    
+
+*/
 	 private Button getArtistButton(int artistNumber)
 	 {
-		final String artistName= infoWindow.massageArtist(testArtists.get(artistNumber)).lastName;
+		final String artistName= testArtists.get(artistNumber);
 		Button b = new Button(artistName);
 		b.setStyle("-fx-font-size:28;");
 		final int an = artistNumber;
@@ -128,17 +107,16 @@ public class ArtistTest extends Application
 		      @Override
 		      public void handle(ActionEvent event) {
 		        testArtistIndex=an;
-		        update();
+		        update(an);
 		      }
 		    });
 		
 		return b;
 	 }
 	    
-	 void update()
+	 void update(int artistNumber)
 	 {
-       String massagedArtist=infoWindow.massageArtist(testArtists.get(testArtistIndex)).lastName;
-       infoWindow.update(massagedArtist, "some title)", testFontIndex, testEffectIndex);
+        infoWindow.update(testArtists.get(artistNumber), "some title");
 	 }
 	 
 
