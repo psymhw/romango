@@ -1,22 +1,16 @@
 package tangodj;
 
-import java.util.ArrayList;
-import java.util.Random;
-
-import javafx.geometry.Bounds;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Light;
-import javafx.scene.effect.Lighting;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -28,6 +22,7 @@ public class InfoWindow
 
   boolean fontsLoaded=false;
   Group root = new Group();
+  ImageView curtain;
   
   public InfoWindow(String artist, String title, boolean test)
   {
@@ -41,11 +36,14 @@ public class InfoWindow
 	Stage infoWindow = new Stage();
     infoWindow.initModality(Modality.NONE);
     
+    Image curtainImage  = new Image(InfoWindow.class.getResourceAsStream("/resources/images/ebabgdag.jpg"));
+    curtain = new ImageView(curtainImage);
     
     Rectangle r = new Rectangle(1200,800);
     r.setFill(Color.DARKGRAY);
     
     root.getChildren().add(r);
+    
     update(artist, title);
     
     Scene scene = new Scene(root, 1200, 800);
@@ -60,7 +58,7 @@ public class InfoWindow
     gridPane.setPadding(new Insets(10, 10, 10, 10));
     gridPane.setVgap(2);
     gridPane.setHgap(5);
-    gridPane.setStyle("-fx-background-color: darkgrey;");
+   // gridPane.setStyle("-fx-background-color: darkgrey;");
     return gridPane;
   }
   
@@ -88,7 +86,9 @@ public class InfoWindow
      GridPane.setHalignment(titleText, HPos.CENTER);
      
      
-  	if (root.getChildren().size()>1)  root.getChildren().remove(1);
+  	while (root.getChildren().size()>1) { root.getChildren().remove(1); }
+  	
+  	root.getChildren().add(curtain);
   	root.getChildren().add(gp);
   }
   
