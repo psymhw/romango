@@ -23,6 +23,7 @@ public class InfoWindow
   boolean fontsLoaded=false;
   Group root = new Group();
   ImageView curtain;
+  ImageView border1;
   
   public InfoWindow(String artist, String title, boolean test)
   {
@@ -37,7 +38,9 @@ public class InfoWindow
     infoWindow.initModality(Modality.NONE);
     
     Image curtainImage  = new Image(InfoWindow.class.getResourceAsStream("/resources/images/ebabgdag.jpg"));
+    Image border1Image  = new Image(InfoWindow.class.getResourceAsStream("/resources/images/border1.jpg"));
     curtain = new ImageView(curtainImage);
+    border1 = new ImageView(border1Image);
     
     Rectangle r = new Rectangle(1200,800);
     r.setFill(Color.DARKGRAY);
@@ -88,7 +91,15 @@ public class InfoWindow
      
   	while (root.getChildren().size()>1) { root.getChildren().remove(1); }
   	
-  	root.getChildren().add(curtain);
+  	if (currentArtist.getLastNameText().getText().equals("CORTINA"))
+  	{	
+  	  root.getChildren().add(curtain);
+  	}
+  	else
+  	{
+  		root.getChildren().add(border1);
+  	 // gp.setStyle("-fx-background-color: darkgrey;");
+  	}
   	root.getChildren().add(gp);
   }
   
