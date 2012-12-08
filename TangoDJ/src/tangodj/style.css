@@ -1,0 +1,3 @@
+.priorityLow{ -fx-background-color: palegreen; }
+.priorityMedium{ -fx-background-color: skyblue;}
+.priorityHigh{ -fx-background-color: palevioletred;}

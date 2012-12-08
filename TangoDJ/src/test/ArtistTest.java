@@ -34,6 +34,7 @@ public class ArtistTest extends Application
 	@Override
 	public void start(Stage stage) throws Exception 
 	{
+		loadFonts();
 		Group root = new Group();
 		// root.getChildren().add(next);
 		
@@ -126,5 +127,18 @@ public class ArtistTest extends Application
 	      
 	     
 	   }
+	 
+	 private void loadFonts()
+	  {
+		
+		Font.loadFont(Test.class.getResource("/resources/fonts/Carousel.ttf").toExternalForm(), 10  );
+		Font.loadFont(Test.class.getResource("/resources/fonts/Anagram.ttf").toExternalForm(), 10  );
+		Font.loadFont(Test.class.getResource("/resources/fonts/Carrington.ttf").toExternalForm(), 10  );
+		Font.loadFont(Test.class.getResource("/resources/fonts/DEFTONE.ttf").toExternalForm(), 10  );
+		Font.loadFont(Test.class.getResource("/resources/fonts/EastMarket.ttf").toExternalForm(), 10  );
+		Font.loadFont(Test.class.getResource("/resources/fonts/england.ttf").toExternalForm(), 10  );
+		Font.loadFont(Test.class.getResource("/resources/fonts/FFF_Tusj.ttf").toExternalForm(), 10  );
+		
+	  }
 	
 }
