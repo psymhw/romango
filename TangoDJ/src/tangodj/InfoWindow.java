@@ -1,10 +1,14 @@
 package tangodj;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -14,6 +18,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import test.Test;
 
 public class InfoWindow 
@@ -22,8 +27,9 @@ public class InfoWindow
 
   boolean fontsLoaded=false;
   Group root = new Group();
-  ImageView curtain;
-  ImageView border1;
+  Random random = new Random();
+ 
+  ArrayList <ImageView>background = new ArrayList<ImageView>();
   
   public InfoWindow(String artist, String title, boolean test)
   {
@@ -32,15 +38,13 @@ public class InfoWindow
   
   public InfoWindow(String artist, String title)
   {
-    loadFonts();
+    //loadFonts();
 	 
 	Stage infoWindow = new Stage();
+	//infoWindow.initStyle(StageStyle.UNDECORATED);
     infoWindow.initModality(Modality.NONE);
     
-    Image curtainImage  = new Image(InfoWindow.class.getResourceAsStream("/resources/images/ebabgdag.jpg"));
-    Image border1Image  = new Image(InfoWindow.class.getResourceAsStream("/resources/images/border1.jpg"));
-    curtain = new ImageView(curtainImage);
-    border1 = new ImageView(border1Image);
+    setupBackgrounds();
     
     Rectangle r = new Rectangle(1200,800);
     r.setFill(Color.DARKGRAY);
@@ -52,6 +56,16 @@ public class InfoWindow
     Scene scene = new Scene(root, 1200, 800);
     infoWindow.setScene(scene);
     infoWindow.show();
+  }
+  
+  private void setupBackgrounds()
+  {
+	background.add(new ImageView(new Image(InfoWindow.class.getResourceAsStream("/resources/images/ebabgdag.jpg"))));
+	background.add(new ImageView(new Image(InfoWindow.class.getResourceAsStream("/resources/images/space.png"))));
+	//background.add(new ImageView(new Image(InfoWindow.class.getResourceAsStream("/resources/images/BsAs1.jpg"))));
+	//background.add(new ImageView(new Image(InfoWindow.class.getResourceAsStream("/resources/images/nyc1.jpg"))));
+	//background.add(new ImageView(new Image(InfoWindow.class.getResourceAsStream("/resources/images/blueDrop.jpg"))));
+	//background.add(new ImageView(new Image(InfoWindow.class.getResourceAsStream("/resources/images/sunset1.jpg"))));
   }
   
   private GridPane getGridPane()
@@ -88,16 +102,19 @@ public class InfoWindow
      GridPane.setHalignment(artistLastNameText, HPos.CENTER);
      GridPane.setHalignment(titleText, HPos.CENTER);
      
+     Button b = new Button("Button");
      
   	while (root.getChildren().size()>1) { root.getChildren().remove(1); }
   	
   	if (currentArtist.getLastNameText().getText().equals("CORTINA"))
   	{	
-  	  root.getChildren().add(curtain);
+  	  root.getChildren().add(background.get(0));
+  	  root.getChildren().add(b);
   	}
   	else
   	{
-  		root.getChildren().add(border1);
+  		root.getChildren().add(background.get(random.nextInt(background.size()-1)+1));
+  		root.getChildren().add(b);
   	 // gp.setStyle("-fx-background-color: darkgrey;");
   	}
   	root.getChildren().add(gp);
@@ -150,7 +167,7 @@ public class InfoWindow
   }
   
   */
-
+/*
 private void loadFonts()
   {
 	if (fontsLoaded) return;
@@ -163,7 +180,7 @@ private void loadFonts()
 	Font.loadFont(Test.class.getResource("/resources/fonts/FFF_Tusj.ttf").toExternalForm(), 10  );
 	fontsLoaded=true;
   }
-
+*/
 /*
   
 	private Text getDropShadow(String str, Font f)

@@ -39,6 +39,7 @@ public class iTunesParser extends DefaultHandler
 	private boolean isTime = false;
 	private boolean isPath = false;
 	private boolean isArtist = false;
+	private boolean isGrouping = false;
 	//parsing ints
 	private int numDicts = 0;
 	private int numArrays = 0;
@@ -253,7 +254,7 @@ public class iTunesParser extends DefaultHandler
 	public void characters( char[] data, int start, int length)
 	{
 		// only process text from elements we're interested in
-        if(isKey || isID || isName || isTime || isPath || isArtist)
+        if(isKey || isID || isName || isTime || isPath || isArtist || isGrouping)
 		{
 			buffer.append(data, start, length);
         }
@@ -286,6 +287,11 @@ public class iTunesParser extends DefaultHandler
 					isPath = true;
 				else if(keyName.equals("Total Time"))
 					isTime = true;
+				else if(keyName.equals("Grouping"))
+				{
+					isGrouping = true;
+					//System.out.println("found grouping");
+				}
 			}
 			else if(isPlaylists)
 			{
@@ -379,6 +385,13 @@ public class iTunesParser extends DefaultHandler
 
 			buffer.delete(0, buffer.length());
 			isArtist = false;
+		}
+		else if(isGrouping)
+		{
+			track.grouping = buffer.toString();
+            //System.out.println("group: "+track.grouping);
+			buffer.delete(0, buffer.length());
+			isGrouping = false;
 		}
 	}
 	

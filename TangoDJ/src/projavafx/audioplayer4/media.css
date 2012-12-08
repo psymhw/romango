@@ -33,7 +33,7 @@
   -fx-background-radius: 5;
   -fx-background-color: #222, #888, black;
   -fx-background-insets: 0, 1 0 0 1, 1;
-  -fx-padding: 2 10;
+  -fx-padding: 2;
 }
 
 .eqSlider .thumb {
@@ -49,7 +49,7 @@
   -fx-background-radius: 5;
   -fx-background-color: #222, #888, black;
   -fx-background-insets: 0, 1 0 0 1, 1;
-  -fx-padding: 2 10;
+  -fx-padding: 2;
 }
 
 #backButton {
@@ -63,7 +63,7 @@
 }
 
 #playPauseButton:hover, #seekEndButton:hover, #seekStartButton:hover {
-  -fx-background-color: rgb(255, 255, 255, 0.1);
+  -fx-background-color: rgb(255, 255, 255);
 }
 
 #seekEndButton {
@@ -96,5 +96,5 @@
 }
 
 .eqLabel {
-  -fx-padding: 8 3;
+  -fx-padding: 2;
 }

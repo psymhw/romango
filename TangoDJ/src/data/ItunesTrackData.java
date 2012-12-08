@@ -23,6 +23,8 @@ public class ItunesTrackData
 	 */
 	public String path;
 	
+	public String grouping;
+	
 	/**
 	 * Total time of the song (in milliseconds)
 	 */

@@ -1,16 +1,16 @@
 package tangodj;
 
+
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.text.DecimalFormat;
-import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
-import test.Test;
+
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -20,36 +20,38 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Light;
-import javafx.scene.effect.Lighting;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.HBoxBuilder;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import test.Test;
 import data.ItunesTrackData;
 import data.PlaylistData;
 import data.iTunesData;
@@ -109,8 +111,8 @@ public class TangoDJ extends Application
  
     @Override
     public void start(Stage stage) 
-    {
-    	
+   {
+    	loadFonts();
     	parser = new iTunesParser(data);
 		parser.parseFile();
 		
@@ -119,7 +121,7 @@ public class TangoDJ extends Application
     	progress.setMaxWidth(300);
         Scene scene = new Scene(new Group());
         stage.setTitle("Tango DJ");
-        stage.setWidth(850);
+        stage.setWidth(950);
         stage.setHeight(600);
  
         final Label label = new Label("Tango DJ");
@@ -135,7 +137,8 @@ public class TangoDJ extends Application
         hbox.setPadding(new Insets(10, 0, 0, 10));
         
         hbox.getChildren().add(playlistTable);
-        hbox.getChildren().add(trackTable);
+       // hbox.getChildren().add(trackTable);
+        hbox.getChildren().add(getTrackList(184));
         
        // File temp = new File("C:/t2/Track02.mp3");
         
@@ -153,7 +156,8 @@ public class TangoDJ extends Application
         vbox.getChildren().addAll(label, hbox);
  
         ((Group) scene.getRoot()).getChildren().addAll(vbox);
- 
+        final URL stylesheet = getClass().getResource("style.css");
+        scene.getStylesheets().add(stylesheet.toString());
         stage.setScene(scene);
         stage.show();
     }
@@ -196,25 +200,33 @@ public class TangoDJ extends Application
 	{
 		trackTable.setEditable(true);
 		
+		TaskCellFactory cellFactory = new TaskCellFactory();
+		
 		TableColumn nameCol = new TableColumn("Track Name");
         nameCol.setMinWidth(200);
         nameCol.setCellValueFactory(
                 new PropertyValueFactory<Track, String>("name"));
- 
+        nameCol.setCellFactory(cellFactory);
         
         TableColumn artistCol = new TableColumn("Artist");
         artistCol.setMinWidth(200);
         artistCol.setCellValueFactory(
                 new PropertyValueFactory<Track, String>("artist"));
 		
+        TableColumn groupCol = new TableColumn("Group");
+        groupCol.setMinWidth(100);
+        groupCol.setCellValueFactory(
+                new PropertyValueFactory<Track, String>("grouping"));
  
         TableColumn timeCol = new TableColumn("Length");
         timeCol.setMinWidth(100);
         timeCol.setCellValueFactory(
                 new PropertyValueFactory<Track, Integer>("time"));
+        
+      
        
         trackTable.setItems(trackData);
-        trackTable.getColumns().addAll(nameCol, artistCol, timeCol);
+        trackTable.getColumns().addAll(nameCol, artistCol, groupCol, timeCol);
         
         
         EventHandler <MouseEvent>click = new EventHandler<MouseEvent>() {
@@ -256,9 +268,9 @@ public class TangoDJ extends Application
 			}
         };
         
-        GenericCellFactory cellFactory = new GenericCellFactory(click);
+       // GenericCellFactory cellFactory = new GenericCellFactory(click);
       
-        nameCol.setCellFactory(cellFactory);
+      //  nameCol.setCellFactory(cellFactory);
 	}
     
 	
@@ -480,6 +492,9 @@ public class TangoDJ extends Application
 	   PlaylistData pd = data.playlists[index];
 	   ItunesTrackData td = null;
 	   String path;
+	   String lastGroup="";
+	   int tandas=0;
+	   
 	   trackData= FXCollections.observableArrayList(); 
 	   for(int j=0; j<pd.tracks.length; j++)
 		{
@@ -491,9 +506,23 @@ public class TangoDJ extends Application
 		  File temp = new File(path);
 		  path=temp.toURI().toString();
 		  //System.out.println("plalist track: "+path);
-		  trackData.add(new Track(td.name, td.artist, path, td.time));
+		  if (td.grouping!=null)
+		  {
+		    if (td.grouping.toLowerCase().equals("cortina"))
+		    {
+		      tandas++;
+		    }
+		  }
+		  trackData.add(new Track(td.name, td.artist, path, td.grouping, td.time));
 		}
 	   trackTable.setItems(trackData);
+	   
+	   // in case last track in playlist is not a cotrina;
+	   if (td.grouping!=null)
+	  {
+	     if (!td.grouping.toLowerCase().equals("cortina")) tandas++;
+	}
+	   System.out.println("Tandas: "+tandas);
 	}
 	
    void getPlaylistData()
@@ -560,5 +589,98 @@ public class TangoDJ extends Application
        infoWindow = new InfoWindow(currentArtist.getText(), currentTrackName.getText());
         
     }
+	
+	private void loadFonts()
+	  {
+		
+		Font.loadFont(Test.class.getResource("/resources/fonts/Carousel.ttf").toExternalForm(), 10  );
+		Font.loadFont(Test.class.getResource("/resources/fonts/Anagram.ttf").toExternalForm(), 10  );
+		Font.loadFont(Test.class.getResource("/resources/fonts/Carrington.ttf").toExternalForm(), 10  );
+		Font.loadFont(Test.class.getResource("/resources/fonts/DEFTONE.ttf").toExternalForm(), 10  );
+		Font.loadFont(Test.class.getResource("/resources/fonts/EastMarket.ttf").toExternalForm(), 10  );
+		Font.loadFont(Test.class.getResource("/resources/fonts/england.ttf").toExternalForm(), 10  );
+		Font.loadFont(Test.class.getResource("/resources/fonts/FFF_Tusj.ttf").toExternalForm(), 10  );
+		
+	  }
+	
+	
+	private ScrollPane getTrackList(int index)
+	{
+	  ScrollPane scrollPane = new ScrollPane();
+	  scrollPane.setPrefWidth(600);
+	  
+	  GridPane gridPane = new GridPane();
+	  
+	 // gridPane.setGridLinesVisible(true);
+	 // gridPane.setStyle("-fx-border: 2px solid; -fx-border-color: red;");
+	
+	  gridPane.setPadding(new Insets(10, 10, 10, 10));
+	  gridPane.setVgap(1);
+	  gridPane.setHgap(5);
+	  
+	   PlaylistData pd = data.playlists[index];
+	   ItunesTrackData td = null;
+	   String path;
+	   String lastGroup="";
+	   int tandas=0;
+	   
+	    
+	   for(int j=0; j<pd.tracks.length; j++)
+		{
+		  td=data.tracks[pd.tracks[j]];
+		  path=td.path.substring(16);
+		  try {
+  			 path = URLDecoder.decode(path,"UTF-8");
+  			 } catch (Exception e) { e.printStackTrace(); }
+		  File temp = new File(path);
+		  path=temp.toURI().toString();
+		  //System.out.println("plalist track: "+path);
+		  if (td.grouping!=null)
+		  {
+		    if (td.grouping.toLowerCase().equals("cortina"))
+		    {
+		      tandas++;
+		    }
+		  }
+		 
+		 
+		 // GridPane.setHalignment(artist, HPos.LEFT);
+		  gridPane.add(textLabel(td.name, 200, 1), 0, j);
+		  gridPane.add(textLabel(td.artist, 200, 1), 1, j);
+		  gridPane.add(textLabel(td.grouping, 100, 1), 2, j);
+		  
+		  //trackData.add(new Track(td.name, td.artist, path, td.grouping, td.time));
+		}
+	  
+	   
+	   // in case last track in playlist is not a cotrina;
+	   if (td.grouping!=null)
+	  {
+	     if (!td.grouping.toLowerCase().equals("cortina")) tandas++;
+	}
+	   System.out.println("Tandas: "+tandas);
+	    
+	  scrollPane.setContent(gridPane);
+	  return scrollPane;
+	}
+	
+	private StackPane textBox(String text)
+	{
+	   StackPane pane = new StackPane();
+	  // Rectangle r = new Rectangle(40, 200);
+	   pane.setStyle("-fx-border: 2px solid; -fx-border-color: gray;");
+	  // pane.getChildren().add(r);
+	   pane.getChildren().add(new Text(text));
+	  
+	   return pane;
+	   
+	}
 
+	private Label textLabel(String text, int width, int color)
+	{
+	   Label label = new Label(" "+text);
+	   label.setPrefWidth(width);
+	   label.setStyle("-fx-border: 2px solid; -fx-border-color: gray; -fx-background-color: skyblue;");
+	   return label;
+	}
 } 
