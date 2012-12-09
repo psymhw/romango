@@ -1,3 +1,12 @@
-.priorityLow{ -fx-background-color: palegreen; }
-.priorityMedium{ -fx-background-color: skyblue;}
-.priorityHigh{ -fx-background-color: palevioletred;}
+/* 
+.tangoBkg{-fx-border: 2px solid; -fx-border-color: gray; -fx-background-color: aliceblue;}
+.valsBkg{-fx-border: 2px solid; -fx-border-color: gray; -fx-background-color: palegoldenrod;}
+.milongaBkg{-fx-border: 2px solid; -fx-border-color: gray; -fx-background-color: pink;}
+.cortinaBkg{-fx-border: 2px solid; -fx-border-color: gray; -fx-background-color: royalblue;}
+.paddingBkg{-fx-border: 2px solid; -fx-border-color: gray; -fx-background-color: silver;}
+*/
+.tangoBkg{-fx-background-color: aliceblue;}
+.valsBkg{-fx-background-color: palegoldenrod;}
+.milongaBkg{-fx-background-color: pink;}
+.cortinaBkg{-fx-background-color: lightblue;}
+.paddingBkg{-fx-background-color: silver;}
