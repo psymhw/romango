@@ -1,6 +1,5 @@
 package tangodj;
 
-
 import java.io.File;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -8,23 +7,19 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-
-
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -33,20 +28,17 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.HBoxBuilder;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -59,11 +51,11 @@ import data.iTunesParser;
  
 public class TangoDJ extends Application 
 {
-	private static String dbURL = "jdbc:derby:tangoDj;create=true;user=rick;password=smegma";
-    private static String tableName = "restaurants";
+//	private static String dbURL = "jdbc:derby:tangoDj;create=true;user=rick;password=smegma";
+ //   private static String tableName = "restaurants";
     // jdbc Connection
-    private static Connection conn = null;
-    private static Statement stmt = null;
+//    private static Connection conn = null;
+//    private static Statement stmt = null;
     
     PlaylistData pd=null;
 	//TrackData td = null;
@@ -86,7 +78,9 @@ public class TangoDJ extends Application
     private TableView<Track> trackTable = new TableView<Track>();
     
     private  ObservableList<Playlist> playlistData= FXCollections.observableArrayList(); 
-    private  ObservableList<Track> trackData= FXCollections.observableArrayList(); 
+   // private  ObservableList<Track> trackData= FXCollections.observableArrayList(); 
+    
+    private ArrayList<TrackRow> trackRows = new ArrayList<TrackRow>();
    
     
     final ProgressBar progress = new ProgressBar();
@@ -101,6 +95,9 @@ public class TangoDJ extends Application
     private MediaView mediaView=null;
     private List<MediaPlayer> players;
     private InfoWindow infoWindow;
+    
+    Group trackGroup = new Group();
+ 
     
     
        
@@ -127,7 +124,7 @@ public class TangoDJ extends Application
         final Label label = new Label("Tango DJ");
         label.setFont(new Font("Arial", 20));
          setupPlaylistTable();
-        setupTrackTable();
+      //  setupTrackTable();
  
         vbox = new VBox();
         vbox.setSpacing(5);
@@ -138,30 +135,21 @@ public class TangoDJ extends Application
         
         hbox.getChildren().add(playlistTable);
        // hbox.getChildren().add(trackTable);
-        hbox.getChildren().add(getTrackList(184));
+        hbox.getChildren().add(getTrackGrid());
+       
         
-       // File temp = new File("C:/t2/Track02.mp3");
-        
-      //  Media media = new Media(temp.toURI().toString());
-        
-       // temp = new File("C:/t2/Track03.mp3");
-      //  media = new Media(temp.toURI().toString());
-        
-      //  mp = new MediaPlayer(media);
-       // mp.setAutoPlay(true);
-        
-     //   mc = new MediaControl(mp);
-     //  ;
+     
         
         vbox.getChildren().addAll(label, hbox);
- 
-        ((Group) scene.getRoot()).getChildren().addAll(vbox);
+        ((Group) scene.getRoot()).getChildren().add(vbox);
+        
         final URL stylesheet = getClass().getResource("style.css");
         scene.getStylesheets().add(stylesheet.toString());
         stage.setScene(scene);
         stage.show();
     }
 
+    
 	private void setupPlaylistTable() 
 	{
 		playlistTable.setEditable(true);
@@ -184,7 +172,8 @@ public class TangoDJ extends Application
 				// TODO Auto-generated method stub
 				int index = ((TableCell)ev.getSource()).getIndex();
 				 System.out.println("Mouse Event: "+index);
-				 setPlaylistTracks(index);
+				// setPlaylistTracks(index);
+				 getTrackRows(index);
 			}
         };
         
@@ -195,7 +184,8 @@ public class TangoDJ extends Application
         playlistTable.setItems(playlistData);
         playlistTable.getColumns().addAll(idCol, nameCol);
 	}
-    
+   
+    /*
 	private void setupTrackTable() 
 	{
 		trackTable.setEditable(true);
@@ -248,21 +238,7 @@ public class TangoDJ extends Application
 			        
 			       
 			     
-			   /*     
-				 if (doubleClick==2)
-				 {
-					path=trackData.get(index).getPath().substring(16);
-					playSong(path, true); 
-					System.out.println("DD");
-				}
-				 else if (doubleClick==1)
-				 {
-					 path=trackData.get(index).getPath().substring(16);
-					 playSong(path, false);
-					 System.out.println("SS");
-				 }
-				 */
-				
+			   
 				 
 				 
 			}
@@ -272,8 +248,9 @@ public class TangoDJ extends Application
       
       //  nameCol.setCellFactory(cellFactory);
 	}
-    
+    */
 	
+	/*
 	 private void processFirstClick() {
 		    new Thread(new Runnable() {
 		      @Override
@@ -348,10 +325,12 @@ public class TangoDJ extends Application
 		listPlaying=true;
         
 		players = new ArrayList<MediaPlayer>();
-        
-        for(int i=playListTrackIndex; i<trackData.size(); i++)
+		//System.out.println("playListTrackIndex: "+playListTrackIndex);
+		
+        for(int i=playListTrackIndex; i<trackRows.size(); i++)
         {
-	      players.add(createMediaPlayer(trackData.get(i).getPath(), false));
+	      players.add(createMediaPlayer(trackRows.get(i).path, false));
+	      //System.out.println("path: "+trackData.get(i).getPath());
         }
         
         mediaView = new MediaView(players.get(0));
@@ -371,7 +350,10 @@ public class TangoDJ extends Application
                 player.currentTimeProperty().removeListener(progressChangeListener);
                 mediaView.setMediaPlayer(nextPlayer);
                 System.out.println("next song");
+                clearNowPlaying();
+                trackRows.get(playListTrackIndex).setNowPlaying();
                 playListTrackIndex++;
+                
                 setInfoWindow();
                   nextPlayer.play();
                   
@@ -387,7 +369,10 @@ public class TangoDJ extends Application
             mediaView.setMediaPlayer(nextPlayer);
             curPlayer.currentTimeProperty().removeListener(progressChangeListener);
             curPlayer.stop();
+            clearNowPlaying();
+            trackRows.get(playListTrackIndex).setNowPlaying();
             playListTrackIndex++;
+            
             setInfoWindow();
            
             nextPlayer.play();
@@ -442,7 +427,7 @@ public class TangoDJ extends Application
         vbox.getChildren().add(currentlyPlaying);
         
         
-        System.out.println("double click");
+       // System.out.println("players: "+players.size());
      // play each audio file in turn.
         for (int i = 0; i < players.size(); i++) 
         {
@@ -454,6 +439,8 @@ public class TangoDJ extends Application
 //          
 	           System.out.println("next player");
 	           mediaView.setMediaPlayer(nextPlayer);
+	           clearNowPlaying();
+	           trackRows.get(playListTrackIndex).setNowPlaying();
 	           playListTrackIndex++;
 	           setInfoWindow();
 	           mediaView.getMediaPlayer().play();
@@ -462,13 +449,23 @@ public class TangoDJ extends Application
           });
         }
         
+        clearNowPlaying();
+        trackRows.get(playListTrackIndex).setNowPlaying();
         playListTrackIndex++;
+        
         setInfoWindow();
         mediaView.getMediaPlayer().play();
         setCurrentlyPlaying(mediaView.getMediaPlayer());
 
 	}
 	
+	private void clearNowPlaying()
+	{
+	  for(int i=0; i<trackRows.size(); i++)
+	  {
+		  trackRows.get(i).setNotPlaying();
+	  }
+	}
 	
     private MediaPlayer createMediaPlayer(String path, boolean autoPlay)
     {
@@ -486,7 +483,8 @@ public class TangoDJ extends Application
 	      mp.setAutoPlay(autoPlay);
 	      return mp;
     }
-			  
+	
+    /*
 	void setPlaylistTracks(int index)
 	{
 	   PlaylistData pd = data.playlists[index];
@@ -524,7 +522,9 @@ public class TangoDJ extends Application
 	}
 	   System.out.println("Tandas: "+tandas);
 	}
-	
+	*/
+    
+    
    void getPlaylistData()
    {
 	   for(int i=0; i<data.playlists.length; i++)
@@ -577,9 +577,9 @@ public class TangoDJ extends Application
 	
 	 private void setInfoWindow()
 	   {
-		 currentArtist.setText(trackData.get(playListTrackIndex-1).getArtist());
+		 currentArtist.setText(trackRows.get(playListTrackIndex-1).artist.getText());
 		
-		 currentTrackName.setText(trackData.get(playListTrackIndex-1).getName());
+		 currentTrackName.setText(trackRows.get(playListTrackIndex-1).name.getText());
 		 
 		 if (infoWindow!=null) infoWindow.update(currentArtist.getText(), currentTrackName.getText());
 	   }
@@ -604,27 +604,41 @@ public class TangoDJ extends Application
 	  }
 	
 	
-	private ScrollPane getTrackList(int index)
+	
+	private ScrollPane getTrackGrid()
 	{
 	  ScrollPane scrollPane = new ScrollPane();
 	  scrollPane.setPrefWidth(600);
-	  
-	  GridPane gridPane = new GridPane();
-	  
-	 // gridPane.setGridLinesVisible(true);
-	 // gridPane.setStyle("-fx-border: 2px solid; -fx-border-color: red;");
+	  scrollPane.setFitToHeight(true);
+	 
+	  scrollPane.setContent(trackGroup);
+	 
+	  return scrollPane;
+	}
 	
-	  gridPane.setPadding(new Insets(10, 10, 10, 10));
-	  gridPane.setVgap(1);
-	  gridPane.setHgap(5);
+	private void getTrackRows(int index)
+	{
+		
+	  // System.out.println("TrackGroup size: "+trackGroup.getChildren().size());
+	  if (trackGroup.getChildren().size()>0) 
+	  {	  
+		  trackGroup.getChildren().remove(0);
+		 trackRows.clear();
+	  }
+	  
+	 // trackData= FXCollections.observableArrayList(); 
+	  
+	  GridPane trackGrid = new GridPane();
+	  trackGrid.setPadding(new Insets(10, 10, 10, 10));
+	  trackGrid.setVgap(0);
+	  trackGrid.setHgap(0);
+	  
+	  
 	  
 	   PlaylistData pd = data.playlists[index];
 	   ItunesTrackData td = null;
-	   String path;
-	   String lastGroup="";
-	   int tandas=0;
+	   String path=null;
 	   
-	    
 	   for(int j=0; j<pd.tracks.length; j++)
 		{
 		  td=data.tracks[pd.tracks[j]];
@@ -635,52 +649,52 @@ public class TangoDJ extends Application
 		  File temp = new File(path);
 		  path=temp.toURI().toString();
 		  //System.out.println("plalist track: "+path);
-		  if (td.grouping!=null)
-		  {
-		    if (td.grouping.toLowerCase().equals("cortina"))
-		    {
-		      tandas++;
-		    }
-		  }
 		 
 		 
+		 trackRows.add(new TrackRow(td.name, td.artist, path, td.grouping, td.time, j));
+	//	 trackData.add(new Track(td.name, td.artist, path, td.grouping, td.time));
+
 		 // GridPane.setHalignment(artist, HPos.LEFT);
-		  gridPane.add(textLabel(td.name, 200, 1), 0, j);
-		  gridPane.add(textLabel(td.artist, 200, 1), 1, j);
-		  gridPane.add(textLabel(td.grouping, 100, 1), 2, j);
+		//  gridPane.add(textLabel(td.name, 200, 1), 0, j);
+		//  gridPane.add(textLabel(td.artist, 200, 1), 1, j);
+		//  gridPane.add(textLabel(td.grouping, 100, 1), 2, j);
 		  
 		  //trackData.add(new Track(td.name, td.artist, path, td.grouping, td.time));
 		}
 	  
+	   TrackRow tr = null;
+	   int row=0;
+	   Iterator<TrackRow> it = trackRows.iterator();
+	   while(it.hasNext())
+	   {
+		  tr=it.next(); 
+		  trackGrid.add(tr.nowPlaying, 0, row);
+		  trackGrid.add(tr.index, 1, row);
+		  trackGrid.add(tr.grouping, 2, row);
+		  trackGrid.add(tr.artist, 3, row);
+		  trackGrid.add(tr.name, 4, row);
+			  
+		  row++;
+	   }
 	   
-	   // in case last track in playlist is not a cotrina;
-	   if (td.grouping!=null)
-	  {
-	     if (!td.grouping.toLowerCase().equals("cortina")) tandas++;
-	}
-	   System.out.println("Tandas: "+tandas);
+	   EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
+	          public void handle(MouseEvent event)  { ShowIndex();  }};
+		
+	  trackGrid.setOnMouseClicked(bHandler);
+	   
+	 // tr=trackRows.get(3);
+	 //  tr.artist.setStyle("-fx-border: 2px solid; -fx-border-color: gray; -fx-background-color: red;");
 	    
-	  scrollPane.setContent(gridPane);
-	  return scrollPane;
+	  trackGroup.getChildren().add(trackGrid);
 	}
 	
-	private StackPane textBox(String text)
+	private void ShowIndex()
 	{
-	   StackPane pane = new StackPane();
-	  // Rectangle r = new Rectangle(40, 200);
-	   pane.setStyle("-fx-border: 2px solid; -fx-border-color: gray;");
-	  // pane.getChildren().add(r);
-	   pane.getChildren().add(new Text(text));
-	  
-	   return pane;
+	   System.out.println("pIndex:  "+TrackRow.getPindex());
+	   playListTrackIndex=TrackRow.getPindex();
+	   playList();
 	   
 	}
 
-	private Label textLabel(String text, int width, int color)
-	{
-	   Label label = new Label(" "+text);
-	   label.setPrefWidth(width);
-	   label.setStyle("-fx-border: 2px solid; -fx-border-color: gray; -fx-background-color: skyblue;");
-	   return label;
-	}
+	
 } 
