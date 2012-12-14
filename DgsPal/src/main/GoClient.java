@@ -556,8 +556,9 @@ public void stop()
       if (getSgfFile(FROM_SERVER))
       {
   	    playAllSgfMoves();
-         feedbackArea.insertText(0, df.format(new Date())+" "+lastSgfMove.getColorStr()+": "+lastSgfMove.getBoardPosition()+"\n");
-         if (!maximized) minFeedbackText.setText(dragonAccess.message);
+         //feedbackArea.insertText(0, df.format(new Date())+" "+lastSgfMove.getColorStr()+": "+lastSgfMove.getBoardPosition()+"\n");
+         minFeedbackText.setText(dragonAccess.message);
+         feedbackArea.insertText(0, dragonAccess.message);
         /*
         if (lastSgfMove.color==BLACK)  
 	  { 
@@ -649,8 +650,8 @@ public void stop()
 	feedbackArea.insertText(0, loginSuccessStr);
 	feedbackArea.insertText(0, loadFromStr);
 	feedbackArea.insertText(0, excessiveUsageStr);
-	if (!maximized) minFeedbackText.setText(dragonAccess.message);
-	
+	minFeedbackText.setText(dragonAccess.message);
+	feedbackArea.insertText(0, dragonAccess.message);
 	//System.out.println("startup refresh: currentMessage "+dragonAccess.currentMessage);
 	if (dragonAccess.currentMessage)
 	{	
@@ -1224,7 +1225,8 @@ private GridPane getRightPane()
      playAllSgfMoves();
      feedbackArea.clear();
      feedbackArea.setText(commentsStr);
-     if (!maximized) minFeedbackText.setText(dragonAccess.message);
+     minFeedbackText.setText(dragonAccess.message);
+     feedbackArea.insertText(0, dragonAccess.message);
      passPlayed=false;
      resignPlayed=false;
      //updateControls();
@@ -1428,7 +1430,11 @@ private GridPane getRightPane()
 	        	  mainBox.getChildren().add(smallRightPane);
 	        	  
 	        	  messageLabel.setText("Message: ");
-	        	  if (dragonAccess!=null) minFeedbackText.setText(dragonAccess.message);
+	        	  if (dragonAccess!=null) 
+	        	  {
+	        		  minFeedbackText.setText(dragonAccess.message);
+	        		  feedbackArea.insertText(0, dragonAccess.message);
+	        	  }
 	        	  minMaxButton.setText("Max");
 	        	  minMaxButton.setTooltip(new Tooltip("Maximum Window"));
 	        	  maximized=false;
