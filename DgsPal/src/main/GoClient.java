@@ -107,6 +107,8 @@ public class GoClient extends Application
   Image board_ur_corner_image;
   Image board_ll_corner_image;
   Image board_lr_corner_image;
+  
+  Image black_cursor;
    
   /*
   Image grid_ul_corner_image;
@@ -418,8 +420,9 @@ public class GoClient extends Application
     
      
      final Scene scene = new Scene(scrollPane, windowWidth, windowHeight);
-     scene.setCursor(new ImageCursor(blackStoneImage, blackStoneImage.getWidth()/2, blackStoneImage.getHeight()/2));
-     
+    // scene.setCursor(new ImageCursor(blackStoneImage, blackStoneImage.getWidth()/2, blackStoneImage.getHeight()/2));
+     boardGroup.setCursor(new ImageCursor(black_cursor, black_cursor.getWidth()/2, black_cursor.getHeight()/2));
+      
     
      scene.setFill(null);
   
@@ -2021,6 +2024,8 @@ void restoreMoveMap(int[][] savedMoveMap)
 	 board_bottom_image = new Image(GoClient.class.getResourceAsStream(src+"/images/wood4_d.gif"));
 	
 	 board_fill_image = new Image(GoClient.class.getResourceAsStream(src+"/images/wood4.gif"));
+	 black_cursor = new Image(GoClient.class.getResourceAsStream(src+"/images/black_cursor.png"));
+	 
 	 
 	 /*
 	 grid_ul_corner_image = new Image(GoClient.class.getResourceAsStream(src+"/images/ul.gif"));

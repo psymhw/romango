@@ -1,0 +1,25 @@
+(
+;FF[4]GM[1]
+AP[DGS:1.0.15]
+PC[Dragon Go Server: http://www.dragongoserver.net/]
+DT[2012-08-01,2012-08-01]
+GN[TimRand-romango-749379-20120801]
+SO[http://www.dragongoserver.net/game.php?gid=749379]
+PB[Rick Roman (romango)]
+PW[Joe Seki (TimRand)]
+BR[9k]
+WR[7k]
+XM[2]
+GC[Game ID: 749379
+Game Type: GO (1:1)
+Rated: Y
+
+White Start Rating: 7k (+27%) - ELO 1426
+Black Start Rating: 9k (-21%) - ELO 1179]
+OT[30 days with 1 day extra per move]
+RU[Japanese]
+SZ[19]
+KM[0.5]
+HA[2]
+AB[dp][pd]
+)
