@@ -29,6 +29,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
+import javafx.scene.ImageCursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -417,6 +418,7 @@ public class GoClient extends Application
     
      
      final Scene scene = new Scene(scrollPane, windowWidth, windowHeight);
+     scene.setCursor(new ImageCursor(blackStoneImage, blackStoneImage.getWidth()/2, blackStoneImage.getHeight()/2));
      
     
      scene.setFill(null);
