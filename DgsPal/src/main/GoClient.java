@@ -109,6 +109,7 @@ public class GoClient extends Application
   Image board_lr_corner_image;
   
   Image black_cursor;
+  Image white_cursor;
    
   /*
   Image grid_ul_corner_image;
@@ -421,7 +422,7 @@ public class GoClient extends Application
      
      final Scene scene = new Scene(scrollPane, windowWidth, windowHeight);
     // scene.setCursor(new ImageCursor(blackStoneImage, blackStoneImage.getWidth()/2, blackStoneImage.getHeight()/2));
-     boardGroup.setCursor(new ImageCursor(black_cursor, black_cursor.getWidth()/2, black_cursor.getHeight()/2));
+   //  boardGroup.setCursor(new ImageCursor(black_cursor, black_cursor.getWidth()/2, black_cursor.getHeight()/2));
       
     
      scene.setFill(null);
@@ -563,7 +564,7 @@ public void stop()
   	    playAllSgfMoves();
          //feedbackArea.insertText(0, df.format(new Date())+" "+lastSgfMove.getColorStr()+": "+lastSgfMove.getBoardPosition()+"\n");
          minFeedbackText.setText(dragonAccess.message);
-         feedbackArea.insertText(0, dragonAccess.message);
+        // feedbackArea.insertText(0, dragonAccess.message);
         /*
         if (lastSgfMove.color==BLACK)  
 	  { 
@@ -584,6 +585,7 @@ public void stop()
       {  
     	  cuckooSound.play();
     	  minFeedbackText.setFill(Color.RED);
+    	  feedbackArea.insertText(0, "*"+lastSgfMove.getBoardPosition()+"\t"+dragonAccess.message);
       }
       else minFeedbackText.setFill(Color.BLACK);
   }
@@ -606,7 +608,7 @@ public void stop()
 	 // System.out.println("startup refresh");
 	int status=NOT_LOGGED_IN;
 	boolean loginSuccess=false;
-	boolean debug=true;
+	boolean debug=false;
 	long runningGameNo=0;
 	
 
@@ -656,7 +658,7 @@ public void stop()
 	feedbackArea.insertText(0, loadFromStr);
 	feedbackArea.insertText(0, excessiveUsageStr);
 	minFeedbackText.setText(dragonAccess.message);
-	feedbackArea.insertText(0, dragonAccess.message);
+	//feedbackArea.insertText(0, dragonAccess.message);
 	//System.out.println("startup refresh: currentMessage "+dragonAccess.currentMessage);
 	if (dragonAccess.currentMessage)
 	{	
@@ -1208,7 +1210,7 @@ private GridPane getRightPane()
    { 
      writeMoveToLocalSgfFile(firstLocalMove);
      
-     feedbackArea.insertText(0, df.format(new Date())+" "+firstLocalMove.getColorStr()+": "+firstLocalMove.getBoardPosition()+"\n");
+     //feedbackArea.insertText(0, df.format(new Date())+" "+firstLocalMove.getColorStr()+": "+firstLocalMove.getBoardPosition()+"\n");
      //commitButton.setDisable(true); 
     
 	  
@@ -1231,7 +1233,8 @@ private GridPane getRightPane()
      feedbackArea.clear();
      feedbackArea.setText(commentsStr);
      minFeedbackText.setText(dragonAccess.message);
-     feedbackArea.insertText(0, dragonAccess.message);
+     //feedbackArea.insertText(0, dragonAccess.message);
+    // feedbackArea.setText(value));
      passPlayed=false;
      resignPlayed=false;
      //updateControls();
@@ -1253,6 +1256,8 @@ private GridPane getRightPane()
         */
      
      lastSgfMoveNumber++;
+     sgfMoves.add(firstLocalMove);
+     //System.out.println("commit, lastSgfMoveNumber: "+lastSgfMoveNumber);
      lastSgfMove=firstLocalMove;
      
      /*
@@ -1438,7 +1443,7 @@ private GridPane getRightPane()
 	        	  if (dragonAccess!=null) 
 	        	  {
 	        		  minFeedbackText.setText(dragonAccess.message);
-	        		  feedbackArea.insertText(0, dragonAccess.message);
+	        		 // feedbackArea.insertText(0, dragonAccess.message);
 	        	  }
 	        	  minMaxButton.setText("Max");
 	        	  minMaxButton.setTooltip(new Tooltip("Maximum Window"));
@@ -2025,6 +2030,7 @@ void restoreMoveMap(int[][] savedMoveMap)
 	
 	 board_fill_image = new Image(GoClient.class.getResourceAsStream(src+"/images/wood4.gif"));
 	 black_cursor = new Image(GoClient.class.getResourceAsStream(src+"/images/black_cursor.png"));
+	 white_cursor = new Image(GoClient.class.getResourceAsStream(src+"/images/white_cursor.png"));
 	 
 	 
 	 /*
@@ -2126,6 +2132,7 @@ void restoreMoveMap(int[][] savedMoveMap)
 	      colorToPlay=BLACK;
      
      if (consecutivePasses==2) gameOver=true;
+    // System.out.println("play all lastSgfMoveNumber: "+lastSgfMoveNumber);
    }
    
    public String colorStr(int color)
@@ -2786,10 +2793,19 @@ void putMoveImageOnCommittedStone()
   
 void playNextStone()
 {
-   //System.out.println("number of moves: "+lastSgfMoveNumber);
-   int moveToReplay=lastSgfMoveNumber+reviewPosition;
-   //System.out.println("move to replay: "+moveToReplay);
+  // System.out.println("*** lastSgfMoveNumber: "+lastSgfMoveNumber);
+  // System.out.println("reviewPosition: "+reviewPosition);
+  // int moveToReplay=(lastSgfMoveNumber+1)+reviewPosition;
+  // System.out.println("move to replay: "+moveToReplay);
+   //System.out.println("moveNumber: "+moveNumber);
+	
+   int numberOfMoves=sgfMoves.size();
+  // System.out.println("*** sgfMoves.size: "+numberOfMoves);
+   int moveToReplay=numberOfMoves+1+reviewPosition;
+   
+  // System.out.println("move to replay: "+moveToReplay);
    Iterator it = sgfMoves.iterator();
+   
    String sgfPosition="";
    String moveLine="";
    Move move;
@@ -2801,6 +2817,7 @@ void playNextStone()
      move=(Move)it.next();
      if (counter==moveToReplay)
      {
+       //System.out.println("playing: "+move.getBoardPosition());
        placeStone(move);
        break;
      }
@@ -2848,6 +2865,7 @@ void playNextStone()
   void rewindLastStone()  // NOT capture
   {
 	reviewPosition--;	
+	//System.out.println("reviewPosition: "+reviewPosition);
     removeLastStone();	
     moveNoVal.setText(""+moveNumber);
     if (reviewPosition<=0) deleteLastMoveButton.setDisable(true);
@@ -2864,7 +2882,8 @@ void playNextStone()
 	{
 	  Move m = (Move) moves.get(size-1);
 	    
-	  //System.out.println("removing: "+m.getBoardPosition()+" "+m.x+"-"+m.y);
+	 // System.out.println("removing: "+((lastSgfMoveNumber+1)+reviewPosition)+" "+m.getBoardPosition());
+	 // System.out.println("r -lastSgfMoveNumber: "+lastSgfMoveNumber);
 	 // color = moveMap[m.x][m.y];
 	  color=m.getColor();
 	  
