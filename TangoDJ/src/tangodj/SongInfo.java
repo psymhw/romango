@@ -14,7 +14,8 @@ public class SongInfo
   String cleanTitle;
   String style;
   FontMeta carousel = new FontMeta("Carousel", FontWeight.BOLD);
-  Font titleFont = Font.font(carousel.name, carousel.style, 70);
+  FontMeta tusj = new FontMeta("FFF Tusj", FontWeight.BOLD);
+  Font titleFont = Font.font(tusj.name, tusj.style, 70);
   
   public SongInfo(String originalTitle)
   {
@@ -52,7 +53,7 @@ public class SongInfo
 	
 	if (bounds.getWidth()>1150)
 	{
-		titleFont = Font.font(carousel.name, carousel.style, 60);
+		titleFont = Font.font(tusj.name, tusj.style, 60);
 		trialText = Artist.getDistantLight(cleanTitle, titleFont);
 	}
 	

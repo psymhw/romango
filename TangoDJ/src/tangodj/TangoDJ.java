@@ -107,6 +107,7 @@ public class TangoDJ extends Application
     
     Rectangle redBox = new Rectangle(100, 100);
     Equalizer eq;
+    long lastPlaylistRequestTime=System.currentTimeMillis();
     
     /*
     private static final double START_FREQ = 250.0;
@@ -135,7 +136,7 @@ public class TangoDJ extends Application
         Scene scene = new Scene(new Group());
         stage.setTitle("Tango DJ");
         stage.setWidth(950);
-        stage.setHeight(600);
+        stage.setHeight(810);
  
         final Label label = new Label("Tango DJ");
         label.setFont(new Font("Arial", 20));
@@ -187,7 +188,7 @@ public class TangoDJ extends Application
 				
 				// TODO Auto-generated method stub
 				int index = ((TableCell)ev.getSource()).getIndex();
-				 System.out.println("Mouse Event: "+index);
+				// System.out.println("Mouse Event: "+index);
 				// setPlaylistTracks(index);
 				 getTrackRows(index);
 			}
@@ -201,142 +202,18 @@ public class TangoDJ extends Application
         playlistTable.getColumns().addAll(idCol, nameCol);
 	}
    
-    /*
-	private void setupTrackTable() 
-	{
-		trackTable.setEditable(true);
-		
-		TaskCellFactory cellFactory = new TaskCellFactory();
-		
-		TableColumn nameCol = new TableColumn("Track Name");
-        nameCol.setMinWidth(200);
-        nameCol.setCellValueFactory(
-                new PropertyValueFactory<Track, String>("name"));
-        nameCol.setCellFactory(cellFactory);
-        
-        TableColumn artistCol = new TableColumn("Artist");
-        artistCol.setMinWidth(200);
-        artistCol.setCellValueFactory(
-                new PropertyValueFactory<Track, String>("artist"));
-		
-        TableColumn groupCol = new TableColumn("Group");
-        groupCol.setMinWidth(100);
-        groupCol.setCellValueFactory(
-                new PropertyValueFactory<Track, String>("grouping"));
- 
-        TableColumn timeCol = new TableColumn("Length");
-        timeCol.setMinWidth(100);
-        timeCol.setCellValueFactory(
-                new PropertyValueFactory<Track, Integer>("time"));
-        
-      
-       
-        trackTable.setItems(trackData);
-        trackTable.getColumns().addAll(nameCol, artistCol, groupCol, timeCol);
-        
-        
-        EventHandler <MouseEvent>click = new EventHandler<MouseEvent>() {
-            
-			@Override
-			public void handle(MouseEvent ev) 
-			{
-				playListTrackIndex = ((TableCell)ev.getSource()).getIndex();
-				
-				 
-				  
-				 
-				 if (ev.getClickCount()==1) {
-			          processFirstClick();
-			        }
-			        if (ev.getClickCount()==2) {
-			          processSecondClick();
-			        }
-			        
-			       
-			     
-			   
-				 
-				 
-			}
-        };
-        
-       // GenericCellFactory cellFactory = new GenericCellFactory(click);
-      
-      //  nameCol.setCellFactory(cellFactory);
-	}
-    */
-	
-	/*
-	 private void processFirstClick() {
-		    new Thread(new Runnable() {
-		      @Override
-		      public void run() {
-		        try {
-		          Thread.sleep(DOUBLE_CLICK_WAIT_TIME);
-		          if (! isBoxDoubleClicked()) {
-		            Platform.runLater(new Runnable() {
-		              @Override
-		              public void run() {
-						 
-		                  System.out.println("Single click");
-		                }
-		            });
-		          }
-		        } catch (InterruptedException exc) {
-		          // Should not be possible
-		          throw new Error(exc);
-		        }
-		      }
-		    }).start();
-		  }
-		  
-		  private void processSecondClick() {
-		    setBoxDoubleClicked(true);
-		   
-		    playList();
-		
-		    new Thread(new Runnable() {
-		      @Override
-		      public void run() {
-		        try {
-		          Thread.sleep(DOUBLE_CLICK_WAIT_TIME);
-		          setBoxDoubleClicked(false);
-		        } catch (InterruptedException exc) {
-		          // should not happen
-		          throw new Error(exc);
-		        }
-		      }
-		    }).start();
-		  }
-		  public synchronized void setBoxDoubleClicked(boolean doubleClicked) {
-			    boxDoubleClicked = doubleClicked ;
-			  }
-			  
-			  public synchronized boolean isBoxDoubleClicked() {
-			    return boxDoubleClicked ;
-			  }
-	/*
-	void playSong(String path, boolean autoPlay)
-	{
-		try {
-			 path = URLDecoder.decode(path,"UTF-8");
-			 } catch (Exception e) { e.printStackTrace(); }
-			 //System.out.println("Track: "+path);
-		    
-		     
-		     int size = vbox.getChildren().size();
-		     if (size>2) 
-		     {
-		       mc.stop();
-		       vbox.getChildren().remove(2);
-		     }
-		     mc = new MediaControl(path, autoPlay);
-		     vbox.getChildren().add(mc);
-	}
-	*/
-		
+    
 	private void playList()
 	{
+		// debounce
+		long currentTime=System.currentTimeMillis();
+		if (currentTime < (lastPlaylistRequestTime+500)) 
+		{	
+			System.out.println("debounced");
+		  return;
+		}
+		lastPlaylistRequestTime=currentTime;
+		
 		cancelListPlay();
 		listPlaying=true;
         
@@ -465,7 +342,7 @@ public class TangoDJ extends Application
         
         eq = new Equalizer(players.get(0));
         vbox.getChildren().add(eq.getGridPane());
-        System.out.println("vbox size: "+vbox.getChildren().size());
+        //System.out.println("vbox size: "+vbox.getChildren().size());
         
        // System.out.println("players: "+players.size());
      // play each audio file in turn.
@@ -620,11 +497,12 @@ public class TangoDJ extends Application
 	
 	 private void setInfoWindow()
 	   {
-		 currentArtist.setText(trackRows.get(playListTrackIndex-1).artist.getText());
+		 String curArtist = trackRows.get(playListTrackIndex-1).getArtistName();
+		 currentArtist.setText(curArtist);
 		
 		 currentTrackName.setText(trackRows.get(playListTrackIndex-1).name.getText());
 		 
-		 if (infoWindow!=null) infoWindow.update(currentArtist.getText(), currentTrackName.getText());
+	    if (infoWindow!=null) infoWindow.update(currentArtist.getText(), currentTrackName.getText());
 	   }
 	
 	private void showInfoWindow()
@@ -733,7 +611,7 @@ public class TangoDJ extends Application
 	
 	private void ShowIndex()
 	{
-	   System.out.println("pIndex:  "+TrackRow.getPindex());
+	  // System.out.println("pIndex:  "+TrackRow.getPindex());
 	   playListTrackIndex=TrackRow.getPindex();
 	   playList();
 	   
