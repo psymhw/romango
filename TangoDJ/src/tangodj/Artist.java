@@ -71,6 +71,7 @@ public class Artist
 	  int MEDIUM=250;
 	  int SMALL=200;
 	  
+	  /*
 	  if (inStr.toLowerCase().contains("cortina"))     return new Artist("",          "CORTINA",               carousel, 250);
 	  if (inStr.toLowerCase().contains("biagi"))       return new Artist("Rudolfo",   "Biagi",                 carousel, MAX);
 	  if (inStr.toLowerCase().contains("calo"))        return new Artist("Miguel",    "Calo",                  anagram, MAX);
@@ -85,8 +86,29 @@ public class Artist
 	  if (inStr.toLowerCase().contains("caro"))        return new Artist("Julio",     "De Caro",               deftone, MAX);	  
 	  if (inStr.toLowerCase().contains("donato"))      return new Artist("Edgardo",   "Donato",                eastMarket, MAX);
 	  if (inStr.toLowerCase().contains("castillo"))    return new Artist("Alberto",   "Castillo",              englandHand, MEDIUM);
-
+*/
 	  
-	  return new Artist("", inStr, carousel, 200);
+	  if (inStr.toLowerCase().contains("cortina"))     return new Artist("",          "CORTINA",               carousel, 250);
+	  if (inStr.toLowerCase().contains("biagi"))       return new Artist("Rudolfo",   "Biagi",                 tusj, MAX);
+	  if (inStr.toLowerCase().contains("calo"))        return new Artist("Miguel",    "Calo",                  tusj, MAX);
+	  if (inStr.toLowerCase().contains("canaro"))      return new Artist("Francisco", "Canaro",                tusj, MAX);
+	  if (inStr.toLowerCase().contains("rodriguez"))   return new Artist("Enrique",   "Rodriguez",             tusj, MAX);
+	  if (inStr.toLowerCase().contains("d'arienzo"))   return new Artist("Juan",      "D'Arienzo",             tusj, MEDIUM);
+	  if (inStr.toLowerCase().contains("angelise"))    return new Artist("Alfredo",   "De Angelise",           tusj, MEDIUM);
+	  if (inStr.toLowerCase().contains("di sarli"))    return new Artist("Carlos",    "Di Sarli",              tusj, MAX);
+	  if (inStr.toLowerCase().contains("firpo"))       return new Artist("Roberto",   "Firpo",                 tusj, MAX);
+	  if (inStr.toLowerCase().contains("tipica"))      return new Artist("",          "Orquesta Tipica Victor",tusj, SMALL);
+	  if (inStr.toLowerCase().contains("ortiz"))       return new Artist("Ciriaco",   "Ortiz",                 tusj, MAX);
+	  if (inStr.toLowerCase().contains("caro"))        return new Artist("Julio",     "De Caro",               tusj, MAX);	  
+	  if (inStr.toLowerCase().contains("donato"))      return new Artist("Edgardo",   "Donato",                tusj, MAX);
+	  if (inStr.toLowerCase().contains("castillo"))    return new Artist("Alberto",   "Castillo",              tusj, MEDIUM);
+	  if (inStr.toLowerCase().contains("lomuto"))      return new Artist("Francisco", "Lomuto",                tusj, MEDIUM);
+	  if (inStr.toLowerCase().contains("d'agostino"))  return new Artist("Angel",     "D'Agostino",            tusj, SMALL);
+	  if (inStr.toLowerCase().contains("tanturi"))     return new Artist("Ricardo",     "Tanturi",            tusj, MEDIUM);
+	  if (inStr.toLowerCase().contains("pugliese"))    return new Artist("Osvaldo",     "Pugliese",            tusj, MEDIUM);
+
+	
+	  
+	  return new Artist("", inStr, deftone, 200);
 	}
 }

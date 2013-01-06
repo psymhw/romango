@@ -15,6 +15,7 @@ public class TrackRow
 	
 	Label name; 
 	Label artist; 
+	String artistName;
 	String path; 
 	Label grouping; 
 	Label  time;
@@ -65,6 +66,7 @@ public class TrackRow
 		
 		this.name=textLabel(iname, 200, cssBkgColor);
 		
+		artistName=iartist;  // holds the name even though it might be surpressed in the table view.
 		if (!lastArtist.equals(iartist))
 		{
 		  this.artist=textLabel(iartist, 200, cssBkgColor);
@@ -84,6 +86,7 @@ public class TrackRow
 		this.index=textLabel(""+(iindex+1)+") ", 50, cssBkgColor);
 		index.setAlignment(Pos.CENTER_RIGHT);
 		
+		this.index.setOnMouseClicked(bHandler);
 		this.name.setOnMouseClicked(bHandler);
 		this.artist.setOnMouseClicked(bHandler);
 		
@@ -132,6 +135,10 @@ public class TrackRow
     		);
         //return time.get();
     }
+
+	public String getArtistName() {
+		return artistName;
+	}
 	
 }
 
