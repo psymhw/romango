@@ -7,6 +7,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 
@@ -38,8 +40,24 @@ public class TrackRow
 		String cssBkgColor = "tangoBkg";
 		
 		EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
-	          public void handle(MouseEvent event)  { setIndex();  }};
-		
+	          public void handle(MouseEvent event)  { setIndex(); }};
+	          
+	  /*    		          
+	          EventHandler <MouseEvent>mouseDownHandler = new EventHandler<MouseEvent>() {
+		          public void handle(MouseEvent event)  { System.out.println("mouse down idx: "+idx);   }};
+		          
+		          
+		          EventHandler <MouseEvent>mouseReleasedHandler = new EventHandler<MouseEvent>() {
+			          public void handle(MouseEvent event)  { System.out.println("mouse up idx: "+idx);   }};
+	          
+	          EventHandler <MouseDragEvent>dragHandler = new EventHandler<MouseDragEvent>() {
+		          public void handle(MouseDragEvent event)  { System.out.println("drag detected, x-"+event.getX());  }};
+		         
+		          EventHandler <MouseDragEvent>dragHandler2 = new EventHandler<MouseDragEvent>() {
+			          public void handle(MouseDragEvent event)  { System.out.println("drag released, x-"+event.getX());  }};
+		*/	
+		          
+		          
 		if (igrouping!=null)
 		{
 		  if (igrouping.toLowerCase().equals("vals")) cssBkgColor = "valsBkg";
@@ -87,6 +105,11 @@ public class TrackRow
 		index.setAlignment(Pos.CENTER_RIGHT);
 		
 		this.index.setOnMouseClicked(bHandler);
+		//this.index.setOnMousePressed(mouseDownHandler);
+		//this.index.setOnMouseReleased(mouseReleasedHandler);
+		//this.index.setOnMouseDragEntered(dragHandler);
+		//this.index.setOnMouseDragExited(dragHandler2);
+		
 		this.name.setOnMouseClicked(bHandler);
 		this.artist.setOnMouseClicked(bHandler);
 		

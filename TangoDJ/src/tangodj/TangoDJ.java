@@ -108,6 +108,9 @@ public class TangoDJ extends Application
     Rectangle redBox = new Rectangle(100, 100);
     Equalizer eq;
     long lastPlaylistRequestTime=System.currentTimeMillis();
+    ScrollPane scrollPane;
+    GridPane trackGrid;
+    int numberOfTracksInPlaylist=0;
     
     /*
     private static final double START_FREQ = 250.0;
@@ -218,7 +221,7 @@ public class TangoDJ extends Application
 		listPlaying=true;
         
 		players = new ArrayList<MediaPlayer>();
-		System.out.println("playListTrackIndex: "+playListTrackIndex);
+		//System.out.println("playListTrackIndex: "+playListTrackIndex);
 		
         for(int i=playListTrackIndex; i<trackRows.size(); i++)
         {
@@ -528,7 +531,35 @@ public class TangoDJ extends Application
 	
 	private ScrollPane getTrackGrid()
 	{
-	  ScrollPane scrollPane = new ScrollPane();
+	  scrollPane = new ScrollPane();
+	  
+	  EventHandler <MouseEvent>mouseDownHandler = new EventHandler<MouseEvent>() {
+          public void handle(MouseEvent event)  
+          { 
+        	 // System.out.println("mouse down: "+event.getY()+" - "+scrollPane.getVvalue());
+        	 // System.out.println("scrollPane Height: "+scrollPane.getHeight());
+        	//  System.out.println("trackGrid Height: "+trackGrid.getHeight());
+        	//  System.out.println("number of rows: "+numberOfTracksInPlaylist);
+        	  double trackIndex=0;
+        	  trackIndex=((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188);
+        	  System.out.println("down trackIndex: "+Math.round(trackIndex));
+        	   
+          }};
+          
+      EventHandler <MouseEvent>mouseReleasedHandler = new EventHandler<MouseEvent>() {
+          public void handle(MouseEvent event)  
+          { 
+        	 // System.out.println("mouse up idx: "+event.getY()+" - "+scrollPane.getVvalue());   
+        	  double trackIndex=0;
+        	  trackIndex=((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188);
+        	  System.out.println("up trackIndex: "+Math.round(trackIndex));
+        	  
+          }};
+  
+	  scrollPane.setOnMousePressed(mouseDownHandler);
+	  scrollPane.setOnMouseReleased(mouseReleasedHandler);
+	  scrollPane.getHvalue();
+	  
 	  scrollPane.setPrefWidth(600);
 	  scrollPane.setFitToHeight(true);
 	 
@@ -549,7 +580,7 @@ public class TangoDJ extends Application
 	  
 	 // trackData= FXCollections.observableArrayList(); 
 	  
-	  GridPane trackGrid = new GridPane();
+	  trackGrid = new GridPane();
 	  trackGrid.setPadding(new Insets(10, 10, 10, 10));
 	  trackGrid.setVgap(0);
 	  trackGrid.setHgap(0);
@@ -585,6 +616,7 @@ public class TangoDJ extends Application
 	  
 	   TrackRow tr = null;
 	   int row=0;
+	   numberOfTracksInPlaylist=0;
 	   Iterator<TrackRow> it = trackRows.iterator();
 	   while(it.hasNext())
 	   {
@@ -594,7 +626,7 @@ public class TangoDJ extends Application
 		  trackGrid.add(tr.grouping, 2, row);
 		  trackGrid.add(tr.artist, 3, row);
 		  trackGrid.add(tr.name, 4, row);
-			  
+		  numberOfTracksInPlaylist++;  
 		  row++;
 	   }
 	   
