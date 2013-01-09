@@ -61,7 +61,8 @@ public class InfoWindow
   private void setupBackgrounds()
   {
 	background.add(new ImageView(new Image(InfoWindow.class.getResourceAsStream("/resources/images/ebabgdag.jpg"))));
-	background.add(new ImageView(new Image(InfoWindow.class.getResourceAsStream("/resources/images/space.png"))));
+	background.add(new ImageView(new Image(InfoWindow.class.getResourceAsStream("/resources/images/black.png"))));
+	//background.add(new ImageView(new Image(InfoWindow.class.getResourceAsStream("/resources/images/space.png"))));
 	//background.add(new ImageView(new Image(InfoWindow.class.getResourceAsStream("/resources/images/BsAs1.jpg"))));
 	//background.add(new ImageView(new Image(InfoWindow.class.getResourceAsStream("/resources/images/nyc1.jpg"))));
 	//background.add(new ImageView(new Image(InfoWindow.class.getResourceAsStream("/resources/images/blueDrop.jpg"))));
@@ -113,7 +114,8 @@ public class InfoWindow
   	}
   	else
   	{
-  		root.getChildren().add(background.get(random.nextInt(background.size()-1)+1));
+  		root.getChildren().add(background.get(1));
+  		//root.getChildren().add(background.get(random.nextInt(background.size()-1)+1));
   		root.getChildren().add(b);
   	 // gp.setStyle("-fx-background-color: darkgrey;");
   	}
