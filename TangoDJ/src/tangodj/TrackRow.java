@@ -28,15 +28,20 @@ public class TrackRow
 	ImageView nowPlaying = new ImageView();
 	Image greenLightImage;
 	Image noLightImage;
+	Image greyLightImage;
 	int fontSize=18;
 	static String lastGrouping="";
 	static String lastArtist="";
 	boolean groupingVisible=true;
+	boolean nowPlayingIndicated=false;
+	boolean selectedIndicated=false;
+	
 	
 	public TrackRow(String iname, String iartist, String ipath, String igrouping, int  itime, int iindex)
 	{
 		greenLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/green_light.png"));
 		noLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/no_light.png"));
+		greyLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/gray_light.png"));
 		String cssBkgColor = "tangoBkg";
 		
 		EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
@@ -119,16 +124,39 @@ public class TrackRow
 		
 	}
 	
-	public void setNowPlaying()
+	public void setNowPlayingIndicatorBall()
 	{
 		nowPlaying.setImage(greenLightImage);
+		nowPlayingIndicated=true;
 	}
 	
-	public void setNotPlaying()
+	public void setNotPlayingIndicatorBall()
 	{
-		nowPlaying.setImage(noLightImage);
+		if (nowPlayingIndicated) 
+		{
+		  nowPlaying.setImage(noLightImage);
+		  nowPlayingIndicated=false;
+		}
 	}
 		
+	public void setSelectedIndicatorBall()
+	{
+	   nowPlaying.setImage(greyLightImage);
+	   selectedIndicated=true;
+	}
+	
+	public void setNotSelectedIndicatorBall()
+	{
+	   if (selectedIndicated) 
+	   {
+		   if (!nowPlayingIndicated) 
+		   {  
+		     nowPlaying.setImage(noLightImage);
+	         selectedIndicated=false;
+		   }
+	   }
+	}
+	
 	private void setIndex()
 	{
 		//System.out.println("TrackRow: "+index);
