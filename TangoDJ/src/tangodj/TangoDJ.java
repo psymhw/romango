@@ -175,97 +175,101 @@ public class TangoDJ extends Application
         stage.setScene(scene);
         
         setupButtonActions();
-        
+        progress.setProgress(0);
        // mediaView = new MediaView(createMediaPlayer(TangoDJ.class.getResource("/resources/sounds/Who1.mp3").toExternalForm(), false));
         HBox hb = HBoxBuilder.create().spacing(10).alignment(Pos.CENTER).children(info, skip, play, stop, progress).build();
         vbox.getChildren().add(hb);
   
-        
+        stop.setDisable(true);
+        play.setDisable(true);
+        skip.setDisable(true);
+        info.setDisable(true);
         stage.show();
     }
 
 	private void setupButtonActions() 
 	{
-		skip.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent actionEvent) 
-            {
-              stopTrack();
-              if ((nowPlayingIndex+1)==numberOfTracksInPlaylist) return;
-              if (selectedIndex==nowPlayingIndex) incrementSelected();
+	  // Skip
+	  skip.setOnAction(new EventHandler<ActionEvent>() 
+	  {
+        public void handle(ActionEvent actionEvent) 
+        {
+          stopTrack();
+          if ((nowPlayingIndex+1)==numberOfTracksInPlaylist) return;
+          if (selectedIndex==nowPlayingIndex) incrementSelected();
              
-              incrementNowPlaying();
-
-              playTrack();
-            }
-          });
+          incrementNowPlaying();
+          playTrack();
+        }
+      });
         
-        // info window
-        info.setOnAction(new EventHandler<ActionEvent>() {
-          @Override public void handle(ActionEvent actionEvent) {
-            showInfoWindow();
-          }
-        });
+      // info window
+      info.setOnAction(new EventHandler<ActionEvent>() 
+      {
+        public void handle(ActionEvent actionEvent) 
+        {
+          showInfoWindow();
+        }
+      });
         
 
-        // allow the user to play or pause a track.
-        play.setOnAction(new EventHandler<ActionEvent>() {
-         public void handle(ActionEvent actionEvent) 
-         {
-        	nowPlayingIndex=selectedIndex;
-        	play.setDisable(true);
-        	playTrack();
-        	
-         }
-        });
+      // Play 
+      play.setOnAction(new EventHandler<ActionEvent>() 
+      {
+        public void handle(ActionEvent actionEvent) 
+        {
+          nowPlayingIndex=selectedIndex;
+          play.setDisable(true);
+          stop.setDisable(false);
+          skip.setDisable(false);
+          info.setDisable(false);
+          playTrack();
+        }
+      });
 
-        stop.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent actionEvent) 
-            {
-            	play.setDisable(false);
-              stopTrack();
-             // vbox.getChildren().remove(2);
-            }
+      // Stop
+      stop.setOnAction(new EventHandler<ActionEvent>() 
+      {
+        public void handle(ActionEvent actionEvent) 
+        {
+          play.setDisable(false);
+          stop.setDisable(true);
+          skip.setDisable(true);
+          info.setDisable(true);
 
-			
-			
-          });
+          stopTrack();
+        }
+      });
 	}
 
 
 
 	private void setupAllPlaylistsTable() 
 	{
-		allPlaylistsTable.setEditable(true);
- 
-        TableColumn idCol = new TableColumn("ID");
-        idCol.setMinWidth(100);
-        idCol.setCellValueFactory(
-                new PropertyValueFactory<Playlist, Integer>("index"));
+	  allPlaylistsTable.setEditable(false);
+      TableColumn idCol = new TableColumn("ID");
+      idCol.setMinWidth(100);
+      idCol.setCellValueFactory(new PropertyValueFactory<Playlist, Integer>("index"));
         
-        TableColumn nameCol = new TableColumn("Playlist Name");
-        nameCol.setMinWidth(200);
-        nameCol.setCellValueFactory(
-                new PropertyValueFactory<Playlist, String>("name"));
+      TableColumn nameCol = new TableColumn("Playlist Name");
+      nameCol.setMinWidth(200);
+      nameCol.setCellValueFactory(new PropertyValueFactory<Playlist, String>("name"));
        
-        EventHandler <MouseEvent>click = new EventHandler<MouseEvent>() {
-         
-			@Override
-			public void handle(MouseEvent ev) {
-				
-				// TODO Auto-generated method stub
-				int index = ((TableCell)ev.getSource()).getIndex();
-				// System.out.println("Mouse Event: "+index);
-				// setPlaylistTracks(index);
-				 getTrackRows(index);
-			}
-        };
+      EventHandler <MouseEvent>click = new EventHandler<MouseEvent>() 
+      {
+	    public void handle(MouseEvent ev) 
+	    {
+		  int index = ((TableCell)ev.getSource()).getIndex();
+		  getTrackRows(index);
+		}
+      };
         
-        GenericCellFactory cellFactory = new GenericCellFactory(click);
+      GenericCellFactory cellFactory = new GenericCellFactory(click);
       
-        nameCol.setCellFactory(cellFactory);
+      nameCol.setCellFactory(cellFactory);
         
-        allPlaylistsTable.setItems(playlistData);
-        allPlaylistsTable.getColumns().addAll(idCol, nameCol);
+      allPlaylistsTable.setItems(playlistData);
+      allPlaylistsTable.getColumns().addAll(idCol, nameCol);
 	}
    
     
@@ -298,7 +302,6 @@ public class TangoDJ extends Application
 	
 	private void playTrack()
 	{
-	   
 	   final MediaPlayer player = createMediaPlayer(trackRows.get(nowPlayingIndex).path, false);
 	   player.setOnEndOfMedia(new Runnable() {
            public void run() {
@@ -312,8 +315,8 @@ public class TangoDJ extends Application
        });    
 	   
 	   mediaView = new MediaView(player);
-	   clearNowPlayingIndicatorBall();
-       trackRows.get(nowPlayingIndex).setNowPlayingIndicatorBall();
+	   //clearNowPlayingIndicatorBall();
+       //trackRows.get(nowPlayingIndex).setNowPlayingIndicatorBall();
        if (eq!=null) 
        {
     	 vbox.getChildren().remove(3);
@@ -362,6 +365,7 @@ public class TangoDJ extends Application
       trackRows.get(nowPlayingIndex).setNowPlayingIndicatorBall();
     }
     
+    /*
 	private void clearNowPlayingIndicatorBall()
 	{
 	  for(int i=0; i<trackRows.size(); i++)
@@ -377,7 +381,8 @@ public class TangoDJ extends Application
 		  trackRows.get(i).setNotSelectedIndicatorBall();
 	  }
 	}
-	
+	*/
+    
     private MediaPlayer createMediaPlayer(String path, boolean autoPlay)
     {
     	//File temp = new File(path);
@@ -558,90 +563,70 @@ public class TangoDJ extends Application
 	
 	private void getTrackRows(int index)
 	{
-	   stopTrack();
-	  
-	  // System.out.println("TrackGroup size: "+trackGroup.getChildren().size());
+	  stopTrack();
 	  if (trackGroup.getChildren().size()>0) 
 	  {	  
-		  trackGroup.getChildren().remove(0);
-		 trackRows.clear();
+		trackGroup.getChildren().remove(0);
+		trackRows.clear();
 	  }
-	  
-	 // trackData= FXCollections.observableArrayList(); 
 	  
 	  trackGrid = new GridPane();
 	  trackGrid.setPadding(new Insets(10, 10, 10, 10));
 	  trackGrid.setVgap(0);
 	  trackGrid.setHgap(0);
 	  
-	   PlaylistData pd = data.playlists[index];
-	   ItunesTrackData td = null;
-	   String path=null;
+	  PlaylistData pd = data.playlists[index];
+	  ItunesTrackData td = null;
+	  String path=null;
 	   
-	   for(int j=0; j<pd.tracks.length; j++)
+	  for(int j=0; j<pd.tracks.length; j++)
+	  {
+	    td=data.tracks[pd.tracks[j]];
+		path=td.path.substring(16);
+		try 
 		{
-		  td=data.tracks[pd.tracks[j]];
-		  path=td.path.substring(16);
-		  try {
-  			 path = URLDecoder.decode(path,"UTF-8");
-  			 } catch (Exception e) { e.printStackTrace(); }
-		  File temp = new File(path);
-		  path=temp.toURI().toString();
-		  //System.out.println("plalist track: "+path);
+  		  path = URLDecoder.decode(path,"UTF-8");
+  		} catch (Exception e) { e.printStackTrace(); }
+		File temp = new File(path);
+		path=temp.toURI().toString();
 		 
-		 
-		 trackRows.add(new TrackRow(td.name, td.artist, path, td.grouping, td.time, j));
-	
-		 
-		}
+		trackRows.add(new TrackRow(td.name, td.artist, path, td.grouping, td.time, j));
+	  }
 	  
-	   TrackRow tr = null;
-	   int row=0;
-	   numberOfTracksInPlaylist=0;
-	   Iterator<TrackRow> it = trackRows.iterator();
-	   while(it.hasNext())
-	   {
-		  tr=it.next(); 
-		  trackGrid.add(tr.indicator, 0, row);
-		  trackGrid.add(tr.index, 1, row);
-		  trackGrid.add(tr.grouping, 2, row);
-		  trackGrid.add(tr.artist, 3, row);
-		  trackGrid.add(tr.name, 4, row);
-		  numberOfTracksInPlaylist++;  
-		  row++;
+	  TrackRow tr = null;
+	  int row=0;
+	  numberOfTracksInPlaylist=0;
+	  Iterator<TrackRow> it = trackRows.iterator();
+	  while(it.hasNext())
+	  {
+	    tr=it.next(); 
+		trackGrid.add(tr.indicator, 0, row);
+		trackGrid.add(tr.index, 1, row);
+		trackGrid.add(tr.grouping, 2, row);
+		trackGrid.add(tr.artist, 3, row);
+		trackGrid.add(tr.name, 4, row);
+		numberOfTracksInPlaylist++;  
+		row++;
 	   }
 	   
-	   EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
-	          public void handle(MouseEvent event)  { ShowIndex();  }};
+	   EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() 
+	   {
+	     public void handle(MouseEvent event)  { ShowIndex(); }
+	   };
 		
-	  trackGrid.setOnMouseClicked(bHandler);
+	   trackGrid.setOnMouseClicked(bHandler);
+	   trackGroup.getChildren().add(trackGrid);
+       trackRows.get(0).setSelectedIndicatorBall();
 	   
-	 // tr=trackRows.get(3);
-	 //  tr.artist.setStyle("-fx-border: 2px solid; -fx-border-color: gray; -fx-background-color: red;");
-	    
-	  trackGroup.getChildren().add(trackGrid);
-	  /*
-		 players = new ArrayList<MediaPlayer>();
-			
-	        for(int i=0; i<trackRows.size(); i++)
-	        {
-		      players.add(createMediaPlayer(trackRows.get(i).path, false));
-		    }
-	*/
-	        trackRows.get(0).setSelectedIndicatorBall();
-	        nowPlayingIndex=0;
-	}
+       nowPlayingIndex=0;
+	   play.setDisable(false);
+	 }
 	
 	private void ShowIndex()
 	{
-	   selectedIndex=TrackRow.getPindex();
-	   //System.out.println("pIndex:  "+nowPlayingIndex);
-	  
-	   clearSelectedIndicatorBall();
-	   trackRows.get(selectedIndex).setSelectedIndicatorBall();
-	   
-	   //playList2();
-	   
+	  selectedIndex=TrackRow.getPindex();
+	  //clearSelectedIndicatorBall();
+	  trackRows.get(selectedIndex).setSelectedIndicatorBall();
 	}
 
 	
