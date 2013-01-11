@@ -78,7 +78,7 @@ public class TangoDJ extends Application
 	MediaControl mc;
 	 private static final int DOUBLE_CLICK_WAIT_TIME = 400 ; // milliseconds
 	 private boolean boxDoubleClicked ;
-	 int playListTrackIndex=0;
+	
 	
     
     private TableView<Playlist> allPlaylistsTable = new TableView<Playlist>();
@@ -100,7 +100,7 @@ public class TangoDJ extends Application
     private boolean listPlaying=false;
     
     private MediaView mediaView=null;
-    private List<MediaPlayer> players;
+    //private List<MediaPlayer> players;
     private InfoWindow infoWindow;
     
     Group trackGroup = new Group();
@@ -111,12 +111,12 @@ public class TangoDJ extends Application
     ScrollPane scrollPane;
     GridPane trackGrid;
     int numberOfTracksInPlaylist=0;  // total number in playlist
-   // int nowPlayingIndex=0;
-    //int numberOfTracks=0;
+    int nowPlayingIndex=0;
+    int selectedIndex=0;
     
     final Button skip = new Button("Skip");
     final Button play = new Button("Play");
-    final Button cancel = new Button("Cancel");
+    final Button stop = new Button("Stop");
     final Button info = new Button("Info Window");
     
     /*
@@ -176,8 +176,8 @@ public class TangoDJ extends Application
         
         setupButtonActions();
         
-        mediaView = new MediaView(createMediaPlayer(TangoDJ.class.getResource("/resources/sounds/Who1.mp3").toExternalForm(), false));
-        HBox hb = HBoxBuilder.create().spacing(10).alignment(Pos.CENTER).children(info, skip, play, progress, mediaView).build();
+       // mediaView = new MediaView(createMediaPlayer(TangoDJ.class.getResource("/resources/sounds/Who1.mp3").toExternalForm(), false));
+        HBox hb = HBoxBuilder.create().spacing(10).alignment(Pos.CENTER).children(info, skip, play, stop, progress).build();
         vbox.getChildren().add(hb);
   
         
@@ -187,11 +187,14 @@ public class TangoDJ extends Application
 	private void setupButtonActions() 
 	{
 		skip.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent actionEvent) {
-              final MediaPlayer curPlayer = mediaView.getMediaPlayer();
-              curPlayer.currentTimeProperty().removeListener(progressChangeListener);
-              curPlayer.stop();
-              playListTrackIndex++;
+            public void handle(ActionEvent actionEvent) 
+            {
+              stopTrack();
+              if ((nowPlayingIndex+1)==numberOfTracksInPlaylist) return;
+              if (selectedIndex==nowPlayingIndex) incrementSelected();
+             
+              incrementNowPlaying();
+
               playTrack();
             }
           });
@@ -208,37 +211,28 @@ public class TangoDJ extends Application
         play.setOnAction(new EventHandler<ActionEvent>() {
          public void handle(ActionEvent actionEvent) 
          {
-        	if (!listPlaying)
-        	{  
-        	  playTrack();
-        	  play.setText("Pause");
-        	}
-        	else if ("Pause".equals(play.getText())) 
-            {
-              mediaView.getMediaPlayer().pause();
-              play.setText("Play");
-            } 
-            else 
-            {
-              mediaView.getMediaPlayer().play();
-              play.setText("Pause");
-            }
-          }
+        	nowPlayingIndex=selectedIndex;
+        	play.setDisable(true);
+        	playTrack();
+        	
+         }
         });
 
-        cancel.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent actionEvent) {
-              final MediaPlayer curPlayer = mediaView.getMediaPlayer();
-              curPlayer.currentTimeProperty().removeListener(progressChangeListener);
-              curPlayer.stop();
-              players.clear();
-              vbox.getChildren().remove(3);
+        stop.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent actionEvent) 
+            {
+            	play.setDisable(false);
+              stopTrack();
              // vbox.getChildren().remove(2);
             }
+
+			
+			
           });
 	}
 
-    
+
+
 	private void setupAllPlaylistsTable() 
 	{
 		allPlaylistsTable.setEditable(true);
@@ -274,148 +268,7 @@ public class TangoDJ extends Application
         allPlaylistsTable.getColumns().addAll(idCol, nameCol);
 	}
    
-    /*
-	private void playList()
-	{
-		// debounce
-		long currentTime=System.currentTimeMillis();
-		if (currentTime < (lastPlaylistRequestTime+500)) 
-		{	
-			System.out.println("debounced");
-		  return;
-		}
-		lastPlaylistRequestTime=currentTime;
-		
-		cancelListPlay();
-		listPlaying=true;
-        
-		players = new ArrayList<MediaPlayer>();
-		//System.out.println("playListTrackIndex: "+playListTrackIndex);
-		
-        for(int i=playListTrackIndex; i<trackRows.size(); i++)
-        {
-	      players.add(createMediaPlayer(trackRows.get(i).path, false));
-	      //System.out.println("path: "+trackData.get(i).getPath());
-        }
-        
-        mediaView = new MediaView(players.get(0));
-        
-        final Button skip = new Button("Skip");
-        final Button play = new Button("Pause");
-        final Button cancel = new Button("Cancel");
-        final Button info = new Button("Info Window");
-
-        
-        
-        // allow the user to skip a track.
-        skip.setOnAction(new EventHandler<ActionEvent>() {
-          @Override public void handle(ActionEvent actionEvent) {
-            final MediaPlayer curPlayer = mediaView.getMediaPlayer();
-            MediaPlayer nextPlayer = players.get((players.indexOf(curPlayer) + 1) % players.size());
-            mediaView.setMediaPlayer(nextPlayer);
-            curPlayer.currentTimeProperty().removeListener(progressChangeListener);
-            curPlayer.stop();
-            clearNowPlaying();
-            trackRows.get(playListTrackIndex).setNowPlaying();
-            playListTrackIndex++;
-            
-            setInfoWindow();
-           vbox.getChildren().remove(3);
-           eq = new Equalizer(nextPlayer);
-           vbox.getChildren().add(eq.getGridPane());
-           
-        
-            nextPlayer.play();
-            
-          }
-        });
-        
-     // cancel playlist.
-        cancel.setOnAction(new EventHandler<ActionEvent>() {
-          @Override public void handle(ActionEvent actionEvent) {
-            final MediaPlayer curPlayer = mediaView.getMediaPlayer();
-            curPlayer.currentTimeProperty().removeListener(progressChangeListener);
-            curPlayer.stop();
-            players.clear();
-            vbox.getChildren().remove(3);
-            vbox.getChildren().remove(2);
-          }
-        });
-        
-     // info window
-        info.setOnAction(new EventHandler<ActionEvent>() {
-          @Override public void handle(ActionEvent actionEvent) {
-            showInfoWindow();
-          }
-        });
-        
-
-        // allow the user to play or pause a track.
-        play.setOnAction(new EventHandler<ActionEvent>() {
-          @Override public void handle(ActionEvent actionEvent) {
-            if ("Pause".equals(play.getText())) {
-              mediaView.getMediaPlayer().pause();
-              play.setText("Play");
-            } else {
-              mediaView.getMediaPlayer().play();
-              play.setText("Pause");
-            }
-          }
-        });
-
-
-        
-        // display the name of the currently playing track.
-        mediaView.mediaPlayerProperty().addListener(new ChangeListener<MediaPlayer>() {
-          @Override public void changed(ObservableValue<? extends MediaPlayer> observableValue, MediaPlayer oldPlayer, MediaPlayer newPlayer) {
-            setCurrentlyPlaying(newPlayer);
-          }
-        });
-        
-        HBox hb = HBoxBuilder.create().spacing(10).alignment(Pos.CENTER).children(info, skip, play, progress, mediaView).build();
-        vbox.getChildren().add(hb);
-        //vbox.getChildren().add(currentlyPlaying);
-        
-        
-        eq = new Equalizer(players.get(0));
-        vbox.getChildren().add(eq.getGridPane());
-        //System.out.println("vbox size: "+vbox.getChildren().size());
-        
-       // System.out.println("players: "+players.size());
-     // play each audio file in turn.
-        for (int i = 0; i < players.size(); i++) 
-        {
-          final MediaPlayer player = players.get(i);
-          
-          final MediaPlayer nextPlayer = players.get((i + 1) % players.size());
-          player.setOnEndOfMedia(new Runnable() {
-            @Override public void run() {
-//          
-	           System.out.println("next player");
-	           mediaView.setMediaPlayer(nextPlayer);
-	           clearNowPlaying();
-	           trackRows.get(playListTrackIndex).setNowPlaying();
-	           playListTrackIndex++;
-	           setInfoWindow();
-	           vbox.getChildren().remove(3);
-	           eq = new Equalizer(nextPlayer);
-	           vbox.getChildren().add(eq.getGridPane());
-	           mediaView.getMediaPlayer().play();
-	           
-             }
-          });
-        }
-        //?
-        clearNowPlaying();
-        trackRows.get(playListTrackIndex).setNowPlaying();
-        playListTrackIndex++;
-        
-        setInfoWindow();
-        mediaView.getMediaPlayer().play();
-        setCurrentlyPlaying(mediaView.getMediaPlayer());
-
-	}
-	*/
+    
 	
 	private void playList2()
 	{
@@ -445,20 +298,22 @@ public class TangoDJ extends Application
 	
 	private void playTrack()
 	{
-	   listPlaying=true;
-	   final MediaPlayer player = players.get(playListTrackIndex);
+	   
+	   final MediaPlayer player = createMediaPlayer(trackRows.get(nowPlayingIndex).path, false);
 	   player.setOnEndOfMedia(new Runnable() {
            public void run() {
                               // nowPlayingIndex++;
-                               playListTrackIndex++;
-                               if (playListTrackIndex>numberOfTracksInPlaylist) return;
+        	                   if ((nowPlayingIndex+1)==numberOfTracksInPlaylist) return;
+        	                   if (selectedIndex==nowPlayingIndex) incrementSelected();
+        	                  
+                               incrementNowPlaying();
                                playTrack();
                              }
        });    
 	   
 	   mediaView = new MediaView(player);
 	   clearNowPlayingIndicatorBall();
-       trackRows.get(playListTrackIndex).setNowPlayingIndicatorBall();
+       trackRows.get(nowPlayingIndex).setNowPlayingIndicatorBall();
        if (eq!=null) 
        {
     	 vbox.getChildren().remove(3);
@@ -466,7 +321,7 @@ public class TangoDJ extends Application
        
        setInfoWindow();
        
-       eq = new Equalizer(players.get(playListTrackIndex));
+       eq = new Equalizer(player);
        vbox.getChildren().add(eq.getGridPane());
        progress.setProgress(0);
        progressChangeListener = new ChangeListener<Duration>() {
@@ -476,10 +331,37 @@ public class TangoDJ extends Application
        };
        player.currentTimeProperty().addListener(progressChangeListener);
      
- 
+       listPlaying=true;
        mediaView.getMediaPlayer().play();
 	}
 	
+    private void stopTrack() 
+    {
+       if (!listPlaying) return;	
+	   final MediaPlayer curPlayer = mediaView.getMediaPlayer();
+	   curPlayer.currentTimeProperty().removeListener(progressChangeListener);
+	   curPlayer.stop();
+	   trackRows.get(nowPlayingIndex).setNotPlayingIndicatorBall();
+	   selectedIndex=0;
+	   vbox.getChildren().remove(3);
+	   eq=null;
+	   listPlaying=false;
+    }   
+	
+    private void incrementSelected()
+    {
+      trackRows.get(selectedIndex).setNotSelectedIndicatorBall();
+      selectedIndex++;
+      trackRows.get(selectedIndex).setSelectedIndicatorBall();
+    }
+    
+    private void incrementNowPlaying()
+    {
+      trackRows.get(nowPlayingIndex).setNotPlayingIndicatorBall();
+      nowPlayingIndex++;
+      trackRows.get(nowPlayingIndex).setNowPlayingIndicatorBall();
+    }
+    
 	private void clearNowPlayingIndicatorBall()
 	{
 	  for(int i=0; i<trackRows.size(); i++)
@@ -590,7 +472,7 @@ public class TangoDJ extends Application
     	   final MediaPlayer curPlayer = mediaView.getMediaPlayer();
            curPlayer.currentTimeProperty().removeListener(progressChangeListener);
            curPlayer.stop();
-           players.clear();
+           //players.clear();
            vbox.getChildren().remove(3);
           // vbox.getChildren().remove(2);
            listPlaying=false;
@@ -606,10 +488,10 @@ public class TangoDJ extends Application
 	
 	 private void setInfoWindow()
 	   {
-		 String curArtist = trackRows.get(playListTrackIndex).getArtistName();
+		 String curArtist = trackRows.get(nowPlayingIndex).getArtistName();
 		 currentArtist.setText(curArtist);
 		
-		 currentTrackName.setText(trackRows.get(playListTrackIndex).name.getText());
+		 currentTrackName.setText(trackRows.get(nowPlayingIndex).name.getText());
 		 
 	    if (infoWindow!=null) infoWindow.update(currentArtist.getText(), currentTrackName.getText());
 	   }
@@ -676,7 +558,8 @@ public class TangoDJ extends Application
 	
 	private void getTrackRows(int index)
 	{
-		
+	   stopTrack();
+	  
 	  // System.out.println("TrackGroup size: "+trackGroup.getChildren().size());
 	  if (trackGroup.getChildren().size()>0) 
 	  {	  
@@ -719,7 +602,7 @@ public class TangoDJ extends Application
 	   while(it.hasNext())
 	   {
 		  tr=it.next(); 
-		  trackGrid.add(tr.nowPlaying, 0, row);
+		  trackGrid.add(tr.indicator, 0, row);
 		  trackGrid.add(tr.index, 1, row);
 		  trackGrid.add(tr.grouping, 2, row);
 		  trackGrid.add(tr.artist, 3, row);
@@ -737,25 +620,25 @@ public class TangoDJ extends Application
 	 //  tr.artist.setStyle("-fx-border: 2px solid; -fx-border-color: gray; -fx-background-color: red;");
 	    
 	  trackGroup.getChildren().add(trackGrid);
-	  
+	  /*
 		 players = new ArrayList<MediaPlayer>();
 			
 	        for(int i=0; i<trackRows.size(); i++)
 	        {
 		      players.add(createMediaPlayer(trackRows.get(i).path, false));
 		    }
-	
+	*/
 	        trackRows.get(0).setSelectedIndicatorBall();
-	        playListTrackIndex=0;
+	        nowPlayingIndex=0;
 	}
 	
 	private void ShowIndex()
 	{
-	   playListTrackIndex=TrackRow.getPindex();
-	   System.out.println("pIndex:  "+playListTrackIndex);
+	   selectedIndex=TrackRow.getPindex();
+	   //System.out.println("pIndex:  "+nowPlayingIndex);
 	  
 	   clearSelectedIndicatorBall();
-	   trackRows.get(playListTrackIndex).setSelectedIndicatorBall();
+	   trackRows.get(selectedIndex).setSelectedIndicatorBall();
 	   
 	   //playList2();
 	   

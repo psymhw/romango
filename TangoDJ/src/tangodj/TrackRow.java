@@ -10,6 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 
 public class TrackRow 
@@ -26,6 +27,7 @@ public class TrackRow
 	
 	static int pIndex=0;
 	ImageView nowPlaying = new ImageView();
+	ImageView selected = new ImageView();
 	Image greenLightImage;
 	Image noLightImage;
 	Image greyLightImage;
@@ -35,6 +37,7 @@ public class TrackRow
 	boolean groupingVisible=true;
 	boolean nowPlayingIndicated=false;
 	boolean selectedIndicated=false;
+	public StackPane indicator = new StackPane();
 	
 	
 	public TrackRow(String iname, String iartist, String ipath, String igrouping, int  itime, int iindex)
@@ -43,6 +46,9 @@ public class TrackRow
 		noLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/no_light.png"));
 		greyLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/gray_light.png"));
 		String cssBkgColor = "tangoBkg";
+		
+		indicator.getChildren().add(selected);
+		indicator.getChildren().add(nowPlaying);
 		
 		EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event)  { setIndex(); }};
@@ -132,29 +138,20 @@ public class TrackRow
 	
 	public void setNotPlayingIndicatorBall()
 	{
-		if (nowPlayingIndicated) 
-		{
-		  nowPlaying.setImage(noLightImage);
-		  nowPlayingIndicated=false;
-		}
+	  nowPlaying.setImage(noLightImage);
+	  nowPlayingIndicated=false;
 	}
 		
 	public void setSelectedIndicatorBall()
 	{
-	   nowPlaying.setImage(greyLightImage);
+	   selected.setImage(greyLightImage);
 	   selectedIndicated=true;
 	}
 	
 	public void setNotSelectedIndicatorBall()
 	{
-	   if (selectedIndicated) 
-	   {
-		   if (!nowPlayingIndicated) 
-		   {  
-		     nowPlaying.setImage(noLightImage);
-	         selectedIndicated=false;
-		   }
-	   }
+	  selected.setImage(noLightImage);
+	  selectedIndicated=false;
 	}
 	
 	private void setIndex()
