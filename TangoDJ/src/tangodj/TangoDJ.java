@@ -58,14 +58,7 @@ import data.iTunesParser;
  
 public class TangoDJ extends Application 
 {
-//	private static String dbURL = "jdbc:derby:tangoDj;create=true;user=rick;password=smegma";
- //   private static String tableName = "restaurants";
-    // jdbc Connection
-//    private static Connection conn = null;
-//    private static Statement stmt = null;
-    
     PlaylistData pd=null;
-	//TrackData td = null;
 	String path=null;
 	String destFileName;
 	DecimalFormat nf = new DecimalFormat("00");
@@ -78,15 +71,10 @@ public class TangoDJ extends Application
 	MediaControl mc;
 	 private static final int DOUBLE_CLICK_WAIT_TIME = 400 ; // milliseconds
 	 private boolean boxDoubleClicked ;
-	
-	
     
     private TableView<Playlist> allPlaylistsTable = new TableView<Playlist>();
     private TableView<Track> trackTable = new TableView<Track>();
-    
     private  ObservableList<Playlist> playlistData= FXCollections.observableArrayList(); 
-   // private  ObservableList<Track> trackData= FXCollections.observableArrayList(); 
-    
     private ArrayList<TrackRow> trackRows = new ArrayList<TrackRow>();
    
     
@@ -100,7 +88,6 @@ public class TangoDJ extends Application
     private boolean listPlaying=false;
     
     private MediaView mediaView=null;
-    //private List<MediaPlayer> players;
     private InfoWindow infoWindow;
     
     Group trackGroup = new Group();
@@ -119,21 +106,13 @@ public class TangoDJ extends Application
     final Button stop = new Button("Stop");
     final Button info = new Button("Info Window");
     
-    /*
-    private static final double START_FREQ = 250.0;
-    private static final int BAND_COUNT = 7;
-    
-    private SpectrumBar[] spectrumBars;
-    private SpectrumListener spectrumListener;
-    */
-       
     public static void main(String[] args) 
     {
         launch(args);
     }
  
-    @Override
-    public void start(Stage stage) 
+  
+   public void start(Stage stage) 
    {
     	redBox.setFill(Color.RED);
     	loadFonts();
@@ -272,21 +251,6 @@ public class TangoDJ extends Application
       allPlaylistsTable.getColumns().addAll(idCol, nameCol);
 	}
    
-    
-	
-	private void playList2()
-	{
-		if (deBounce()) return;
-		cancelListPlay();
-		listPlaying=true;
-		
-        
-        //nowPlayingIndex=0;
-        //numberOfTracks=players.size();
-
-        playTrack();
-
-	}
 	
 	private boolean deBounce()
 	{
@@ -380,60 +344,20 @@ public class TangoDJ extends Application
     
     private MediaPlayer createMediaPlayer(String path, boolean autoPlay)
     {
-    	//File temp = new File(path);
-	  //  Media  media = new Media(temp.toURI().toString());
-    	final String thisPath=path;
-    	Media  media = new Media(path);
-	      final MediaPlayer mp = new MediaPlayer(media);
-	      mp.setOnError(new Runnable() {
-	          public void run() {
-	            System.out.println("Media error occurred: " + mp.getError());
-	            System.out.println("path: " + thisPath);
-	          }
-	        });
-	      mp.setAutoPlay(autoPlay);
-	      return mp;
+      final String thisPath=path;
+      Media  media = new Media(path);
+	  final MediaPlayer mp = new MediaPlayer(media);
+	  mp.setOnError(new Runnable() 
+	  {
+	    public void run() 
+	    {
+	      System.out.println("Media error occurred: " + mp.getError());
+	      System.out.println("path: " + thisPath);
+	    }});
+	    mp.setAutoPlay(autoPlay);
+	    return mp;
     }
 	
-    /*
-	void setPlaylistTracks(int index)
-	{
-	   PlaylistData pd = data.playlists[index];
-	   ItunesTrackData td = null;
-	   String path;
-	   String lastGroup="";
-	   int tandas=0;
-	   
-	   trackData= FXCollections.observableArrayList(); 
-	   for(int j=0; j<pd.tracks.length; j++)
-		{
-		  td=data.tracks[pd.tracks[j]];
-		  path=td.path.substring(16);
-		  try {
-   			 path = URLDecoder.decode(path,"UTF-8");
-   			 } catch (Exception e) { e.printStackTrace(); }
-		  File temp = new File(path);
-		  path=temp.toURI().toString();
-		  //System.out.println("plalist track: "+path);
-		  if (td.grouping!=null)
-		  {
-		    if (td.grouping.toLowerCase().equals("cortina"))
-		    {
-		      tandas++;
-		    }
-		  }
-		  trackData.add(new Track(td.name, td.artist, path, td.grouping, td.time));
-		}
-	   trackTable.setItems(trackData);
-	   
-	   // in case last track in playlist is not a cotrina;
-	   if (td.grouping!=null)
-	  {
-	     if (!td.grouping.toLowerCase().equals("cortina")) tandas++;
-	}
-	   System.out.println("Tandas: "+tandas);
-	}
-	*/
     
     
    void getPlaylistData()
@@ -445,26 +369,7 @@ public class TangoDJ extends Application
 		}
    }
    
-   /** sets the currently playing label to the label of the new media player and updates the progress monitor. 
-   private void setCurrentlyPlaying(final MediaPlayer newPlayer) 
-   {
-     progress.setProgress(0);
-     progressChangeListener = new ChangeListener<Duration>() {
-       @Override public void changed(ObservableValue<? extends Duration> observableValue, Duration oldValue, Duration newValue) {
-         progress.setProgress(1.0 * newPlayer.getCurrentTime().toMillis() / newPlayer.getTotalDuration().toMillis());
-       }
-     };
-     newPlayer.currentTimeProperty().addListener(progressChangeListener);
-
-     String source = newPlayer.getMedia().getSource();
-     source = source.substring(0, source.length() - ".mp3".length());
-     source = source.substring(source.lastIndexOf("/") + 1).replaceAll("%20", " ");
-     currentlyPlaying.setText("Now Playing: " + source);
-     setInfoWindow();
-  }
-   */
-  
-    
+   
     private void cancelListPlay()
     {
     	if (listPlaying)
@@ -472,29 +377,19 @@ public class TangoDJ extends Application
     	   final MediaPlayer curPlayer = mediaView.getMediaPlayer();
            curPlayer.currentTimeProperty().removeListener(progressChangeListener);
            curPlayer.stop();
-           //players.clear();
            vbox.getChildren().remove(3);
-          // vbox.getChildren().remove(2);
            listPlaying=false;
     	}
     }
     
-    
-    
-   
-   
-    
- 	
 	
 	 private void setInfoWindow()
-	   {
-		 String curArtist = trackRows.get(nowPlayingIndex).getArtistName();
-		 currentArtist.setText(curArtist);
-		
-		 currentTrackName.setText(trackRows.get(nowPlayingIndex).name.getText());
-		 
+	 {
+	   String curArtist = trackRows.get(nowPlayingIndex).getArtistName();
+	   currentArtist.setText(curArtist);
+	   currentTrackName.setText(trackRows.get(nowPlayingIndex).name.getText());
 	    if (infoWindow!=null) infoWindow.update(currentArtist.getText(), currentTrackName.getText());
-	   }
+	  }
 	
 	private void showInfoWindow()
     {
@@ -520,40 +415,33 @@ public class TangoDJ extends Application
 	private ScrollPane getTrackGrid()
 	{
 	  scrollPane = new ScrollPane();
-	  
-	  EventHandler <MouseEvent>mouseDownHandler = new EventHandler<MouseEvent>() {
-          public void handle(MouseEvent event)  
-          { 
-        	 // System.out.println("mouse down: "+event.getY()+" - "+scrollPane.getVvalue());
-        	 // System.out.println("scrollPane Height: "+scrollPane.getHeight());
-        	//  System.out.println("trackGrid Height: "+trackGrid.getHeight());
-        	//  System.out.println("number of rows: "+numberOfTracksInPlaylist);
-        	  double trackIndex=0;
-        	  trackIndex=((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188);
-        	  System.out.println("down trackIndex: "+Math.round(trackIndex));
-        	   
-          }};
+	  EventHandler <MouseEvent>mouseDownHandler = new EventHandler<MouseEvent>() 
+	  {
+        public void handle(MouseEvent event)  
+        { 
+          double trackIndex=0;
+          trackIndex=((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188);
+          System.out.println("down trackIndex: "+Math.round(trackIndex));
+        }};
           
-      EventHandler <MouseEvent>mouseReleasedHandler = new EventHandler<MouseEvent>() {
+        EventHandler <MouseEvent>mouseReleasedHandler = new EventHandler<MouseEvent>() 
+        {
           public void handle(MouseEvent event)  
           { 
-        	 // System.out.println("mouse up idx: "+event.getY()+" - "+scrollPane.getVvalue());   
-        	  double trackIndex=0;
-        	  trackIndex=((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188);
-        	  System.out.println("up trackIndex: "+Math.round(trackIndex));
-        	  
-          }};
+            double trackIndex=0;
+        	trackIndex=((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188);
+        	System.out.println("up trackIndex: "+Math.round(trackIndex));
+          }
+        };
   
-	  scrollPane.setOnMousePressed(mouseDownHandler);
-	  scrollPane.setOnMouseReleased(mouseReleasedHandler);
-	  scrollPane.getHvalue();
-	  
-	  scrollPane.setPrefWidth(600);
-	  scrollPane.setFitToHeight(true);
+	    scrollPane.setOnMousePressed(mouseDownHandler);
+	    scrollPane.setOnMouseReleased(mouseReleasedHandler);
+	    scrollPane.getHvalue();
+	    scrollPane.setPrefWidth(600);
+	    scrollPane.setFitToHeight(true);
+	    scrollPane.setContent(trackGroup);
 	 
-	  scrollPane.setContent(trackGroup);
-	 
-	  return scrollPane;
+	    return scrollPane;
 	}
 	
 	private void getTrackRows(int index)
