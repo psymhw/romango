@@ -31,6 +31,7 @@ public class TrackRow
 	Image greenLightImage;
 	Image noLightImage;
 	Image greyLightImage;
+	Image selectedArrowImage;
 	int fontSize=18;
 	static String lastGrouping="";
 	static String lastArtist="";
@@ -45,6 +46,8 @@ public class TrackRow
 		greenLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/green_light.png"));
 		noLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/no_light.png"));
 		greyLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/gray_light.png"));
+		selectedArrowImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/selected_arrow.png"));
+		
 		String cssBkgColor = "tangoBkg";
 		
 		indicator.getChildren().add(selected);
@@ -144,7 +147,7 @@ public class TrackRow
 		
 	public void setSelectedIndicatorBall()
 	{
-	   selected.setImage(greyLightImage);
+	   selected.setImage(selectedArrowImage);
 	   selectedIndicated=true;
 	}
 	

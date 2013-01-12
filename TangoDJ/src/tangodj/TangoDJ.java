@@ -125,7 +125,7 @@ public class TangoDJ extends Application
         Scene scene = new Scene(new Group());
         stage.setTitle("Tango DJ");
         stage.setWidth(950);
-        stage.setHeight(810);
+        stage.setHeight(590);
  
         final Label label = new Label("Tango DJ");
         label.setFont(new Font("Arial", 20));
