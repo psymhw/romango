@@ -2054,9 +2054,9 @@ void restoreMoveMap(int[][] savedMoveMap)
 	    smallerWhiteStoneImage = new Image(Stone.class.getResourceAsStream(src+"/images/smaller_w.gif")); 
 	   
 	    horizSgfLabelsImage = new Image(Stone.class.getResourceAsStream(src+"/images/horizLabels.png")); 
-	    horizLabelsOff = new Image(Stone.class.getResourceAsStream(src+"/images/horizLabelsOff")); 
+	    horizLabelsOff = new Image(Stone.class.getResourceAsStream(src+"/images/horizLabelsOff.png")); 
 	    vertSgfLabelsImage = new Image(Stone.class.getResourceAsStream(src+"/images/vertSgfLabels.png")); 
-	    vertLabelsOff = new Image(Stone.class.getResourceAsStream(src+"/images/vertLabelsOff")); 
+	    vertLabelsOff = new Image(Stone.class.getResourceAsStream(src+"/images/vertLabelsOff.png")); 
 		 
 	    vertRegularLabelsImage = new Image(Stone.class.getResourceAsStream(src+"/images/vertNumbLabels.png")); 
 	    horizRegularLabelsImage = new Image(Stone.class.getResourceAsStream(src+"/images/horizRegLabels.png")); 
