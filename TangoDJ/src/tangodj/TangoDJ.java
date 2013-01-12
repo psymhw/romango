@@ -302,40 +302,35 @@ public class TangoDJ extends Application
 	
 	private void playTrack()
 	{
-	   final MediaPlayer player = createMediaPlayer(trackRows.get(nowPlayingIndex).path, false);
-	   player.setOnEndOfMedia(new Runnable() {
-           public void run() {
-                              // nowPlayingIndex++;
-        	                   if ((nowPlayingIndex+1)==numberOfTracksInPlaylist) return;
-        	                   if (selectedIndex==nowPlayingIndex) incrementSelected();
-        	                  
-                               incrementNowPlaying();
-                               playTrack();
-                             }
-       });    
+	  final MediaPlayer player = createMediaPlayer(trackRows.get(nowPlayingIndex).path, false);
+	  player.setOnEndOfMedia(new Runnable() 
+	  {
+        public void run() 
+        {
+          if ((nowPlayingIndex+1)==numberOfTracksInPlaylist) return;
+          if (selectedIndex==nowPlayingIndex) incrementSelected();
+          incrementNowPlaying();
+          playTrack();
+        }
+      });    
 	   
-	   mediaView = new MediaView(player);
-	   //clearNowPlayingIndicatorBall();
-       //trackRows.get(nowPlayingIndex).setNowPlayingIndicatorBall();
-       if (eq!=null) 
-       {
-    	 vbox.getChildren().remove(3);
-       }
+	  mediaView = new MediaView(player);
+      if (eq!=null) vbox.getChildren().remove(3);
        
-       setInfoWindow();
+      setInfoWindow();
        
-       eq = new Equalizer(player);
-       vbox.getChildren().add(eq.getGridPane());
-       progress.setProgress(0);
-       progressChangeListener = new ChangeListener<Duration>() {
-          public void changed(ObservableValue<? extends Duration> observableValue, Duration oldValue, Duration newValue) {
-           progress.setProgress(1.0 * player.getCurrentTime().toMillis() / player.getTotalDuration().toMillis());
-         }
-       };
-       player.currentTimeProperty().addListener(progressChangeListener);
+      eq = new Equalizer(player);
+      vbox.getChildren().add(eq.getGridPane());
+      progress.setProgress(0);
+      progressChangeListener = new ChangeListener<Duration>() 
+      {
+        public void changed(ObservableValue<? extends Duration> observableValue, Duration oldValue, Duration newValue) {
+        progress.setProgress(1.0 * player.getCurrentTime().toMillis() / player.getTotalDuration().toMillis());
+      }};
+      player.currentTimeProperty().addListener(progressChangeListener);
      
-       listPlaying=true;
-       mediaView.getMediaPlayer().play();
+      listPlaying=true;
+      mediaView.getMediaPlayer().play();
 	}
 	
     private void stopTrack() 
