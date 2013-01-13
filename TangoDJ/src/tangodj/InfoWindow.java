@@ -15,6 +15,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -24,19 +25,20 @@ import test.Test;
 public class InfoWindow 
 {
 //  public ArrayList<FontMeta> fontMeta = new ArrayList<FontMeta>();
-
+	FontMeta tusj = new FontMeta("FFF Tusj", FontWeight.BOLD);
+  Font titleFont = Font.font(tusj.name, tusj.style, 70);
   boolean fontsLoaded=false;
   Group root = new Group();
   Random random = new Random();
  
   ArrayList <ImageView>background = new ArrayList<ImageView>();
   
-  public InfoWindow(String artist, String title, boolean test)
+  public InfoWindow(String artist, String title, String group, boolean test)
   {
-	 this(artist, title); 
+	 this(artist, title, group); 
   }
   
-  public InfoWindow(String artist, String title)
+  public InfoWindow(String artist, String title, String group)
   {
     //loadFonts();
 	 
@@ -51,7 +53,7 @@ public class InfoWindow
     
     root.getChildren().add(r);
     
-    update(artist, title);
+    update(artist, title, group);
     
     Scene scene = new Scene(root, 1200, 800);
     infoWindow.setScene(scene);
@@ -82,14 +84,29 @@ public class InfoWindow
   
   
   
-  public void update(String artist, String title)
+  public void update(String artist, String title, String group)
   {
-  	 Artist currentArtist=Artist.getArtist(artist);
+	  
+  	 Artist currentArtist;
+  	 Text titleText= new Text("--");
   	 SongInfo songInfo = new SongInfo(title);
+  	 
+  	if (group.equalsIgnoreCase("CORTINA"))
+  	{
+  	   currentArtist=Artist.getArtist("cortina");
+  	   
+  	   titleText = Artist.getDistantLight(artist+" - "+title, titleFont);
+  	}
+  	else
+  	{
+      currentArtist=Artist.getArtist(artist);
+      titleText = songInfo.getTitleText();
+  	}
+  	 
   	   	  
   	 Text artistLastNameText =  currentArtist.getLastNameText();
   	 Text artistFirstNameText =  currentArtist.getFirstNameText();
-   	 Text titleText = songInfo.getTitleText();
+   	// Text titleText = songInfo.getTitleText();
   	  
   	 GridPane gp = getGridPane();
   	 gp.setAlignment(Pos.CENTER);
@@ -107,7 +124,7 @@ public class InfoWindow
      
   	while (root.getChildren().size()>1) { root.getChildren().remove(1); }
   	
-  	if (currentArtist.getLastNameText().getText().equals("CORTINA"))
+  	if (group.equalsIgnoreCase("CORTINA"))
   	{	
   	  root.getChildren().add(background.get(0));
   	  root.getChildren().add(b);

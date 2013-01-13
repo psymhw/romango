@@ -21,6 +21,7 @@ public class TrackRow
 	String artistName;
 	String path; 
 	Label grouping; 
+	public String groupingName;
 	Label  time;
 	Label index;
 	int idx=0;
@@ -56,28 +57,15 @@ public class TrackRow
 		EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
 	          public void handle(MouseEvent event)  { setIndex(); }};
 	          
-	  /*    		          
-	          EventHandler <MouseEvent>mouseDownHandler = new EventHandler<MouseEvent>() {
-		          public void handle(MouseEvent event)  { System.out.println("mouse down idx: "+idx);   }};
-		          
-		          
-		          EventHandler <MouseEvent>mouseReleasedHandler = new EventHandler<MouseEvent>() {
-			          public void handle(MouseEvent event)  { System.out.println("mouse up idx: "+idx);   }};
-	          
-	          EventHandler <MouseDragEvent>dragHandler = new EventHandler<MouseDragEvent>() {
-		          public void handle(MouseDragEvent event)  { System.out.println("drag detected, x-"+event.getX());  }};
-		         
-		          EventHandler <MouseDragEvent>dragHandler2 = new EventHandler<MouseDragEvent>() {
-			          public void handle(MouseDragEvent event)  { System.out.println("drag released, x-"+event.getX());  }};
-		*/	
-		          
-		          
+			          
 		if (igrouping!=null)
 		{
 		  if (igrouping.toLowerCase().equals("vals")) cssBkgColor = "valsBkg";
 		  else if (igrouping.toLowerCase().equals("milonga")) cssBkgColor = "milongaBkg";
 		  else if (igrouping.toLowerCase().equals("cortina")) cssBkgColor = "cortinaBkg";
 		  else if (igrouping.toLowerCase().equals("padding")) cssBkgColor = "paddingBkg";
+		  
+		  groupingName=igrouping;
 		  
 		  if (!lastGrouping.equals(igrouping))
 			{
@@ -93,8 +81,13 @@ public class TrackRow
 			}
 			this.grouping.setOnMouseClicked(bHandler);
 		}
-		else this.grouping=textLabel("", 100, cssBkgColor);
-			
+		else 
+		{	
+		   this.grouping=textLabel("", 100, cssBkgColor);
+		   groupingName=lastGrouping;
+		}	
+		
+		if (groupingName==null) groupingName="General";
 		
 		this.name=textLabel(iname, 200, cssBkgColor);
 		
@@ -109,26 +102,18 @@ public class TrackRow
 		//this.artist=textLabel(iartist, 200, cssBkgColor);
 		this.path=ipath;
 		
-		
-		
-		
-		
 		this.time=textLabel(getTime(itime), 100, cssBkgColor);
 		idx=iindex;
 		this.index=textLabel(""+(iindex+1)+") ", 50, cssBkgColor);
 		index.setAlignment(Pos.CENTER_RIGHT);
 		
 		this.index.setOnMouseClicked(bHandler);
-		//this.index.setOnMousePressed(mouseDownHandler);
-		//this.index.setOnMouseReleased(mouseReleasedHandler);
-		//this.index.setOnMouseDragEntered(dragHandler);
-		//this.index.setOnMouseDragExited(dragHandler2);
-		
 		this.name.setOnMouseClicked(bHandler);
 		this.artist.setOnMouseClicked(bHandler);
 		
 		this.time.setOnMouseClicked(bHandler);
 		nowPlaying.setOnMouseClicked(bHandler);
+		selected.setOnMouseClicked(bHandler);
 		nowPlaying.setImage(noLightImage);
 		
 	}

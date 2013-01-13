@@ -175,8 +175,7 @@ public class TangoDJ extends Application
         {
           stopTrack();
           if ((nowPlayingIndex+1)==numberOfTracksInPlaylist) return;
-          if (selectedIndex==nowPlayingIndex) incrementSelected();
-             
+                       
           incrementNowPlaying();
           playTrack();
         }
@@ -198,6 +197,7 @@ public class TangoDJ extends Application
         public void handle(ActionEvent actionEvent) 
         {
           nowPlayingIndex=selectedIndex;
+          trackRows.get(nowPlayingIndex).setNowPlayingIndicatorBall();
           play.setDisable(true);
           stop.setDisable(false);
           skip.setDisable(false);
@@ -294,6 +294,7 @@ public class TangoDJ extends Application
       player.currentTimeProperty().addListener(progressChangeListener);
      
       listPlaying=true;
+      trackRows.get(nowPlayingIndex).setNowPlayingIndicatorBall();
       mediaView.getMediaPlayer().play();
 	}
 	
@@ -304,7 +305,7 @@ public class TangoDJ extends Application
 	   curPlayer.currentTimeProperty().removeListener(progressChangeListener);
 	   curPlayer.stop();
 	   trackRows.get(nowPlayingIndex).setNotPlayingIndicatorBall();
-	   selectedIndex=0;
+	   //selectedIndex=0;
 	   vbox.getChildren().remove(3);
 	   eq=null;
 	   listPlaying=false;
@@ -312,6 +313,7 @@ public class TangoDJ extends Application
 	
     private void incrementSelected()
     {
+      System.out.println("increment selected");
       trackRows.get(selectedIndex).setNotSelectedIndicatorBall();
       selectedIndex++;
       trackRows.get(selectedIndex).setSelectedIndicatorBall();
@@ -319,9 +321,22 @@ public class TangoDJ extends Application
     
     private void incrementNowPlaying()
     {
+      System.out.println("selected: "+selectedIndex);
+      System.out.println("now Playing: "+nowPlayingIndex);
+      
       trackRows.get(nowPlayingIndex).setNotPlayingIndicatorBall();
-      nowPlayingIndex++;
-      trackRows.get(nowPlayingIndex).setNowPlayingIndicatorBall();
+      
+      if (selectedIndex==nowPlayingIndex) 
+      {
+    	incrementSelected();
+    	nowPlayingIndex++;
+      }
+      else 
+      {
+    	nowPlayingIndex=selectedIndex;
+      }
+     
+      
     }
     
     /*
@@ -385,15 +400,17 @@ public class TangoDJ extends Application
 	
 	 private void setInfoWindow()
 	 {
-	   String curArtist = trackRows.get(nowPlayingIndex).getArtistName();
+	   TrackRow row = 	trackRows.get(nowPlayingIndex); 
+	   String curArtist = row.getArtistName();
 	   currentArtist.setText(curArtist);
-	   currentTrackName.setText(trackRows.get(nowPlayingIndex).name.getText());
-	    if (infoWindow!=null) infoWindow.update(currentArtist.getText(), currentTrackName.getText());
+	   currentTrackName.setText(row.name.getText());
+	    if (infoWindow!=null) infoWindow.update(currentArtist.getText(), currentTrackName.getText(), row.groupingName);
 	  }
 	
 	private void showInfoWindow()
     {
-       infoWindow = new InfoWindow(currentArtist.getText(), currentTrackName.getText());
+		TrackRow row = 	trackRows.get(nowPlayingIndex); 
+       infoWindow = new InfoWindow(currentArtist.getText(), currentTrackName.getText(), row.groupingName);
         
     }
 	
@@ -447,6 +464,10 @@ public class TangoDJ extends Application
 	private void getTrackRows(int index)
 	{
 	  stopTrack();
+      stop.setDisable(true);
+      play.setDisable(true);
+      skip.setDisable(true);
+      info.setDisable(true);
 	  if (trackGroup.getChildren().size()>0) 
 	  {	  
 		trackGroup.getChildren().remove(0);
@@ -502,13 +523,14 @@ public class TangoDJ extends Application
        trackRows.get(0).setSelectedIndicatorBall();
 	   
        nowPlayingIndex=0;
+       selectedIndex=0;
 	   play.setDisable(false);
 	 }
 	
 	private void ShowIndex()
 	{
+	  trackRows.get(selectedIndex).setNotSelectedIndicatorBall();
 	  selectedIndex=TrackRow.getPindex();
-	  //clearSelectedIndicatorBall();
 	  trackRows.get(selectedIndex).setSelectedIndicatorBall();
 	}
 
