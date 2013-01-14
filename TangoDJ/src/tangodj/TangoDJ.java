@@ -166,9 +166,9 @@ public class TangoDJ extends Application
         public void handle(ActionEvent actionEvent) 
         {
           stopTrack();
-          if ((playlist.playingTrack+1)==numberOfTracksInPlaylist) return;
+          if (playlist.isDone()) return;
                        
-          incrementNowPlaying();
+          playlist.incrementPlaying();
           playTrack();
         }
       });
@@ -188,7 +188,7 @@ public class TangoDJ extends Application
       {
         public void handle(ActionEvent actionEvent) 
         {
-          playlist.playingTrack=playlist.selectedTrack;
+          playlist.setPlayingTrackToSelected();
           playlist.setPlayingIndicator();
           play.setDisable(true);
           stop.setDisable(false);
@@ -258,14 +258,14 @@ public class TangoDJ extends Application
 	
 	private void playTrack()
 	{
-	  final MediaPlayer player = createMediaPlayer(playlist.getTrackPath(playlist.playingTrack), false);
+	  final MediaPlayer player = createMediaPlayer(playlist.getPlayingTrackPath(), false);
 	  player.setOnEndOfMedia(new Runnable() 
 	  {
         public void run() 
         {
           if (playlist.isDone()) return;
-          if (playlist.selectedTrack==playlist.playingTrack) incrementSelected();
-          incrementNowPlaying();
+          if (playlist.playingIsSelected()) playlist.incrementSelected();
+          playlist.incrementPlaying();
           playTrack();
         }
       });    
@@ -303,35 +303,9 @@ public class TangoDJ extends Application
 	   listPlaying=false;
     }   
 	
-    private void incrementSelected()
-    {
-      System.out.println("increment selected");
-      playlist.setNotSelectedIndicator(playlist.selectedTrack);
-      playlist.selectedTrack++;
-      playlist.setSelectedIndicator(playlist.selectedTrack);
-    }
-    
-    private void incrementNowPlaying()
-    {
-      System.out.println("selected: "+playlist.selectedTrack);
-      System.out.println("now Playing: "+playlist.playingTrack);
-      
-      playlist.setNotPlayingIndicator();
-      
-      if (playlist.selectedTrack==playlist.playingTrack) 
-      {
-    	incrementSelected();
-    	playlist.playingTrack++;
-      }
-      else 
-      {
-    	playlist.playingTrack=playlist.selectedTrack;
-      }
-     
-      
-    }
     
     
+   
     
     private MediaPlayer createMediaPlayer(String path, boolean autoPlay)
     {
@@ -569,9 +543,9 @@ public class TangoDJ extends Application
 	
 	private void ShowIndex()
 	{
-		playlist.setNotSelectedIndicator(playlist.selectedTrack);
+		playlist.setNotSelectedIndicator();
 	  playlist.selectedTrack=TrackRow.getPindex();
-	  playlist.setSelectedIndicator(playlist.selectedTrack);
+	  playlist.setSelectedIndicator();
 	}
 	
 	private void populateTrackGrid()
@@ -625,7 +599,7 @@ public class TangoDJ extends Application
 				
 	  trackGrid.setOnMouseClicked(bHandler);
 	  trackGroup.getChildren().add(trackGrid);
-	  playlist.setSelectedIndicator(0);
+	  playlist.resetSelectedIndicator();
 			   
 	  play.setDisable(false);
 	}

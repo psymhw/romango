@@ -40,19 +40,24 @@ public class Playlist
 	  trackRows.get(playingTrack).setNotPlayingIndicatorBall();
 	}
 	
-	public void setSelectedIndicator(int index)
+	public void setSelectedIndicator()
 	{
-		trackRows.get(index).setSelectedIndicatorBall();
+		trackRows.get(selectedTrack).setSelectedIndicatorBall();
 	}
 	
-	public void setNotSelectedIndicator(int index)
+	public void setNotSelectedIndicator()
 	{
-		trackRows.get(index).setNotSelectedIndicatorBall();
+		trackRows.get(selectedTrack).setNotSelectedIndicatorBall();
+	}
+	public void resetSelectedIndicator()
+	{
+		trackRows.get(0).setNotSelectedIndicatorBall();
 	}
 	
-	public String getTrackPath(int index)
+	
+	public String getPlayingTrackPath()
 	{
-		return trackRows.get(index).path;
+		return trackRows.get(playingTrack).path;
 	}
 	
 	public TrackRow getTrack(int index)
@@ -71,5 +76,38 @@ public class Playlist
 		return false;
 	}
 	
+	public void setPlayingTrackToSelected()
+	{
+		playingTrack=selectedTrack;
+	}
 	
+	public boolean playingIsSelected()
+	{
+		if (playingTrack==selectedTrack) return true;
+		return false;
+	}
+	
+	public void incrementSelected()
+    {
+      setNotSelectedIndicator();
+      selectedTrack++;
+      setSelectedIndicator();
+    }
+	
+	 public void incrementPlaying()
+	 {
+	   setNotPlayingIndicator();
+	      
+	   if (playingIsSelected()) 
+	   {
+	     incrementSelected();
+	     playingTrack++;
+	   }
+	   else 
+	   {
+	     playingTrack=selectedTrack;
+	   }
+     }
+	    
+	    
  }
