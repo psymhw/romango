@@ -63,7 +63,7 @@ public class TangoDJ extends Application
 	String destFileName;
 	DecimalFormat nf = new DecimalFormat("00");
 	
-	String playlist="";
+	//String playlist="";
 	iTunesData data = new iTunesData();
 	iTunesParser parser;
 	
@@ -75,8 +75,10 @@ public class TangoDJ extends Application
     private TableView<PlaylistTitle> allPlaylistsTable = new TableView<PlaylistTitle>();
     private TableView<Track> trackTable = new TableView<Track>();
     private  ObservableList<PlaylistTitle> playlistData= FXCollections.observableArrayList(); 
-    private ArrayList<TrackRow> trackRows = new ArrayList<TrackRow>();
-    private ArrayList<Tanda> tandas;
+   // private ArrayList<TrackRow> trackRows = new ArrayList<TrackRow>();
+   // private ArrayList<Tanda> tandas;
+    
+    private Playlist playlist;
    
     
     final ProgressBar progress = new ProgressBar();
@@ -198,7 +200,7 @@ public class TangoDJ extends Application
         public void handle(ActionEvent actionEvent) 
         {
           nowPlayingIndex=selectedIndex;
-          trackRows.get(nowPlayingIndex).setNowPlayingIndicatorBall();
+          playlist.setPlayingIndicator(nowPlayingIndex);
           play.setDisable(true);
           stop.setDisable(false);
           skip.setDisable(false);
@@ -267,7 +269,7 @@ public class TangoDJ extends Application
 	
 	private void playTrack()
 	{
-	  final MediaPlayer player = createMediaPlayer(trackRows.get(nowPlayingIndex).path, false);
+	  final MediaPlayer player = createMediaPlayer(playlist.getTrackPath(nowPlayingIndex), false);
 	  player.setOnEndOfMedia(new Runnable() 
 	  {
         public void run() 
@@ -295,7 +297,7 @@ public class TangoDJ extends Application
       player.currentTimeProperty().addListener(progressChangeListener);
      
       listPlaying=true;
-      trackRows.get(nowPlayingIndex).setNowPlayingIndicatorBall();
+      playlist.setPlayingIndicator(nowPlayingIndex);
       mediaView.getMediaPlayer().play();
 	}
 	
@@ -305,7 +307,7 @@ public class TangoDJ extends Application
 	   final MediaPlayer curPlayer = mediaView.getMediaPlayer();
 	   curPlayer.currentTimeProperty().removeListener(progressChangeListener);
 	   curPlayer.stop();
-	   trackRows.get(nowPlayingIndex).setNotPlayingIndicatorBall();
+	   playlist.setNotPlayingIndicator(nowPlayingIndex);
 	   //selectedIndex=0;
 	   vbox.getChildren().remove(3);
 	   eq=null;
@@ -315,9 +317,9 @@ public class TangoDJ extends Application
     private void incrementSelected()
     {
       System.out.println("increment selected");
-      trackRows.get(selectedIndex).setNotSelectedIndicatorBall();
+      playlist.setNotSelectedIndicator(selectedIndex);
       selectedIndex++;
-      trackRows.get(selectedIndex).setSelectedIndicatorBall();
+      playlist.setSelectedIndicator(selectedIndex);
     }
     
     private void incrementNowPlaying()
@@ -325,7 +327,7 @@ public class TangoDJ extends Application
       System.out.println("selected: "+selectedIndex);
       System.out.println("now Playing: "+nowPlayingIndex);
       
-      trackRows.get(nowPlayingIndex).setNotPlayingIndicatorBall();
+      playlist.setNotPlayingIndicator(nowPlayingIndex);
       
       if (selectedIndex==nowPlayingIndex) 
       {
@@ -340,23 +342,7 @@ public class TangoDJ extends Application
       
     }
     
-    /*
-	private void clearNowPlayingIndicatorBall()
-	{
-	  for(int i=0; i<trackRows.size(); i++)
-	  {
-		  trackRows.get(i).setNotPlayingIndicatorBall();
-	  }
-	}
-	
-	private void clearSelectedIndicatorBall()
-	{
-	  for(int i=0; i<trackRows.size(); i++)
-	  {
-		  trackRows.get(i).setNotSelectedIndicatorBall();
-	  }
-	}
-	*/
+    
     
     private MediaPlayer createMediaPlayer(String path, boolean autoPlay)
     {
@@ -401,7 +387,7 @@ public class TangoDJ extends Application
 	
 	 private void setInfoWindow()
 	 {
-	   TrackRow row = 	trackRows.get(nowPlayingIndex); 
+	   TrackRow row = 	playlist.getTrack(nowPlayingIndex); 
 	   String curArtist = row.getArtistName();
 	   currentArtist.setText(curArtist);
 	   currentTrackName.setText(row.name.getText());
@@ -410,7 +396,7 @@ public class TangoDJ extends Application
 	
 	private void showInfoWindow()
     {
-		TrackRow row = 	trackRows.get(nowPlayingIndex); 
+		TrackRow row = 	playlist.getTrack(nowPlayingIndex); 
        infoWindow = new InfoWindow(currentArtist.getText(), currentTrackName.getText(), row.groupingName);
         
     }
@@ -545,9 +531,11 @@ public class TangoDJ extends Application
 	  String lastGrouping="";
 	  String lastArtist="";
 	  Tanda tanda=null;
-	  tandas = new ArrayList<Tanda>();
+	//  tandas = new ArrayList<Tanda>();
 	  int tandaNumber=0;
 	  int tandaTrackNumber=0;
+	  
+	  playlist = new Playlist();
 	  	  	   
 	  // populate Tandas and TrackRows
 	  for(int j=0; j<pd.tracks.length; j++)
@@ -569,7 +557,7 @@ public class TangoDJ extends Application
 			{
 		      if (!"padding".equalsIgnoreCase(td.grouping))
 			  {
-		    	if (tanda!=null) tandas.add(tanda);  
+		    	if (tanda!=null) playlist.addTanda(tanda);
 		        tanda = new Tanda(td.artist, td.grouping);
 		        tandaTrackNumber=0;
 		        tandaNumber++;
@@ -584,7 +572,7 @@ public class TangoDJ extends Application
 		tandaTrackNumber++;
 	  }
 	  
-	  tandas.add(tanda);
+	  playlist.addTanda(tanda);
 	  populateTrackGrid();
 	}
 	
@@ -592,9 +580,9 @@ public class TangoDJ extends Application
 	
 	private void ShowIndex()
 	{
-	  trackRows.get(selectedIndex).setNotSelectedIndicatorBall();
+		playlist.setNotSelectedIndicator(selectedIndex);
 	  selectedIndex=TrackRow.getPindex();
-	  trackRows.get(selectedIndex).setSelectedIndicatorBall();
+	  playlist.setSelectedIndicator(selectedIndex);
 	}
 	
 	private void populateTrackGrid()
@@ -608,7 +596,7 @@ public class TangoDJ extends Application
 	  if (trackGroup.getChildren().size()>0) 
 	  {	  
 		trackGroup.getChildren().remove(0);
-		trackRows.clear();
+		//playlist.getTrackRows().clear();
 	  }
 	  
 	  trackGrid = new GridPane();
@@ -616,7 +604,7 @@ public class TangoDJ extends Application
 	  trackGrid.setVgap(0);
 	  trackGrid.setHgap(0);
 
-	  Iterator<Tanda> it = tandas.iterator();
+	  Iterator<Tanda> it = playlist.getTandas().iterator();
 	  while(it.hasNext())
 	  {
 		tanda = it.next();
@@ -627,7 +615,7 @@ public class TangoDJ extends Application
 		while(itx.hasNext())
 		{
 		  tr = itx.next();
-		  trackRows.add(tr);
+		  //trackRows.add(tr);
 		  trackGrid.add(tr.indicator, 0, row);
 		  trackGrid.add(tr.index, 1, row);
 		  trackGrid.add(tr.grouping, 2, row);
@@ -648,7 +636,7 @@ public class TangoDJ extends Application
 				
 	  trackGrid.setOnMouseClicked(bHandler);
 	  trackGroup.getChildren().add(trackGrid);
-	  trackRows.get(0).setSelectedIndicatorBall();
+	  playlist.setSelectedIndicator(0);
 			   
 	  nowPlayingIndex=0;
 	  selectedIndex=0;
