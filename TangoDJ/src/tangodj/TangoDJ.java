@@ -133,7 +133,7 @@ public class TangoDJ extends Application
         
         hbox.getChildren().add(allPlaylistsTable);
        // hbox.getChildren().add(trackTable);
-        hbox.getChildren().add(getTrackGrid());
+        hbox.getChildren().add(getTrackScrollPane());
        
         
      
@@ -335,19 +335,7 @@ public class TangoDJ extends Application
    }
    
    
-    private void cancelListPlay()
-    {
-    	if (listPlaying)
-    	{
-    	   final MediaPlayer curPlayer = mediaView.getMediaPlayer();
-           curPlayer.currentTimeProperty().removeListener(progressChangeListener);
-           curPlayer.stop();
-           vbox.getChildren().remove(3);
-           listPlaying=false;
-    	}
-    }
-    
-	
+   
 	 private void setInfoWindow()
 	 {
 	   TrackRow row = 	playlist.getPlayingTrack(); 
@@ -379,7 +367,7 @@ public class TangoDJ extends Application
 	
 	
 	
-	private ScrollPane getTrackGrid()
+	private ScrollPane getTrackScrollPane()
 	{
 	  scrollPane = new ScrollPane();
 	  EventHandler <MouseEvent>mouseDownHandler = new EventHandler<MouseEvent>() 
@@ -387,6 +375,7 @@ public class TangoDJ extends Application
         public void handle(MouseEvent event)  
         { 
           double trackIndex=0;
+          event.setDragDetect(true);
           trackIndex=((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188);
           System.out.println("down trackIndex: "+Math.round(trackIndex));
         }};
