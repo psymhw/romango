@@ -7,6 +7,8 @@ public class Playlist
 {
 	private ArrayList<Tanda> tandas = new ArrayList<Tanda>();
 	private ArrayList<TrackRow> trackRows = new ArrayList<TrackRow>();
+	public int playingTrack=-1;
+	public int selectedTrack=0;
 
 	public void addTanda(Tanda tanda)
 	{
@@ -28,14 +30,14 @@ public class Playlist
 	   return trackRows;
 	}
 	
-	public void setPlayingIndicator(int index)
+	public void setPlayingIndicator()
 	{
-	  trackRows.get(index).setNowPlayingIndicatorBall();
+	  trackRows.get(playingTrack).setNowPlayingIndicatorBall();
 	}
 	
-	public void setNotPlayingIndicator(int index)
+	public void setNotPlayingIndicator()
 	{
-	  trackRows.get(index).setNotPlayingIndicatorBall();
+	  trackRows.get(playingTrack).setNotPlayingIndicatorBall();
 	}
 	
 	public void setSelectedIndicator(int index)
@@ -57,5 +59,17 @@ public class Playlist
 	{
 	  return trackRows.get(index); 
 	}
+	
+	public TrackRow getPlayingTrack()
+	{
+	  return trackRows.get(playingTrack); 
+	}
+	
+	public boolean isDone()
+	{
+		if ((playingTrack+1)>=trackRows.size()) return true;
+		return false;
+	}
+	
 	
  }
