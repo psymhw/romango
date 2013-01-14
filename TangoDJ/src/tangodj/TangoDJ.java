@@ -72,10 +72,11 @@ public class TangoDJ extends Application
 	 private static final int DOUBLE_CLICK_WAIT_TIME = 400 ; // milliseconds
 	 private boolean boxDoubleClicked ;
     
-    private TableView<Playlist> allPlaylistsTable = new TableView<Playlist>();
+    private TableView<PlaylistTitle> allPlaylistsTable = new TableView<PlaylistTitle>();
     private TableView<Track> trackTable = new TableView<Track>();
-    private  ObservableList<Playlist> playlistData= FXCollections.observableArrayList(); 
+    private  ObservableList<PlaylistTitle> playlistData= FXCollections.observableArrayList(); 
     private ArrayList<TrackRow> trackRows = new ArrayList<TrackRow>();
+    private ArrayList<Tanda> tandas;
    
     
     final ProgressBar progress = new ProgressBar();
@@ -228,11 +229,11 @@ public class TangoDJ extends Application
 	  allPlaylistsTable.setEditable(false);
       TableColumn idCol = new TableColumn("ID");
       idCol.setMinWidth(100);
-      idCol.setCellValueFactory(new PropertyValueFactory<Playlist, Integer>("index"));
+      idCol.setCellValueFactory(new PropertyValueFactory<PlaylistTitle, Integer>("index"));
         
       TableColumn nameCol = new TableColumn("Playlist Name");
       nameCol.setMinWidth(200);
-      nameCol.setCellValueFactory(new PropertyValueFactory<Playlist, String>("name"));
+      nameCol.setCellValueFactory(new PropertyValueFactory<PlaylistTitle, String>("name"));
        
       EventHandler <MouseEvent>click = new EventHandler<MouseEvent>() 
       {
@@ -380,7 +381,7 @@ public class TangoDJ extends Application
 	   for(int i=0; i<data.playlists.length; i++)
 		{	
 		  pd = 	data.playlists[i];
-	      playlistData.add(new Playlist(i+1, pd.name));
+	      playlistData.add(new PlaylistTitle(i+1, pd.name));
 		}
    }
    
@@ -461,6 +462,7 @@ public class TangoDJ extends Application
 	    return scrollPane;
 	}
 	
+	/*
 	private void getTrackRows(int index)
 	{
 	  stopTrack();
@@ -526,12 +528,131 @@ public class TangoDJ extends Application
        selectedIndex=0;
 	   play.setDisable(false);
 	 }
+	*/
+	
+	
+	private void getTrackRows(int index)
+	{
+	  stopTrack();
+      stop.setDisable(true);
+      play.setDisable(true);
+      skip.setDisable(true);
+      info.setDisable(true);
+	  
+	  PlaylistData pd = data.playlists[index];
+	  ItunesTrackData td = null;
+	  String path=null;
+	  String lastGrouping="";
+	  String lastArtist="";
+	  Tanda tanda=null;
+	  tandas = new ArrayList<Tanda>();
+	  int tandaNumber=0;
+	  int tandaTrackNumber=0;
+	  	  	   
+	  // populate Tandas and TrackRows
+	  for(int j=0; j<pd.tracks.length; j++)
+	  {
+	    td=data.tracks[pd.tracks[j]];
+		path=td.path.substring(16);
+		try 
+		{
+  		  path = URLDecoder.decode(path,"UTF-8");
+  		} catch (Exception e) { e.printStackTrace(); }
+		File temp = new File(path);
+		path=temp.toURI().toString();
+		
+		if (!lastArtist.equals(td.artist))
+		{
+		  if (td.grouping!=null)
+		  {
+		    if (!"cortina".equalsIgnoreCase(td.grouping))
+			{
+		      if (!"padding".equalsIgnoreCase(td.grouping))
+			  {
+		    	if (tanda!=null) tandas.add(tanda);  
+		        tanda = new Tanda(td.artist, td.grouping);
+		        tandaTrackNumber=0;
+		        tandaNumber++;
+		        lastArtist=td.artist;
+			  }
+			}
+		  }
+		}
+		
+		if (tanda==null) tanda = new Tanda("Artist", "Group");
+		tanda.addTrackRow( new TrackRow(td.name, td.artist, path, td.grouping, td.time, j, tandaNumber, tandaTrackNumber));
+		tandaTrackNumber++;
+	  }
+	  
+	  tandas.add(tanda);
+	  populateTrackGrid();
+	}
+	
+	
 	
 	private void ShowIndex()
 	{
 	  trackRows.get(selectedIndex).setNotSelectedIndicatorBall();
 	  selectedIndex=TrackRow.getPindex();
 	  trackRows.get(selectedIndex).setSelectedIndicatorBall();
+	}
+	
+	private void populateTrackGrid()
+	{
+	  Tanda tanda;
+	  ArrayList<TrackRow> trs;
+	  TrackRow tr;
+	  int row=0;
+	  numberOfTracksInPlaylist=0;
+	  
+	  if (trackGroup.getChildren().size()>0) 
+	  {	  
+		trackGroup.getChildren().remove(0);
+		trackRows.clear();
+	  }
+	  
+	  trackGrid = new GridPane();
+	  trackGrid.setPadding(new Insets(10, 10, 10, 10));
+	  trackGrid.setVgap(0);
+	  trackGrid.setHgap(0);
+
+	  Iterator<Tanda> it = tandas.iterator();
+	  while(it.hasNext())
+	  {
+		tanda = it.next();
+		
+		//System.out.println(tanda.artist.lastName+" "+tanda.group);
+		trs=tanda.getTrackRows();
+		Iterator<TrackRow> itx = trs.iterator();
+		while(itx.hasNext())
+		{
+		  tr = itx.next();
+		  trackRows.add(tr);
+		  trackGrid.add(tr.indicator, 0, row);
+		  trackGrid.add(tr.index, 1, row);
+		  trackGrid.add(tr.grouping, 2, row);
+		  trackGrid.add(tr.artist, 3, row);
+		  trackGrid.add(tr.name, 4, row);
+		  numberOfTracksInPlaylist++;  
+		  row++;
+
+		  //System.out.println("   "+tr.title);
+		}
+		
+	  }  
+	  
+	  EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() 
+	  {
+	    public void handle(MouseEvent event)  { ShowIndex(); }
+	  };
+				
+	  trackGrid.setOnMouseClicked(bHandler);
+	  trackGroup.getChildren().add(trackGrid);
+	  trackRows.get(0).setSelectedIndicatorBall();
+			   
+	  nowPlayingIndex=0;
+	  selectedIndex=0;
+	  play.setDisable(false);
 	}
 
 	
