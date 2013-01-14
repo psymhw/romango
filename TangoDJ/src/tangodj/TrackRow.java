@@ -25,6 +25,7 @@ public class TrackRow
 	Label  time;
 	Label index;
 	int idx=0;
+	String title;
 	
 	static int pIndex=0;
 	ImageView nowPlaying = new ImageView();
@@ -42,7 +43,7 @@ public class TrackRow
 	public StackPane indicator = new StackPane();
 	
 	
-	public TrackRow(String iname, String iartist, String ipath, String igrouping, int  itime, int iindex)
+	public TrackRow(String iname, String iartist, String ipath, String igrouping, int  itime, int iindex, int tandaNumber, int tandaTrackNumber)
 	{
 		greenLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/green_light.png"));
 		noLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/no_light.png"));
@@ -90,6 +91,7 @@ public class TrackRow
 		if (groupingName==null) groupingName="General";
 		
 		this.name=textLabel(iname, 200, cssBkgColor);
+		title = iname;
 		
 		artistName=iartist;  // holds the name even though it might be surpressed in the table view.
 		if (!lastArtist.equals(iartist))

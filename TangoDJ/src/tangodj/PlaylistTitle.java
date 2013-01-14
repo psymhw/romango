@@ -3,12 +3,12 @@ package tangodj;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class Playlist 
+public class PlaylistTitle 
 {
   private final SimpleStringProperty name;
   private final SimpleIntegerProperty index;
 
-    public Playlist(int index, String name) 
+    public PlaylistTitle(int index, String name) 
     {
         this.name = new SimpleStringProperty(name);
         this.index = new SimpleIntegerProperty(index);
