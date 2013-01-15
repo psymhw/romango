@@ -74,11 +74,3 @@
 #volume .knobDot {
     -fx-background-color: transparent;
 }   
-#volume .knobOverlay {
-    -fx-background-color: 
-        linear (0%,0%) to (0%,100%) stops (0,rgba(255,255,255,0.1)) (1,rgba(0,0,0,0.5));
-    -fx-background-radius: 500; 
-    -fx-background-insets: 0; 
-    -fx-background-image: url("images/volume-highlights.png");
-    -fx-background-position: center center;
-}
