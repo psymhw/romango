@@ -111,7 +111,7 @@ public class TangoDJ extends Application
     	parser = new iTunesParser(data);
 		parser.parseFile();
 		
-    	getPlaylistData();
+    	getAllPlaylistData();
     	
     	progress.setMaxWidth(300);
         Scene scene = new Scene(new Group());
@@ -325,7 +325,7 @@ public class TangoDJ extends Application
 	
     
     
-   void getPlaylistData()
+   void getAllPlaylistData()
    {
 	   for(int i=0; i<data.playlists.length; i++)
 		{	
@@ -375,9 +375,12 @@ public class TangoDJ extends Application
         public void handle(MouseEvent event)  
         { 
           double trackIndex=0;
-          event.setDragDetect(true);
           trackIndex=((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188);
           System.out.println("down trackIndex: "+Math.round(trackIndex));
+         
+          redBox.setX(event.getX());
+          redBox.setY(event.getY());
+          trackGroup.getChildren().add(redBox);
         }};
           
         EventHandler <MouseEvent>mouseReleasedHandler = new EventHandler<MouseEvent>() 
@@ -387,9 +390,19 @@ public class TangoDJ extends Application
             double trackIndex=0;
         	trackIndex=((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188);
         	System.out.println("up trackIndex: "+Math.round(trackIndex));
+        	trackGroup.getChildren().remove(1);
           }
         };
-  
+        
+       
+        trackGroup.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+            	//System.out.println("Mouse Moved");
+                redBox.setX(event.getX());
+                redBox.setY(event.getY());
+            }
+        });
+   
 	    scrollPane.setOnMousePressed(mouseDownHandler);
 	    scrollPane.setOnMouseReleased(mouseReleasedHandler);
 	    scrollPane.getHvalue();
@@ -400,73 +413,7 @@ public class TangoDJ extends Application
 	    return scrollPane;
 	}
 	
-	/*
-	private void getTrackRows(int index)
-	{
-	  stopTrack();
-      stop.setDisable(true);
-      play.setDisable(true);
-      skip.setDisable(true);
-      info.setDisable(true);
-	  if (trackGroup.getChildren().size()>0) 
-	  {	  
-		trackGroup.getChildren().remove(0);
-		trackRows.clear();
-	  }
-	  
-	  trackGrid = new GridPane();
-	  trackGrid.setPadding(new Insets(10, 10, 10, 10));
-	  trackGrid.setVgap(0);
-	  trackGrid.setHgap(0);
-	  
-	  PlaylistData pd = data.playlists[index];
-	  ItunesTrackData td = null;
-	  String path=null;
-	   
-	  for(int j=0; j<pd.tracks.length; j++)
-	  {
-	    td=data.tracks[pd.tracks[j]];
-		path=td.path.substring(16);
-		try 
-		{
-  		  path = URLDecoder.decode(path,"UTF-8");
-  		} catch (Exception e) { e.printStackTrace(); }
-		File temp = new File(path);
-		path=temp.toURI().toString();
-		 
-		trackRows.add(new TrackRow(td.name, td.artist, path, td.grouping, td.time, j));
-	  }
-	  
-	  TrackRow tr = null;
-	  int row=0;
-	  numberOfTracksInPlaylist=0;
-	  Iterator<TrackRow> it = trackRows.iterator();
-	  while(it.hasNext())
-	  {
-	    tr=it.next(); 
-		trackGrid.add(tr.indicator, 0, row);
-		trackGrid.add(tr.index, 1, row);
-		trackGrid.add(tr.grouping, 2, row);
-		trackGrid.add(tr.artist, 3, row);
-		trackGrid.add(tr.name, 4, row);
-		numberOfTracksInPlaylist++;  
-		row++;
-	   }
-	   
-	   EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() 
-	   {
-	     public void handle(MouseEvent event)  { ShowIndex(); }
-	   };
-		
-	   trackGrid.setOnMouseClicked(bHandler);
-	   trackGroup.getChildren().add(trackGrid);
-       trackRows.get(0).setSelectedIndicatorBall();
-	   
-       playlist.playingTrack=0;
-       selectedIndex=0;
-	   play.setDisable(false);
-	 }
-	*/
+	
 	
 	
 	private void getTrackRows(int index)
@@ -552,6 +499,7 @@ public class TangoDJ extends Application
 	  }
 	  
 	  trackGrid = new GridPane();
+		
 	  trackGrid.setPadding(new Insets(10, 10, 10, 10));
 	  trackGrid.setVgap(0);
 	  trackGrid.setHgap(0);
