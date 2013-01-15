@@ -50,7 +50,7 @@ public class ArtistTest extends Application
 		 gp.setHgap(3);
 		    gp.setVgap(3);
 		    gp.setPadding(new Insets(10));
-		 infoWindow = new InfoWindow("Hello World", "Some Title", true);
+		 //infoWindow = new InfoWindow("Hello World", "Some Title", true);
 		/* 		 		 
 		 for(int i=0; i<infoWindow.fontMeta.size(); i++)
 		 {
@@ -117,7 +117,7 @@ public class ArtistTest extends Application
 	    
 	 void update(int artistNumber)
 	 {
-        infoWindow.update(testArtists.get(artistNumber), "some title");
+       // infoWindow.update(testArtists.get(artistNumber), "some title");
 	 }
 	 
 
