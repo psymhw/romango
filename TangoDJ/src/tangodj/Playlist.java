@@ -109,5 +109,11 @@ public class Playlist
 	   }
      }
 	    
-	    
+	 public String getDragText(int index)
+	 {
+		TrackRow trackRow = trackRows.get(index);
+		int tandaNumber = trackRow.getTandaNumber();
+		Tanda tanda = tandas.get(tandaNumber);
+		return tanda.artist.lastName+" - "+tanda.group;
+	 }
  }
