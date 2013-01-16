@@ -92,6 +92,9 @@ public class TangoDJ extends Application
     int numberOfTracksInPlaylist=0;  // total number in playlist
     Group tandaDrag = new Group();
     Text dragText = new Text("HELLO");
+    private int dragStartIndex=0;
+    private int dragFinishIndex=0;
+    
    // int nowPlayingIndex=0;
    // int selectedIndex=0;
     
@@ -381,8 +384,8 @@ public class TangoDJ extends Application
         { 
           int trackIndex=0;
           trackIndex=(int)Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188));
-          System.out.println("down trackIndex: "+trackIndex);
-         
+          //System.out.println("down trackIndex: "+trackIndex);
+          dragStartIndex=trackIndex;
           dragText.setText(playlist.getDragText(trackIndex-1));
           dragText.setX(event.getX());
           dragText.setY(event.getY());
@@ -393,9 +396,12 @@ public class TangoDJ extends Application
         {
           public void handle(MouseEvent event)  
           { 
-            double trackIndex=0;
-        	trackIndex=((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188);
-        	System.out.println("up trackIndex: "+Math.round(trackIndex));
+            int trackIndex=0;
+        	//trackIndex=((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188);
+            trackIndex=(int)Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188));
+            dragFinishIndex=trackIndex;
+            if (dragStartIndex!=dragFinishIndex) playlist.reorder(dragStartIndex, dragFinishIndex);
+        	//System.out.println("up trackIndex: "+Math.round(trackIndex));
         	trackGroup.getChildren().remove(1);
           }
         };
@@ -433,46 +439,20 @@ public class TangoDJ extends Application
 	  PlaylistData pd = data.playlists[index];
 	  ItunesTrackData td = null;
 	  String path=null;
-	  String lastGrouping="";
-	  String lastArtist="";
-	  Tanda tanda=null;
-	  
 	  playlist = new Playlist();
 	  	  	   
 	  // populate Tandas and TrackRows
-	  for(int j=0; j<pd.tracks.length; j++)
+	  for(int trackNumber=0; trackNumber<pd.tracks.length; trackNumber++)
 	  {
-	    td=data.tracks[pd.tracks[j]];
+	    td=data.tracks[pd.tracks[trackNumber]];
 		path=td.path.substring(16);
 		try 
-		{
-  		  path = URLDecoder.decode(path,"UTF-8");
-  		} catch (Exception e) { e.printStackTrace(); }
+		{ path = URLDecoder.decode(path,"UTF-8"); } catch (Exception e) { e.printStackTrace(); }
 		File temp = new File(path);
 		path=temp.toURI().toString();
-		
-		if (!lastArtist.equals(td.artist))
-		{
-		  if (td.grouping!=null)
-		  {
-		    if (!"cortina".equalsIgnoreCase(td.grouping))
-			{
-		      if (!"padding".equalsIgnoreCase(td.grouping))
-			  {
-		    	if (tanda!=null) playlist.addTanda(tanda);
-		        tanda = new Tanda(td.artist, td.grouping);
-		        lastArtist=td.artist;
-			  }
-			}
-		  }
-		}
-		
-		if (tanda==null) tanda = new Tanda("Artist", "Group");
-		tanda.addTrackRow( new TrackRow(td.name, td.artist, path, td.grouping, td.time, j));
+		playlist.addTrackRow( new TrackRow(td.name, td.artist, path, td.grouping, td.time, trackNumber));
 	  }
-	  
-	  playlist.addTanda(tanda);
-	  
+	  playlist.setTrackRows();
 	  printTandas();
 	  
 	  populateTrackGrid();
@@ -551,6 +531,7 @@ public class TangoDJ extends Application
 	  TrackRow tr;
 	  int row=1;
 	  numberOfTracksInPlaylist=0;
+	  int tandaNumber=1;
 	  
 
 	  Iterator<Tanda> it = playlist.getTandas().iterator();
@@ -558,7 +539,7 @@ public class TangoDJ extends Application
 	  {
 		tanda = it.next();
 		row=1;
-		System.out.println(tanda.artist.lastName+" "+tanda.group);
+		System.out.println(tandaNumber+" "+tanda.artist.lastName+" "+tanda.group);
 		trs=tanda.getTrackRows();
 		Iterator<TrackRow> itx = trs.iterator();
 		while(itx.hasNext())
@@ -567,7 +548,7 @@ public class TangoDJ extends Application
 		  System.out.println(row+" of "+tanda.tracksInTanda()+"   "+tr.title);
 		  row++;
 		}
-		
+		tandaNumber++;
 	  }  
 	  
 
