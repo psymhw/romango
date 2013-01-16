@@ -436,9 +436,6 @@ public class TangoDJ extends Application
 	  String lastGrouping="";
 	  String lastArtist="";
 	  Tanda tanda=null;
-	//  tandas = new ArrayList<Tanda>();
-	  int tandaNumber=0;
-	  int tandaTrackNumber=0;
 	  
 	  playlist = new Playlist();
 	  	  	   
@@ -464,8 +461,6 @@ public class TangoDJ extends Application
 			  {
 		    	if (tanda!=null) playlist.addTanda(tanda);
 		        tanda = new Tanda(td.artist, td.grouping);
-		        tandaTrackNumber=0;
-		        tandaNumber++;
 		        lastArtist=td.artist;
 			  }
 			}
@@ -473,11 +468,13 @@ public class TangoDJ extends Application
 		}
 		
 		if (tanda==null) tanda = new Tanda("Artist", "Group");
-		tanda.addTrackRow( new TrackRow(td.name, td.artist, path, td.grouping, td.time, j, tandaNumber, tandaTrackNumber));
-		tandaTrackNumber++;
+		tanda.addTrackRow( new TrackRow(td.name, td.artist, path, td.grouping, td.time, j));
 	  }
 	  
 	  playlist.addTanda(tanda);
+	  
+	  printTandas();
+	  
 	  populateTrackGrid();
 	}
 	
@@ -545,6 +542,35 @@ public class TangoDJ extends Application
 	  playlist.resetSelectedIndicator();
 			   
 	  play.setDisable(false);
+	}
+	
+	private void printTandas()
+	{
+	  Tanda tanda;
+	  ArrayList<TrackRow> trs;
+	  TrackRow tr;
+	  int row=1;
+	  numberOfTracksInPlaylist=0;
+	  
+
+	  Iterator<Tanda> it = playlist.getTandas().iterator();
+	  while(it.hasNext())
+	  {
+		tanda = it.next();
+		row=1;
+		System.out.println(tanda.artist.lastName+" "+tanda.group);
+		trs=tanda.getTrackRows();
+		Iterator<TrackRow> itx = trs.iterator();
+		while(itx.hasNext())
+		{
+		  tr = itx.next();
+		  System.out.println(row+" of "+tanda.tracksInTanda()+"   "+tr.title);
+		  row++;
+		}
+		
+	  }  
+	  
+
 	}
 
 	

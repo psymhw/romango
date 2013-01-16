@@ -9,14 +9,19 @@ public class Playlist
 	private ArrayList<TrackRow> trackRows = new ArrayList<TrackRow>();
 	public int playingTrack=-1;
 	public int selectedTrack=0;
+	private int tandaTrackNumber=0;
 
 	public void addTanda(Tanda tanda)
-	{
+	{ 
+	  int tandaNumber=tandas.size();
 	  tandas.add(tanda);
 	  Iterator<TrackRow> it = tanda.getTrackRows().iterator();
+	  TrackRow trackRow;
 	  while(it.hasNext())
 	  {
-		trackRows.add(it.next());
+		trackRow=it.next();
+		trackRow.setTandaInfo(tandaNumber, tandaTrackNumber++);
+		trackRows.add(trackRow);
 	  }
 	}
 	
@@ -113,6 +118,7 @@ public class Playlist
 	 {
 		TrackRow trackRow = trackRows.get(index);
 		int tandaNumber = trackRow.getTandaNumber();
+		System.out.println("Track title: "+trackRow.title+" "+trackRow.getTandaNumber());
 		Tanda tanda = tandas.get(tandaNumber);
 		return tanda.artist.lastName+" - "+tanda.group;
 	 }
