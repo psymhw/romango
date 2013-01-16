@@ -108,10 +108,6 @@ public class TangoDJ extends Application
   
    public void start(Stage stage) 
    {
-    	redBox.setFill(Color.RED);
-    	tandaDrag.getChildren().add(redBox);
-    	tandaDrag.getChildren().add(new Text("hello"));
-    	
     	dragText.setFill(Color.RED);
     	dragText.setOpacity(.5);
     	dragText.setFont(new Font("Cambria", 18));
@@ -383,10 +379,11 @@ public class TangoDJ extends Application
 	  {
         public void handle(MouseEvent event)  
         { 
-          double trackIndex=0;
-          trackIndex=((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188);
-          System.out.println("down trackIndex: "+Math.round(trackIndex));
+          int trackIndex=0;
+          trackIndex=(int)Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188));
+          System.out.println("down trackIndex: "+trackIndex);
          
+          dragText.setText(playlist.getDragText(trackIndex-1));
           dragText.setX(event.getX());
           dragText.setY(event.getY());
           trackGroup.getChildren().add(dragText);

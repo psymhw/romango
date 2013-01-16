@@ -41,10 +41,20 @@ public class TrackRow
 	boolean nowPlayingIndicated=false;
 	boolean selectedIndicated=false;
 	public StackPane indicator = new StackPane();
+	private int tandaNumber=0;
 	
 	
+	public int getTandaNumber() {
+		return tandaNumber;
+	}
+
+	public void setTandaNumber(int tandaNumber) {
+		this.tandaNumber = tandaNumber;
+	}
+
 	public TrackRow(String iname, String iartist, String ipath, String igrouping, int  itime, int iindex, int tandaNumber, int tandaTrackNumber)
 	{
+		this.tandaNumber = tandaNumber;
 		greenLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/green_light.png"));
 		noLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/no_light.png"));
 		greyLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/gray_light.png"));
