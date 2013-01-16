@@ -163,5 +163,16 @@ public class Playlist
 	 public void reorder(int startIndex, int finishIndex)
 	 {
 		 System.out.println("start: "+startIndex+", finish: "+finishIndex); 
+		 TrackRow tr = trackRows.get(startIndex-1);
+		 int startTanda = tr.getTandaNumber();
+		 tr = trackRows.get(finishIndex-1);
+		 int finishTanda = tr.getTandaNumber();
+		 System.out.println("start tanda: "+startTanda+", finish tanda: "+finishTanda); 
+		 
+		 Tanda holdTanda = tandas.get(startTanda);
+		 tandas.remove(startTanda);
+		 tandas.add(finishTanda, holdTanda);
+		 
+		 setTrackRows();
 	 }
  }

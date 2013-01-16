@@ -400,7 +400,11 @@ public class TangoDJ extends Application
         	//trackIndex=((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188);
             trackIndex=(int)Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188));
             dragFinishIndex=trackIndex;
-            if (dragStartIndex!=dragFinishIndex) playlist.reorder(dragStartIndex, dragFinishIndex);
+            if (dragStartIndex!=dragFinishIndex) 
+            {
+            	playlist.reorder(dragStartIndex, dragFinishIndex);
+            	printTandas();
+            }
         	//System.out.println("up trackIndex: "+Math.round(trackIndex));
         	trackGroup.getChildren().remove(1);
           }
