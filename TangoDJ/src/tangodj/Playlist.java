@@ -10,19 +10,28 @@ public class Playlist
 	public int playingTrack=-1;
 	public int selectedTrack=0;
 	private int tandaTrackNumber=0;
-
-	public void addTanda(Tanda tanda)
-	{ 
-	  int tandaNumber=tandas.size();
-	  tandas.add(tanda);
-	  Iterator<TrackRow> it = tanda.getTrackRows().iterator();
-	  TrackRow trackRow;
-	  while(it.hasNext())
-	  {
-		trackRow=it.next();
-		trackRow.setTandaInfo(tandaNumber, tandaTrackNumber++);
-		trackRows.add(trackRow);
-	  }
+	boolean newTanda = true;
+	
+	
+	public void addTrackRow(TrackRow trackRow)
+	{
+	   
+	   if (newTanda)
+	   {
+		 tandas.add(new Tanda(trackRow.artistName, trackRow.groupingName));
+		 newTanda=false;
+	   }
+	   Tanda tanda = tandas.get(tandas.size()-1);
+	   trackRow.setTandaInfo(tandas.size()-1, tandaTrackNumber);
+	   tandaTrackNumber++;
+	   tanda.addTrackRow(trackRow);
+	  // trackRows.add(trackRow);
+	   
+	   if ("cortina".equalsIgnoreCase(trackRow.groupingName))
+	   {
+		 newTanda=true;
+		 tandaTrackNumber=0;
+	   }
 	}
 	
 	public ArrayList<Tanda> getTandas()
@@ -121,5 +130,38 @@ public class Playlist
 		System.out.println("Track title: "+trackRow.title+" "+trackRow.getTandaNumber());
 		Tanda tanda = tandas.get(tandaNumber);
 		return tanda.artist.lastName+" - "+tanda.group;
+	 }
+	 
+	 public void setTrackRows()
+	 {
+		 trackRows.clear();
+		 Tanda tanda;
+		 ArrayList<TrackRow> trs;
+		 TrackRow tr;
+		 
+		 int tandaNumber=0;
+		 int tandaTrackNumber=0;
+		  
+		  Iterator<Tanda> it = tandas.iterator();
+		  while(it.hasNext())
+		  {
+			tanda = it.next();
+			trs=tanda.getTrackRows();
+			Iterator<TrackRow> itx = trs.iterator();
+			while(itx.hasNext())
+			{
+			  tr = itx.next();
+			  tr.setTandaInfo(tandaNumber, tandaTrackNumber);
+			  trackRows.add(tr);
+			  tandaTrackNumber++;
+			}
+			
+			tandaNumber++;
+		  }  
+	 }
+	 
+	 public void reorder(int startIndex, int finishIndex)
+	 {
+		 System.out.println("start: "+startIndex+", finish: "+finishIndex); 
 	 }
  }
