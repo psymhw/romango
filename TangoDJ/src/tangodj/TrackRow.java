@@ -23,8 +23,8 @@ public class TrackRow
 	Label grouping; 
 	public String groupingName;
 	Label  time;
-	Label index;
-	int idx=0;
+	Label trackLabel;
+	int trackNumber=0;
 	String title;
 	
 	static int pIndex=0;
@@ -53,7 +53,7 @@ public class TrackRow
 		this.tandaNumber = tandaNumber;
 	}
 
-	public TrackRow(String iname, String iartist, String ipath, String igrouping, int  itime, int iindex)
+	public TrackRow(String iname, String iartist, String ipath, String igrouping, int  itime, int trackNumber)
 	{
 		greenLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/green_light.png"));
 		noLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/no_light.png"));
@@ -115,11 +115,11 @@ public class TrackRow
 		this.path=ipath;
 		
 		this.time=textLabel(getTime(itime), 100, cssBkgColor);
-		idx=iindex;
-		this.index=textLabel(""+(iindex+1)+") ", 50, cssBkgColor);
-		index.setAlignment(Pos.CENTER_RIGHT);
+		this.trackNumber=trackNumber;
+		this.trackLabel=textLabel(""+(trackNumber+1)+") ", 50, cssBkgColor);
+		trackLabel.setAlignment(Pos.CENTER_RIGHT);
 		
-		this.index.setOnMouseClicked(bHandler);
+		this.trackLabel.setOnMouseClicked(bHandler);
 		this.name.setOnMouseClicked(bHandler);
 		this.artist.setOnMouseClicked(bHandler);
 		
@@ -157,7 +157,7 @@ public class TrackRow
 	private void setIndex()
 	{
 		//System.out.println("TrackRow: "+index);
-		pIndex=idx;
+		pIndex=trackNumber;
 	}
 	
 	public static int getPindex()
@@ -188,10 +188,13 @@ public class TrackRow
 		return artistName;
 	}
 	
-	public void setTandaInfo(int tandaNumber, int tandaTrackNumber)
+	public void setTandaInfo(int tandaNumber, int tandaTrackNumber, int trackNumber)
 	{
 		this.tandaNumber=tandaNumber;
 		this.tandaTrackNumber=tandaTrackNumber;
+		this.trackNumber=trackNumber;
+		this.trackLabel.setText(""+(trackNumber+1)+") ");
+		trackLabel.setAlignment(Pos.CENTER_RIGHT);
 	}
 }
 
