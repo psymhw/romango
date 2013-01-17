@@ -10,6 +10,7 @@ public class Playlist
 	public int playingTrack=-1;
 	public int selectedTrack=0;
 	private int tandaTrackNumber=0;
+	private int trackNumber=0;
 	boolean newTanda = true;
 	
 	
@@ -22,8 +23,9 @@ public class Playlist
 		 newTanda=false;
 	   }
 	   Tanda tanda = tandas.get(tandas.size()-1);
-	   trackRow.setTandaInfo(tandas.size()-1, tandaTrackNumber);
+	   trackRow.setTandaInfo(tandas.size()-1, tandaTrackNumber, trackNumber);
 	   tandaTrackNumber++;
+	   trackNumber++;
 	   tanda.addTrackRow(trackRow);
 	  // trackRows.add(trackRow);
 	   
@@ -141,6 +143,7 @@ public class Playlist
 		 
 		 int tandaNumber=0;
 		 int tandaTrackNumber=0;
+		 int trackNumber=0;
 		  
 		  Iterator<Tanda> it = tandas.iterator();
 		  while(it.hasNext())
@@ -151,9 +154,10 @@ public class Playlist
 			while(itx.hasNext())
 			{
 			  tr = itx.next();
-			  tr.setTandaInfo(tandaNumber, tandaTrackNumber);
+			  tr.setTandaInfo(tandaNumber, tandaTrackNumber, trackNumber);
 			  trackRows.add(tr);
 			  tandaTrackNumber++;
+			  trackNumber++;
 			}
 			
 			tandaNumber++;

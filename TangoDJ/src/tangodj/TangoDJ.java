@@ -506,7 +506,7 @@ public class TangoDJ extends Application
 		{
 		  tr = itx.next();
 		  trackGrid.add(tr.indicator, 0, row);
-		  trackGrid.add(tr.index, 1, row);
+		  trackGrid.add(tr.trackLabel, 1, row);
 		  trackGrid.add(tr.grouping, 2, row);
 		  trackGrid.add(tr.artist, 3, row);
 		  trackGrid.add(tr.name, 4, row);
