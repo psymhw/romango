@@ -239,7 +239,15 @@ public class TangoDJ extends Application
 	    public void handle(MouseEvent ev) 
 	    {
 		  int index = ((TableCell)ev.getSource()).getIndex();
-		  getTrackRows(index);
+		  stopTrack();
+	      stop.setDisable(true);
+	      play.setDisable(true);
+	      skip.setDisable(true);
+	      info.setDisable(true);
+		  createPlaylist(index);
+		  populateTrackGrid();
+		  playlist.resetSelectedIndicator();
+		  play.setDisable(false);
 		}
       };
         
@@ -400,13 +408,15 @@ public class TangoDJ extends Application
         	//trackIndex=((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188);
             trackIndex=(int)Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188));
             dragFinishIndex=trackIndex;
+            trackGroup.getChildren().remove(1);
             if (dragStartIndex!=dragFinishIndex) 
             {
             	playlist.reorder(dragStartIndex, dragFinishIndex);
-            	printTandas();
+            	populateTrackGrid();
+            	//printTandas();
             }
         	//System.out.println("up trackIndex: "+Math.round(trackIndex));
-        	trackGroup.getChildren().remove(1);
+        	
           }
         };
         
@@ -432,13 +442,9 @@ public class TangoDJ extends Application
 	
 	
 	
-	private void getTrackRows(int index)
+	private void createPlaylist(int index)
 	{
-	  stopTrack();
-      stop.setDisable(true);
-      play.setDisable(true);
-      skip.setDisable(true);
-      info.setDisable(true);
+	  
 	  
 	  PlaylistData pd = data.playlists[index];
 	  ItunesTrackData td = null;
@@ -457,9 +463,9 @@ public class TangoDJ extends Application
 		playlist.addTrackRow( new TrackRow(td.name, td.artist, path, td.grouping, td.time, trackNumber));
 	  }
 	  playlist.setTrackRows();
-	  printTandas();
+	  //printTandas();
 	  
-	  populateTrackGrid();
+	  
 	}
 	
 	
@@ -482,7 +488,6 @@ public class TangoDJ extends Application
 	  if (trackGroup.getChildren().size()>0) 
 	  {	  
 		trackGroup.getChildren().remove(0);
-		//playlist.getTrackRows().clear();
 	  }
 	  
 	  trackGrid = new GridPane();
@@ -495,14 +500,11 @@ public class TangoDJ extends Application
 	  while(it.hasNext())
 	  {
 		tanda = it.next();
-		
-		//System.out.println(tanda.artist.lastName+" "+tanda.group);
 		trs=tanda.getTrackRows();
 		Iterator<TrackRow> itx = trs.iterator();
 		while(itx.hasNext())
 		{
 		  tr = itx.next();
-		  //trackRows.add(tr);
 		  trackGrid.add(tr.indicator, 0, row);
 		  trackGrid.add(tr.index, 1, row);
 		  trackGrid.add(tr.grouping, 2, row);
@@ -510,10 +512,7 @@ public class TangoDJ extends Application
 		  trackGrid.add(tr.name, 4, row);
 		  numberOfTracksInPlaylist++;  
 		  row++;
-
-		  //System.out.println("   "+tr.title);
 		}
-		
 	  }  
 	  
 	  EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() 
@@ -523,9 +522,7 @@ public class TangoDJ extends Application
 				
 	  trackGrid.setOnMouseClicked(bHandler);
 	  trackGroup.getChildren().add(trackGrid);
-	  playlist.resetSelectedIndicator();
-			   
-	  play.setDisable(false);
+	
 	}
 	
 	private void printTandas()
