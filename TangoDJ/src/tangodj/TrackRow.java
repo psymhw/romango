@@ -15,17 +15,18 @@ import javafx.scene.text.Font;
 
 public class TrackRow 
 {
-	private String artistName;
+	private String artist;
 	private String path; 
-	private String groupingName;
+	private String grouping;
 	private String trackTitle;
 	private int trackNumber=0;
+	private int time;
 	
 	private Label trackTitleLabel; 
 	private Label artistLabel; 
 	private Label groupingLabel; 
 	private Label  timeLabel;
-	private Label trackLabel;
+	private Label trackNumberLabel;
 	
 	
 	private static int pIndex=0;
@@ -54,10 +55,23 @@ public class TrackRow
 		this.tandaNumber = tandaNumber;
 	}
 
-	public TrackRow(String trackTitle, String artistName, String ipath, String grouping, int  time, int trackNumber)
+	public TrackRow clone(TrackRow tr)
 	{
+	   return new TrackRow(tr.getTrackTitle(), tr.getArtist(), tr.getPath(), tr.getGrouping(), tr.getTime(), tr.getTrackNumber());
+	}
+	
+	
+
+	public TrackRow(String trackTitle, String artist, String path, String grouping, int time, int trackNumber) 
+	{
+		
+	  this.trackNumber=trackNumber;
 	  this.trackTitle = trackTitle;
-	  this.artistName=artistName;
+	  this.artist=artist;
+	  this.grouping=grouping;
+	  this.path=path;
+	  this.time=time;
+	  
 		greenLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/green_light.png"));
 		noLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/no_light.png"));
 		greyLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/gray_light.png"));
@@ -79,7 +93,7 @@ public class TrackRow
 		  else if (grouping.toLowerCase().equals("cortina")) cssBkgColor = "cortinaBkg";
 		  else if (grouping.toLowerCase().equals("padding")) cssBkgColor = "paddingBkg";
 		  
-		  groupingName=grouping;
+		  
 		  
 		  if (!lastGrouping.equals(grouping))
 			{
@@ -98,31 +112,31 @@ public class TrackRow
 		else 
 		{	
 		   groupingLabel=textLabel("", 100, cssBkgColor);
-		   groupingName=lastGrouping;
+		   grouping=lastGrouping;
 		}	
 		
-		if (groupingName==null) groupingName="General";
+		if (grouping==null) grouping="General";
 		
 		this.trackTitleLabel=textLabel(trackTitle, 200, cssBkgColor);
 		
 		
 		  // holds the name even though it might be surpressed in the table view.
-		if (!lastArtist.equals(artistName))
+		if (!lastArtist.equals(artist))
 		{
-		  this.artistLabel=textLabel(artistName, 200, cssBkgColor);
-		  lastArtist=artistName;
+		  this.artistLabel=textLabel(artist, 200, cssBkgColor);
+		  lastArtist=artist;
 		}
 		else this.artistLabel=textLabel("", 200, cssBkgColor);
 		
 		//this.artist=textLabel(iartist, 200, cssBkgColor);
-		this.path=ipath;
 		
-		timeLabel=textLabel(getTime(time), 100, cssBkgColor);
-		this.trackNumber=trackNumber;
-		this.trackLabel=textLabel(""+(trackNumber+1)+") ", 50, cssBkgColor);
-		trackLabel.setAlignment(Pos.CENTER_RIGHT);
 		
-		this.trackLabel.setOnMouseClicked(bHandler);
+		timeLabel=textLabel(getTimeStr(time), 100, cssBkgColor);
+		
+		this.trackNumberLabel=textLabel(""+(trackNumber+1)+") ", 50, cssBkgColor);
+		trackNumberLabel.setAlignment(Pos.CENTER_RIGHT);
+		
+		this.trackNumberLabel.setOnMouseClicked(bHandler);
 		this.trackTitleLabel.setOnMouseClicked(bHandler);
 		this.artistLabel.setOnMouseClicked(bHandler);
 		
@@ -132,6 +146,8 @@ public class TrackRow
 		nowPlaying.setImage(noLightImage);
 		
 	}
+	
+	
 	
 	public void setNowPlayingIndicatorBall()
 	{
@@ -178,7 +194,7 @@ public class TrackRow
 	   return label;
 	}
 	
-	public String getTime(int time) {
+	public String getTimeStr(int time) {
     	return String.format("%d:%d", 
     		    TimeUnit.MILLISECONDS.toMinutes(time),
     		    TimeUnit.MILLISECONDS.toSeconds(time) - 
@@ -187,8 +203,8 @@ public class TrackRow
         //return time.get();
     }
 
-	public String getArtistName() {
-		return artistName;
+	public String getArtist() {
+		return artist;
 	}
 	
 	public void setTandaInfo(int tandaNumber, int tandaTrackNumber, int trackNumber)
@@ -196,8 +212,8 @@ public class TrackRow
 		this.tandaNumber=tandaNumber;
 		this.tandaTrackNumber=tandaTrackNumber;
 		this.trackNumber=trackNumber;
-		this.trackLabel.setText(""+(trackNumber+1)+") ");
-		trackLabel.setAlignment(Pos.CENTER_RIGHT);
+		this.trackNumberLabel.setText(""+(trackNumber+1)+") ");
+		trackNumberLabel.setAlignment(Pos.CENTER_RIGHT);
 	}
 
 	public String getPath() {
@@ -238,6 +254,46 @@ public class TrackRow
 
 	public void setGroupingLabel(Label groupingLabel) {
 		this.groupingLabel = groupingLabel;
+	}
+
+	public Label getTrackNumberLabel() {
+		return trackNumberLabel;
+	}
+
+	public void setTrackNumberLabel(Label trackNumberLabel) {
+		this.trackNumberLabel = trackNumberLabel;
+	}
+
+	public Label getArtistLabel() {
+		return artistLabel;
+	}
+
+	public void setArtistLabel(Label artistLabel) {
+		this.artistLabel = artistLabel;
+	}
+
+	public String getGrouping() {
+		return grouping;
+	}
+
+	public void setGrouping(String grouping) {
+		this.grouping = grouping;
+	}
+
+	public int getTrackNumber() {
+		return trackNumber;
+	}
+
+	public void setTrackNumber(int trackNumber) {
+		this.trackNumber = trackNumber;
+	}
+
+	public int getTime() {
+		return time;
+	}
+
+	public void setTime(int time) {
+		this.time = time;
 	}
 }
 
