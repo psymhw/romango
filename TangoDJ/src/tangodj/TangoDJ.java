@@ -512,10 +512,10 @@ public class TangoDJ extends Application
 		while(itx.hasNext())
 		{
 		  tr = itx.next();
-		  trackGrid.add(tr.indicator, 0, row);
-		  trackGrid.add(tr.trackLabel, 1, row);
-		  trackGrid.add(tr.grouping, 2, row);
-		  trackGrid.add(tr.artist, 3, row);
+		  trackGrid.add(tr.getIndicator(), 0, row);
+		  trackGrid.add(tr.getTrackTitleLabel(), 1, row);
+		  trackGrid.add(tr.getGroupingLabel(), 2, row);
+		  trackGrid.add(tr.getArtistLabel(), 3, row);
 		  trackGrid.add(tr.name, 4, row);
 		  numberOfTracksInPlaylist++;  
 		  row++;
@@ -553,7 +553,7 @@ public class TangoDJ extends Application
 		while(itx.hasNext())
 		{
 		  tr = itx.next();
-		  System.out.println(row+" of "+tanda.tracksInTanda()+"   "+tr.title);
+		  System.out.println(row+" of "+tanda.tracksInTanda()+"   "+tr.trackTitle);
 		  row++;
 		}
 		tandaNumber++;
