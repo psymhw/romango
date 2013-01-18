@@ -15,31 +15,33 @@ import javafx.scene.text.Font;
 
 public class TrackRow 
 {
-	Label name; 
-	Label artist; 
-	String artistName;
-	String path; 
-	Label grouping; 
-	public String groupingName;
-	Label  time;
-	Label trackLabel;
-	int trackNumber=0;
-	String title;
+	private String artistName;
+	private String path; 
+	private String groupingName;
+	private String trackTitle;
+	private int trackNumber=0;
 	
-	static int pIndex=0;
-	ImageView nowPlaying = new ImageView();
-	ImageView selected = new ImageView();
-	Image greenLightImage;
-	Image noLightImage;
-	Image greyLightImage;
-	Image selectedArrowImage;
-	int fontSize=18;
-	static String lastGrouping="";
-	static String lastArtist="";
-	boolean groupingVisible=true;
-	boolean nowPlayingIndicated=false;
-	boolean selectedIndicated=false;
-	public StackPane indicator = new StackPane();
+	private Label trackTitleLabel; 
+	private Label artistLabel; 
+	private Label groupingLabel; 
+	private Label  timeLabel;
+	private Label trackLabel;
+	
+	
+	private static int pIndex=0;
+	private ImageView nowPlaying = new ImageView();
+	private ImageView selected = new ImageView();
+	private Image greenLightImage;
+	private Image noLightImage;
+	private Image greyLightImage;
+	private Image selectedArrowImage;
+	private int fontSize=18;
+	private static String lastGrouping="";
+	private static String lastArtist="";
+	private boolean groupingVisible=true;
+	private boolean nowPlayingIndicated=false;
+	private boolean selectedIndicated=false;
+	private StackPane indicator = new StackPane();
 	private int tandaNumber=0;
 	private int tandaTrackNumber=0;
 	
@@ -52,8 +54,10 @@ public class TrackRow
 		this.tandaNumber = tandaNumber;
 	}
 
-	public TrackRow(String iname, String iartist, String ipath, String igrouping, int  itime, int trackNumber)
+	public TrackRow(String trackTitle, String artistName, String ipath, String grouping, int  time, int trackNumber)
 	{
+	  this.trackTitle = trackTitle;
+	  this.artistName=artistName;
 		greenLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/green_light.png"));
 		noLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/no_light.png"));
 		greyLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/gray_light.png"));
@@ -68,61 +72,61 @@ public class TrackRow
 	          public void handle(MouseEvent event)  { setIndex(); }};
 	          
 			          
-		if (igrouping!=null)
+		if (grouping!=null)
 		{
-		  if (igrouping.toLowerCase().equals("vals")) cssBkgColor = "valsBkg";
-		  else if (igrouping.toLowerCase().equals("milonga")) cssBkgColor = "milongaBkg";
-		  else if (igrouping.toLowerCase().equals("cortina")) cssBkgColor = "cortinaBkg";
-		  else if (igrouping.toLowerCase().equals("padding")) cssBkgColor = "paddingBkg";
+		  if (grouping.toLowerCase().equals("vals")) cssBkgColor = "valsBkg";
+		  else if (grouping.toLowerCase().equals("milonga")) cssBkgColor = "milongaBkg";
+		  else if (grouping.toLowerCase().equals("cortina")) cssBkgColor = "cortinaBkg";
+		  else if (grouping.toLowerCase().equals("padding")) cssBkgColor = "paddingBkg";
 		  
-		  groupingName=igrouping;
+		  groupingName=grouping;
 		  
-		  if (!lastGrouping.equals(igrouping))
+		  if (!lastGrouping.equals(grouping))
 			{
-			  this.grouping=textLabel(igrouping, 100, cssBkgColor);
-			  lastGrouping=igrouping;
+			  groupingLabel=textLabel(grouping, 100, cssBkgColor);
+			  lastGrouping=grouping;
 			}
-			else this.grouping=textLabel("", 100, cssBkgColor);
+			else groupingLabel=textLabel("", 100, cssBkgColor);
 			
-			if (igrouping.toLowerCase().equals("padding")) 
+			if (grouping.toLowerCase().equals("padding")) 
 			{	
 				//System.out.println("padding");
-			  this.grouping.setText("");
+			  groupingLabel.setText("");
 			}
-			this.grouping.setOnMouseClicked(bHandler);
+			groupingLabel.setOnMouseClicked(bHandler);
 		}
 		else 
 		{	
-		   this.grouping=textLabel("", 100, cssBkgColor);
+		   groupingLabel=textLabel("", 100, cssBkgColor);
 		   groupingName=lastGrouping;
 		}	
 		
 		if (groupingName==null) groupingName="General";
 		
-		this.name=textLabel(iname, 200, cssBkgColor);
-		title = iname;
+		this.trackTitleLabel=textLabel(trackTitle, 200, cssBkgColor);
 		
-		artistName=iartist;  // holds the name even though it might be surpressed in the table view.
-		if (!lastArtist.equals(iartist))
+		
+		  // holds the name even though it might be surpressed in the table view.
+		if (!lastArtist.equals(artistName))
 		{
-		  this.artist=textLabel(iartist, 200, cssBkgColor);
-		  lastArtist=iartist;
+		  this.artistLabel=textLabel(artistName, 200, cssBkgColor);
+		  lastArtist=artistName;
 		}
-		else this.artist=textLabel("", 200, cssBkgColor);
+		else this.artistLabel=textLabel("", 200, cssBkgColor);
 		
 		//this.artist=textLabel(iartist, 200, cssBkgColor);
 		this.path=ipath;
 		
-		this.time=textLabel(getTime(itime), 100, cssBkgColor);
+		timeLabel=textLabel(getTime(time), 100, cssBkgColor);
 		this.trackNumber=trackNumber;
 		this.trackLabel=textLabel(""+(trackNumber+1)+") ", 50, cssBkgColor);
 		trackLabel.setAlignment(Pos.CENTER_RIGHT);
 		
 		this.trackLabel.setOnMouseClicked(bHandler);
-		this.name.setOnMouseClicked(bHandler);
-		this.artist.setOnMouseClicked(bHandler);
+		this.trackTitleLabel.setOnMouseClicked(bHandler);
+		this.artistLabel.setOnMouseClicked(bHandler);
 		
-		this.time.setOnMouseClicked(bHandler);
+		timeLabel.setOnMouseClicked(bHandler);
 		nowPlaying.setOnMouseClicked(bHandler);
 		selected.setOnMouseClicked(bHandler);
 		nowPlaying.setImage(noLightImage);
@@ -194,6 +198,46 @@ public class TrackRow
 		this.trackNumber=trackNumber;
 		this.trackLabel.setText(""+(trackNumber+1)+") ");
 		trackLabel.setAlignment(Pos.CENTER_RIGHT);
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public String getTrackTitle() {
+		return trackTitle;
+	}
+
+	public void setTrackTitle(String trackTitle) {
+		this.trackTitle = trackTitle;
+	}
+
+	public StackPane getIndicator() {
+		return indicator;
+	}
+
+	public void setIndicator(StackPane indicator) {
+		this.indicator = indicator;
+	}
+
+	public Label getTrackTitleLabel() {
+		return trackTitleLabel;
+	}
+
+	public void setTrackTitleLabel(Label trackTitleLabel) {
+		this.trackTitleLabel = trackTitleLabel;
+	}
+
+	public Label getGroupingLabel() {
+		return groupingLabel;
+	}
+
+	public void setGroupingLabel(Label groupingLabel) {
+		this.groupingLabel = groupingLabel;
 	}
 }
 
