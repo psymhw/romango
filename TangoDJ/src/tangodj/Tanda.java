@@ -17,10 +17,10 @@ public class Tanda
   
   public void addTrackRow(TrackRow t)
   {
-	if (t.groupingName.equalsIgnoreCase("vals")||
-			t.groupingName.equalsIgnoreCase("tango")||
-			t.groupingName.equalsIgnoreCase("milonga")||
-			t.groupingName.equalsIgnoreCase("alternative")) tracksInTanda++;
+	if (t.getGrouping().equalsIgnoreCase("vals")||
+			t.getGrouping().equalsIgnoreCase("tango")||
+			t.getGrouping().equalsIgnoreCase("milonga")||
+			t.getGrouping().equalsIgnoreCase("alternative")) tracksInTanda++;
 	trackRows.add(t);  
   }
 

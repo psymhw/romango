@@ -19,7 +19,7 @@ public class Playlist
 	   
 	   if (newTanda)
 	   {
-		 tandas.add(new Tanda(trackRow.artistName, trackRow.groupingName));
+		 tandas.add(new Tanda(trackRow.getArtist(), trackRow.getGrouping()));
 		 newTanda=false;
 	   }
 	   Tanda tanda = tandas.get(tandas.size()-1);
@@ -29,7 +29,7 @@ public class Playlist
 	   tanda.addTrackRow(trackRow);
 	  // trackRows.add(trackRow);
 	   
-	   if ("cortina".equalsIgnoreCase(trackRow.groupingName))
+	   if ("cortina".equalsIgnoreCase(trackRow.getGrouping()))
 	   {
 		 newTanda=true;
 		 tandaTrackNumber=0;
@@ -73,7 +73,7 @@ public class Playlist
 	
 	public String getPlayingTrackPath()
 	{
-		return trackRows.get(playingTrack).path;
+		return trackRows.get(playingTrack).getPath();
 	}
 	
 	public TrackRow getTrack(int index)
@@ -129,7 +129,7 @@ public class Playlist
 	 {
 		TrackRow trackRow = trackRows.get(index);
 		int tandaNumber = trackRow.getTandaNumber();
-		System.out.println("Track title: "+trackRow.title+" "+trackRow.getTandaNumber());
+		System.out.println("Track title: "+trackRow.getTrackTitle()+" "+trackRow.getTandaNumber());
 		Tanda tanda = tandas.get(tandaNumber);
 		return tanda.artist.lastName+" - "+tanda.group;
 	 }

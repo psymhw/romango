@@ -350,16 +350,16 @@ public class TangoDJ extends Application
 	 private void setInfoWindow()
 	 {
 	   TrackRow row = 	playlist.getPlayingTrack(); 
-	   String curArtist = row.getArtistName();
+	   String curArtist = row.getArtist();
 	   currentArtist.setText(curArtist);
-	   currentTrackName.setText(row.name.getText());
-	    if (infoWindow!=null) infoWindow.update(currentArtist.getText(), currentTrackName.getText(), row.groupingName);
+	   currentTrackName.setText(row.getTrackTitle());
+	    if (infoWindow!=null) infoWindow.update(currentArtist.getText(), currentTrackName.getText(), row.getGrouping());
 	  }
 	
 	private void showInfoWindow()
     {
 		TrackRow row = 	playlist.getPlayingTrack(); 
-       infoWindow = new InfoWindow(currentArtist.getText(), currentTrackName.getText(), row.groupingName);
+       infoWindow = new InfoWindow(currentArtist.getText(), currentTrackName.getText(), row.getGrouping());
         
     }
 	
@@ -373,7 +373,6 @@ public class TangoDJ extends Application
 		Font.loadFont(TangoDJ.class.getResource("/resources/fonts/EastMarket.ttf").toExternalForm(), 10  );
 		Font.loadFont(TangoDJ.class.getResource("/resources/fonts/england.ttf").toExternalForm(), 10  );
 		Font.loadFont(TangoDJ.class.getResource("/resources/fonts/FFF_Tusj.ttf").toExternalForm(), 10  );
-		
 	  }
 	
 	
@@ -387,16 +386,13 @@ public class TangoDJ extends Application
         { 
           int trackIndex=0;
           trackIndex=(int)Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188));
-          //System.out.println("down trackIndex: "+trackIndex);
+          System.out.println("mouse x: "+event.getX());
           tda.dragStartIndex=trackIndex;
-          tda.dragText.setText(playlist.getDragText(trackIndex-1));
-          tda.dragText.setX(event.getX());
-          tda.dragText.setY(event.getY());
-          
+                    
           tda.setTanda(playlist.getTandas().get(2));
-          tda.gp.setLayoutX(event.getX());
+          tda.gp.setLayoutX(0);
           tda.gp.setLayoutY(event.getY());
-          tda.dragText.setVisible(false);
+          tda.gp.setVisible(false);
           tda.startDragTime=System.currentTimeMillis();
           trackGroup.getChildren().add(tda);
         }};
@@ -427,11 +423,9 @@ public class TangoDJ extends Application
             {
             	//System.out.println("Mouse Moved");
             	long currentTime=System.currentTimeMillis();
-            	if ((tda.startDragTime+500)>currentTime) tda.dragText.setVisible(true);
-            	tda.dragText.setX(event.getX());
-            	tda.dragText.setY(event.getY());
+            	if ((tda.startDragTime+500)>currentTime) tda.gp.setVisible(true);
             	
-                tda.gp.setLayoutX(event.getX());
+                //tda.gp.setLayoutX(event.getX());
                 tda.gp.setLayoutY(event.getY());
             }
         });
@@ -513,10 +507,10 @@ public class TangoDJ extends Application
 		{
 		  tr = itx.next();
 		  trackGrid.add(tr.getIndicator(), 0, row);
-		  trackGrid.add(tr.getTrackTitleLabel(), 1, row);
+		  trackGrid.add(tr.getTrackNumberLabel(), 1, row);
 		  trackGrid.add(tr.getGroupingLabel(), 2, row);
 		  trackGrid.add(tr.getArtistLabel(), 3, row);
-		  trackGrid.add(tr.name, 4, row);
+		  trackGrid.add(tr.getTrackTitleLabel(), 4, row);
 		  numberOfTracksInPlaylist++;  
 		  row++;
 		}
@@ -553,7 +547,7 @@ public class TangoDJ extends Application
 		while(itx.hasNext())
 		{
 		  tr = itx.next();
-		  System.out.println(row+" of "+tanda.tracksInTanda()+"   "+tr.trackTitle);
+		  System.out.println(row+" of "+tanda.tracksInTanda()+"   "+tr.getTrackTitle());
 		  row++;
 		}
 		tandaNumber++;
