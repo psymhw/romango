@@ -20,7 +20,7 @@ public class TandaDragAnimation extends Group
  
   	
 
-  	public void setTanda(Tanda tanda)
+  	public TandaDragAnimation(Tanda tanda)
   	{
   	  this.tanda=tanda;
   	  gp = new GridPane();

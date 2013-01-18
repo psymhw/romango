@@ -90,11 +90,11 @@ public class TangoDJ extends Application
     ScrollPane scrollPane;
     GridPane trackGrid;
     int numberOfTracksInPlaylist=0;  // total number in playlist
-    Group tandaDrag = new Group();
+   // Group tandaDrag = new Group();
    
    // int nowPlayingIndex=0;
    // int selectedIndex=0;
-    TandaDragAnimation tda = new TandaDragAnimation();
+    TandaDragAnimation tda;
     
     final Button skip = new Button("Skip");
     final Button play = new Button("Play");
@@ -387,9 +387,9 @@ public class TangoDJ extends Application
           int trackIndex=0;
           trackIndex=(int)Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188));
           System.out.println("mouse x: "+event.getX());
+          tda = new TandaDragAnimation(playlist.getTandas().get(2));
+          
           tda.dragStartIndex=trackIndex;
-                    
-          tda.setTanda(playlist.getTandas().get(2));
           tda.gp.setLayoutX(0);
           tda.gp.setLayoutY(event.getY());
           tda.gp.setVisible(false);
