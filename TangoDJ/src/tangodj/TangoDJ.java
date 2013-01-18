@@ -91,12 +91,10 @@ public class TangoDJ extends Application
     GridPane trackGrid;
     int numberOfTracksInPlaylist=0;  // total number in playlist
     Group tandaDrag = new Group();
-    Text dragText = new Text("HELLO");
-    private int dragStartIndex=0;
-    private int dragFinishIndex=0;
-    
+   
    // int nowPlayingIndex=0;
    // int selectedIndex=0;
+    TandaDragAnimation tda = new TandaDragAnimation();
     
     final Button skip = new Button("Skip");
     final Button play = new Button("Play");
@@ -111,9 +109,6 @@ public class TangoDJ extends Application
   
    public void start(Stage stage) 
    {
-    	dragText.setFill(Color.RED);
-    	dragText.setOpacity(.5);
-    	dragText.setFont(new Font("Cambria", 18));
     	
     	loadFonts();
     	parser = new iTunesParser(data);
@@ -393,11 +388,17 @@ public class TangoDJ extends Application
           int trackIndex=0;
           trackIndex=(int)Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188));
           //System.out.println("down trackIndex: "+trackIndex);
-          dragStartIndex=trackIndex;
-          dragText.setText(playlist.getDragText(trackIndex-1));
-          dragText.setX(event.getX());
-          dragText.setY(event.getY());
-          trackGroup.getChildren().add(dragText);
+          tda.dragStartIndex=trackIndex;
+          tda.dragText.setText(playlist.getDragText(trackIndex-1));
+          tda.dragText.setX(event.getX());
+          tda.dragText.setY(event.getY());
+          
+          tda.setTanda(playlist.getTandas().get(2));
+          tda.gp.setLayoutX(event.getX());
+          tda.gp.setLayoutY(event.getY());
+          tda.dragText.setVisible(false);
+          tda.startDragTime=System.currentTimeMillis();
+          trackGroup.getChildren().add(tda);
         }};
           
         EventHandler <MouseEvent>mouseReleasedHandler = new EventHandler<MouseEvent>() 
@@ -407,11 +408,11 @@ public class TangoDJ extends Application
             int trackIndex=0;
         	//trackIndex=((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188);
             trackIndex=(int)Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188));
-            dragFinishIndex=trackIndex;
+            tda.dragFinishIndex=trackIndex;
             trackGroup.getChildren().remove(1);
-            if (dragStartIndex!=dragFinishIndex) 
+            if (tda.dragStartIndex!=tda.dragFinishIndex) 
             {
-            	playlist.reorder(dragStartIndex, dragFinishIndex);
+            	playlist.reorder(tda.dragStartIndex, tda.dragFinishIndex);
             	populateTrackGrid();
             	//printTandas();
             }
@@ -422,10 +423,16 @@ public class TangoDJ extends Application
         
        
         trackGroup.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            public void handle(MouseEvent event) {
+            public void handle(MouseEvent event) 
+            {
             	//System.out.println("Mouse Moved");
-                dragText.setX(event.getX());
-                dragText.setY(event.getY());
+            	long currentTime=System.currentTimeMillis();
+            	if ((tda.startDragTime+500)>currentTime) tda.dragText.setVisible(true);
+            	tda.dragText.setX(event.getX());
+            	tda.dragText.setY(event.getY());
+            	
+                tda.gp.setLayoutX(event.getX());
+                tda.gp.setLayoutY(event.getY());
             }
         });
    

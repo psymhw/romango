@@ -15,7 +15,6 @@ import javafx.scene.text.Font;
 
 public class TrackRow 
 {
-	
 	Label name; 
 	Label artist; 
 	String artistName;
