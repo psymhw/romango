@@ -363,17 +363,7 @@ public class TangoDJ extends Application
         
     }
 	
-	private void loadFonts()
-	  {
-		
-		Font.loadFont(TangoDJ.class.getResource("/resources/fonts/Carousel.ttf").toExternalForm(), 10  );
-		Font.loadFont(TangoDJ.class.getResource("/resources/fonts/Anagram.ttf").toExternalForm(), 10  );
-		Font.loadFont(TangoDJ.class.getResource("/resources/fonts/Carrington.ttf").toExternalForm(), 10  );
-		Font.loadFont(TangoDJ.class.getResource("/resources/fonts/DEFTONE.ttf").toExternalForm(), 10  );
-		Font.loadFont(TangoDJ.class.getResource("/resources/fonts/EastMarket.ttf").toExternalForm(), 10  );
-		Font.loadFont(TangoDJ.class.getResource("/resources/fonts/england.ttf").toExternalForm(), 10  );
-		Font.loadFont(TangoDJ.class.getResource("/resources/fonts/FFF_Tusj.ttf").toExternalForm(), 10  );
-	  }
+
 	
 	
 	
@@ -387,12 +377,12 @@ public class TangoDJ extends Application
           int trackIndex=0;
           trackIndex=(int)Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188));
           System.out.println("mouse x: "+event.getX());
-          tda = new TandaDragAnimation(playlist.getTandas().get(2));
+          tda = new TandaDragAnimation(playlist.getTanda(trackIndex-1), event.getY());
           
           tda.dragStartIndex=trackIndex;
-          tda.gp.setLayoutX(0);
-          tda.gp.setLayoutY(event.getY());
-          tda.gp.setVisible(false);
+          //tda.gp.setLayoutX(0);
+          //tda.gp.setLayoutY(event.getY());
+          //tda.gp.setVisible(false);
           tda.startDragTime=System.currentTimeMillis();
           trackGroup.getChildren().add(tda);
         }};
@@ -423,10 +413,10 @@ public class TangoDJ extends Application
             {
             	//System.out.println("Mouse Moved");
             	long currentTime=System.currentTimeMillis();
-            	if ((tda.startDragTime+500)>currentTime) tda.gp.setVisible(true);
+            	//if ((tda.startDragTime+500)>currentTime) tda.gp.setVisible(true);
             	
                 //tda.gp.setLayoutX(event.getX());
-                tda.gp.setLayoutY(event.getY());
+                tda.move(event.getY());
             }
         });
    
@@ -556,5 +546,15 @@ public class TangoDJ extends Application
 
 	}
 
-	
+	private void loadFonts()
+	  {
+		
+		Font.loadFont(TangoDJ.class.getResource("/resources/fonts/Carousel.ttf").toExternalForm(), 10  );
+		Font.loadFont(TangoDJ.class.getResource("/resources/fonts/Anagram.ttf").toExternalForm(), 10  );
+		Font.loadFont(TangoDJ.class.getResource("/resources/fonts/Carrington.ttf").toExternalForm(), 10  );
+		Font.loadFont(TangoDJ.class.getResource("/resources/fonts/DEFTONE.ttf").toExternalForm(), 10  );
+		Font.loadFont(TangoDJ.class.getResource("/resources/fonts/EastMarket.ttf").toExternalForm(), 10  );
+		Font.loadFont(TangoDJ.class.getResource("/resources/fonts/england.ttf").toExternalForm(), 10  );
+		Font.loadFont(TangoDJ.class.getResource("/resources/fonts/FFF_Tusj.ttf").toExternalForm(), 10  );
+	  }
 } 
