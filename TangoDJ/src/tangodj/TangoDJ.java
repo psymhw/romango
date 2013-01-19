@@ -233,6 +233,7 @@ public class TangoDJ extends Application
       {
 	    public void handle(MouseEvent ev) 
 	    {
+	       if (listPlaying) return;	
 		  int index = ((TableCell)ev.getSource()).getIndex();
 		  stopTrack();
 	      stop.setDisable(true);
@@ -377,12 +378,9 @@ public class TangoDJ extends Application
           int trackIndex=0;
           trackIndex=(int)Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188));
           System.out.println("mouse x: "+event.getX());
-          tda = new TandaDragAnimation(playlist.getTanda(trackIndex-1), event.getY());
+          tda = new TandaDragAnimation(playlist.getTanda(trackIndex-1), event.getY(), playlist.getTandaPositions());
           
           tda.dragStartIndex=trackIndex;
-          //tda.gp.setLayoutX(0);
-          //tda.gp.setLayoutY(event.getY());
-          //tda.gp.setVisible(false);
           tda.startDragTime=System.currentTimeMillis();
           trackGroup.getChildren().add(tda);
         }};
@@ -392,7 +390,6 @@ public class TangoDJ extends Application
           public void handle(MouseEvent event)  
           { 
             int trackIndex=0;
-        	//trackIndex=((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188);
             trackIndex=(int)Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188));
             tda.dragFinishIndex=trackIndex;
             trackGroup.getChildren().remove(1);
@@ -413,9 +410,7 @@ public class TangoDJ extends Application
             {
             	//System.out.println("Mouse Moved");
             	long currentTime=System.currentTimeMillis();
-            	//if ((tda.startDragTime+500)>currentTime) tda.gp.setVisible(true);
             	
-                //tda.gp.setLayoutX(event.getX());
                 tda.move(event.getY());
             }
         });
@@ -453,7 +448,7 @@ public class TangoDJ extends Application
 		path=temp.toURI().toString();
 		playlist.addTrackRow( new TrackRow(td.name, td.artist, path, td.grouping, td.time, trackNumber));
 	  }
-	  playlist.setTrackRows();
+	  playlist.finalize();
 	  //printTandas();
 	  
 	  
