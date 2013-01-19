@@ -17,12 +17,13 @@ public class TandaDragAnimation extends Group
     public long startDragTime=0;
     public GridPane gp = new GridPane();
     private Tanda tanda;
+    double startPosition=0;
  
-  	
 
-  	public TandaDragAnimation(Tanda tanda)
+  	public TandaDragAnimation(Tanda tanda, double startPosition)
   	{
   	  this.tanda=tanda;
+  	  this.startPosition=startPosition;
   	  gp = new GridPane();
 	  gp.setPadding(new Insets(10, 10, 10, 10));
 	  gp.setVgap(0);
@@ -47,6 +48,13 @@ public class TandaDragAnimation extends Group
 	}
 	
 	this.getChildren().clear();
+	gp.setLayoutX(0);
+	gp.setLayoutY(tanda.getPosition());
 	this.getChildren().add(gp);
+  	}
+  	
+  	public void move(double newPosition)
+  	{
+  		gp.setLayoutY(tanda.getPosition()-(startPosition-newPosition));	
   	}
 }

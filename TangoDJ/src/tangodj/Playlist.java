@@ -12,6 +12,7 @@ public class Playlist
 	private int tandaTrackNumber=0;
 	private int trackNumber=0;
 	boolean newTanda = true;
+	double currentPosition=0;
 	
 	
 	public void addTrackRow(TrackRow trackRow)
@@ -19,7 +20,9 @@ public class Playlist
 	   
 	   if (newTanda)
 	   {
-		 tandas.add(new Tanda(trackRow.getArtist(), trackRow.getGrouping()));
+		 Tanda t = new Tanda(trackRow.getArtist(), trackRow.getGrouping()); 
+		 t.setPosition(trackNumber*22.188);
+		 tandas.add(t);
 		 newTanda=false;
 	   }
 	   Tanda tanda = tandas.get(tandas.size()-1);
@@ -178,5 +181,27 @@ public class Playlist
 		 tandas.add(finishTanda, holdTanda);
 		 
 		 setTrackRows();
+		 calcTandaPositions();
+	 }
+	 
+	 private void calcTandaPositions() 
+	 {
+		int trackNumber=0;
+		Tanda t;
+		Iterator<Tanda> it = tandas.iterator();
+		while(it.hasNext())
+		{
+		  t=it.next();
+		  t.setPosition(trackNumber*22.188);
+		  trackNumber+=t.getTrackRows().size();
+		}
+		
+		
+	}
+
+	public Tanda getTanda(int trackIndex)
+	 {
+		TrackRow tr = trackRows.get(trackIndex);
+		return tandas.get(tr.getTandaNumber());
 	 }
  }

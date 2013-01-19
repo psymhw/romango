@@ -7,6 +7,7 @@ public class Tanda
   Artist artist;
   String group;
   private int tracksInTanda=0;
+  private double position;
   private ArrayList<TrackRow> trackRows = new ArrayList<TrackRow>();
   
   public Tanda(String artistStr, String group)
@@ -33,4 +34,12 @@ public class Tanda
   {
 	return tracksInTanda;
   }
+
+public double getPosition() {
+	return position;
+}
+
+public void setPosition(double position) {
+	this.position = position;
+}
 }
