@@ -5,6 +5,8 @@ import java.util.Iterator;
 
 import javafx.geometry.Insets;
 import javafx.scene.Group;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -19,8 +21,10 @@ public class TandaDragAnimation extends Group
     public GridPane gp = new GridPane();
     private Tanda tanda;
     double startPosition=0;
-    Rectangle destMarker;
+    //Rectangle destMarker;
     double[] tandaPositions;
+    Image pointHand;
+    private ImageView destMarker = new ImageView();
  
 
   	public TandaDragAnimation(Tanda tanda, double startPosition, double[] tandaPositions)
@@ -28,6 +32,8 @@ public class TandaDragAnimation extends Group
   	  this.tanda=tanda;
   	  this.startPosition=startPosition;
   	  this.tandaPositions=tandaPositions;
+  	  pointHand = new Image(TangoDJ.class.getResourceAsStream("/resources/images/point_hand.png"));
+  	  destMarker.setImage(pointHand);
   	  
   	  gp = new GridPane();
 	  gp.setPadding(new Insets(10, 10, 10, 10));
@@ -64,10 +70,10 @@ public class TandaDragAnimation extends Group
 	voidBox.setFill(Color.LIGHTGRAY);
 	voidBox.setOpacity(.8);
 	
-	destMarker = new Rectangle(75, 8);
-	destMarker.setFill(Color.YELLOW);
-	destMarker.setStrokeWidth(1);
-	destMarker.setStroke(Color.RED);
+	//destMarker = new Rectangle(75, 8);
+	//destMarker.setFill(Color.YELLOW);
+	//destMarker.setStrokeWidth(1);
+	//destMarker.setStroke(Color.RED);
 	destMarker.setX(0);
 	destMarker.setY(tanda.getPosition());
 	
