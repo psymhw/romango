@@ -19,12 +19,16 @@ public class TandaDragAnimation extends Group
     public GridPane gp = new GridPane();
     private Tanda tanda;
     double startPosition=0;
+    Rectangle destMarker;
+    double[] tandaPositions;
  
 
-  	public TandaDragAnimation(Tanda tanda, double startPosition)
+  	public TandaDragAnimation(Tanda tanda, double startPosition, double[] tandaPositions)
   	{
   	  this.tanda=tanda;
   	  this.startPosition=startPosition;
+  	  this.tandaPositions=tandaPositions;
+  	  
   	  gp = new GridPane();
 	  gp.setPadding(new Insets(10, 10, 10, 10));
 	  gp.setVgap(0);
@@ -60,9 +64,9 @@ public class TandaDragAnimation extends Group
 	voidBox.setFill(Color.LIGHTGRAY);
 	voidBox.setOpacity(.8);
 	
-	Rectangle destMarker = new Rectangle(75, 10);
+	destMarker = new Rectangle(75, 8);
 	destMarker.setFill(Color.YELLOW);
-	destMarker.setStrokeWidth(2);
+	destMarker.setStrokeWidth(1);
 	destMarker.setStroke(Color.RED);
 	destMarker.setX(0);
 	destMarker.setY(tanda.getPosition());
@@ -74,6 +78,19 @@ public class TandaDragAnimation extends Group
   	
   	public void move(double newPosition)
   	{
-  		gp.setLayoutY(tanda.getPosition()-(startPosition-newPosition));	
+  	  double gridPosition=tanda.getPosition()-(startPosition-newPosition);
+  	  destMarker.setY(findDestPosition(gridPosition));
+  	  gp.setLayoutY(gridPosition);	
   	}
+
+	private double findDestPosition(double gridPosition) 
+	{
+		double returnPos=10;
+		for(int i=0; i<tandaPositions.length; i++)
+		{
+		  if (gridPosition>tandaPositions[i]) returnPos=tandaPositions[i];
+		}
+		//System.out.println("return pos: "+returnPos);
+		return returnPos;
+	}
 }
