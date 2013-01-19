@@ -7,6 +7,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -50,6 +51,24 @@ public class TandaDragAnimation extends Group
 	this.getChildren().clear();
 	gp.setLayoutX(0);
 	gp.setLayoutY(tanda.getPosition());
+	
+	double tandaHeight=row*22.188;
+	double tandaWidth=525;
+	Rectangle voidBox = new Rectangle(tandaWidth, tandaHeight);
+	voidBox.setX(50);
+	voidBox.setY(tanda.getPosition()+8);
+	voidBox.setFill(Color.LIGHTGRAY);
+	voidBox.setOpacity(.8);
+	
+	Rectangle destMarker = new Rectangle(75, 10);
+	destMarker.setFill(Color.YELLOW);
+	destMarker.setStrokeWidth(2);
+	destMarker.setStroke(Color.RED);
+	destMarker.setX(0);
+	destMarker.setY(tanda.getPosition());
+	
+	this.getChildren().add(voidBox);
+	this.getChildren().add(destMarker);
 	this.getChildren().add(gp);
   	}
   	
