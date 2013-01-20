@@ -221,4 +221,9 @@ public class Playlist
 	public double[] getTandaPositions() {
 		return tandaPositions;
 	}
+	
+	public int getTandaIndex(int trackRowIndex)
+	{
+	  return trackRows.get(trackRowIndex).getTandaNumber();
+	}
  }

@@ -25,12 +25,14 @@ public class TandaDragAnimation extends Group
     double[] tandaPositions;
     Image pointHand;
     private ImageView destMarker = new ImageView();
+    private int destTandaNumber=0;
  
 
-  	public TandaDragAnimation(Tanda tanda, double startPosition, double[] tandaPositions)
+  	public TandaDragAnimation(Tanda tanda, int startTandaNumber, double startPosition, double[] tandaPositions)
   	{
   	  this.tanda=tanda;
   	  this.startPosition=startPosition;
+  	  this.destTandaNumber=startTandaNumber;
   	  this.tandaPositions=tandaPositions;
   	  pointHand = new Image(TangoDJ.class.getResourceAsStream("/resources/images/point_hand.png"));
   	  destMarker.setImage(pointHand);
@@ -85,6 +87,7 @@ public class TandaDragAnimation extends Group
   	public void move(double newPosition)
   	{
   	  double gridPosition=tanda.getPosition()-(startPosition-newPosition);
+  	  
   	  destMarker.setY(findDestPosition(gridPosition));
   	  gp.setLayoutY(gridPosition);	
   	}
@@ -94,9 +97,14 @@ public class TandaDragAnimation extends Group
 		double returnPos=10;
 		for(int i=0; i<tandaPositions.length; i++)
 		{
-		  if (gridPosition>tandaPositions[i]) returnPos=tandaPositions[i];
+		  destTandaNumber=i;	
+		  if (gridPosition>tandaPositions[i]-40) returnPos=tandaPositions[i];
 		}
 		//System.out.println("return pos: "+returnPos);
 		return returnPos;
+	}
+
+	public int getDestTandaNumber() {
+		return destTandaNumber;
 	}
 }
