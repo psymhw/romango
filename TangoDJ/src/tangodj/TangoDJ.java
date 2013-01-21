@@ -394,8 +394,10 @@ public class TangoDJ extends Application
           public void handle(MouseEvent event)  
           { 
             int trackIndex=0;
-            trackIndex=(int)
-       Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188)-1);
+            trackIndex=
+            		   (int)Math.round(((event.getY()
+            				   +(scrollPane.getVvalue()*(trackGrid.getHeight()
+            				   -scrollPane.getHeight())))  /22.188)-1);
             tda.dragFinishIndex=trackIndex;
             trackGroup.getChildren().remove(1);
             if (tda.dragStartIndex!=tda.getDestTandaNumber()) 
