@@ -388,6 +388,7 @@ public class TangoDJ extends Application
          // tda.dragStartIndex=trackIndex;
           tda.startDragTime=System.currentTimeMillis();
           trackGroup.getChildren().add(tda);
+          System.out.println("mouse down Y: "+event.getY());
         }};
           
         // MOUSE UP
@@ -402,12 +403,11 @@ public class TangoDJ extends Application
             				   -scrollPane.getHeight())))  /22.188)-1);
          //   int finishTandaIndex=playlist.getTandaIndex(trackIndex);
             trackGroup.getChildren().remove(1);
-            System.out.println("startDragIndex: "+tda.getStartTandaIndex()+" destTandaNumber: "+tda.getDestTandaIndex());
-            if (tda.getDestTandaIndex()!=tda.getDestTandaIndex()) 
+            System.out.println("startTandaIndex: "+tda.getStartTandaIndex()+" destTandaNumber: "+tda.getDestTandaIndex());
+            if (tda.getStartTandaIndex()!=tda.getDestTandaIndex()) 
             {
-            	//System.out.println("startDragIndex: "+tda.dragStartIndex+" destTandaNumber: "+tda.getDestTandaIndex());
-            	//playlist.reorder(tda.getStartTandaIndex(), tda.getDestTandaIndex());
-            	populateTrackGrid();
+            //	playlist.reorder(tda.getStartTandaIndex(), tda.getDestTandaIndex());
+            //	populateTrackGrid();
             }
           }
         };
