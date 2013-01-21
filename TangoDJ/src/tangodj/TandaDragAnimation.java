@@ -15,8 +15,8 @@ import javafx.scene.text.Text;
 
 public class TandaDragAnimation extends Group
 {
-    public int dragStartIndex=0;
-    public int dragFinishIndex=0;
+    //public int dragStartIndex=0;
+    //public int dragFinishIndex=0;
     public long startDragTime=0;
     public GridPane gp = new GridPane();
     private Tanda tanda;
@@ -25,15 +25,17 @@ public class TandaDragAnimation extends Group
     double[] tandaPositions;
     Image pointHand;
     private ImageView destMarker = new ImageView();
-    private int destTandaNumber=0;
+    private int destTandaIndex=0;
+    private int startTandaIndex=0;
  
 
-  	public TandaDragAnimation(Tanda tanda, int startTandaNumber, double startPosition, double[] tandaPositions)
+  	public TandaDragAnimation(Tanda tanda, int startTandaIndex, double startPosition, double[] tandaPositions)
   	{
   	  this.tanda=tanda;
   	  this.startPosition=startPosition;
-  	  this.destTandaNumber=startTandaNumber;
+  	  this.destTandaIndex=startTandaIndex;
   	  this.tandaPositions=tandaPositions;
+  	  this.startTandaIndex=startTandaIndex;
   	  pointHand = new Image(TangoDJ.class.getResourceAsStream("/resources/images/point_hand.png"));
   	  destMarker.setImage(pointHand);
   	  
@@ -97,14 +99,22 @@ public class TandaDragAnimation extends Group
 		double returnPos=10;
 		for(int i=0; i<tandaPositions.length; i++)
 		{
-		  destTandaNumber=i;	
+		  destTandaIndex=i;	
 		  if (gridPosition>tandaPositions[i]-40) returnPos=tandaPositions[i];
 		}
 		//System.out.println("return pos: "+returnPos);
 		return returnPos;
 	}
 
-	public int getDestTandaNumber() {
-		return destTandaNumber;
+	public int getDestTandaIndex() {
+		return destTandaIndex;
+	}
+
+	public int getStartTandaIndex() {
+		return startTandaIndex;
+	}
+
+	public void setStartTandaIndex(int startTandaIndex) {
+		this.startTandaIndex = startTandaIndex;
 	}
 }
