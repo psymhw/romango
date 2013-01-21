@@ -171,7 +171,7 @@ public class Playlist
 	 public void reorder(int startTandaIndex, int finishTandaIndex)
 	 {
 		
-		 System.out.println("start tanda: "+startTandaIndex+", finish tanda: "+finishTandaIndex); 
+		 //System.out.println("start tanda: "+startTandaIndex+", finish tanda: "+finishTandaIndex); 
 		 
 		 Tanda holdTanda = tandas.get(startTandaIndex);
 		 tandas.remove(startTandaIndex);
