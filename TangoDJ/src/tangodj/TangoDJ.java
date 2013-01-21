@@ -371,15 +371,16 @@ public class TangoDJ extends Application
 	private ScrollPane getTrackScrollPane()
 	{
 	  scrollPane = new ScrollPane();
+	  // MOUSE DOWN
 	  EventHandler <MouseEvent>mouseDownHandler = new EventHandler<MouseEvent>() 
 	  {
         public void handle(MouseEvent event)  
         { 
           int trackIndex=0;
-          trackIndex=(int)Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188));
-          System.out.println("mouse x: "+event.getX());
-          tda = new TandaDragAnimation(playlist.getTanda(trackIndex-1), 
-        		                       playlist.getTandaIndex(trackIndex-1), event.getY(), 
+          trackIndex=(int)
+        		  Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188)-1);
+          tda = new TandaDragAnimation(playlist.getTanda(trackIndex), 
+        		                       playlist.getTandaIndex(trackIndex), event.getY(), 
         		                       playlist.getTandaPositions());
           
           tda.dragStartIndex=trackIndex;
@@ -387,27 +388,28 @@ public class TangoDJ extends Application
           trackGroup.getChildren().add(tda);
         }};
           
+        // MOUSE UP
         EventHandler <MouseEvent>mouseReleasedHandler = new EventHandler<MouseEvent>() 
         {
           public void handle(MouseEvent event)  
           { 
             int trackIndex=0;
-            trackIndex=(int)Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188));
+            trackIndex=(int)
+       Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188)-1);
             tda.dragFinishIndex=trackIndex;
             trackGroup.getChildren().remove(1);
             if (tda.dragStartIndex!=tda.getDestTandaNumber()) 
             {
+            	System.out.println("startDragIndex: "+tda.dragStartIndex+" destTandaNumber: "+tda.getDestTandaNumber());
             	playlist.reorder(tda.dragStartIndex, tda.getDestTandaNumber());
             	populateTrackGrid();
-            	//printTandas();
             }
-        	//System.out.println("up trackIndex: "+Math.round(trackIndex));
-        	
           }
         };
         
-       
-        trackGroup.setOnMouseDragged(new EventHandler<MouseEvent>() {
+       // MOUSE MOVE
+        trackGroup.setOnMouseDragged(new EventHandler<MouseEvent>() 
+        {
             public void handle(MouseEvent event) 
             {
             	//System.out.println("Mouse Moved");
