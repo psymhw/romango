@@ -168,21 +168,16 @@ public class Playlist
 		  }  
 	 }
 	 
-	 public void reorder(int startIndex, int finishIndex)
+	 public void reorder(int startTandaIndex, int finishTandaIndex)
 	 {
-		 System.out.println("start: "+startIndex+", finish: "+finishIndex); 
-		 TrackRow tr = trackRows.get(startIndex-1);
-		 int startTanda = tr.getTandaNumber();
-		 tr = trackRows.get(finishIndex-1);
-		 int finishTanda = tr.getTandaNumber();
-		 System.out.println("start tanda: "+startTanda+", finish tanda: "+finishTanda); 
+		
+		 System.out.println("start tanda: "+startTandaIndex+", finish tanda: "+finishTandaIndex); 
 		 
-		 Tanda holdTanda = tandas.get(startTanda);
-		 tandas.remove(startTanda);
-		 tandas.add(finishTanda, holdTanda);
+		 Tanda holdTanda = tandas.get(startTandaIndex);
+		 tandas.remove(startTandaIndex);
+		 tandas.add(finishTandaIndex, holdTanda);
 		 
-		 setTrackRows();
-		 calcTandaPositions();
+		 finalize();
 	 }
 	 
 	 private void calcTandaPositions() 

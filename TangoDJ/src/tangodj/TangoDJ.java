@@ -379,11 +379,13 @@ public class TangoDJ extends Application
           int trackIndex=0;
           trackIndex=(int)
         		  Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188)-1);
-          tda = new TandaDragAnimation(playlist.getTanda(trackIndex), 
-        		                       playlist.getTandaIndex(trackIndex), event.getY(), 
+          int startTandaIndex=playlist.getTandaIndex(trackIndex);
+          
+          tda = new TandaDragAnimation(playlist.getTandas().get(startTandaIndex), 
+        		                       startTandaIndex, event.getY(), 
         		                       playlist.getTandaPositions());
           
-          tda.dragStartIndex=trackIndex;
+         // tda.dragStartIndex=trackIndex;
           tda.startDragTime=System.currentTimeMillis();
           trackGroup.getChildren().add(tda);
         }};
@@ -398,12 +400,13 @@ public class TangoDJ extends Application
             		   (int)Math.round(((event.getY()
             				   +(scrollPane.getVvalue()*(trackGrid.getHeight()
             				   -scrollPane.getHeight())))  /22.188)-1);
-            tda.dragFinishIndex=trackIndex;
+         //   int finishTandaIndex=playlist.getTandaIndex(trackIndex);
             trackGroup.getChildren().remove(1);
-            if (tda.dragStartIndex!=tda.getDestTandaNumber()) 
+            System.out.println("startDragIndex: "+tda.getStartTandaIndex()+" destTandaNumber: "+tda.getDestTandaIndex());
+            if (tda.getDestTandaIndex()!=tda.getDestTandaIndex()) 
             {
-            	System.out.println("startDragIndex: "+tda.dragStartIndex+" destTandaNumber: "+tda.getDestTandaNumber());
-            	playlist.reorder(tda.dragStartIndex, tda.getDestTandaNumber());
+            	//System.out.println("startDragIndex: "+tda.dragStartIndex+" destTandaNumber: "+tda.getDestTandaIndex());
+            	//playlist.reorder(tda.getStartTandaIndex(), tda.getDestTandaIndex());
             	populateTrackGrid();
             }
           }
