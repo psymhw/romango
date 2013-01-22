@@ -381,13 +381,14 @@ public class TangoDJ extends Application
         		  Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188)-1);
           int startTandaIndex=playlist.getTandaIndex(trackIndex);
           
-          tda = new TandaDragAnimation(playlist.getTandas().get(startTandaIndex), 
-        		                       startTandaIndex, event.getY(), 
-        		                       playlist.getTandaPositions());
+         // tda = new TandaDragAnimation(playlist.getTandas().get(startTandaIndex), 
+        //		                       startTandaIndex, event.getY(), 
+        //		                       playlist.getTandaPositions());
           
          // tda.dragStartIndex=trackIndex;
-          tda.startDragTime=System.currentTimeMillis();
-          trackGroup.getChildren().add(tda);
+        // tda.startDragTime=System.currentTimeMillis();
+          ScrollPosTest spt = new ScrollPosTest(playlist.getTandaPositions());
+          trackGroup.getChildren().add(spt);
           System.out.println("mouse down Y: "+event.getY());
         }};
           
@@ -402,13 +403,13 @@ public class TangoDJ extends Application
             				   +(scrollPane.getVvalue()*(trackGrid.getHeight()
             				   -scrollPane.getHeight())))  /22.188)-1);
          //   int finishTandaIndex=playlist.getTandaIndex(trackIndex);
-            trackGroup.getChildren().remove(1);
-            System.out.println("startTandaIndex: "+tda.getStartTandaIndex()+" destTandaNumber: "+tda.getDestTandaIndex());
-            if (tda.getStartTandaIndex()!=tda.getDestTandaIndex()) 
-            {
+         //   trackGroup.getChildren().remove(1);
+        //    System.out.println("startTandaIndex: "+tda.getStartTandaIndex()+" destTandaNumber: "+tda.getDestTandaIndex());
+           // if (tda.getStartTandaIndex()!=tda.getDestTandaIndex()) 
+           // {
             //	playlist.reorder(tda.getStartTandaIndex(), tda.getDestTandaIndex());
             //	populateTrackGrid();
-            }
+           // }
           }
         };
         
@@ -420,7 +421,7 @@ public class TangoDJ extends Application
             	//System.out.println("Mouse Moved");
             	long currentTime=System.currentTimeMillis();
             	
-                tda.move(event.getY());
+               // tda.move(event.getY());
             }
         });
    
