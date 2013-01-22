@@ -83,30 +83,29 @@ public class TandaDragAnimation extends Group
 	
 	this.getChildren().add(voidBox);
 	this.getChildren().add(destMarker);
-	this.getChildren().add(gp);
+	//this.getChildren().add(gp);
   	}
   	
   	public void move(double newPosition)
   	{
   	  double gridPosition=tanda.getPosition()-(startPosition-newPosition);
   	 double destPos=findDestPosition(gridPosition);
-  	//  System.out.println("grid pos: "+gridPosition+" dest pos: "+destPos);
-  	  destMarker.setY(destPos);
-  	  gp.setLayoutY(gridPosition);	
+  	System.out.println("dest tanda index: "+destTandaIndex+" dest pos: "+destPos);
+  	 if (destPos!=-1) destMarker.setY(destPos);
+  	//  gp.setLayoutY(gridPosition);	
   	}
 
 	private double findDestPosition(double gridPosition) 
 	{
-	  double returnPos=10;
 	  for(int i=0; i<tandaPositions.length; i++)
 	  {
 	    if (gridPosition>tandaPositions[i]-40) 
 		{  
 		  destTandaIndex=i;	
-		  returnPos=tandaPositions[i];
+		  return tandaPositions[i];
 		}
 	  }  
-      return returnPos;
+      return 0;
 	}
 
 	public int getDestTandaIndex() {
