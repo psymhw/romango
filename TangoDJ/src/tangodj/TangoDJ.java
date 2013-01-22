@@ -381,14 +381,14 @@ public class TangoDJ extends Application
         		  Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188)-1);
           int startTandaIndex=playlist.getTandaIndex(trackIndex);
           
-         // tda = new TandaDragAnimation(playlist.getTandas().get(startTandaIndex), 
-        //		                       startTandaIndex, event.getY(), 
-        //		                       playlist.getTandaPositions());
+          tda = new TandaDragAnimation(playlist.getTandas().get(startTandaIndex), 
+        		                       startTandaIndex, event.getY(), 
+        		                       playlist.getTandaPositions());
           
          // tda.dragStartIndex=trackIndex;
         // tda.startDragTime=System.currentTimeMillis();
-          ScrollPosTest spt = new ScrollPosTest(playlist.getTandaPositions());
-          trackGroup.getChildren().add(spt);
+        //  ScrollPosTest spt = new ScrollPosTest(playlist.getTandaPositions());
+          trackGroup.getChildren().add(tda);
           System.out.println("mouse down Y: "+event.getY());
         }};
           
@@ -421,7 +421,7 @@ public class TangoDJ extends Application
             	//System.out.println("Mouse Moved");
             	long currentTime=System.currentTimeMillis();
             	
-               // tda.move(event.getY());
+                tda.move(event.getY());
             }
         });
    
