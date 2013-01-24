@@ -385,7 +385,7 @@ public class TangoDJ extends Application
           tda = new TandaDragAnimation(playlist.getTandas().get(startTandaIndex), 
         		                       startTandaIndex, event.getY(), 
         		                       playlist.getTandaPositions(),
-        		                       scrollPane.getVvalue(),
+        		                       scrollPane,
         		                       scrollWindow);
           
          // tda.dragStartIndex=trackIndex;
@@ -406,7 +406,7 @@ public class TangoDJ extends Application
             				   +(scrollPane.getVvalue()*(trackGrid.getHeight()
             				   -scrollPane.getHeight())))  /22.188)-1);
          //   int finishTandaIndex=playlist.getTandaIndex(trackIndex);
-         //   trackGroup.getChildren().remove(1);
+            trackGroup.getChildren().remove(1);
         //    System.out.println("startTandaIndex: "+tda.getStartTandaIndex()+" destTandaNumber: "+tda.getDestTandaIndex());
            // if (tda.getStartTandaIndex()!=tda.getDestTandaIndex()) 
            // {
