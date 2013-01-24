@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import javafx.geometry.Insets;
 import javafx.scene.Group;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -27,11 +28,15 @@ public class TandaDragAnimation extends Group
     private ImageView destMarker = new ImageView();
     private int destTandaIndex=0;
     private int startTandaIndex=0;
+    double scrollPanePercent;
+    double scrollWindow;
  
 
-  	public TandaDragAnimation(Tanda tanda, int startTandaIndex, double startPosition, double[] tandaPositions)
+  	public TandaDragAnimation(Tanda tanda, int startTandaIndex, double startPosition, double[] tandaPositions, double scrollPanePercent, double scrollWindow)
   	{
   	  this.tanda=tanda;
+  	  this.scrollPanePercent=scrollPanePercent;
+  	  this.scrollWindow=scrollWindow;
   	  this.startPosition=startPosition;
   	  this.destTandaIndex=startTandaIndex;
   	  this.tandaPositions=tandaPositions;
@@ -88,11 +93,11 @@ public class TandaDragAnimation extends Group
   	
   	public void move(double newPosition)
   	{
-  	  double gridPosition=tanda.getPosition()-(startPosition-newPosition);
-  	 double destPos=findDestPosition(gridPosition);
-  	System.out.println("dest tanda index: "+destTandaIndex+" dest pos: "+destPos);
-  	 if (destPos!=-1) destMarker.setY(destPos);
-  	//  gp.setLayoutY(gridPosition);	
+  	  double gridPosition=tanda.getPosition()-(startPosition-newPosition)-(scrollPanePercent*scrollWindow);
+  //	 double destPos=findDestPosition(gridPosition);
+  //	System.out.println("dest tanda index: "+destTandaIndex+" dest pos: "+destPos);
+  //	 if (destPos!=-1) destMarker.setY(destPos);
+  	 gp.setLayoutY(gridPosition);	
   	}
 
 	private double findDestPosition(double gridPosition) 

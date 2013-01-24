@@ -18,6 +18,7 @@ public class Tanda
   
   public void addTrackRow(TrackRow t)
   {
+	if   (t.getGrouping()!=null)
 	if (t.getGrouping().equalsIgnoreCase("vals")||
 			t.getGrouping().equalsIgnoreCase("tango")||
 			t.getGrouping().equalsIgnoreCase("milonga")||
