@@ -377,13 +377,16 @@ public class TangoDJ extends Application
         public void handle(MouseEvent event)  
         { 
           int trackIndex=0;
+          double scrollWindow=trackGrid.getHeight()-scrollPane.getHeight();
           trackIndex=(int)
-        		  Math.round(((event.getY()+(scrollPane.getVvalue()*(trackGrid.getHeight()-scrollPane.getHeight())))  /22.188)-1);
+        		  Math.round(((event.getY()+(scrollPane.getVvalue()*scrollWindow))  /22.188)-1);
           int startTandaIndex=playlist.getTandaIndex(trackIndex);
           
           tda = new TandaDragAnimation(playlist.getTandas().get(startTandaIndex), 
         		                       startTandaIndex, event.getY(), 
-        		                       playlist.getTandaPositions());
+        		                       playlist.getTandaPositions(),
+        		                       scrollPane.getVvalue(),
+        		                       scrollWindow);
           
          // tda.dragStartIndex=trackIndex;
         // tda.startDragTime=System.currentTimeMillis();
