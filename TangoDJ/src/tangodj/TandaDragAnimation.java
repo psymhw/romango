@@ -28,14 +28,14 @@ public class TandaDragAnimation extends Group
     private ImageView destMarker = new ImageView();
     private int destTandaIndex=0;
     private int startTandaIndex=0;
-    double scrollPanePercent;
+    ScrollPane scrollPane;
     double scrollWindow;
  
 
-  	public TandaDragAnimation(Tanda tanda, int startTandaIndex, double startPosition, double[] tandaPositions, double scrollPanePercent, double scrollWindow)
+  	public TandaDragAnimation(Tanda tanda, int startTandaIndex, double startPosition, double[] tandaPositions, ScrollPane scrollPane, double scrollWindow)
   	{
   	  this.tanda=tanda;
-  	  this.scrollPanePercent=scrollPanePercent;
+  	  this.scrollPane=scrollPane;
   	  this.scrollWindow=scrollWindow;
   	  this.startPosition=startPosition;
   	  this.destTandaIndex=startTandaIndex;
@@ -88,15 +88,15 @@ public class TandaDragAnimation extends Group
 	
 	this.getChildren().add(voidBox);
 	this.getChildren().add(destMarker);
-	//this.getChildren().add(gp);
+	this.getChildren().add(gp);
   	}
   	
   	public void move(double newPosition)
   	{
-  	  double gridPosition=tanda.getPosition()-(startPosition-newPosition)-(scrollPanePercent*scrollWindow);
-  //	 double destPos=findDestPosition(gridPosition);
-  //	System.out.println("dest tanda index: "+destTandaIndex+" dest pos: "+destPos);
-  //	 if (destPos!=-1) destMarker.setY(destPos);
+  	  double gridPosition=tanda.getPosition()-(startPosition-newPosition)-(scrollPane.getVvalue()*scrollWindow);
+   	 double destPos=findDestPosition(gridPosition);
+     System.out.println("dest tanda index: "+destTandaIndex+" dest pos: "+destPos);
+  	 if (destPos!=-1) destMarker.setY(destPos);
   	 gp.setLayoutY(gridPosition);	
   	}
 
@@ -104,13 +104,13 @@ public class TandaDragAnimation extends Group
 	{
 	  for(int i=0; i<tandaPositions.length; i++)
 	  {
-	    if (gridPosition>tandaPositions[i]-40) 
+	    if (gridPosition>tandaPositions[i]-(scrollPane.getVvalue()*scrollWindow)) 
 		{  
 		  destTandaIndex=i;	
-		  return tandaPositions[i];
+		  return tandaPositions[i]-(scrollPane.getVvalue()*scrollWindow);
 		}
 	  }  
-      return 0;
+      return -1;
 	}
 
 	public int getDestTandaIndex() {
