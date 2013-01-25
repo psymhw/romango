@@ -219,6 +219,9 @@ public class Playlist
 	
 	public int getTandaIndex(int trackRowIndex)
 	{
-	  return trackRows.get(trackRowIndex).getTandaNumber();
+	  
+      int ti = trackRows.get(trackRowIndex).getTandaNumber();
+      if (ti>0) return ti;
+	  return 0;
 	}
  }

@@ -377,9 +377,11 @@ public class TangoDJ extends Application
         public void handle(MouseEvent event)  
         { 
           int trackIndex=0;
+          if (trackGrid==null) return;
           double scrollWindow=trackGrid.getHeight()-scrollPane.getHeight();
           trackIndex=(int)
         		  Math.round(((event.getY()+(scrollPane.getVvalue()*scrollWindow))  /22.188)-1);
+          if (trackIndex<0) trackIndex=0;
           int startTandaIndex=playlist.getTandaIndex(trackIndex);
           
           tda = new TandaDragAnimation(playlist.getTandas().get(startTandaIndex), 
@@ -401,18 +403,22 @@ public class TangoDJ extends Application
           public void handle(MouseEvent event)  
           { 
             int trackIndex=0;
+            if (trackGrid==null) return;
             trackIndex=
             		   (int)Math.round(((event.getY()
             				   +(scrollPane.getVvalue()*(trackGrid.getHeight()
             				   -scrollPane.getHeight())))  /22.188)-1);
+            if (trackIndex<0) trackIndex=0;
          //   int finishTandaIndex=playlist.getTandaIndex(trackIndex);
             trackGroup.getChildren().remove(1);
         //    System.out.println("startTandaIndex: "+tda.getStartTandaIndex()+" destTandaNumber: "+tda.getDestTandaIndex());
-           // if (tda.getStartTandaIndex()!=tda.getDestTandaIndex()) 
-           // {
-            //	playlist.reorder(tda.getStartTandaIndex(), tda.getDestTandaIndex());
-            //	populateTrackGrid();
-           // }
+            if (tda.getStartTandaIndex()!=tda.getDestTandaIndex()) 
+            {
+              double savedScrollAmount=scrollPane.getVvalue();	
+           	  playlist.reorder(tda.getStartTandaIndex(), tda.getDestTandaIndex());
+              populateTrackGrid();
+              scrollPane.setVvalue(savedScrollAmount);
+            }
           }
         };
         
@@ -422,6 +428,7 @@ public class TangoDJ extends Application
             public void handle(MouseEvent event) 
             {
             	//System.out.println("Mouse Moved");
+            	if (trackGrid==null) return;
             	long currentTime=System.currentTimeMillis();
             	
                 tda.move(event.getY());
