@@ -441,6 +441,7 @@ public class TangoDJ extends Application
 	    scrollPane.setPrefWidth(600);
 	    scrollPane.setFitToHeight(true);
 	    scrollPane.setContent(trackGroup);
+	    //scrollPane.setPannable(true);
 	 
 	    return scrollPane;
 	}
