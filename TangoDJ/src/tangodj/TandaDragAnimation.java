@@ -95,14 +95,28 @@ public class TandaDragAnimation extends Group
 		System.out.println(i+") tandapos: "+tandaPositions[i]);
 	  }  
 	*/
+	//System.out.println("panable: "+scrollPane.isPannable());
   	}
   
   	public void move(double newPosition)
   	{
-  	  double gridPosition=tanda.getPosition()-(startPosition-newPosition)-(scrollPane.getVvalue()*scrollWindow);
-   	 double destPos=findDestPosition(gridPosition);
-   	// System.out.println("dest tanda index: "+destTandaIndex+" dest pos: "+destPos);
-  	 if (destPos!=-1) destMarker.setY(destPos);
+  	  double viewport =scrollPane.getVvalue()*scrollWindow;
+  	  double gridPosition=tanda.getPosition()-(startPosition-newPosition)-viewport;
+   	  double destPos=findDestPosition(gridPosition);
+   	  //System.out.println("scroll value: "+scrollPane.getVvalue()+" dest pos: "+destPos+" view: "+viewport);
+  
+   	  if (destPos-viewport<10)
+  	 {
+  	   double vpos = scrollPane.getVvalue();
+  	   if (vpos>0)
+  	   {
+  		 vpos=vpos-.1;
+  		 if (vpos<0) vpos=0;
+  		 scrollPane.setVvalue(vpos);
+  	   }
+  	 }
+  	 
+   	 if (destPos!=-1) destMarker.setY(destPos);
   	 gp.setLayoutY(gridPosition);	
   	}
 
