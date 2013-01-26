@@ -26,6 +26,8 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -95,6 +97,7 @@ public class TangoDJ extends Application
    // int nowPlayingIndex=0;
    // int selectedIndex=0;
     TandaDragAnimation tda;
+    boolean tandaMoveActive=false;
     
     final Button skip = new Button("Skip");
     final Button play = new Button("Play");
@@ -159,6 +162,9 @@ public class TangoDJ extends Application
         skip.setDisable(true);
         info.setDisable(true);
         stage.show();
+        
+        
+       
     }
 
 	private void setupButtonActions() 
@@ -377,26 +383,27 @@ public class TangoDJ extends Application
         public void handle(MouseEvent event)  
         { 
           int trackIndex=0;
-          if (trackGrid==null) return;
-          double scrollWindow=trackGrid.getHeight()-scrollPane.getHeight();
-          trackIndex=(int)
-        		  Math.round(((event.getY()+(scrollPane.getVvalue()*scrollWindow))  /22.188)-1);
-          if (trackIndex<0) trackIndex=0;
-          int startTandaIndex=playlist.getTandaIndex(trackIndex);
           
-          tda = new TandaDragAnimation(playlist.getTandas().get(startTandaIndex), 
+          if (event.isSecondaryButtonDown())
+          {	  
+            if (trackGrid==null) return;
+            double scrollWindow=trackGrid.getHeight()-scrollPane.getHeight();
+            trackIndex=(int) Math.round(((event.getY()+
+            		(scrollPane.getVvalue()*scrollWindow))/22.188)-1);
+            if (trackIndex<0) trackIndex=0;
+            int startTandaIndex=playlist.getTandaIndex(trackIndex);
+            tda = new TandaDragAnimation(playlist.getTandas().get(startTandaIndex), 
         		                       startTandaIndex, event.getY(), 
         		                       playlist.getTandaPositions(),
         		                       scrollPane,
         		                       scrollWindow);
-          
-         // tda.dragStartIndex=trackIndex;
-        // tda.startDragTime=System.currentTimeMillis();
-        //  ScrollPosTest spt = new ScrollPosTest(playlist.getTandaPositions());
-          trackGroup.getChildren().add(tda);
-          System.out.println("mouse down Y: "+event.getY());
+            tandaMoveActive=true;
+            trackGroup.getChildren().add(tda);
+            System.out.println("Mouse Down");
+          }
         }};
           
+        /*
         // MOUSE UP
         EventHandler <MouseEvent>mouseReleasedHandler = new EventHandler<MouseEvent>() 
         {
@@ -409,9 +416,7 @@ public class TangoDJ extends Application
             				   +(scrollPane.getVvalue()*(trackGrid.getHeight()
             				   -scrollPane.getHeight())))  /22.188)-1);
             if (trackIndex<0) trackIndex=0;
-         //   int finishTandaIndex=playlist.getTandaIndex(trackIndex);
             trackGroup.getChildren().remove(1);
-        //    System.out.println("startTandaIndex: "+tda.getStartTandaIndex()+" destTandaNumber: "+tda.getDestTandaIndex());
             if (tda.getStartTandaIndex()!=tda.getDestTandaIndex()) 
             {
               double savedScrollAmount=scrollPane.getVvalue();	
@@ -435,19 +440,29 @@ public class TangoDJ extends Application
                 
             }
         });
-   
+       */
 	    scrollPane.setOnMousePressed(mouseDownHandler);
-	    scrollPane.setOnMouseReleased(mouseReleasedHandler);
+	   // scrollPane.setOnMouseReleased(mouseReleasedHandler);
 	    scrollPane.getHvalue();
 	    scrollPane.setPrefWidth(600);
 	    scrollPane.setFitToHeight(true);
 	    scrollPane.setContent(trackGroup);
 	    //scrollPane.setPannable(true);
-	 
+	    scrollPane.setOnKeyReleased(new EventHandler<KeyEvent>() {
+	    public void handle(KeyEvent ke) 
+	    {
+	      if (ke.getCode()==KeyCode.ESCAPE) tandaMoveOff();
+	    }});
 	    return scrollPane;
 	}
 	
-	
+	private void tandaMoveOff()
+	{
+		System.out.println("tandaMoveOff");
+	  if (!tandaMoveActive) return;
+	  trackGroup.getChildren().remove(1);
+	  tandaMoveActive=false;
+	}
 	
 	
 	private void createPlaylist(int index)
