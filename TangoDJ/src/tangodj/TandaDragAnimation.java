@@ -5,10 +5,12 @@ import java.util.Iterator;
 
 import javafx.geometry.Insets;
 import javafx.scene.Group;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -19,7 +21,7 @@ public class TandaDragAnimation extends Group
     //public int dragStartIndex=0;
     //public int dragFinishIndex=0;
     public long startDragTime=0;
-    public GridPane gp = new GridPane();
+    public GridPane gridPane = new GridPane();
     private Tanda tanda;
     double startPosition=0;
     //Rectangle destMarker;
@@ -30,6 +32,8 @@ public class TandaDragAnimation extends Group
     private int startTandaIndex=0;
     ScrollPane scrollPane;
     double scrollWindow;
+    HBox hbox;
+    private int fontSize=18;
  
 
   	public TandaDragAnimation(Tanda tanda, int startTandaIndex, double startPosition, double[] tandaPositions, ScrollPane scrollPane, double scrollWindow)
@@ -44,11 +48,18 @@ public class TandaDragAnimation extends Group
   	  pointHand = new Image(TangoDJ.class.getResourceAsStream("/resources/images/point_hand.png"));
   	  destMarker.setImage(pointHand);
   	  
-  	  gp = new GridPane();
-	  gp.setPadding(new Insets(10, 10, 10, 10));
-	  gp.setVgap(0);
-	  gp.setHgap(0);
-	  gp.setOpacity(.7);
+  	  hbox = new HBox();
+      hbox.setSpacing(5);
+      hbox.setPadding(new Insets(5, 5, 5, 5));
+      
+      hbox.getChildren().add(textLabel(tanda.group, 100, "paddingBkg"));
+      hbox.getChildren().add(textLabel(tanda.artist.lastName, 100, "paddingBkg"));
+      
+  	  gridPane = new GridPane();
+	  gridPane.setPadding(new Insets(10, 10, 10, 10));
+	  gridPane.setVgap(0);
+	  gridPane.setHgap(0);
+	  gridPane.setOpacity(.7);
   	  ArrayList<TrackRow> trs;
 	  TrackRow tr=null;
 	  TrackRow trt;
@@ -59,17 +70,19 @@ public class TandaDragAnimation extends Group
 	  {
 	    trt = itx.next();
 	    tr = trt.clone(trt);
-	    gp.add(tr.getIndicator(), 0, row);
-	    gp.add(tr.getTrackNumberLabel(), 1, row);
-	    gp.add(tr.getGroupingLabel(), 2, row);
-	    gp.add(tr.getArtistLabel(), 3, row);
-	    gp.add(tr.getTrackTitleLabel(), 4, row);
+	    gridPane.add(tr.getIndicator(), 0, row);
+	    gridPane.add(tr.getTrackNumberLabel(), 1, row);
+	    gridPane.add(tr.getGroupingLabel(), 2, row);
+	    gridPane.add(tr.getArtistLabel(), 3, row);
+	    gridPane.add(tr.getTrackTitleLabel(), 4, row);
 	    row++;
 	}
 	
 	this.getChildren().clear();
-	gp.setLayoutX(0);
-	gp.setLayoutY(tanda.getPosition());
+	//gridPane.setLayoutX(0);
+	//gridPane.setLayoutY(tanda.getPosition());
+	hbox.setLayoutX(50);
+    hbox.setLayoutY(tanda.getPosition());
 	
 	double tandaHeight=row*22.188;
 	double tandaWidth=525;
@@ -86,9 +99,10 @@ public class TandaDragAnimation extends Group
 	destMarker.setX(0);
 	destMarker.setY(tanda.getPosition());
 	
-	this.getChildren().add(voidBox);
+	//this.getChildren().add(voidBox);
 	this.getChildren().add(destMarker);
-	this.getChildren().add(gp);
+	//this.getChildren().add(gridPane);
+	this.getChildren().add(hbox);
 	/*
 	  for(int i=0; i<tandaPositions.length; i++)
 	  {
@@ -117,7 +131,8 @@ public class TandaDragAnimation extends Group
   	 }
   	 
    	 if (destPos!=-1) destMarker.setY(destPos);
-  	 gp.setLayoutY(gridPosition);	
+   	 hbox.setLayoutY(gridPosition);	
+  	 //gridPane.setLayoutY(gridPosition);	
   	}
 
 	private double findDestPosition(double gridPosition) 
@@ -145,5 +160,15 @@ public class TandaDragAnimation extends Group
 
 	public void setStartTandaIndex(int startTandaIndex) {
 		this.startTandaIndex = startTandaIndex;
+	}
+	
+	private Label textLabel(String text, int width, String cssBkgColor)
+	{
+	   Label label = new Label(" "+text);
+	   label.setPrefWidth(width);
+	   label.getStyleClass().add(cssBkgColor);
+	   label.setFont(new Font("Cambria", fontSize));
+	  // label.setStyle("tangoBkg");
+	   return label;
 	}
 }
