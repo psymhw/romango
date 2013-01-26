@@ -432,6 +432,7 @@ public class TangoDJ extends Application
             	long currentTime=System.currentTimeMillis();
             	
                 tda.move(event.getY());
+                
             }
         });
    
