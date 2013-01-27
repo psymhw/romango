@@ -84,13 +84,13 @@ public class TangoDJ extends Application
     private MediaView mediaView=null;
     private InfoWindow infoWindow;
     
-    Group trackGroup = new Group();
+  //  Group trackGroup = new Group();
     
     Rectangle redBox = new Rectangle(100, 100);
     Equalizer eq;
     long lastPlaylistRequestTime=System.currentTimeMillis();
     ScrollPane scrollPane;
-    GridPane trackGrid;
+   // GridPane trackGrid;
     int numberOfTracksInPlaylist=0;  // total number in playlist
    // Group tandaDrag = new Group();
    
@@ -387,12 +387,15 @@ public class TangoDJ extends Application
           
           if (event.isSecondaryButtonDown())
           {	  
-            if (trackGrid==null) return;
-            double scrollWindow=trackGrid.getHeight()-scrollPane.getHeight();
+            if (playlist==null) return;
+            double scrollWindow=playlist.getHeight()-scrollPane.getHeight();
             trackIndex=(int) Math.round(((event.getY()+
             		(scrollPane.getVvalue()*scrollWindow))/22.188)-1);
             if (trackIndex<0) trackIndex=0;
             int startTandaIndex=playlist.getTandaIndex(trackIndex);
+            
+            System.out.println("track index: "+trackIndex+" tanda index: "+startTandaIndex);
+            
             /*
             tda = new TandaDragAnimation(playlist.getTandas().get(startTandaIndex), 
         		                       startTandaIndex, event.getY(), 
@@ -400,7 +403,7 @@ public class TangoDJ extends Application
         		                       scrollPane,
         		                       scrollWindow);
             trackGroup.getChildren().add(tda);
-            */
+           
             
             if (tandaMoveActive)
             {
@@ -413,6 +416,7 @@ public class TangoDJ extends Application
               tandaMoveActive=true;
              // trackGroup.getChildren().add(getTandaHighlightBox(playlist.getTanda(startTandaIndex)));
             }
+             */
             System.out.println("Mouse Down");
           }
         }};
@@ -476,7 +480,7 @@ public class TangoDJ extends Application
 	{
 		//System.out.println("tandaMoveOff");
 	  if (!tandaMoveActive) return;
-	  trackGroup.getChildren().remove(1);
+	 // trackGroup.getChildren().remove(1);
 	  tandaMoveActive=false;
 	}
 	
@@ -515,7 +519,7 @@ public class TangoDJ extends Application
 	  playlist.selectedTrack=TrackRow.getPindex();
 	  playlist.setSelectedIndicator();
 	}
-	
+/*	
 	private void populateTrackGrid()
 	{
 	  Tanda tanda;
@@ -563,7 +567,7 @@ public class TangoDJ extends Application
 	  trackGroup.getChildren().add(trackGrid);
 	
 	}
-	
+	*/
 	private void printTandas()
 	{
 	  Tanda tanda;

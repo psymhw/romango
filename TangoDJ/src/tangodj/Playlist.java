@@ -20,6 +20,7 @@ public class Playlist
 	boolean newTanda = true;
 	double currentPosition=0;
 	double[] tandaPositions;
+	double height=0;
 	
 	
 	public void addTrackRow(TrackRow trackRow)
@@ -278,8 +279,13 @@ public class Playlist
 	///  };
 				
 	 // trackGrid.setOnMouseClicked(bHandler);
+	  height=trackGrid.getHeight();
 	 return trackGrid;
 	
+	}
+
+	public double getHeight() {
+		return height;
 	}
 	
  }
