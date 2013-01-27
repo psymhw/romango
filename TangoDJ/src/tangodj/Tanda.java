@@ -19,11 +19,11 @@ public class Tanda
   {
 	this.artist = Artist.getArtist(artistStr);
 	this.group=group; 
-	tandaHighlightBox = new Rectangle(525, height);
-    tandaHighlightBox.setX(50);
+	tandaHighlightBox = new Rectangle(555, height);
+    tandaHighlightBox.setX(0);
     tandaHighlightBox.setY(0);
     tandaHighlightBox.setFill(Color.RED);
-    tandaHighlightBox.setOpacity(.3);
+    tandaHighlightBox.setOpacity(.2);
     tandaHighlightBox.setVisible(false);
   }
   
@@ -53,11 +53,22 @@ public double getPosition() {
 	return position;
 }
 
-public void setPosition(double position) {
+public void setPosition(double position) 
+{
 	this.position = position;
+	this.tandaHighlightBox.setY(position+7);
 }
 
 public double getHeight() {
 	return height;
+}
+
+public Rectangle getTandaHighlightBox() {
+	return tandaHighlightBox;
+}
+
+public void highlight(boolean choice)
+{
+	tandaHighlightBox.setVisible(choice);
 }
 }

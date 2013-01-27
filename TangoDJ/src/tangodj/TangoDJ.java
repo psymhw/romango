@@ -379,93 +379,12 @@ public class TangoDJ extends Application
 	{
 	  scrollPane = new ScrollPane();
 	  // MOUSE DOWN
-	  EventHandler <MouseEvent>mouseDownHandler = new EventHandler<MouseEvent>() 
-	  {
-        public void handle(MouseEvent event)  
-        { 
-          int trackIndex=0;
-          
-          if (event.isSecondaryButtonDown())
-          {	  
-            if (playlist==null) return;
-            double scrollWindow=playlist.getHeight()-scrollPane.getHeight();
-            trackIndex=(int) Math.round(((event.getY()+
-            		(scrollPane.getVvalue()*scrollWindow))/22.188)-1);
-            if (trackIndex<0) trackIndex=0;
-            int startTandaIndex=playlist.getTandaIndex(trackIndex);
-            
-            System.out.println("track index: "+trackIndex+" tanda index: "+startTandaIndex);
-            
-            /*
-            tda = new TandaDragAnimation(playlist.getTandas().get(startTandaIndex), 
-        		                       startTandaIndex, event.getY(), 
-        		                       playlist.getTandaPositions(),
-        		                       scrollPane,
-        		                       scrollWindow);
-            trackGroup.getChildren().add(tda);
-           
-            
-            if (tandaMoveActive)
-            {
-              tandaMoveOff();
-              tandaMoveActive=true;
-             // trackGroup.getChildren().add(getTandaHighlightBox(playlist.getTanda(startTandaIndex)));
-            }
-            else
-            {
-              tandaMoveActive=true;
-             // trackGroup.getChildren().add(getTandaHighlightBox(playlist.getTanda(startTandaIndex)));
-            }
-             */
-            System.out.println("Mouse Down");
-          }
-        }};
-          
-        /*
-        // MOUSE UP
-        EventHandler <MouseEvent>mouseReleasedHandler = new EventHandler<MouseEvent>() 
-        {
-          public void handle(MouseEvent event)  
-          { 
-            int trackIndex=0;
-            if (trackGrid==null) return;
-            trackIndex=
-            		   (int)Math.round(((event.getY()
-            				   +(scrollPane.getVvalue()*(trackGrid.getHeight()
-            				   -scrollPane.getHeight())))  /22.188)-1);
-            if (trackIndex<0) trackIndex=0;
-            trackGroup.getChildren().remove(1);
-            if (tda.getStartTandaIndex()!=tda.getDestTandaIndex()) 
-            {
-              double savedScrollAmount=scrollPane.getVvalue();	
-           	  playlist.reorder(tda.getStartTandaIndex(), tda.getDestTandaIndex());
-              populateTrackGrid();
-              scrollPane.setVvalue(savedScrollAmount);
-            }
-          }
-        };
-        
-       // MOUSE MOVE
-        trackGroup.setOnMouseDragged(new EventHandler<MouseEvent>() 
-        {
-            public void handle(MouseEvent event) 
-            {
-            	//System.out.println("Mouse Moved");
-            	if (trackGrid==null) return;
-            	long currentTime=System.currentTimeMillis();
-            	
-                tda.move(event.getY());
-                
-            }
-        });
-       */
-	    scrollPane.setOnMousePressed(mouseDownHandler);
+	  //  scrollPane.setOnMousePressed(mouseDownHandler);
 	   // scrollPane.setOnMouseReleased(mouseReleasedHandler);
+	  ///scrollPane.setonm
 	    scrollPane.getHvalue();
 	    scrollPane.setPrefWidth(600);
 	    scrollPane.setFitToHeight(true);
-	   // scrollPane.setContent(playlist.getDisplay());
-	    //scrollPane.setPannable(true);
 	    scrollPane.setOnKeyReleased(new EventHandler<KeyEvent>() {
 	    public void handle(KeyEvent ke) 
 	    {
@@ -474,6 +393,87 @@ public class TangoDJ extends Application
 	    return scrollPane;
 	}
 	
+	  EventHandler <MouseEvent>mouseDownHandler = new EventHandler<MouseEvent>() 
+	  {
+      public void handle(MouseEvent event)  
+      { 
+        int trackIndex=0;
+        
+        if (event.isSecondaryButtonDown())
+        {	  
+          if (playlist==null) return;
+          double scrollWindow=playlist.getHeight()-scrollPane.getHeight();
+          trackIndex=(int) Math.round(((event.getY()+
+          		(scrollPane.getVvalue()*scrollWindow))/22.188)-1);
+          if (trackIndex<0) trackIndex=0;
+          int startTandaIndex=playlist.getTandaIndex(trackIndex);
+          
+          System.out.println("track index: "+trackIndex+" tanda index: "+startTandaIndex);
+          playlist.highlightTanda(startTandaIndex, true);
+          /*
+          tda = new TandaDragAnimation(playlist.getTandas().get(startTandaIndex), 
+      		                       startTandaIndex, event.getY(), 
+      		                       playlist.getTandaPositions(),
+      		                       scrollPane,
+      		                       scrollWindow);
+          trackGroup.getChildren().add(tda);
+         
+          
+          if (tandaMoveActive)
+          {
+            tandaMoveOff();
+            tandaMoveActive=true;
+           // trackGroup.getChildren().add(getTandaHighlightBox(playlist.getTanda(startTandaIndex)));
+          }
+          else
+          {
+            tandaMoveActive=true;
+           // trackGroup.getChildren().add(getTandaHighlightBox(playlist.getTanda(startTandaIndex)));
+          }
+           */
+          System.out.println("Mouse Down");
+        }
+      }};
+        
+      /*
+      // MOUSE UP
+      EventHandler <MouseEvent>mouseReleasedHandler = new EventHandler<MouseEvent>() 
+      {
+        public void handle(MouseEvent event)  
+        { 
+          int trackIndex=0;
+          if (trackGrid==null) return;
+          trackIndex=
+          		   (int)Math.round(((event.getY()
+          				   +(scrollPane.getVvalue()*(trackGrid.getHeight()
+          				   -scrollPane.getHeight())))  /22.188)-1);
+          if (trackIndex<0) trackIndex=0;
+          trackGroup.getChildren().remove(1);
+          if (tda.getStartTandaIndex()!=tda.getDestTandaIndex()) 
+          {
+            double savedScrollAmount=scrollPane.getVvalue();	
+         	  playlist.reorder(tda.getStartTandaIndex(), tda.getDestTandaIndex());
+            populateTrackGrid();
+            scrollPane.setVvalue(savedScrollAmount);
+          }
+        }
+      };
+      
+     // MOUSE MOVE
+      trackGroup.setOnMouseDragged(new EventHandler<MouseEvent>() 
+      {
+          public void handle(MouseEvent event) 
+          {
+          	//System.out.println("Mouse Moved");
+          	if (trackGrid==null) return;
+          	long currentTime=System.currentTimeMillis();
+          	
+              tda.move(event.getY());
+              
+          }
+      });
+     */
+
 	
 	
 	private void tandaMoveOff()

@@ -235,7 +235,14 @@ public class Playlist
 	public Group getDisplay()
 	{
 	  Group displayGroup = new Group();
+	  Tanda tanda;
 	  displayGroup.getChildren().add(getTrackGrid());
+	  Iterator<Tanda> it = tandas.iterator();
+	  while(it.hasNext())
+	  {
+		tanda = it.next();
+		displayGroup.getChildren().add(tanda.getTandaHighlightBox());
+	  }
 	  return displayGroup;
 	}
 	
@@ -280,12 +287,41 @@ public class Playlist
 				
 	 // trackGrid.setOnMouseClicked(bHandler);
 	  height=trackGrid.getHeight();
+	  trackGrid.setOnMouseClicked(mouseDownHandler);
 	 return trackGrid;
 	
 	}
 
+	  EventHandler <MouseEvent>mouseDownHandler = new EventHandler<MouseEvent>() 
+	  {
+    public void handle(MouseEvent event)  
+    { 
+      int trackIndex=0;
+      
+      if (event.isSecondaryButtonDown())
+      {	  
+    	  /*
+        double scrollWindow=playlist.getHeight()-scrollPane.getHeight();
+        trackIndex=(int) Math.round(((event.getY()+
+        		(scrollPane.getVvalue()*scrollWindow))/22.188)-1);
+        if (trackIndex<0) trackIndex=0;
+        int startTandaIndex=playlist.getTandaIndex(trackIndex);
+        
+        System.out.println("track index: "+trackIndex+" tanda index: "+startTandaIndex);
+        playlist.highlightTanda(startTandaIndex, true);
+        */
+         System.out.println("Mouse Down");
+      }
+    }};
+
+	
 	public double getHeight() {
 		return height;
+	}
+	
+	public void highlightTanda(int index, boolean choice)
+	{
+	   tandas.get(index).highlight(choice);
 	}
 	
  }
