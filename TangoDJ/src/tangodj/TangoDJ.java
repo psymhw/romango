@@ -247,7 +247,8 @@ public class TangoDJ extends Application
 	      skip.setDisable(true);
 	      info.setDisable(true);
 		  createPlaylist(index);
-		  populateTrackGrid();
+		  scrollPane.setContent(playlist.getDisplay());
+		  //populateTrackGrid();
 		  playlist.resetSelectedIndicator();
 		  play.setDisable(false);
 		}
@@ -392,13 +393,26 @@ public class TangoDJ extends Application
             		(scrollPane.getVvalue()*scrollWindow))/22.188)-1);
             if (trackIndex<0) trackIndex=0;
             int startTandaIndex=playlist.getTandaIndex(trackIndex);
+            /*
             tda = new TandaDragAnimation(playlist.getTandas().get(startTandaIndex), 
         		                       startTandaIndex, event.getY(), 
         		                       playlist.getTandaPositions(),
         		                       scrollPane,
         		                       scrollWindow);
-            tandaMoveActive=true;
             trackGroup.getChildren().add(tda);
+            */
+            
+            if (tandaMoveActive)
+            {
+              tandaMoveOff();
+              tandaMoveActive=true;
+             // trackGroup.getChildren().add(getTandaHighlightBox(playlist.getTanda(startTandaIndex)));
+            }
+            else
+            {
+              tandaMoveActive=true;
+             // trackGroup.getChildren().add(getTandaHighlightBox(playlist.getTanda(startTandaIndex)));
+            }
             System.out.println("Mouse Down");
           }
         }};
@@ -446,7 +460,7 @@ public class TangoDJ extends Application
 	    scrollPane.getHvalue();
 	    scrollPane.setPrefWidth(600);
 	    scrollPane.setFitToHeight(true);
-	    scrollPane.setContent(trackGroup);
+	   // scrollPane.setContent(playlist.getDisplay());
 	    //scrollPane.setPannable(true);
 	    scrollPane.setOnKeyReleased(new EventHandler<KeyEvent>() {
 	    public void handle(KeyEvent ke) 
@@ -456,9 +470,11 @@ public class TangoDJ extends Application
 	    return scrollPane;
 	}
 	
+	
+	
 	private void tandaMoveOff()
 	{
-		System.out.println("tandaMoveOff");
+		//System.out.println("tandaMoveOff");
 	  if (!tandaMoveActive) return;
 	  trackGroup.getChildren().remove(1);
 	  tandaMoveActive=false;

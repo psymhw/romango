@@ -3,6 +3,12 @@ package tangodj;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.Group;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
+
 public class Playlist 
 {
 	private ArrayList<Tanda> tandas = new ArrayList<Tanda>();
@@ -224,4 +230,56 @@ public class Playlist
       if (ti>0) return ti;
 	  return 0;
 	}
+	
+	public Group getDisplay()
+	{
+	  Group displayGroup = new Group();
+	  displayGroup.getChildren().add(getTrackGrid());
+	  return displayGroup;
+	}
+	
+	private GridPane getTrackGrid()
+	{
+	  Tanda tanda;
+	  ArrayList<TrackRow> trs;
+	  TrackRow tr;
+	  int row=0;
+	  int numberOfTracksInPlaylist=0;
+	  
+	  
+	  GridPane trackGrid = new GridPane();
+		
+	  trackGrid.setPadding(new Insets(10, 10, 10, 10));
+	  trackGrid.setVgap(0);
+	  trackGrid.setHgap(0);
+
+	  Iterator<Tanda> it = tandas.iterator();
+	  while(it.hasNext())
+	  {
+		tanda = it.next();
+		trs=tanda.getTrackRows();
+		Iterator<TrackRow> itx = trs.iterator();
+		while(itx.hasNext())
+		{
+		  tr = itx.next();
+		  trackGrid.add(tr.getIndicator(), 0, row);
+		  trackGrid.add(tr.getTrackNumberLabel(), 1, row);
+		  trackGrid.add(tr.getGroupingLabel(), 2, row);
+		  trackGrid.add(tr.getArtistLabel(), 3, row);
+		  trackGrid.add(tr.getTrackTitleLabel(), 4, row);
+		  numberOfTracksInPlaylist++;  
+		  row++;
+		}
+	  }  
+	  
+	 // EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() 
+	 // {
+	 //   public void handle(MouseEvent event)  { ShowIndex(); }
+	///  };
+				
+	 // trackGrid.setOnMouseClicked(bHandler);
+	 return trackGrid;
+	
+	}
+	
  }
