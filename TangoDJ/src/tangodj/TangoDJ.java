@@ -408,7 +408,7 @@ public class TangoDJ extends Application
          double scrollPaneContentsHeight=scrollPane.getContent().getBoundsInLocal().getHeight();
          double rowHeight=scrollPaneContentsHeight/playlist.getNumberOfTracks();
 
-         playlist.calcTandaPositions(scrollPaneContentsHeight);
+         playlist.calcPositions(scrollPaneContentsHeight);
          System.out.println("scrollPaneContentsHeight: "+scrollPaneContentsHeight);
          
           
@@ -428,7 +428,7 @@ public class TangoDJ extends Application
           System.out.println("eventY: "+event.getY()+" track index: "+trackIndex+" tanda index: "+startTandaIndex);
       //    System.out.println("row height: "+rowHeight+" scrollpane vvalue: "+scrollPane.getVvalue()+" scrollpane height: "+scrollPane.getContent().getBoundsInLocal().getHeight());
 
-          playlist.highlightTanda(startTandaIndex, true);
+          playlist.highlightTanda(startTandaIndex);
           /*
           tda = new TandaDragAnimation(playlist.getTandas().get(startTandaIndex), 
       		                       startTandaIndex, event.getY(), 

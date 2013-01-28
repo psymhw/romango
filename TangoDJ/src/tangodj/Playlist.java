@@ -25,6 +25,7 @@ public class Playlist
 	double currentPosition=0;
 	double[] tandaPositions;
 	double height=0;
+	int highlightedTanda=0;
 	
 	ScrollPane scrollPane;
 	 Group displayGroup = new Group();
@@ -196,18 +197,14 @@ public class Playlist
 		 finalize();
 	 }
 	 
-	 public void calcTandaPositions(double scrollPaneContentsHeight) 
+	 public void calcPositions(double scrollPaneContentsHeight) 
 	 {
 		int trackNumber=0;
 		Tanda t;
 		tandaPositions = new double[tandas.size()];
 		int i=0;
 		double pos=0;
-        //double scrollPaneContentsHeight=scrollPane.getContent().getBoundsInLocal().getHeight();
-		//double scrollPaneContentsHeight=scrollPane.getContent().getBoundsInParent().getHeight();
-        double rowHeight=scrollPaneContentsHeight/getNumberOfTracks();
-
-		System.out.println("scrollpane ht: "+scrollPaneContentsHeight);
+        double rowHeight=(scrollPaneContentsHeight)/getNumberOfTracks();
         
 		Iterator<Tanda> it = tandas.iterator();
 		while(it.hasNext())
@@ -304,15 +301,6 @@ public class Playlist
 		}
 	  }  
 	  
-	 // EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() 
-	 // {
-	 //   public void handle(MouseEvent event)  { ShowIndex(); }
-	///  };
-				
-	 // trackGrid.setOnMouseClicked(bHandler);
-	
-	 // trackGrid.setOnMouseClicked(mouseDownHandler);
-	//  System.out.println("playlist.trackGridheight: "+trackGrid.getHeight());
 	 return trackGrid;
 	
 	}
@@ -335,6 +323,12 @@ public class Playlist
 		return height;
 	}
 	
+	public void highlightTanda(int index)
+	{
+		tandas.get(highlightedTanda).highlight(false);
+		highlightedTanda=index;
+		tandas.get(index).highlight(true);
+	}
 	public void highlightTanda(int index, boolean choice)
 	{
 	   tandas.get(index).highlight(choice);
