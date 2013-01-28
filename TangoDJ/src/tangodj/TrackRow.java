@@ -191,6 +191,7 @@ public class TrackRow
 	   label.getStyleClass().add(cssBkgColor);
 	   label.setFont(new Font("Cambria", fontSize));
 	  // label.setStyle("tangoBkg");
+	   
 	   return label;
 	}
 	

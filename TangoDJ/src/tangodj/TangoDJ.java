@@ -103,6 +103,7 @@ public class TangoDJ extends Application
     final Button play = new Button("Play");
     final Button stop = new Button("Stop");
     final Button info = new Button("Info Window");
+    private HBox hbox;
     
     public static void main(String[] args) 
     {
@@ -133,13 +134,13 @@ public class TangoDJ extends Application
         vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10, 0, 0, 10));
-        final HBox hbox = new HBox();
+        hbox = new HBox();
         hbox.setSpacing(5);
         hbox.setPadding(new Insets(10, 0, 0, 10));
         
         hbox.getChildren().add(allPlaylistsTable);
        // hbox.getChildren().add(trackTable);
-        hbox.getChildren().add(getTrackScrollPane());
+       hbox.getChildren().add(getTrackScrollPane());
        
         
      
@@ -247,6 +248,7 @@ public class TangoDJ extends Application
 	      skip.setDisable(true);
 	      info.setDisable(true);
 		  createPlaylist(index);
+		  //hbox.getChildren().add(playlist.getDisplay());
 		  scrollPane.setContent(playlist.getDisplay());
 		  //populateTrackGrid();
 		  playlist.resetSelectedIndicator();
@@ -379,7 +381,7 @@ public class TangoDJ extends Application
 	{
 	  scrollPane = new ScrollPane();
 	  // MOUSE DOWN
-	  //  scrollPane.setOnMousePressed(mouseDownHandler);
+	    scrollPane.setOnMousePressed(mouseDownHandler);
 	   // scrollPane.setOnMouseReleased(mouseReleasedHandler);
 	  ///scrollPane.setonm
 	    scrollPane.getHvalue();
@@ -402,14 +404,29 @@ public class TangoDJ extends Application
         if (event.isSecondaryButtonDown())
         {	  
           if (playlist==null) return;
-          double scrollWindow=playlist.getHeight()-scrollPane.getHeight();
-          trackIndex=(int) Math.round(((event.getY()+
-          		(scrollPane.getVvalue()*scrollWindow))/22.188)-1);
-          if (trackIndex<0) trackIndex=0;
-          int startTandaIndex=playlist.getTandaIndex(trackIndex);
           
-          System.out.println("track index: "+trackIndex+" tanda index: "+startTandaIndex);
-          playlist.highlightTanda(startTandaIndex, true);
+         double scrollPaneContentsHeight=scrollPane.getContent().getBoundsInLocal().getHeight();
+       //   double rowHeight=scrollPaneContentsHeight/playlist.getNumberOfTracks();
+       //   playlist.setRowHeight(rowHeight);
+          
+        //  double scrollWindow=playlist.getHeight()-scrollPane.getHeight();
+        //  trackIndex=(int) Math.round(((event.getY()+
+        //  		(scrollPane.getVvalue()*scrollWindow))/22.188)-1);
+     
+       //   double scrollWindow=scrollPaneContentsHeight-400;
+       //   trackIndex=(int) Math.round(((event.getY()+
+        //  		(scrollPane.getVvalue()*scrollWindow))/rowHeight)-1);
+  
+          
+          
+       //   if (trackIndex<0) trackIndex=0;
+        //  int startTandaIndex=playlist.getTandaIndex(trackIndex);
+          playlist.calcTandaPositions(scrollPaneContentsHeight);
+          System.out.println("scrollPaneContentsHeight: "+scrollPaneContentsHeight);
+          //System.out.println("eventY: "+event.getY()+" track index: "+trackIndex+" tanda index: "+startTandaIndex);
+      //    System.out.println("row height: "+rowHeight+" scrollpane vvalue: "+scrollPane.getVvalue()+" scrollpane height: "+scrollPane.getContent().getBoundsInLocal().getHeight());
+
+    //      playlist.highlightTanda(startTandaIndex, true);
           /*
           tda = new TandaDragAnimation(playlist.getTandas().get(startTandaIndex), 
       		                       startTandaIndex, event.getY(), 
