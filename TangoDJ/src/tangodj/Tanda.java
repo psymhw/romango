@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 
 public class Tanda 
 {
@@ -19,12 +20,16 @@ public class Tanda
   {
 	this.artist = Artist.getArtist(artistStr);
 	this.group=group; 
-	tandaHighlightBox = new Rectangle(555, height);
-    tandaHighlightBox.setX(0);
+	tandaHighlightBox = new Rectangle(550, height);
+    tandaHighlightBox.setX(15);
     tandaHighlightBox.setY(0);
-    tandaHighlightBox.setFill(Color.RED);
+    tandaHighlightBox.setFill(Color.HOTPINK);
     tandaHighlightBox.setOpacity(.2);
+    tandaHighlightBox.setStroke(Color.BLACK);
+    tandaHighlightBox.setStrokeWidth(3);
+    tandaHighlightBox.setStrokeType(StrokeType.INSIDE);
     tandaHighlightBox.setVisible(false);
+    
   }
   
   public void addTrackRow(TrackRow t)
