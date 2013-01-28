@@ -56,7 +56,7 @@ public double getPosition() {
 public void setPosition(double position) 
 {
 	this.position = position;
-	this.tandaHighlightBox.setY(position+7);
+	this.tandaHighlightBox.setY(position);
 }
 
 public double getHeight() {
