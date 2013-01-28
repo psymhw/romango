@@ -406,27 +406,29 @@ public class TangoDJ extends Application
           if (playlist==null) return;
           
          double scrollPaneContentsHeight=scrollPane.getContent().getBoundsInLocal().getHeight();
-       //   double rowHeight=scrollPaneContentsHeight/playlist.getNumberOfTracks();
-       //   playlist.setRowHeight(rowHeight);
+         double rowHeight=scrollPaneContentsHeight/playlist.getNumberOfTracks();
+
+         playlist.calcTandaPositions(scrollPaneContentsHeight);
+         System.out.println("scrollPaneContentsHeight: "+scrollPaneContentsHeight);
+         
           
-        //  double scrollWindow=playlist.getHeight()-scrollPane.getHeight();
-        //  trackIndex=(int) Math.round(((event.getY()+
+         // double scrollWindow=playlist.getHeight()-scrollPane.getHeight();
+          //trackIndex=(int) Math.round(((event.getY()+
         //  		(scrollPane.getVvalue()*scrollWindow))/22.188)-1);
      
-       //   double scrollWindow=scrollPaneContentsHeight-400;
-       //   trackIndex=(int) Math.round(((event.getY()+
-        //  		(scrollPane.getVvalue()*scrollWindow))/rowHeight)-1);
+          double scrollWindow=scrollPaneContentsHeight-400;
+          trackIndex=(int) Math.round(((event.getY()+
+          		(scrollPane.getVvalue()*scrollWindow))/rowHeight)-1);
   
           
           
-       //   if (trackIndex<0) trackIndex=0;
-        //  int startTandaIndex=playlist.getTandaIndex(trackIndex);
-          playlist.calcTandaPositions(scrollPaneContentsHeight);
-          System.out.println("scrollPaneContentsHeight: "+scrollPaneContentsHeight);
-          //System.out.println("eventY: "+event.getY()+" track index: "+trackIndex+" tanda index: "+startTandaIndex);
+         if (trackIndex<0) trackIndex=0;
+         int startTandaIndex=playlist.getTandaIndex(trackIndex);
+        
+          System.out.println("eventY: "+event.getY()+" track index: "+trackIndex+" tanda index: "+startTandaIndex);
       //    System.out.println("row height: "+rowHeight+" scrollpane vvalue: "+scrollPane.getVvalue()+" scrollpane height: "+scrollPane.getContent().getBoundsInLocal().getHeight());
 
-    //      playlist.highlightTanda(startTandaIndex, true);
+          playlist.highlightTanda(startTandaIndex, true);
           /*
           tda = new TandaDragAnimation(playlist.getTandas().get(startTandaIndex), 
       		                       startTandaIndex, event.getY(), 
