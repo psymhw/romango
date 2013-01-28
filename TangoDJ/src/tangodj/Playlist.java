@@ -6,6 +6,10 @@ import java.util.Iterator;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 
@@ -21,6 +25,10 @@ public class Playlist
 	double currentPosition=0;
 	double[] tandaPositions;
 	double height=0;
+	
+	ScrollPane scrollPane;
+	 Group displayGroup = new Group();
+	
 	
 	
 	public void addTrackRow(TrackRow trackRow)
@@ -167,6 +175,7 @@ public class Playlist
 			  tr = itx.next();
 			  tr.setTandaInfo(tandaNumber, tandaTrackNumber, trackNumber);
 			  trackRows.add(tr);
+			 // System.out.println("playlist, adding trackrow "+trackNumber);
 			  tandaTrackNumber++;
 			  trackNumber++;
 			}
@@ -187,18 +196,24 @@ public class Playlist
 		 finalize();
 	 }
 	 
-	 private void calcTandaPositions() 
+	 public void calcTandaPositions(double scrollPaneContentsHeight) 
 	 {
 		int trackNumber=0;
 		Tanda t;
 		tandaPositions = new double[tandas.size()];
 		int i=0;
 		double pos=0;
+        //double scrollPaneContentsHeight=scrollPane.getContent().getBoundsInLocal().getHeight();
+		//double scrollPaneContentsHeight=scrollPane.getContent().getBoundsInParent().getHeight();
+        double rowHeight=scrollPaneContentsHeight/getNumberOfTracks();
+
+		System.out.println("scrollpane ht: "+scrollPaneContentsHeight);
+        
 		Iterator<Tanda> it = tandas.iterator();
 		while(it.hasNext())
 		{
 		  t=it.next();
-		  pos=trackNumber*22.188;
+		  pos=trackNumber*rowHeight;
 		  t.setPosition(pos);
 		  tandaPositions[i]=pos;
 		  trackNumber+=t.getTrackRows().size();
@@ -216,8 +231,26 @@ public class Playlist
 	
 	public void finalize()
 	{
-		setTrackRows();
-		calcTandaPositions();
+	  setTrackRows();
+	 
+	  displayGroup.getChildren().add(getTrackGrid());
+	  
+ 	  Tanda tanda;
+	  
+	  Iterator<Tanda> it = tandas.iterator();
+	  while(it.hasNext())
+	  {
+		tanda = it.next();
+		displayGroup.getChildren().add(tanda.getTandaHighlightBox());
+	  }
+	  
+	  
+	 // setScrollPane();
+	  
+	 // displayGroup.getChildren().add(scrollPane);
+	 // scrollPane.setVbarPolicy(ScrollBarPolicy.ALWAYS);
+		
+	 // calcTandaPositions();
 	}
 
 	public double[] getTandaPositions() {
@@ -234,15 +267,6 @@ public class Playlist
 	
 	public Group getDisplay()
 	{
-	  Group displayGroup = new Group();
-	  Tanda tanda;
-	  displayGroup.getChildren().add(getTrackGrid());
-	  Iterator<Tanda> it = tandas.iterator();
-	  while(it.hasNext())
-	  {
-		tanda = it.next();
-		displayGroup.getChildren().add(tanda.getTandaHighlightBox());
-	  }
 	  return displayGroup;
 	}
 	
@@ -286,8 +310,9 @@ public class Playlist
 	///  };
 				
 	 // trackGrid.setOnMouseClicked(bHandler);
-	  height=trackGrid.getHeight();
-	  trackGrid.setOnMouseClicked(mouseDownHandler);
+	
+	 // trackGrid.setOnMouseClicked(mouseDownHandler);
+	//  System.out.println("playlist.trackGridheight: "+trackGrid.getHeight());
 	 return trackGrid;
 	
 	}
@@ -300,16 +325,7 @@ public class Playlist
       
       if (event.isSecondaryButtonDown())
       {	  
-    	  /*
-        double scrollWindow=playlist.getHeight()-scrollPane.getHeight();
-        trackIndex=(int) Math.round(((event.getY()+
-        		(scrollPane.getVvalue()*scrollWindow))/22.188)-1);
-        if (trackIndex<0) trackIndex=0;
-        int startTandaIndex=playlist.getTandaIndex(trackIndex);
-        
-        System.out.println("track index: "+trackIndex+" tanda index: "+startTandaIndex);
-        playlist.highlightTanda(startTandaIndex, true);
-        */
+        // calcTandaPositions();
          System.out.println("Mouse Down");
       }
     }};
@@ -322,6 +338,30 @@ public class Playlist
 	public void highlightTanda(int index, boolean choice)
 	{
 	   tandas.get(index).highlight(choice);
+	}
+
+	public int getNumberOfTracks()
+	{
+		return trackNumber;
+	}
+
+	
+	
+	private void setScrollPane()
+	{
+		scrollPane = new ScrollPane();
+	  // MOUSE DOWN
+	    scrollPane.setOnMousePressed(mouseDownHandler);
+	   // scrollPane.setOnMouseReleased(mouseReleasedHandler);
+	  ///scrollPane.setonm
+	    scrollPane.getHvalue();
+	    scrollPane.setPrefWidth(600);
+	    scrollPane.setFitToHeight(true);
+	    scrollPane.setOnKeyReleased(new EventHandler<KeyEvent>() {
+	    public void handle(KeyEvent ke) 
+	    {
+	      if (ke.getCode()==KeyCode.ESCAPE) System.out.println(" esc Pressed");
+	    }});
 	}
 	
  }
