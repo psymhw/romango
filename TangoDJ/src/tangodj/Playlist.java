@@ -3,202 +3,169 @@ package tangodj;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 
 public class Playlist 
 {
-	private ArrayList<Tanda> tandas = new ArrayList<Tanda>();
-	private ArrayList<TrackRow> trackRows = new ArrayList<TrackRow>();
-	public int playingTrack=-1;
-	public int selectedTrack=0;
-	private int tandaTrackNumber=0;
-	private int trackNumber=0;
-	boolean newTanda = true;
-	double currentPosition=0;
-	double[] tandaPositions;
-	double height=0;
-	int highlightedTanda=0;
+  private ArrayList<Tanda> tandas = new ArrayList<Tanda>();
+  private ArrayList<TrackRow> trackRows = new ArrayList<TrackRow>();
+  public int playingTrack=-1;
+  public int selectedTrack=0;
+  private int tandaTrackNumber=0;
+  private int trackNumber=0;
+  private boolean newTanda = true;
+  private double[] tandaPositions;
+  private double height=0;
+  private int highlightedTanda=0;
+  private Group displayGroup = new Group();
+  private boolean highlightActive=false;
+  private double scrollPaneContentsHeight=0;
+  private int numberOfTandas=0;
 	
-	ScrollPane scrollPane;
-	 Group displayGroup = new Group();
-	 boolean highlightActive=false;
-	 double scrollPaneContentsHeight=0;
-	
-	
-	
-	public void addTrackRow(TrackRow trackRow)
-	{
-	   
-	   if (newTanda)
-	   {
-		 Tanda t = new Tanda(trackRow.getArtist(), trackRow.getGrouping()); 
-		 //t.setPosition(trackNumber*22.188);
-		 tandas.add(t);
-		 newTanda=false;
-	   }
-	   Tanda tanda = tandas.get(tandas.size()-1);
-	   trackRow.setTandaInfo(tandas.size()-1, tandaTrackNumber, trackNumber);
-	   tandaTrackNumber++;
-	   trackNumber++;
-	   tanda.addTrackRow(trackRow);
-	  // trackRows.add(trackRow);
-	   
-	   if ("cortina".equalsIgnoreCase(trackRow.getGrouping()))
-	   {
-		 newTanda=true;
-		 tandaTrackNumber=0;
-	   }
-	}
-	
-	
-	public void incrementSelected()
+  public void addTrackRow(TrackRow trackRow)
+  {
+    if (newTanda)
     {
-      setNotSelectedIndicator();
-      selectedTrack++;
-      setSelectedIndicator();
-    }
-	
-	 public void incrementPlaying()
-	 {
-	   setNotPlayingIndicator();
-	      
-	   if (playingIsSelected()) 
-	   {
-	     incrementSelected();
-	     playingTrack++;
-	   }
-	   else 
-	   {
-	     playingTrack=selectedTrack;
-	   }
-     }
-	    
-	 public String getDragText(int index)
-	 {
-		TrackRow trackRow = trackRows.get(index);
-		int tandaNumber = trackRow.getTandaNumber();
-		System.out.println("Track title: "+trackRow.getTrackTitle()+" "+trackRow.getTandaNumber());
-		Tanda tanda = tandas.get(tandaNumber);
-		return tanda.artist.lastName+" - "+tanda.group;
-	 }
-	 
-	 public void setTrackRows()
-	 {
-		 trackRows.clear();
-		 Tanda tanda;
-		 ArrayList<TrackRow> trs;
-		 TrackRow tr;
-		 
-		 int tandaNumber=0;
-		 int tandaTrackNumber=0;
-		 int trackNumber=0;
-		  
-		  Iterator<Tanda> it = tandas.iterator();
-		  while(it.hasNext())
-		  {
-			tanda = it.next();
-			trs=tanda.getTrackRows();
-			Iterator<TrackRow> itx = trs.iterator();
-			while(itx.hasNext())
-			{
-			  tr = itx.next();
-			  tr.setTandaInfo(tandaNumber, tandaTrackNumber, trackNumber);
-			  trackRows.add(tr);
-			 // System.out.println("playlist, adding trackrow "+trackNumber);
-			  tandaTrackNumber++;
-			  trackNumber++;
-			}
-			
-			tandaNumber++;
-		  }  
-	 }
-	 
-	 public void reorder(KeyCode direction)
-	 {
-		
-		 //System.out.println("start tanda: "+startTandaIndex+", finish tanda: "+finishTandaIndex); 
-		 int move=0;
-		 if (direction==KeyCode.UP) move=-1;
-		 else move=1;
-		 
-		 Tanda holdTanda = tandas.get(highlightedTanda);
-		 tandas.remove(highlightedTanda);
-		 tandas.add(highlightedTanda+move, holdTanda);
-		 
-	     finalize();
-	     
-	     highlightedTanda+=move;
-	 }
-	 
-	 public void calcPositions(double scrollPaneContentsHeight) 
-	 {
-		 this.scrollPaneContentsHeight=scrollPaneContentsHeight;
-	     calcPositions();
-	 }
-	 public void calcPositions() 
-	 {
-		int trackNumber=0;
-		Tanda t;
-		tandaPositions = new double[tandas.size()];
-		int i=0;
-		double pos=0;
-        double rowHeight=(scrollPaneContentsHeight)/getNumberOfTracks();
-        
-		Iterator<Tanda> it = tandas.iterator();
-		while(it.hasNext())
-		{
-		  t=it.next();
-		  pos=trackNumber*(rowHeight);
-		  t.setPosition(pos);
-		  tandaPositions[i]=pos;
-		  trackNumber+=t.getTrackRows().size();
-		  i++;
-		}
-		
-		
+      Tanda t = new Tanda(trackRow.getArtist(), trackRow.getGrouping()); 
+	  tandas.add(t);
+	  newTanda=false;
 	}
-
-	public Tanda getTanda(int trackIndex)
-	 {
-		TrackRow tr = trackRows.get(trackIndex);
-		return tandas.get(tr.getTandaNumber());
-	 }
-	
-	public void finalize()
+	Tanda tanda = tandas.get(tandas.size()-1);
+	trackRow.setTandaInfo(tandas.size()-1, tandaTrackNumber, trackNumber);
+	tandaTrackNumber++;
+	trackNumber++;
+	tanda.addTrackRow(trackRow);
+	   
+	if ("cortina".equalsIgnoreCase(trackRow.getGrouping()))
 	{
-	  
-	 
-	  displayGroup= new Group();
-	  setTrackRows();
-	  displayGroup.getChildren().add(getTrackGrid());
-	  
- 	  Tanda tanda;
-	  
-	  Iterator<Tanda> it = tandas.iterator();
-	  while(it.hasNext())
-	  {
-		tanda = it.next();
-		displayGroup.getChildren().add(tanda.getTandaHighlightBox());
-	  }
-	  
-	  
-	 // setScrollPane();
-	  
-	 // displayGroup.getChildren().add(scrollPane);
-	 // scrollPane.setVbarPolicy(ScrollBarPolicy.ALWAYS);
-		
-	 // calcTandaPositions();
+	  newTanda=true;
+	  tandaTrackNumber=0;
 	}
+  }
+	
+	
+  public void incrementSelected()
+  {
+    setNotSelectedIndicator();
+    selectedTrack++;
+    setSelectedIndicator();
+  }
+	
+  public void incrementPlaying()
+  {
+    setNotPlayingIndicator();
+	      
+	if (playingIsSelected()) 
+	{
+	  incrementSelected();
+	  playingTrack++;
+	}
+	else 
+	{
+	  playingTrack=selectedTrack;
+	}
+  }
+  
+  public void setTrackRows()
+  {
+	trackRows.clear();
+	Tanda tanda;
+	ArrayList<TrackRow> trs;
+	TrackRow tr;
+		 
+	int tandaNumber=0;
+	int tandaTrackNumber=0;
+	int trackNumber=0;
+		  
+	Iterator<Tanda> it = tandas.iterator();
+	while(it.hasNext())
+	{
+	  tanda = it.next();
+	  trs=tanda.getTrackRows();
+	  Iterator<TrackRow> itx = trs.iterator();
+	  while(itx.hasNext())
+      {
+	    tr = itx.next();
+		tr.setTandaInfo(tandaNumber, tandaTrackNumber, trackNumber);
+		trackRows.add(tr);
+		tandaTrackNumber++;
+		trackNumber++;
+	  }
+	  tandaNumber++;
+	}  
+  }
+	 
+  public void reorder(KeyCode direction)
+  {
+    int move=0;
+    if ((direction==KeyCode.UP)&&(highlightedTanda==0)) return;
+    if ((direction==KeyCode.DOWN)&&(highlightedTanda==(numberOfTandas-1))) return;
+    
+	if (direction==KeyCode.UP) move=-1;	else move=1;
+	Tanda holdTanda = tandas.get(highlightedTanda);
+	tandas.remove(highlightedTanda);
+	tandas.add(highlightedTanda+move, holdTanda);
+	finalize();
+	highlightedTanda+=move;
+	calcPositions();
+  }
+	 
+  public void calcPositions(double scrollPaneContentsHeight) 
+  {
+    this.scrollPaneContentsHeight=scrollPaneContentsHeight;
+	calcPositions();
+  }
+  
+  public void calcPositions() 
+  {
+    int trackNumber=0;
+	Tanda t;
+	tandaPositions = new double[tandas.size()];
+	int i=0;
+	double pos=0;
+    double rowHeight=(scrollPaneContentsHeight)/getNumberOfTracks();
+        
+	Iterator<Tanda> it = tandas.iterator();
+	while(it.hasNext())
+	{
+	  t=it.next();
+	  pos=trackNumber*(rowHeight);
+	  t.setPosition(pos);
+	  tandaPositions[i]=pos;
+	  trackNumber+=t.getTrackRows().size();
+	  i++;
+	}
+  }
 
-	public double[] getTandaPositions() {
+  public Tanda getTanda(int trackIndex)
+  {
+	TrackRow tr = trackRows.get(trackIndex);
+	return tandas.get(tr.getTandaNumber());
+  }
+	
+  public void finalize()
+  {
+	displayGroup= new Group();
+	setTrackRows();
+	displayGroup.getChildren().add(getTrackGrid());
+	  
+ 	Tanda tanda;
+	  
+	Iterator<Tanda> it = tandas.iterator();
+	while(it.hasNext())
+	{
+	  tanda = it.next();
+	  displayGroup.getChildren().add(tanda.getTandaHighlightBox());
+	}
+	
+	numberOfTandas=tandas.size();
+  }
+
+  public double[] getTandaPositions() {
 		return tandaPositions;
 	}
 	
@@ -282,27 +249,6 @@ public class Playlist
 	  }
 	}
 	
-
-	
-	/*
-	private void setScrollPane()
-	{
-		scrollPane = new ScrollPane();
-	  // MOUSE DOWN
-	    scrollPane.setOnMousePressed(mouseDownHandler);
-	   // scrollPane.setOnMouseReleased(mouseReleasedHandler);
-	  ///scrollPane.setonm
-	    scrollPane.getHvalue();
-	    scrollPane.setPrefWidth(600);
-	    scrollPane.setFitToHeight(true);
-	    scrollPane.setOnKeyReleased(new EventHandler<KeyEvent>() {
-	    public void handle(KeyEvent ke) 
-	    {
-	      if (ke.getCode()==KeyCode.ESCAPE) System.out.println(" esc Pressed");
-	    }});
-	}
-	*/
-	
 	public ArrayList<Tanda> getTandas()
 	{
 	  return tandas;	
@@ -378,6 +324,17 @@ public class Playlist
 	public int getNumberOfTracks()
 	{
 		return trackNumber;
+	}
+	
+	public int getNumberOfTandas()
+	{
+		return numberOfTandas;
+	}
+
+
+	public void setScrollPaneContentsHeight(double scrollPaneContentsHeight) {
+		this.scrollPaneContentsHeight = scrollPaneContentsHeight;
+		calcPositions();
 	}
 
  }
