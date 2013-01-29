@@ -248,9 +248,7 @@ public class TangoDJ extends Application
 	      skip.setDisable(true);
 	      info.setDisable(true);
 		  createPlaylist(index);
-		  //hbox.getChildren().add(playlist.getDisplay());
 		  scrollPane.setContent(playlist.getDisplay());
-		  //populateTrackGrid();
 		  playlist.resetSelectedIndicator();
 		  play.setDisable(false);
 		}
@@ -380,7 +378,7 @@ public class TangoDJ extends Application
 	private ScrollPane getTrackScrollPane()
 	{
 	  scrollPane = new ScrollPane();
-	  scrollPane.setOnMousePressed(mouseDownHandler);
+	  scrollPane.setOnMousePressed(mouseHandler);
 	  scrollPane.setOnKeyReleased(keyEvent);
 	  scrollPane.getHvalue();
 	  scrollPane.setPrefWidth(600);
@@ -398,48 +396,53 @@ public class TangoDJ extends Application
 	    {
 	    	playlist.reorder(KeyCode.UP);
 	    	scrollPane.setContent(playlist.getDisplay());
-	    	playlist.calcPositions();
+	    	//playlist.calcPositions();
+	    	playlist.highlightTanda();
+	    }
+	    if (ke.getCode()==KeyCode.DOWN) 
+	    {
+	    	playlist.reorder(KeyCode.DOWN);
+	    	scrollPane.setContent(playlist.getDisplay());
+	    	//playlist.calcPositions();
 	    	playlist.highlightTanda();
 	    }
 	  }
 	};
 	
-	  // MOUSE DOWN  
-	EventHandler <MouseEvent>mouseDownHandler = new EventHandler<MouseEvent>() 
+	// MOUSE  
+	EventHandler <MouseEvent>mouseHandler = new EventHandler<MouseEvent>() 
 	{
       public void handle(MouseEvent event)  
       { 
+    	if (playlist==null) return;  
         int trackIndex=0;
+        double scrollPaneContentsHeight=scrollPane.getContent().getBoundsInLocal().getHeight();
+        double rowHeight=scrollPaneContentsHeight/playlist.getNumberOfTracks();
+        double scrollWindow=scrollPaneContentsHeight-scrollPane.getViewportBounds().getHeight();
+
+        playlist.setScrollPaneContentsHeight(scrollPaneContentsHeight); // not sure why this doesn't work when first loading the playlist (above).
+        
+        trackIndex=(int) Math.round(((event.getY()+(scrollPane.getVvalue()*scrollWindow))/rowHeight)-1);
+        if (trackIndex<0) trackIndex=0;
+        
         if (event.isSecondaryButtonDown())
         {	  
-          if (playlist==null) return;
-          
-          double scrollPaneContentsHeight=scrollPane.getContent().getBoundsInLocal().getHeight();
-          double rowHeight=scrollPaneContentsHeight/playlist.getNumberOfTracks();
-          double scrollWindow=scrollPaneContentsHeight-scrollPane.getViewportBounds().getHeight();
-
-          playlist.calcPositions(scrollPaneContentsHeight);
-          
-          trackIndex=(int) Math.round(((event.getY()+(scrollPane.getVvalue()*scrollWindow))/rowHeight)-1);
-          if (trackIndex<0) trackIndex=0;
-          
           int tandaIndex=playlist.getTandaIndex(trackIndex);
-           playlist.highlightTanda(tandaIndex);
-  
-          System.out.println("Mouse Down");
+          playlist.highlightTanda(tandaIndex);
         }
+        
+        if (event.isPrimaryButtonDown())
+        {	 
+          playlist.selectedTrack=trackIndex;
+          playlist.setSelectedIndicator();
+        }
+        
+        
       }};
         
-  
-	
-	
-	
-	
 	
 	private void createPlaylist(int index)
 	{
-	  
-	  
 	  PlaylistData pd = data.playlists[index];
 	  ItunesTrackData td = null;
 	  String path=null;
@@ -458,8 +461,6 @@ public class TangoDJ extends Application
 	  }
 	  playlist.finalize();
 	  //printTandas();
-	  
-	  
 	}
 	
 	
@@ -470,55 +471,7 @@ public class TangoDJ extends Application
 	  playlist.selectedTrack=TrackRow.getPindex();
 	  playlist.setSelectedIndicator();
 	}
-/*	
-	private void populateTrackGrid()
-	{
-	  Tanda tanda;
-	  ArrayList<TrackRow> trs;
-	  TrackRow tr;
-	  int row=0;
-	  numberOfTracksInPlaylist=0;
-	  
-	  if (trackGroup.getChildren().size()>0) 
-	  {	  
-		trackGroup.getChildren().remove(0);
-	  }
-	  
-	  trackGrid = new GridPane();
-		
-	  trackGrid.setPadding(new Insets(10, 10, 10, 10));
-	  trackGrid.setVgap(0);
-	  trackGrid.setHgap(0);
 
-	  Iterator<Tanda> it = playlist.getTandas().iterator();
-	  while(it.hasNext())
-	  {
-		tanda = it.next();
-		trs=tanda.getTrackRows();
-		Iterator<TrackRow> itx = trs.iterator();
-		while(itx.hasNext())
-		{
-		  tr = itx.next();
-		  trackGrid.add(tr.getIndicator(), 0, row);
-		  trackGrid.add(tr.getTrackNumberLabel(), 1, row);
-		  trackGrid.add(tr.getGroupingLabel(), 2, row);
-		  trackGrid.add(tr.getArtistLabel(), 3, row);
-		  trackGrid.add(tr.getTrackTitleLabel(), 4, row);
-		  numberOfTracksInPlaylist++;  
-		  row++;
-		}
-	  }  
-	  
-	  EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() 
-	  {
-	    public void handle(MouseEvent event)  { ShowIndex(); }
-	  };
-				
-	  trackGrid.setOnMouseClicked(bHandler);
-	  trackGroup.getChildren().add(trackGrid);
-	
-	}
-	*/
 	private void printTandas()
 	{
 	  Tanda tanda;
