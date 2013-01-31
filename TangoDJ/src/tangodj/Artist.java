@@ -76,7 +76,7 @@ public class Artist
 	  if (inStr.toLowerCase().contains("calo"))        return new Artist("Miguel",    "Calo",                  tusj, MAX);
 	  if (inStr.toLowerCase().contains("canaro"))      return new Artist("Francisco", "Canaro",                tusj, MAX);
 	  if (inStr.toLowerCase().contains("rodriguez"))   return new Artist("Enrique",   "Rodriguez",             tusj, MAX);
-	  if (inStr.toLowerCase().contains("d'arienzo"))   return new Artist("Juan",      "D'Arienzo",             tusj, MEDIUM);
+	  if (inStr.toLowerCase().contains("d'arienzo"))   return new Artist("Juan",      "D'Arienzo",             tusj, SMALL);
 	  if (inStr.toLowerCase().contains("angelise"))    return new Artist("Alfredo",   "De Angelise",           tusj, MEDIUM);
 	  if (inStr.toLowerCase().contains("di sarli"))    return new Artist("Carlos",    "Di Sarli",              tusj, MAX);
 	  if (inStr.toLowerCase().contains("firpo"))       return new Artist("Roberto",   "Firpo",                 tusj, MAX);
