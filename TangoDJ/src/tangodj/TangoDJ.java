@@ -360,17 +360,17 @@ public class TangoDJ extends Application
    
 	 private void setInfoWindow()
 	 {
-	   TrackRow row = 	playlist.getPlayingTrack(); 
-	   String curArtist = row.getArtist();
-	   currentArtist.setText(curArtist);
-	   currentTrackName.setText(row.getTrackTitle());
-	    if (infoWindow!=null) infoWindow.update(currentArtist.getText(), currentTrackName.getText(), row.getGrouping());
+	   //TrackRow row = 	playlist.getPlayingTrack(); 
+	   //String curArtist = row.getArtist();
+	  // currentArtist.setText(curArtist);
+	  // currentTrackName.setText(row.getTrackTitle());
+	    if (infoWindow!=null) infoWindow.update(playlist);
 	  }
 	
 	private void showInfoWindow()
     {
-		TrackRow row = 	playlist.getPlayingTrack(); 
-       infoWindow = new InfoWindow(currentArtist.getText(), currentTrackName.getText(), row.getGrouping());
+	//	TrackRow row = 	playlist.getPlayingTrack(); 
+       infoWindow = new InfoWindow(playlist);
         
     }
 	

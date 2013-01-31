@@ -319,6 +319,21 @@ public class Playlist
 	  return trackRows.get(playingTrack); 
 	}
 	
+	public String getPlayingTitle()
+	{
+	  return trackRows.get(playingTrack).getTrackTitle(); 
+	}
+	
+	public String getPlayingArtist()
+	{
+	  return trackRows.get(playingTrack).getArtist();
+	}
+	
+	public String getPlayingGrouping()
+	{
+	  return trackRows.get(playingTrack).getGrouping();
+	}
+	
 	public boolean isDone()
 	{
 		if ((playingTrack+1)>=trackRows.size()) return true;
