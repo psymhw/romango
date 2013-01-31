@@ -34,7 +34,6 @@ public class Tanda
     tandaHighlightBox.setStrokeWidth(3);
     tandaHighlightBox.setStrokeType(StrokeType.INSIDE);
     tandaHighlightBox.setVisible(false);
-    
   }
   
   LinearGradient linearGradient_REFLECT
@@ -93,5 +92,9 @@ public Rectangle getTandaHighlightBox() {
 public void highlight(boolean choice)
 {
 	tandaHighlightBox.setVisible(choice);
+}
+
+public int getTracksInTanda() {
+	return tracksInTanda;
 }
 }

@@ -112,6 +112,7 @@ public class InfoWindow
      gp.add(artistLastNameText, 0, 1);
      gp.add(titleText, 0, 2);
      if (!titleText2.getText().equals("--")) gp.add(titleText2, 0, 3);
+     gp.add(getTitleText(playlist.getTandaInfo()), 0, 4);
      
 	 GridPane.setHalignment(artistFirstNameText, HPos.CENTER);
      GridPane.setHalignment(artistLastNameText, HPos.CENTER);
