@@ -334,6 +334,16 @@ public class Playlist
 	  return trackRows.get(playingTrack).getGrouping();
 	}
 	
+	public String getTandaInfo()
+	{
+	  TrackRow tr=trackRows.get(playingTrack);
+	  String tandaInfo=	tr.getGrouping()+" "+(tr.getTandaTrackNumber()+1)+" of "+getTanda(tr.getTandaNumber()).getTracksInTanda();
+	  return tandaInfo;
+	}
+	
+	
+	
+	
 	public boolean isDone()
 	{
 		if ((playingTrack+1)>=trackRows.size()) return true;

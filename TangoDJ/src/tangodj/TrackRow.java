@@ -296,5 +296,9 @@ public class TrackRow
 		else
 		selectedImage.setImage(noLightImage);
 	}
+
+	public int getTandaTrackNumber() {
+		return tandaTrackNumber;
+	}
 }
 
