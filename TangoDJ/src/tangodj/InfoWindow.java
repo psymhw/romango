@@ -51,7 +51,7 @@ public class InfoWindow
     Rectangle r = new Rectangle(1200,800);
     r.setFill(Color.DARKGRAY);
     
-    root.getChildren().add(r);
+    //root.getChildren().add(r);
     
     update(artist, title, group);
     
@@ -109,8 +109,9 @@ public class InfoWindow
    	// Text titleText = songInfo.getTitleText();
   	  
   	 GridPane gp = getGridPane();
-  	 gp.setAlignment(Pos.CENTER);
+  	 gp.setAlignment(Pos.TOP_CENTER);
      gp.setPrefWidth(1190);
+     gp.setGridLinesVisible(true);
     	 
      gp.add(artistFirstNameText, 0, 0);
      gp.add(artistLastNameText, 0, 1);
@@ -120,20 +121,20 @@ public class InfoWindow
      GridPane.setHalignment(artistLastNameText, HPos.CENTER);
      GridPane.setHalignment(titleText, HPos.CENTER);
      
-     Button b = new Button("Button");
+    // Button b = new Button("Button");
      
   	while (root.getChildren().size()>1) { root.getChildren().remove(1); }
   	
   	if (group.equalsIgnoreCase("CORTINA"))
   	{	
   	  root.getChildren().add(background.get(0));
-  	  root.getChildren().add(b);
+  //	  root.getChildren().add(b);
   	}
   	else
   	{
   		root.getChildren().add(background.get(1));
   		//root.getChildren().add(background.get(random.nextInt(background.size()-1)+1));
-  		root.getChildren().add(b);
+  //		root.getChildren().add(b);
   	 // gp.setStyle("-fx-background-color: darkgrey;");
   	}
   	root.getChildren().add(gp);
