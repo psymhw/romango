@@ -25,6 +25,7 @@ public class Playlist
   private boolean highlightActive=false;
   private double scrollPaneContentsHeight=0;
   private int numberOfTandas=0;
+  private boolean playing=false;
 	
   public void addTrackRow(TrackRow trackRow)
   {
@@ -50,16 +51,16 @@ public class Playlist
 	
   public void incrementSelected()
   {
-    setNotSelectedIndicator();
+    setSelected(false);
     selectedTrack++;
-    setSelectedIndicator();
+    setSelected(true);
   }
 	
   public void incrementPlaying()
   {
-    setNotPlayingIndicator();
+    setPlaying(false);
 	      
-	if (playingIsSelected()) 
+	if (playingTrack==selectedTrack) 
 	{
 	  incrementSelected();
 	  playingTrack++;
@@ -105,13 +106,24 @@ public class Playlist
     if ((direction==KeyCode.UP)&&(highlightedTanda==0)) return;
     if ((direction==KeyCode.DOWN)&&(highlightedTanda==(numberOfTandas-1))) return;
     
-	if (direction==KeyCode.UP) move=-1;	else move=1;
+	if (direction==KeyCode.UP)
+	{
+	  move=-1;
+	  
+	}
+	else // down arrow
+	{
+	  move=1;
+	  
+	}
 	Tanda holdTanda = tandas.get(highlightedTanda);
 	tandas.remove(highlightedTanda);
 	tandas.add(highlightedTanda+move, holdTanda);
+	
 	finalize();
 	highlightedTanda+=move;
 	calcPositions();
+	if (playing) { playingTrack=findPlayingTrack();  selectTrack(playingTrack); }
   }
 	 
   public void calcPositions(double scrollPaneContentsHeight) 
@@ -246,6 +258,7 @@ public class Playlist
 	  {	  
 	    tandas.get(highlightedTanda).highlight(false);
 	    highlightActive=false;
+	    System.out.println("highlighted tanda: "+highlightedTanda);
 	  }
 	}
 	
@@ -259,28 +272,35 @@ public class Playlist
 	   return trackRows;
 	}
 	
-	public void setPlayingIndicator()
+	public void setPlayingIndicator(boolean playing)
 	{
-	  trackRows.get(playingTrack).setNowPlayingIndicatorBall();
+	  trackRows.get(playingTrack).setPlaying(playing);
 	}
 	
-	public void setNotPlayingIndicator()
+	
+	
+	public void setSelected(boolean selected)
 	{
-	  trackRows.get(playingTrack).setNotPlayingIndicatorBall();
+	  trackRows.get(selectedTrack).setSelected(selected);
 	}
 	
-	public void setSelectedIndicator()
+	public void selectTrack(int trackIndex)
 	{
-		trackRows.get(selectedTrack).setSelectedIndicatorBall();
+	  trackRows.get(selectedTrack).setSelected(false);	
+	  selectedTrack=trackIndex;
+	  setSelected(true);
 	}
 	
-	public void setNotSelectedIndicator()
+	public void setPlayingTrack()
 	{
-		trackRows.get(selectedTrack).setNotSelectedIndicatorBall();
+      playingTrack=selectedTrack;
+      setPlaying(true);
 	}
-	public void resetSelectedIndicator()
+	
+	public void selectFirstTrack()
 	{
-		trackRows.get(0).setNotSelectedIndicatorBall();
+	  selectedTrack=0;
+	  setSelected(true);
 	}
 	
 	
@@ -305,17 +325,8 @@ public class Playlist
 		return false;
 	}
 	
-	public void setPlayingTrackToSelected()
-	{
-		playingTrack=selectedTrack;
-	}
 	
-	public boolean playingIsSelected()
-	{
-		if (playingTrack==selectedTrack) return true;
-		return false;
-	}
-	
+		
 	public void highlightTanda(int index, boolean choice)
 	{
 	   tandas.get(index).highlight(choice);
@@ -335,6 +346,32 @@ public class Playlist
 	public void setScrollPaneContentsHeight(double scrollPaneContentsHeight) {
 		this.scrollPaneContentsHeight = scrollPaneContentsHeight;
 		calcPositions();
+	}
+
+
+	public boolean isPlaying() {
+		return playing;
+	}
+
+
+	public void setPlaying(boolean playing) 
+	{
+	   this.playing = playing;
+	   setPlayingIndicator(playing);
+	}
+	
+	private int findPlayingTrack()
+	{
+	  Iterator it = trackRows.iterator();
+	  TrackRow tr;
+	  int i=0;
+	  while(it.hasNext())
+	  {
+		  tr=(TrackRow)it.next();
+		  if (tr.isPlaying()) return i;
+		  i++;
+	  }
+	  return -1;
 	}
 
  }

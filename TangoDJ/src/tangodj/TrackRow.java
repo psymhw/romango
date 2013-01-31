@@ -30,8 +30,8 @@ public class TrackRow
 	
 	
 	private static int pIndex=0;
-	private ImageView nowPlaying = new ImageView();
-	private ImageView selected = new ImageView();
+	private ImageView playingImage = new ImageView();
+	private ImageView selectedImage = new ImageView();
 	private Image greenLightImage;
 	private Image noLightImage;
 	private Image greyLightImage;
@@ -40,8 +40,8 @@ public class TrackRow
 	private static String lastGrouping="";
 	private static String lastArtist="";
 	private boolean groupingVisible=true;
-	private boolean nowPlayingIndicated=false;
-	private boolean selectedIndicated=false;
+	private boolean playing=false;
+	private boolean selected=false;
 	private StackPane indicator = new StackPane();
 	private int tandaNumber=0;
 	private int tandaTrackNumber=0;
@@ -79,11 +79,12 @@ public class TrackRow
 		
 		String cssBkgColor = "tangoBkg";
 		
-		indicator.getChildren().add(selected);
-		indicator.getChildren().add(nowPlaying);
+		indicator.getChildren().add(selectedImage);
+		indicator.getChildren().add(playingImage);
 		
-		EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
-	          public void handle(MouseEvent event)  { setIndex(); }};
+		
+		//EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
+	    //      public void handle(MouseEvent event)  { setIndex(); }};
 	          
 			          
 		if (grouping!=null)
@@ -107,7 +108,7 @@ public class TrackRow
 				//System.out.println("padding");
 			  groupingLabel.setText("");
 			}
-			groupingLabel.setOnMouseClicked(bHandler);
+		//	groupingLabel.setOnMouseClicked(bHandler);
 		}
 		else 
 		{	
@@ -136,42 +137,17 @@ public class TrackRow
 		this.trackNumberLabel=textLabel(""+(trackNumber+1)+") ", 50, cssBkgColor);
 		trackNumberLabel.setAlignment(Pos.CENTER_RIGHT);
 		
-		this.trackNumberLabel.setOnMouseClicked(bHandler);
-		this.trackTitleLabel.setOnMouseClicked(bHandler);
-		this.artistLabel.setOnMouseClicked(bHandler);
+		//this.trackNumberLabel.setOnMouseClicked(bHandler);
+		//this.trackTitleLabel.setOnMouseClicked(bHandler);
+		//this.artistLabel.setOnMouseClicked(bHandler);
 		
-		timeLabel.setOnMouseClicked(bHandler);
-		nowPlaying.setOnMouseClicked(bHandler);
-		selected.setOnMouseClicked(bHandler);
-		nowPlaying.setImage(noLightImage);
+		//timeLabel.setOnMouseClicked(bHandler);
+		//playingImage.setOnMouseClicked(bHandler);
+	//	selectedImage.setOnMouseClicked(bHandler);
+		playingImage.setImage(noLightImage);
 		
 	}
 	
-	
-	
-	public void setNowPlayingIndicatorBall()
-	{
-		nowPlaying.setImage(greenLightImage);
-		nowPlayingIndicated=true;
-	}
-	
-	public void setNotPlayingIndicatorBall()
-	{
-	  nowPlaying.setImage(noLightImage);
-	  nowPlayingIndicated=false;
-	}
-		
-	public void setSelectedIndicatorBall()
-	{
-	   selected.setImage(selectedArrowImage);
-	   selectedIndicated=true;
-	}
-	
-	public void setNotSelectedIndicatorBall()
-	{
-	  selected.setImage(noLightImage);
-	  selectedIndicated=false;
-	}
 	
 	private void setIndex()
 	{
@@ -295,6 +271,30 @@ public class TrackRow
 
 	public void setTime(int time) {
 		this.time = time;
+	}
+
+	public boolean isPlaying() {
+		return playing;
+	}
+
+	public void setPlaying(boolean playing) 
+	{
+		this.playing = playing;
+		if (playing) playingImage.setImage(greenLightImage);
+		else
+		playingImage.setImage(noLightImage);
+	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) 
+	{
+		this.selected = selected;
+		if (selected) selectedImage.setImage(selectedArrowImage);
+		else
+		selectedImage.setImage(noLightImage);
 	}
 }
 
