@@ -3,6 +3,10 @@ package tangodj;
 import java.util.ArrayList;
 
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.LinearGradientBuilder;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 
@@ -23,14 +27,28 @@ public class Tanda
 	tandaHighlightBox = new Rectangle(550, height);
     tandaHighlightBox.setX(15);
     tandaHighlightBox.setY(0);
-    tandaHighlightBox.setFill(Color.HOTPINK);
-    tandaHighlightBox.setOpacity(.2);
+    //tandaHighlightBox.setFill(Color.HOTPINK);
+    tandaHighlightBox.setFill(linearGradient_REFLECT);
+    tandaHighlightBox.setOpacity(.3);
     tandaHighlightBox.setStroke(Color.BLACK);
     tandaHighlightBox.setStrokeWidth(3);
     tandaHighlightBox.setStrokeType(StrokeType.INSIDE);
     tandaHighlightBox.setVisible(false);
     
   }
+  
+  LinearGradient linearGradient_REFLECT
+  = LinearGradientBuilder.create()
+  .startX(275)
+  .startY(50)
+  .endX(250)
+  .endY(100)
+  .proportional(false)
+  .cycleMethod(CycleMethod.REFLECT)
+  .stops(
+      new Stop(0.1f, Color.rgb(255, 0, 255, 0.9)),
+      new Stop(1.0f, Color.rgb(0, 255, 0, 1.0)))
+  .build();
   
   public void addTrackRow(TrackRow t)
   {

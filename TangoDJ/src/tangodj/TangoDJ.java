@@ -69,7 +69,7 @@ public class TangoDJ extends Application
    // private ArrayList<TrackRow> trackRows = new ArrayList<TrackRow>();
    // private ArrayList<Tanda> tandas;
     
-    private Playlist playlist;
+    private Playlist playlist = new Playlist();;
    
     
     final ProgressBar progress = new ProgressBar();
@@ -79,7 +79,7 @@ public class TangoDJ extends Application
     final Label currentTrackName = new Label();
     final Label nextArtist = new Label();
     final Label nextTrackName = new Label();
-    private boolean listPlaying=false;
+   // private boolean listPlaying=false;
     
     private MediaView mediaView=null;
     private InfoWindow infoWindow;
@@ -170,12 +170,13 @@ public class TangoDJ extends Application
 
 	private void setupButtonActions() 
 	{
-	  // Skip
+	  // SKIP *******************************************************************
 	  skip.setOnAction(new EventHandler<ActionEvent>() 
 	  {
         public void handle(ActionEvent actionEvent) 
         {
           stopTrack();
+          playlist.highlightTandaOff();
           if (playlist.isDone()) return;
                        
           playlist.incrementPlaying();
@@ -193,13 +194,13 @@ public class TangoDJ extends Application
       });
         
 
-      // Play 
+      // PLAY ******************************************************* 
       play.setOnAction(new EventHandler<ActionEvent>() 
       {
         public void handle(ActionEvent actionEvent) 
         {
-          playlist.setPlayingTrackToSelected();
-          playlist.setPlayingIndicator();
+          playlist.setPlayingTrack();
+          playlist.setPlaying(true);
           play.setDisable(true);
           stop.setDisable(false);
           skip.setDisable(false);
@@ -208,7 +209,7 @@ public class TangoDJ extends Application
         }
       });
 
-      // Stop
+      // STOP **************************************************************
       stop.setOnAction(new EventHandler<ActionEvent>() 
       {
         public void handle(ActionEvent actionEvent) 
@@ -240,7 +241,8 @@ public class TangoDJ extends Application
       {
 	    public void handle(MouseEvent ev) 
 	    {
-	       if (listPlaying) return;	
+	      
+	      if (playlist.isPlaying()) return;	
 		  int index = ((TableCell)ev.getSource()).getIndex();
 		  stopTrack();
 	      stop.setDisable(true);
@@ -249,7 +251,7 @@ public class TangoDJ extends Application
 	      info.setDisable(true);
 		  createPlaylist(index);
 		  scrollPane.setContent(playlist.getDisplay());
-		  playlist.resetSelectedIndicator();
+		  playlist.selectFirstTrack();
 		  play.setDisable(false);
 		}
       };
@@ -283,7 +285,7 @@ public class TangoDJ extends Application
         public void run() 
         {
           if (playlist.isDone()) return;
-          if (playlist.playingIsSelected()) playlist.incrementSelected();
+          //if (playlist.playingIsSelected()) playlist.incrementSelected();
           playlist.incrementPlaying();
           playTrack();
         }
@@ -304,22 +306,23 @@ public class TangoDJ extends Application
       }};
       player.currentTimeProperty().addListener(progressChangeListener);
      
-      listPlaying=true;
-      playlist.setPlayingIndicator();
+      playlist.setPlaying(true);
+    //  playlist.setPlayingIndicator();
       mediaView.getMediaPlayer().play();
 	}
 	
     private void stopTrack() 
     {
-       if (!listPlaying) return;	
+    	
+	   if (!playlist.isPlaying()) return; 
 	   final MediaPlayer curPlayer = mediaView.getMediaPlayer();
 	   curPlayer.currentTimeProperty().removeListener(progressChangeListener);
 	   curPlayer.stop();
-	   playlist.setNotPlayingIndicator();
+	   playlist.setPlaying(false);
 	   //selectedIndex=0;
 	   vbox.getChildren().remove(3);
 	   eq=null;
-	   listPlaying=false;
+	   playlist.setPlaying(false);
     }   
 	
     
@@ -391,7 +394,11 @@ public class TangoDJ extends Application
     {
 	  public void handle(KeyEvent ke) 
 	  {
-	    if (ke.getCode()==KeyCode.ESCAPE) playlist.highlightTandaOff();
+	    if (ke.getCode()==KeyCode.ESCAPE) 
+	    {
+	    	playlist.highlightTandaOff();
+	    	
+	    }
 	    if (ke.getCode()==KeyCode.UP) 
 	    {
 	    	playlist.reorder(KeyCode.UP);
@@ -433,8 +440,8 @@ public class TangoDJ extends Application
         
         if (event.isPrimaryButtonDown())
         {	 
-          playlist.selectedTrack=trackIndex;
-          playlist.setSelectedIndicator();
+          //playlist.selectedTrack=trackIndex;
+          playlist.selectTrack(trackIndex);
         }
         
         
@@ -465,12 +472,12 @@ public class TangoDJ extends Application
 	
 	
 	
-	private void ShowIndex()
-	{
-		playlist.setNotSelectedIndicator();
-	  playlist.selectedTrack=TrackRow.getPindex();
-	  playlist.setSelectedIndicator();
-	}
+	//private void ShowIndex()
+	//{
+	//	playlist.setNotSelectedIndicator();
+//	  playlist.selectedTrack=TrackRow.getPindex();
+	//  playlist.setSelectedIndicator();
+//	}
 
 	private void printTandas()
 	{
