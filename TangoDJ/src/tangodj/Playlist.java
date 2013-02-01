@@ -34,9 +34,11 @@ public class Playlist
       Tanda t = new Tanda(trackRow.getArtist(), trackRow.getGrouping()); 
 	  tandas.add(t);
 	  newTanda=false;
+	  tandaTrackNumber=0;
 	}
 	Tanda tanda = tandas.get(tandas.size()-1);
 	trackRow.setTandaInfo(tandas.size()-1, tandaTrackNumber, trackNumber);
+	// System.out.println("tandatracknumber: "+tandaTrackNumber);
 	tandaTrackNumber++;
 	trackNumber++;
 	tanda.addTrackRow(trackRow);
@@ -91,7 +93,6 @@ public class Playlist
 	  while(itx.hasNext())
       {
 	    tr = itx.next();
-		tr.setTandaInfo(tandaNumber, tandaTrackNumber, trackNumber);
 		trackRows.add(tr);
 		tandaTrackNumber++;
 		trackNumber++;
@@ -337,11 +338,15 @@ public class Playlist
 	public String getTandaInfo()
 	{
 	  TrackRow tr=trackRows.get(playingTrack);
-	  String tandaInfo=	tr.getGrouping()+" "+(tr.getTandaTrackNumber()+1)+" of "+getTanda(tr.getTandaNumber()).getTracksInTanda();
+	  String tandaInfo=	tr.getGrouping()+" "+(tr.getTandaTrackIndex()+1)+" of "+getTanda(tr.getTandaNumber()).getTracksInTanda();
 	  return tandaInfo;
 	}
 	
-	
+	public int getTandaTrackIndex()
+	{
+		TrackRow tr=trackRows.get(playingTrack);
+		return tr.getTandaTrackIndex();
+	}
 	
 	
 	public boolean isDone()
@@ -360,6 +365,12 @@ public class Playlist
 	public int getNumberOfTracks()
 	{
 		return trackNumber;
+	}
+	
+	public int getNumberOfTracksInPlayingTanda()
+	{
+		TrackRow tr = getTrack(playingTrack);
+		return getTanda(tr.getTandaNumber()).getTracksInTanda();
 	}
 	
 	public int getNumberOfTandas()
