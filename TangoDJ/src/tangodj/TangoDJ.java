@@ -317,6 +317,7 @@ public class TangoDJ extends Application
       volumeSlider.valueProperty().bindBidirectional(player.volumeProperty());
       
       Duration duration = player.getTotalDuration();
+      System.out.println("duration: "+duration.toMinutes());
       currentTimeListener = new CurrentTimeListener(player, currentTimeLabel, progress, duration);
       player.currentTimeProperty().addListener(currentTimeListener);
       
