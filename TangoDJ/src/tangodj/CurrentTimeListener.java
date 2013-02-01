@@ -15,6 +15,7 @@ class CurrentTimeListener implements InvalidationListener
 	MediaPlayer player;
 	Label currentTimeLabel;
 	ProgressBar progress;
+	ProgressBar progress2;
 	
 	  @Override
 	  public void invalidated(Observable observable) {
@@ -25,16 +26,17 @@ class CurrentTimeListener implements InvalidationListener
 	        final Duration trackLength = player.getTotalDuration();
 	        currentTimeLabel.setText(formatDuration(trackLength.toMillis()-currentTime.toMillis()));
 	        progress.setProgress(1.0 * player.getCurrentTime().toMillis() / player.getTotalDuration().toMillis());
+	        progress2.setProgress(1.0 * player.getCurrentTime().toMillis() / player.getTotalDuration().toMillis());
 	      }
 	    });
 	  }
 	  
-	  public CurrentTimeListener(MediaPlayer player, Label currentTimeLabel, ProgressBar progress)
+	  public CurrentTimeListener(MediaPlayer player, Label currentTimeLabel, ProgressBar progress, ProgressBar progress2)
 	  {
 		 this.player=player; 
 		 this.currentTimeLabel=currentTimeLabel;
 		 this.progress=progress;
-		 
+		 this.progress2=progress2;
 	  }
 	  
 	  private String formatDuration(double time) {

@@ -44,7 +44,7 @@ public class TrackRow
 	private boolean selected=false;
 	private StackPane indicator = new StackPane();
 	private int tandaNumber=0;
-	private int tandaTrackNumber=0;
+	private int tandaTrackIndex=0;
 	
 	
 	public int getTandaNumber() {
@@ -184,10 +184,10 @@ public class TrackRow
 		return artist;
 	}
 	
-	public void setTandaInfo(int tandaNumber, int tandaTrackNumber, int trackNumber)
+	public void setTandaInfo(int tandaNumber, int tandaTrackIndex, int trackNumber)
 	{
 		this.tandaNumber=tandaNumber;
-		this.tandaTrackNumber=tandaTrackNumber;
+		this.tandaTrackIndex=tandaTrackIndex;
 		this.trackNumber=trackNumber;
 		this.trackNumberLabel.setText(""+(trackNumber+1)+") ");
 		trackNumberLabel.setAlignment(Pos.CENTER_RIGHT);
@@ -297,8 +297,8 @@ public class TrackRow
 		selectedImage.setImage(noLightImage);
 	}
 
-	public int getTandaTrackNumber() {
-		return tandaTrackNumber;
+	public int getTandaTrackIndex() {
+		return tandaTrackIndex;
 	}
 }
 

@@ -72,6 +72,8 @@ public class TangoDJ extends Application
    
     
     final ProgressBar progress = new ProgressBar();
+    final ProgressBar progress2 = new ProgressBar();
+   
     private ChangeListener<Duration> progressChangeListener;
     final Label currentlyPlaying = new Label();
     private Text currentArtist = new Text();
@@ -118,6 +120,8 @@ public class TangoDJ extends Application
     	getAllPlaylistData();
     	
     	progress.setMaxWidth(300);
+    	progress2.setMaxWidth(300);
+    	progress2.setPrefHeight(100);
         Scene scene = new Scene(new Group());
         stage.setTitle("Tango DJ");
         stage.setWidth(950);
@@ -156,6 +160,7 @@ public class TangoDJ extends Application
         
         setupButtonActions();
         progress.setProgress(0);
+        progress2.setProgress(0);
        // mediaView = new MediaView(createMediaPlayer(TangoDJ.class.getResource("/resources/sounds/Who1.mp3").toExternalForm(), false));
         HBox hb = HBoxBuilder.create().spacing(10).alignment(Pos.CENTER).children(info, skip, play, stop, volumeSlider, progress, currentTimeLabel ).build();
         vbox.getChildren().add(hb);
@@ -298,17 +303,19 @@ public class TangoDJ extends Application
 	  mediaView = new MediaView(player);
       if (eq!=null) vbox.getChildren().remove(3);
        
-      setInfoWindow();
+      
        
       eq = new Equalizer(player);
       vbox.getChildren().add(eq.getGridPane());
       progress.setProgress(0);
+      progress2.setProgress(0);
       volumeSlider.valueProperty().bindBidirectional(player.volumeProperty());
-      currentTimeListener = new CurrentTimeListener(player, currentTimeLabel, progress);
+      currentTimeListener = new CurrentTimeListener(player, currentTimeLabel, progress, progress2);
       player.currentTimeProperty().addListener(currentTimeListener);
       
       playlist.setPlaying(true);
       mediaView.getMediaPlayer().play();
+      setInfoWindow();
 	}
 	
     private void stopTrack() 
@@ -366,13 +373,13 @@ public class TangoDJ extends Application
 	   //String curArtist = row.getArtist();
 	  // currentArtist.setText(curArtist);
 	  // currentTrackName.setText(row.getTrackTitle());
-	    if (infoWindow!=null) infoWindow.update(playlist);
+	    if (infoWindow!=null) infoWindow.update(playlist, progress2);
 	  }
 	
 	private void showInfoWindow()
     {
 	//	TrackRow row = 	playlist.getPlayingTrack(); 
-       infoWindow = new InfoWindow(playlist);
+       infoWindow = new InfoWindow(playlist, progress2);
         
     }
 	
