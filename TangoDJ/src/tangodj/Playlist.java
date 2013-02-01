@@ -205,7 +205,7 @@ public class Playlist
 	  
 	  GridPane trackGrid = new GridPane();
 		
-	  trackGrid.setPadding(new Insets(0, 0, 0, 0));
+	  trackGrid.setPadding(new Insets(0, 0, 0, 10));
 	  trackGrid.setVgap(0);
 	  trackGrid.setHgap(0);
 

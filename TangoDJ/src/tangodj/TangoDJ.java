@@ -7,15 +7,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-
-
-
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -36,7 +29,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.HBoxBuilder;
 import javafx.scene.layout.VBox;
@@ -97,14 +89,7 @@ public class TangoDJ extends Application
     Equalizer eq;
     long lastPlaylistRequestTime=System.currentTimeMillis();
     ScrollPane scrollPane;
-   // GridPane trackGrid;
     int numberOfTracksInPlaylist=0;  // total number in playlist
-   // Group tandaDrag = new Group();
-   
-   // int nowPlayingIndex=0;
-   // int selectedIndex=0;
-    TandaDragAnimation tda;
-    //boolean tandaMoveActive=false;
     
     final Button skip = new Button("Skip");
     final Button play = new Button("Play");
@@ -115,6 +100,7 @@ public class TangoDJ extends Application
     private CurrentTimeListener currentTimeListener;
     private Label currentTimeLabel;
     private MediaPlayer player;
+    private double volume=.75;
     
     public static void main(String[] args) 
     {
@@ -143,7 +129,8 @@ public class TangoDJ extends Application
       //  setupTrackTable();
          
          volumeSlider = createSlider("volumeSlider");
-         currentTimeLabel = new Label("00:00");
+         volumeSlider.setValue(volume);
+         currentTimeLabel = createLabel("00:00", "mediaText");
  
         vbox = new VBox();
         vbox.setSpacing(5);
@@ -164,12 +151,13 @@ public class TangoDJ extends Application
         
         final URL stylesheet = getClass().getResource("style.css");
         scene.getStylesheets().add(stylesheet.toString());
+        scene.setFill(Color.BLACK);
         stage.setScene(scene);
         
         setupButtonActions();
         progress.setProgress(0);
        // mediaView = new MediaView(createMediaPlayer(TangoDJ.class.getResource("/resources/sounds/Who1.mp3").toExternalForm(), false));
-        HBox hb = HBoxBuilder.create().spacing(10).alignment(Pos.CENTER).children(info, skip, play, stop, volumeSlider, currentTimeLabel, progress ).build();
+        HBox hb = HBoxBuilder.create().spacing(10).alignment(Pos.CENTER).children(info, skip, play, stop, volumeSlider, progress, currentTimeLabel ).build();
         vbox.getChildren().add(hb);
   
         stop.setDisable(true);
@@ -295,6 +283,7 @@ public class TangoDJ extends Application
 	{
 	 // final MediaPlayer player = createMediaPlayer(playlist.getPlayingTrackPath(), false);
 	  player = createMediaPlayer(playlist.getPlayingTrackPath(), false);
+	  player.setVolume(volumeSlider.getValue());
 	  player.setOnEndOfMedia(new Runnable() 
 	  {
         public void run() 
@@ -315,10 +304,7 @@ public class TangoDJ extends Application
       vbox.getChildren().add(eq.getGridPane());
       progress.setProgress(0);
       volumeSlider.valueProperty().bindBidirectional(player.volumeProperty());
-      
-      Duration duration = player.getTotalDuration();
-      System.out.println("duration: "+duration.toMinutes());
-      currentTimeListener = new CurrentTimeListener(player, currentTimeLabel, progress, duration);
+      currentTimeListener = new CurrentTimeListener(player, currentTimeLabel, progress);
       player.currentTimeProperty().addListener(currentTimeListener);
       
       playlist.setPlaying(true);
