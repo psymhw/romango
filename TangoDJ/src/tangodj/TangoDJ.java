@@ -7,7 +7,13 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+
+
+
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -22,6 +28,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -104,6 +111,10 @@ public class TangoDJ extends Application
     final Button stop = new Button("Stop");
     final Button info = new Button("Info Window");
     private HBox hbox;
+    private Slider volumeSlider;
+    private CurrentTimeListener currentTimeListener;
+    private Label currentTimeLabel;
+    private MediaPlayer player;
     
     public static void main(String[] args) 
     {
@@ -130,6 +141,9 @@ public class TangoDJ extends Application
         label.setFont(new Font("Arial", 20));
          setupAllPlaylistsTable();
       //  setupTrackTable();
+         
+         volumeSlider = createSlider("volumeSlider");
+         currentTimeLabel = new Label("00:00");
  
         vbox = new VBox();
         vbox.setSpacing(5);
@@ -155,7 +169,7 @@ public class TangoDJ extends Application
         setupButtonActions();
         progress.setProgress(0);
        // mediaView = new MediaView(createMediaPlayer(TangoDJ.class.getResource("/resources/sounds/Who1.mp3").toExternalForm(), false));
-        HBox hb = HBoxBuilder.create().spacing(10).alignment(Pos.CENTER).children(info, skip, play, stop, progress).build();
+        HBox hb = HBoxBuilder.create().spacing(10).alignment(Pos.CENTER).children(info, skip, play, stop, volumeSlider, currentTimeLabel, progress ).build();
         vbox.getChildren().add(hb);
   
         stop.setDisable(true);
@@ -279,7 +293,8 @@ public class TangoDJ extends Application
 	
 	private void playTrack()
 	{
-	  final MediaPlayer player = createMediaPlayer(playlist.getPlayingTrackPath(), false);
+	 // final MediaPlayer player = createMediaPlayer(playlist.getPlayingTrackPath(), false);
+	  player = createMediaPlayer(playlist.getPlayingTrackPath(), false);
 	  player.setOnEndOfMedia(new Runnable() 
 	  {
         public void run() 
@@ -299,15 +314,13 @@ public class TangoDJ extends Application
       eq = new Equalizer(player);
       vbox.getChildren().add(eq.getGridPane());
       progress.setProgress(0);
-      progressChangeListener = new ChangeListener<Duration>() 
-      {
-        public void changed(ObservableValue<? extends Duration> observableValue, Duration oldValue, Duration newValue) {
-        progress.setProgress(1.0 * player.getCurrentTime().toMillis() / player.getTotalDuration().toMillis());
-      }};
-      player.currentTimeProperty().addListener(progressChangeListener);
-     
+      volumeSlider.valueProperty().bindBidirectional(player.volumeProperty());
+      
+      Duration duration = player.getTotalDuration();
+      currentTimeListener = new CurrentTimeListener(player, currentTimeLabel, progress, duration);
+      player.currentTimeProperty().addListener(currentTimeListener);
+      
       playlist.setPlaying(true);
-    //  playlist.setPlayingIndicator();
       mediaView.getMediaPlayer().play();
 	}
 	
@@ -316,7 +329,9 @@ public class TangoDJ extends Application
     	
 	   if (!playlist.isPlaying()) return; 
 	   final MediaPlayer curPlayer = mediaView.getMediaPlayer();
-	   curPlayer.currentTimeProperty().removeListener(progressChangeListener);
+	   //curPlayer.currentTimeProperty().removeListener(progressChangeListener);
+	   curPlayer.currentTimeProperty().removeListener(currentTimeListener);
+	   volumeSlider.valueProperty().unbind();
 	   curPlayer.stop();
 	   playlist.setPlaying(false);
 	   //selectedIndex=0;
@@ -520,4 +535,26 @@ public class TangoDJ extends Application
 		Font.loadFont(TangoDJ.class.getResource("/resources/fonts/england.ttf").toExternalForm(), 10  );
 		Font.loadFont(TangoDJ.class.getResource("/resources/fonts/FFF_Tusj.ttf").toExternalForm(), 10  );
 	  }
+	
+	private Slider createSlider(String id) {
+	    final Slider slider = new Slider(0.0, 1.0, 0.1);
+	    slider.setId(id);
+	    slider.setValue(0);
+	    return slider;
+	  }
+	
+	private String formatDuration(Duration duration) {
+	    double millis = duration.toMillis();
+	    int seconds = (int) (millis / 1000) % 60;
+	    int minutes = (int) (millis / (1000 * 60));
+	    return String.format("%02d:%02d", minutes, seconds);
+	  }
+	
+	private Label createLabel(String text, String styleClass) {
+	    final Label label = new Label(text);
+	    label.getStyleClass().add(styleClass);
+	    return label;
+	  }
+	
+	
 } 
