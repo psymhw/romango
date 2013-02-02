@@ -317,6 +317,7 @@ class PlayerControlsView extends AbstractView {
     }
   }
   
+ 
   private class OpenHandler implements EventHandler<ActionEvent> {
     @Override
     public void handle(ActionEvent event) {
@@ -362,6 +363,7 @@ private class CurrentTimeListener implements InvalidationListener {
     });
   }
 }
+
 
   private class TotalDurationListener implements InvalidationListener {
     @Override
