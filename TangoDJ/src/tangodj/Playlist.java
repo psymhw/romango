@@ -373,6 +373,20 @@ public class Playlist
 		return getTanda(tr.getTandaNumber()).getTracksInTanda();
 	}
 	
+	public String getNextTandaInfo()
+	{
+		TrackRow tr = getTrack(playingTrack);
+		int nextTandaIndex=tr.getTandaNumber()+1;
+		//System.out.println("Next Tanda: "+nextTandaIndex);
+		if (nextTandaIndex<tandas.size())
+		{	
+		  Tanda t = tandas.get(nextTandaIndex);
+		  return "Next Tanda: "+t.artist.lastName+" - "+t.group;
+		}
+		else return "The End";
+		
+	}
+	
 	public int getNumberOfTandas()
 	{
 		return numberOfTandas;
