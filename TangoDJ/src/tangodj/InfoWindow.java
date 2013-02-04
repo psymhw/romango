@@ -15,6 +15,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -35,6 +37,8 @@ public class InfoWindow
 {
 //  public ArrayList<FontMeta> fontMeta = new ArrayList<FontMeta>();
 	FontMeta tusj = new FontMeta("FFF Tusj", FontWeight.BOLD);
+	FontMeta carousel = new FontMeta("Carousel", FontWeight.BOLD);
+	Font cortinaFont = Font.font(carousel.name, carousel.style, 240);
   Font titleFont = Font.font(tusj.name, tusj.style, 70);
   boolean fontsLoaded=false;
   Group root = new Group();
@@ -87,63 +91,67 @@ public class InfoWindow
     return gridPane;
   }
   
+  private VBox getVBox()
+  {
+	  VBox vbox;  
+	  vbox = new VBox(); 
+	  vbox.setPadding(new Insets(10, 10, 10, 10));
+	 // vbox.setVgap(2);
+	 // vbox.setHgap(5);
+    return vbox;
+  }
+  
   
   
   public void update(Playlist playlist, ProgressBar progress2)
   {
-	 this.playlist=playlist;
-	 this.progress2=progress2;
-	 if  (playlist.getPlayingGrouping().equalsIgnoreCase("PADDING")) return;
-  	 Artist currentArtist;
-  	 Text titleText= new Text("--");
-  	 Text titleText2= new Text("--");
-  	 
-  	 //SongInfo songInfo = new SongInfo(playlist.getPlayingTitle());
-  	 
-  	if (playlist.getPlayingGrouping().equalsIgnoreCase("CORTINA"))
-  	{
-  	   currentArtist=Artist.getArtist("cortina");
-  	   
-  	   titleText = Artist.getDistantLight(playlist.getPlayingArtist(), titleFont);
-  	   titleText2 = Artist.getDistantLight(playlist.getPlayingTitle(), titleFont);
-  	}
-  	else
-  	{
-      currentArtist=Artist.getArtist(playlist.getPlayingArtist());
-      titleText = getTitleText(playlist.getPlayingTitle());
-  	}
-  	   	  
-  	 Text artistLastNameText =  currentArtist.getLastNameText();
-  	 Text artistFirstNameText =  currentArtist.getFirstNameText();
-  	  
-  	 GridPane gp = getGridPane();
-  	 gp.setAlignment(Pos.TOP_CENTER);
-     gp.setPrefWidth(1190);
-    // gp.setGridLinesVisible(true);
-    	 
-     gp.add(artistFirstNameText, 0, 0);
-     gp.add(artistLastNameText, 0, 1);
-     gp.add(titleText, 0, 2);
-     if (!titleText2.getText().equals("--")) gp.add(titleText2, 0, 3);
-     gp.add(getTitleText(playlist.getTandaInfo()), 0, 4);
-     gp.add(getTandaProgress(), 0, 5);
-     
-	 GridPane.setHalignment(artistFirstNameText, HPos.CENTER);
-     GridPane.setHalignment(artistLastNameText, HPos.CENTER);
-     GridPane.setHalignment(titleText, HPos.CENTER);
-     if (!titleText2.getText().equals("--"))  GridPane.setHalignment(titleText2, HPos.CENTER);
-     
-  	while (root.getChildren().size()>1) { root.getChildren().remove(1); }
+    this.playlist=playlist;
+	this.progress2=progress2;
+
+	if  (playlist.getPlayingGrouping().equalsIgnoreCase("PADDING")) return;
+	
+	while (root.getChildren().size()>1) { root.getChildren().remove(1); }
+	
+  	Artist currentArtist;
+  	Text titleText= new Text("--");
+  	Text titleText2= new Text("--");
   	
+  	VBox vbox = getVBox();
+  	vbox.setAlignment(Pos.TOP_CENTER);
+  	vbox.setPrefWidth(1190);
+  	 
   	if (playlist.getPlayingGrouping().equalsIgnoreCase("CORTINA"))
-  	{	
-  	  root.getChildren().add(background.get(0));
-  	}
-  	else
   	{
-  		root.getChildren().add(background.get(1));
+  	   root.getChildren().add(background.get(0));
+  	     	   
+  	   vbox.getChildren().add(getPane(new Text(""),75));
+  	   vbox.getChildren().add(getPane(Artist.getDistantLight("CORTINA", cortinaFont),200));
+  	   vbox.getChildren().add(Artist.getDistantLight(playlist.getPlayingArtist(), titleFont));
+  	   vbox.getChildren().add(Artist.getDistantLight(playlist.getPlayingTitle(), titleFont));
+  	  
+  	    root.getChildren().add(vbox);
+  	    return;
   	}
-  	root.getChildren().add(gp);
+  	
+  	root.getChildren().add(background.get(1));
+    currentArtist=Artist.getArtist(playlist.getPlayingArtist());
+    titleText = getTitleText(playlist.getPlayingTitle());
+  	   	  
+  	Text artistLastNameText =  currentArtist.getLastNameText();
+  	Text artistFirstNameText =  currentArtist.getFirstNameText();
+  	 
+  	
+    	 
+     //gp.add(artistFirstNameText, 0, 0);
+  	vbox.getChildren().add(artistFirstNameText);
+    vbox.getChildren().add(artistLastNameText);
+    vbox.getChildren().add(titleText);
+    if (!titleText2.getText().equals("--")) vbox.getChildren().add(titleText2);
+   
+    vbox.getChildren().add(getTandaProgress());
+    vbox.getChildren().add(getUpNext());
+  	
+  	root.getChildren().add(vbox);
   }
   
   
@@ -161,33 +169,37 @@ public class InfoWindow
 	return trialText;
   }
   
-  LinearGradient linearGradient_REFLECT
-  = LinearGradientBuilder.create()
-  .startX(275)
-  .startY(50)
-  .endX(250)
-  .endY(100)
-  .proportional(false)
-  .cycleMethod(CycleMethod.REFLECT)
-  .stops(
-      new Stop(0.1f, Color.rgb(255, 0, 255, 0.9)),
-      new Stop(1.0f, Color.rgb(0, 255, 0, 1.0)))
-  .build();
+  
   
   private HBox getTandaProgress()
   {
 	HBox hbox = new HBox();
 	//hbox.setPadding(new Insets(3, 3, 3, 3));
 	hbox.setSpacing(5);
+	Color c;
+	int height=75;
+	
+	
 	int numberOfTracks=playlist.getNumberOfTracks();
 	int unitSize=125;
 	int width=numberOfTracks*unitSize;
 	
 	hbox.setPrefWidth(width);
 	progress2.setPrefWidth(unitSize-6);
+	//progress2.setStyle("-fx-accent: blue;");
 	
 	
+	if (playlist.getPlayingGrouping().equalsIgnoreCase("CORTINA"))
+	{
+		Rectangle r = new Rectangle();
+		r.setWidth(500);
+		r.setHeight(height);
+		r.setFill(null);
+		hbox.getChildren().add(r);
+		return hbox;
+	}
 
+	hbox.getChildren().add(getTitleText(playlist.getPlayingGrouping()+": "));
 	
 	int currentTandaTrack = playlist.getTandaTrackIndex();
 	
@@ -195,27 +207,72 @@ public class InfoWindow
 	
 	for(int i=0; i<playlist.getNumberOfTracksInPlayingTanda(); i++)
 	{
-	  if (i==currentTandaTrack) hbox.getChildren().add(progress2);
+	  if (i==currentTandaTrack) hbox.getChildren().add(getProgressBox(i+1, unitSize, height));
 	  else
 	  {
-		Rectangle r = new Rectangle();
-		r.setWidth(unitSize);
-		r.setHeight(100);
-		if (i<currentTandaTrack) r.setFill(Color.DEEPSKYBLUE);
-		else r.setFill(Color.LIGHTGREY);
-	   // r.setOpacity(.3);
-	    //r.setStroke(Color.BLACK);
-	   // r.setStrokeWidth(3);
-	   // r.setStrokeType(StrokeType.INSIDE);
-	    //tandaHighlightBox.setVisible(false);
-	    hbox.getChildren().add(r);
+		if (i<currentTandaTrack) c=Color.DEEPSKYBLUE;
+		else c=Color.LIGHTGREY;
+	    hbox.getChildren().add(getBlankProgressBox(i+1, unitSize, height, c));
 	  }
 	}
 	
 	return hbox;
   }
+  
+  public Pane getBlankProgressBox(int number, int width, int height, Color c)
+  {
+	  StackPane stackPane = new StackPane();
+      stackPane.setPrefSize(width, height);
+      stackPane.setAlignment(Pos.CENTER);
+      Rectangle r = new Rectangle();
+	  r.setWidth(width);
+		r.setHeight(height);
+		r.setFill(c);
+		r.setArcHeight(10);
+		r.setArcWidth(10);
 
+		
+      stackPane.getChildren().add(r);
+      
+      Text t = new Text(""+number);
+      t.setFont(Font.font(tusj.name, tusj.style, 60));
+      
+      stackPane.getChildren().add(t);
+      
+      return stackPane;
+  }
+
+  
+  public Pane getProgressBox(int number, int width, int height)
+  {
+	  StackPane stackPane = new StackPane();
+      stackPane.setPrefSize(width, height);
+      stackPane.setAlignment(Pos.CENTER);
+      
+      progress2.getStyleClass().add("progress-bar");
+      stackPane.getChildren().add(progress2);
+      
+      Text t = new Text(""+number);
+      t.setFont(Font.font(tusj.name, tusj.style, 60));
+      
+      stackPane.getChildren().add(t);
+      
+      return stackPane;
+  }
+  
+  public Pane getPane(Text text, int height)
+  {
+	  StackPane stackPane = new StackPane();
+      stackPane.setPrefHeight(height);
+      stackPane.setAlignment(Pos.CENTER);  
+      stackPane.getChildren().add(text);
+      return stackPane;
+  }
 
 	
+  private Text getUpNext()
+  {
+	  return getTitleText(playlist.getNextTandaInfo());	  
+  }
 	
 }

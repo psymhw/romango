@@ -73,6 +73,7 @@ public class TangoDJ extends Application
     
     final ProgressBar progress = new ProgressBar();
     final ProgressBar progress2 = new ProgressBar();
+    
    
     private ChangeListener<Duration> progressChangeListener;
     final Label currentlyPlaying = new Label();
@@ -122,6 +123,7 @@ public class TangoDJ extends Application
     	progress.setMaxWidth(300);
     	progress2.setMaxWidth(300);
     	progress2.setPrefHeight(100);
+    	
         Scene scene = new Scene(new Group());
         stage.setTitle("Tango DJ");
         stage.setWidth(950);
