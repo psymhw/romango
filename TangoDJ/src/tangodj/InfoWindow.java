@@ -7,12 +7,14 @@ import javafx.geometry.Bounds;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -28,6 +30,7 @@ import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -45,6 +48,7 @@ public class InfoWindow
   Random random = new Random();
   Playlist playlist;
   ProgressBar progress2;
+  boolean showBorders=false;
   
  
   ArrayList <ImageView>background = new ArrayList<ImageView>();
@@ -85,7 +89,7 @@ public class InfoWindow
   {
     GridPane gridPane;  
 	gridPane = new GridPane(); 
-    gridPane.setPadding(new Insets(10, 10, 10, 10));
+    gridPane.setPadding(new Insets(0, 0, 0, 0));
     gridPane.setVgap(2);
     gridPane.setHgap(5);
     return gridPane;
@@ -95,7 +99,7 @@ public class InfoWindow
   {
 	  VBox vbox;  
 	  vbox = new VBox(); 
-	  vbox.setPadding(new Insets(10, 10, 10, 10));
+	  vbox.setPadding(new Insets(0,0,0,0));
 	 // vbox.setVgap(2);
 	 // vbox.setHgap(5);
     return vbox;
@@ -116,42 +120,51 @@ public class InfoWindow
   	Text titleText= new Text("--");
   	Text titleText2= new Text("--");
   	
+  	BorderPane borderPane = new BorderPane();
+  	borderPane.setPrefHeight(800);
+  	
   	VBox vbox = getVBox();
   	vbox.setAlignment(Pos.TOP_CENTER);
   	vbox.setPrefWidth(1190);
+  	if (showBorders) vbox.setStyle("-fx-border-style: solid;"
+            + "-fx-border-width: 2;"
+            + "-fx-border-color: black");
   	 
   	if (playlist.getPlayingGrouping().equalsIgnoreCase("CORTINA"))
   	{
-  	   root.getChildren().add(background.get(0));
-  	     	   
-  	   vbox.getChildren().add(getPane(new Text(""),75));
-  	   vbox.getChildren().add(getPane(Artist.getDistantLight("CORTINA", cortinaFont),200));
-  	   vbox.getChildren().add(Artist.getDistantLight(playlist.getPlayingArtist(), titleFont));
-  	   vbox.getChildren().add(Artist.getDistantLight(playlist.getPlayingTitle(), titleFont));
+  	  root.getChildren().add(background.get(0));
+  	  borderPane.setTop(getPane(new Text(""),75));
+  	   
+  	  vbox.getChildren().add(getPane(Artist.getDistantLight("CORTINA", cortinaFont),200));
+  	  vbox.getChildren().add(getPane(Artist.getDistantLight(playlist.getPlayingArtist(), titleFont), 100));
+  	  vbox.getChildren().add(getPane(Artist.getDistantLight(playlist.getPlayingTitle(), titleFont), 100));
+      borderPane.setCenter(vbox);
+  	
+  	  borderPane.setBottom(getPane(getUpNext(), 100));
   	  
-  	    root.getChildren().add(vbox);
-  	    return;
+  	  root.getChildren().add(borderPane);
+  	  return;
   	}
   	
   	root.getChildren().add(background.get(1));
+  	
     currentArtist=Artist.getArtist(playlist.getPlayingArtist());
     titleText = getTitleText(playlist.getPlayingTitle());
-  	   	  
   	Text artistLastNameText =  currentArtist.getLastNameText();
   	Text artistFirstNameText =  currentArtist.getFirstNameText();
-  	 
   	
-    	 
-     //gp.add(artistFirstNameText, 0, 0);
-  	vbox.getChildren().add(artistFirstNameText);
-    vbox.getChildren().add(artistLastNameText);
-    vbox.getChildren().add(titleText);
-    if (!titleText2.getText().equals("--")) vbox.getChildren().add(titleText2);
+  	borderPane.setTop(getPane(artistFirstNameText, 75));
+  	
+  	vbox.getChildren().add(getPane(artistLastNameText, 200));
+  	vbox.getChildren().add(getPane(titleText, 100));
+    if (!titleText2.getText().equals("--")) vbox.getChildren().add(getPane(titleText2, 100));
    
     vbox.getChildren().add(getTandaProgress());
-    vbox.getChildren().add(getUpNext());
+    borderPane.setCenter(vbox);
+    
+    borderPane.setBottom(getPane(getUpNext(), 100));
   	
-  	root.getChildren().add(vbox);
+  	root.getChildren().add(borderPane);
   }
   
   
@@ -174,36 +187,34 @@ public class InfoWindow
   private HBox getTandaProgress()
   {
 	HBox hbox = new HBox();
-	//hbox.setPadding(new Insets(3, 3, 3, 3));
 	hbox.setSpacing(5);
 	Color c;
 	int height=75;
-	
 	
 	int numberOfTracks=playlist.getNumberOfTracks();
 	int unitSize=125;
 	int width=numberOfTracks*unitSize;
 	
 	hbox.setPrefWidth(width);
+	hbox.setAlignment(Pos.CENTER);
 	progress2.setPrefWidth(unitSize-6);
 	//progress2.setStyle("-fx-accent: blue;");
 	
-	
 	if (playlist.getPlayingGrouping().equalsIgnoreCase("CORTINA"))
 	{
-		Rectangle r = new Rectangle();
-		r.setWidth(500);
-		r.setHeight(height);
-		r.setFill(null);
-		hbox.getChildren().add(r);
-		return hbox;
+	  Rectangle r = new Rectangle();
+	  r.setWidth(500);
+	  r.setHeight(height);
+	  r.setFill(null);
+	  hbox.getChildren().add(r);
+	  return hbox;
 	}
 
 	hbox.getChildren().add(getTitleText(playlist.getPlayingGrouping()+": "));
 	
 	int currentTandaTrack = playlist.getTandaTrackIndex();
 	
-	System.out.println("current track: "+currentTandaTrack);
+	//System.out.println("current track: "+currentTandaTrack);
 	
 	for(int i=0; i<playlist.getNumberOfTracksInPlayingTanda(); i++)
 	{
@@ -221,25 +232,26 @@ public class InfoWindow
   
   public Pane getBlankProgressBox(int number, int width, int height, Color c)
   {
-	  StackPane stackPane = new StackPane();
-      stackPane.setPrefSize(width, height);
-      stackPane.setAlignment(Pos.CENTER);
-      Rectangle r = new Rectangle();
-	  r.setWidth(width);
-		r.setHeight(height);
-		r.setFill(c);
-		r.setArcHeight(10);
-		r.setArcWidth(10);
-
+	StackPane stackPane = new StackPane();
+    stackPane.setPrefSize(width, height);
+    stackPane.setAlignment(Pos.CENTER);
+    Rectangle r = new Rectangle();
+	r.setWidth(width);
+	r.setHeight(height);
+	r.setFill(c);
+	r.setArcHeight(10);
+	r.setArcWidth(10);
 		
-      stackPane.getChildren().add(r);
+    stackPane.getChildren().add(r);
       
-      Text t = new Text(""+number);
-      t.setFont(Font.font(tusj.name, tusj.style, 60));
+    Text t = new Text(""+number);
+    t.setFont(Font.font(tusj.name, tusj.style, 60));
+    t.setTextAlignment(TextAlignment.CENTER);
+    t.setTextOrigin(VPos.CENTER);
       
-      stackPane.getChildren().add(t);
+    stackPane.getChildren().add(t);
       
-      return stackPane;
+    return stackPane;
   }
 
   
@@ -254,6 +266,8 @@ public class InfoWindow
       
       Text t = new Text(""+number);
       t.setFont(Font.font(tusj.name, tusj.style, 60));
+      t.setTextAlignment(TextAlignment.CENTER);
+      t.setTextOrigin(VPos.CENTER);
       
       stackPane.getChildren().add(t);
       
@@ -266,9 +280,13 @@ public class InfoWindow
       stackPane.setPrefHeight(height);
       stackPane.setAlignment(Pos.CENTER);  
       stackPane.getChildren().add(text);
+      if (showBorders) stackPane.setStyle("-fx-border-style: solid;"
+              + "-fx-border-width: 1;"
+              + "-fx-border-color: red");
       return stackPane;
   }
-
+  
+  
 	
   private Text getUpNext()
   {

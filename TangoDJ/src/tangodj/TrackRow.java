@@ -89,11 +89,12 @@ public class TrackRow
 			          
 		if (grouping!=null)
 		{
-		  if (grouping.toLowerCase().equals("vals")) cssBkgColor = "valsBkg";
+		       if (grouping.toLowerCase().equals("vals"))    cssBkgColor = "valsBkg";
 		  else if (grouping.toLowerCase().equals("milonga")) cssBkgColor = "milongaBkg";
 		  else if (grouping.toLowerCase().equals("cortina")) cssBkgColor = "cortinaBkg";
 		  else if (grouping.toLowerCase().equals("padding")) cssBkgColor = "paddingBkg";
-		  
+		  else if (grouping.toLowerCase().equals("alternative")) cssBkgColor = "alternativeBkg";
+		  else cssBkgColor = "tangoBkg";
 		  
 		  
 		  if (!lastGrouping.equals(grouping))
