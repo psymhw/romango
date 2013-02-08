@@ -48,6 +48,7 @@ import data.iTunesParser;
  
 public class TangoDJ extends Application 
 {
+	int test=0;
     PlaylistData pd=null;
 	String path=null;
 	String destFileName;
