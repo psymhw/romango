@@ -11,6 +11,7 @@ import javafx.scene.text.Font;
 public class Stone extends Group
 {
   private int stoneColor;
+  int test=0;
   //private BoardPosition boardPosition;
   private boolean alive=true;
   private int captureMoveNumber;
