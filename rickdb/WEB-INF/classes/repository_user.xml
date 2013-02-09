@@ -1,0 +1,518 @@
+<!-- Please keep user defined mappings in this file only
+     to avoid mixing user defined and system mappings. -->
+<!-- Mapping of User defined classes starts here -->
+<!--
+#/* Copyright 2002-2004 The Apache Software Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+<!-- This file usually contains the mappings for the application classes. -->
+
+	<class-descriptor class="db.TransDb" table="trans">
+		<field-descriptor name="transId" column="trans_id" jdbc-type="BIGINT"
+			primarykey="true" autoincrement="true" access="readonly"/>
+		
+		<field-descriptor name="trackId" column="track_id"
+			jdbc-type="BIGINT"/>
+		<field-descriptor name="acctId" column="acct_id"
+			jdbc-type="BIGINT"/>
+		<field-descriptor name="debit" column="debit"
+			jdbc-type="DOUBLE"/>
+		<field-descriptor name="credit" column="credit"
+			jdbc-type="DOUBLE"/>
+		<field-descriptor name="transDate" column="trans_date"
+			jdbc-type="DATE"/>
+		<field-descriptor name="description" column="description" jdbc-type="VARCHAR"
+			length="100"/>
+		<field-descriptor name="comment" column="comment" jdbc-type="VARCHAR"
+			length="200"/>
+		<field-descriptor name="memberId" column="member_id"
+			jdbc-type="BIGINT"/>
+			<field-descriptor name="archived" column="archived"
+			jdbc-type="INTEGER"/>
+		<field-descriptor name="archive_set" column="archive_set" jdbc-type="VARCHAR"
+			length="4"/>
+			<field-descriptor name="cust_id" column="cust_id"
+			jdbc-type="BIGINT"/>
+			<field-descriptor name="order_id" column="order_id"
+			jdbc-type="BIGINT"/>
+	</class-descriptor>
+	
+	<class-descriptor class="db.OrdersDb" table="orders"	>
+		<field-descriptor name="id" column="id" jdbc-type="BIGINT"
+			primarykey="true" autoincrement="true" access="readonly"/>
+		<field-descriptor id="2" name="cust_id"	column="cust_id" jdbc-type="BIGINT"   
+		 />
+		 <field-descriptor name="order_date" column="order_date"
+			jdbc-type="DATE"/>
+			<field-descriptor name="est_delivery" column="est_delivery"
+			jdbc-type="DATE"/>
+		<field-descriptor name="notes" column="notes" jdbc-type="VARCHAR"
+			length="500"/>
+			<field-descriptor name="complete" column="complete"
+			jdbc-type="INTEGER"/>
+			<field-descriptor name="price" column="price"
+			jdbc-type="DOUBLE"/>
+			<field-descriptor name="status" column="status" jdbc-type="VARCHAR"
+			length="200"/>
+		
+	</class-descriptor>
+
+	<class-descriptor class="db.TracksDb" table="tracks"	>
+		<field-descriptor name="trackId" column="track_id" jdbc-type="BIGINT"
+			primarykey="true" autoincrement="true" access="readonly"/>
+		<field-descriptor name="description" column="description" jdbc-type="VARCHAR"
+			length="45"/>
+		<field-descriptor name="memberId" column="member_id"
+			jdbc-type="BIGINT"/>	
+	</class-descriptor>
+
+	<class-descriptor class="db.AccountsDb" table="accounts">
+		<field-descriptor name="acctId" column="acct_id" jdbc-type="BIGINT"
+			primarykey="true" autoincrement="true" access="readonly"/>
+		<field-descriptor name="description" column="description" jdbc-type="VARCHAR"
+			length="45"/>
+		<field-descriptor name="memberId" column="member_id"
+			jdbc-type="BIGINT"/>
+	</class-descriptor>
+	
+	<class-descriptor class="db.PasswordDb" table="password">
+		<field-descriptor name="id" column="id" jdbc-type="BIGINT"
+			primarykey="true" autoincrement="true" access="readonly"/>
+		<field-descriptor name="user" column="user" jdbc-type="VARCHAR"
+			length="45"/>
+			<field-descriptor name="password" column="password" jdbc-type="VARCHAR"
+			length="45"/>
+		
+	</class-descriptor>
+	
+ <class-descriptor 
+	class="db.AddressDb" table="address" >
+    <field-descriptor 
+		name="id"
+		column="id"
+		jdbc-type="INTEGER"
+		primarykey="true"
+		autoincrement="true" access="readonly"
+    />
+    <field-descriptor 
+		name="lastname"
+		column="lastname"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor 
+		name="firstname"
+		column="firstname"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor 
+		name="street1"
+		column="street1"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor 
+		name="street2"
+		column="street2"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor 
+		name="csz"
+		column="csz"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor 
+		name="type"
+		column="type"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor 
+		name="home_phone"
+		column="home_phone"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor 
+		name="work_phone"
+		column="work_phone"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor 
+		name="cell_phone"
+		column="cell_phone"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor 
+		name="notes"
+		column="notes"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor 
+		name="email"
+		column="email"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor 
+		name="company"
+		column="company"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor 
+		name="personal"
+		column="personal"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor 
+		name="business"
+		column="business"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor 
+		name="provider"
+		column="provider"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor 
+		name="customer"
+		column="customer"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor 
+		name="family"
+		column="family"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor 
+		name="feet"
+		column="feet"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor 
+		name="last_touch"
+		column="last_touch"
+		jdbc-type="TIMESTAMP"
+    />
+    <field-descriptor 
+		name="website"
+		column="website"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor name="memberId" column="member_id"
+			jdbc-type="BIGINT"/>
+ </class-descriptor>
+
+<class-descriptor 
+	class="db.ImageRefDb"
+	 	table="image_ref"
+>
+    <field-descriptor id="1"
+		name="id"
+		column="id"
+		jdbc-type="INTEGER"
+		primarykey="true"
+		autoincrement="true" access="readonly"
+    />
+    <field-descriptor id="2"
+		name="cust_id"
+		column="cust_id"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="3"
+		name="description"
+		column="description"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor id="4"
+		name="path"
+		column="path"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor id="5"
+		name="filename"
+		column="filename"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor id="6"
+		name="feet_id"
+		column="feet_id"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="7"
+		name="notes"
+		column="notes"
+		jdbc-type="VARCHAR"
+    />
+     <field-descriptor id="8"
+		name="file_size"
+		column="file_size"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="9"
+		name="note_id"
+		column="note_id"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor name="memberId" column="member_id"
+			jdbc-type="BIGINT"/>
+</class-descriptor>
+<class-descriptor 
+	class="db.FeetDb"
+	
+	table="feet"
+>
+    <field-descriptor id="1"
+		name="id"
+		column="id"
+		jdbc-type="INTEGER"
+		primarykey="true"
+		autoincrement="true" access="readonly"
+    />
+     <field-descriptor id="2"
+		name="rt_length"
+		column="rt_length"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="3"
+		name="rt_bb_width"
+		column="rt_bb_width"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="4"
+		name="rt_b2b"
+		column="rt_b2b"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="5"
+		name="rt_bb_girth"
+		column="rt_bb_girth"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="6"
+		name="rt_waist_girth"
+		column="rt_waist_girth"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="7"
+		name="rt_instep_girth"
+		column="rt_instep_girth"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="8"
+		name="rt_heel_width"
+		column="rt_heel_width"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="9"
+		name="rt_short_heel"
+		column="rt_short_heel"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="10"
+		name="rt_ankle_height"
+		column="rt_ankle_height"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="11"
+		name="stylus_allowance"
+		column="stylus_allowance"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="12"
+		name="cust_dir"
+		column="cust_dir"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor id="13"
+		name="shoe_size_1"
+		column="shoe_size_1"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor id="14"
+		name="shoe_size_2"
+		column="shoe_size_2"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor id="15"
+		name="notes"
+		column="notes"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor id="16"
+		name="cust_id"
+		column="cust_id"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="17"
+		name="measure_date"
+		column="measure_date"
+		jdbc-type="TIMESTAMP"
+    />
+    <field-descriptor id="18"
+		name="units"
+		column="units"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor id="19"
+		name="lf_length"
+		column="lf_length"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="20"
+		name="lf_bb_width"
+		column="lf_bb_width"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="21"
+		name="lf_b2b"
+		column="lf_b2b"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="22"
+		name="lf_bb_girth"
+		column="lf_bb_girth"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="23"
+		name="lf_waist_girth"
+		column="lf_waist_girth"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="24"
+		name="lf_instep_girth"
+		column="lf_instep_girth"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="25"
+		name="lf_heel_width"
+		column="lf_heel_width"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="26"
+		name="lf_short_heel"
+		column="lf_short_heel"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="27"
+		name="lf_ankle_height"
+		column="lf_ankle_height"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor name="memberId" column="member_id"
+			jdbc-type="BIGINT"/>
+
+</class-descriptor>
+
+<class-descriptor 
+	class="db.NotesDb"
+	table="notes"
+>
+    <field-descriptor id="1"
+		name="id"
+		column="id"
+		jdbc-type="INTEGER"
+		primarykey="true"
+    />
+    <field-descriptor id="2"
+		name="note_date"
+		column="note_date"
+		jdbc-type="DATE"
+    />
+    <field-descriptor id="3"
+		name="summary"
+		column="summary"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor id="4"
+		name="note"
+		column="note"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor id="5"
+		name="track"
+		column="track"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="6"
+		name="cust_id"
+		column="cust_id"
+		jdbc-type="INTEGER"
+    />
+     <field-descriptor id="7"
+		name="priority"
+		column="priority"
+		jdbc-type="INTEGER"
+    />
+     <field-descriptor id="8"
+		name="bookmark"
+		column="bookmark"
+		jdbc-type="INTEGER"
+    />
+     <field-descriptor id="9"
+		name="website"
+		column="website"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor name="memberId" column="member_id"
+			jdbc-type="BIGINT"/>
+			
+			<field-descriptor 
+		name="order_id"
+		column="order_id"
+		jdbc-type="INTEGER"
+    />
+</class-descriptor>
+
+<class-descriptor 
+	class="db.MileageDb"
+	table="mileage"
+>
+    <field-descriptor id="1"
+		name="id"
+		column="id"
+		jdbc-type="INTEGER"
+		primarykey="true"
+    />
+    <field-descriptor id="2"
+		name="mileage_date"
+		column="mileage_date"
+		jdbc-type="DATE"
+    />
+    <field-descriptor id="3"
+		name="description"
+		column="description"
+		jdbc-type="VARCHAR"
+    />
+    <field-descriptor id="4"
+		name="track"
+		column="track"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor id="5"
+		name="start_mile"
+		column="start_mile"
+		jdbc-type="BIGINT"
+    />
+    <field-descriptor id="6"
+		name="end_mile"
+		column="end_mile"
+		jdbc-type="BIGINT"
+    />
+    <field-descriptor id="7"
+		name="miles"
+		column="miles"
+		jdbc-type="INTEGER"
+    />
+    <field-descriptor name="memberId" column="member_id"
+			jdbc-type="BIGINT"/>
+</class-descriptor>
+
+<!-- Mapping of User defined classes ends here -->
