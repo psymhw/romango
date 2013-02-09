@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+  <display-name>Rick DB</display-name>
+
+  <description>
+      Rick DB
+  </description>
+ 
+	
+ 
+  <!-- Standard Action Servlet Configuration (with debugging) -->
+  
+  <servlet>	 
+    <servlet-name>InitServlet</servlet-name>
+    <servlet-class>admin.InitServlet</servlet-class>
+	<load-on-startup>1</load-on-startup> 
+  </servlet>	
+  
+  	<servlet-mapping>
+    <servlet-name>InitServlet</servlet-name>
+    <url-pattern>/InitServlet</url-pattern>	 
+  </servlet-mapping>
+  
+  <servlet>	 
+    <servlet-name>Test</servlet-name>
+    <servlet-class>serv.Test</servlet-class>
+  </servlet>	
+  
+  	<servlet-mapping>
+    <servlet-name>Test</servlet-name>
+    <url-pattern>/servlet/Test</url-pattern>	 
+  </servlet-mapping>
+  
+    <servlet>	 
+    <servlet-name>DbImageReader</servlet-name>
+    <servlet-class>serv.DbImageReader</servlet-class>
+  </servlet>	
+  
+  	<servlet-mapping>
+    <servlet-name>DbImageReader</servlet-name>
+    <url-pattern>/DbImageReader</url-pattern>	 
+  </servlet-mapping>
+  
+  
+<!--	
+ <servlet>
+    <servlet-name>PageImage</servlet-name>
+    <servlet-class>org.mff.web.serv.PageImage</servlet-class>
+  </servlet>
+
+
+ <servlet-mapping>
+    <servlet-name>PageImage</servlet-name>
+    <url-pattern>/servlet/PageImage</url-pattern>
+  </servlet-mapping>
+-->	
+  <servlet>
+    <servlet-name>action</servlet-name>
+    <servlet-class>org.apache.struts.action.ActionServlet</servlet-class>
+    <init-param>
+      <param-name>config</param-name>
+      <param-value>/WEB-INF/struts-config.xml</param-value>
+    </init-param>
+    <!-- module configurations -->
+    <!--
+    <init-param>
+      <param-name>config/exercise</param-name>
+      <param-value>/WEB-INF/exercise/struts-config.xml</param-value>
+    </init-param>
+    <init-param>
+      <param-name>config/upload</param-name>
+      <param-value>/WEB-INF/upload/struts-config.xml</param-value>
+    </init-param>
+    -->
+    <init-param>
+      <param-name>config/validator</param-name>
+      <param-value>/WEB-INF/validator/struts-config.xml</param-value>
+    </init-param>
+    <!--
+    <init-param>
+        <param-name>config/dispatch</param-name>
+        <param-value>/WEB-INF/dispatch/struts-config.xml</param-value>
+    </init-param>
+    -->
+    <init-param>
+      <param-name>debug</param-name>
+      <param-value>2</param-value>
+    </init-param>
+    <init-param>
+      <param-name>detail</param-name>
+      <param-value>2</param-value>
+    </init-param>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+ 
+ 
+ <servlet-mapping>
+    <servlet-name>action</servlet-name>
+    <url-pattern>*.do</url-pattern>
+</servlet-mapping>
+ 
+  <welcome-file-list>
+    <welcome-file>/login.jsp</welcome-file>
+  </welcome-file-list>
+  
+ 
+ 
+  <!-- Struts Tag Library Descriptors -->
+ 
+ <taglib>
+  <taglib-uri>/WEB-INF/struts-bean.tld</taglib-uri>
+  <taglib-location>/WEB-INF/struts-bean.tld</taglib-location>
+ </taglib>
+
+ <taglib>
+  <taglib-uri>/WEB-INF/struts-html.tld</taglib-uri>
+  <taglib-location>/WEB-INF/struts-html.tld</taglib-location>
+ </taglib>
+
+  <taglib>
+  <taglib-uri>/WEB-INF/struts-logic.tld</taglib-uri>
+  <taglib-location>/WEB-INF/struts-logic.tld</taglib-location>
+ </taglib>
+ 
+  <taglib>
+    <taglib-uri>/WEB-INF/struts-tiles.tld</taglib-uri>
+    <taglib-location>/WEB-INF/struts-tiles.tld</taglib-location>
+  </taglib>
+  <session-config>
+	  <session-timeout>120</session-timeout> 
+    </session-config>
+
+ </web-app>

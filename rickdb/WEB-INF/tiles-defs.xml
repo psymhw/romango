@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?> 
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"
+       "http://struts.apache.org/dtds/tiles-config_1_1.dtd">
+
+<tiles-definitions>
+   <definition name="masterdef" page="/layout/layout.jsp">
+		<put name="title" value="Master Site Definition"/>
+		<put name="header" value="/dummy/dummy.jsp"/>
+		<put name="body" value="/dummy/dummy.jsp"/>
+	</definition>
+	
+	<definition name="maindef" extends="masterdef">
+		<put name="title" value="Rick DB"/>
+		<put name="header" value="/menu/headerMenu.jsp"/>
+		<put name="body" value="/dummy/body.jsp"/>
+	</definition>
+	
+	<definition name="image_support_def" page="/layout/image_layout.jsp">
+		<put name="title" value="Rick DB"/>
+		<put name="header" value="/menu/headerMenu.jsp"/>
+		<put name="body" value="/dummy/body.jsp"/>
+		<put name="images" value="/dummy/dummy.jsp"/>
+	</definition>
+	
+	<definition name="home_def" page="/layout/home_layout.jsp">
+		<put name="title" value="Rick DB"/>
+		<put name="header" value="/menu/headerMenu.jsp"/>
+		<put name="body" value="/dummy/body.jsp"/>
+		<put name="images" value="/dummy/dummy.jsp"/>
+	</definition>
+	
+	
+</tiles-definitions>
