@@ -99,13 +99,22 @@ public class EventsAction extends Action
 	  
 	  if ("list".equals(mode))
       {
+		PersistenceBroker broker=null;
 		listEvents(request, response);  
-		PersistenceBroker broker = PersistenceBrokerFactory.defaultPersistenceBroker();
-		brokerOpens++;
-		//((ConnectionManagerImpl)broker.serviceConnectionManager()).getUnderlyingConnectionFactory().releaseAllResources();
-		request.setAttribute("Articles", getArticles(broker, false));
-		broker.close();
-		brokerCloses++;
+		try 
+		{
+		  broker = PersistenceBrokerFactory.defaultPersistenceBroker();
+		  brokerOpens++;
+		  request.setAttribute("Articles", getArticles(broker, false));
+		}
+		finally 
+		{
+		  if (broker!=null) 
+		  { 
+			broker.close();
+		    brokerCloses++; 
+		  }
+		}
 		return list;
       }
 	  
@@ -272,16 +281,23 @@ public class EventsAction extends Action
 		 if (edb.getExpire_date()==null) edb.setStart_date(today);
 		// edb.outEvent();
 		 int lastEventId=0;
+		 PersistenceBroker broker=null;
 		 try {
-			 PersistenceBroker broker = PersistenceBrokerFactory.defaultPersistenceBroker();
+			 broker = PersistenceBrokerFactory.defaultPersistenceBroker();
 			 brokerOpens++;
 			 broker.beginTransaction();
 			 broker.store(edb, ObjectModification.INSERT);
 			 broker.commitTransaction();
-			 broker.close();
-			 brokerCloses++;
 	    	 lastEventId=EventDb.getLastMemberEventId(userData.getId(), null);
 		 } catch (Exception e) {  e.printStackTrace(); }
+		 finally 
+			{
+			  if (broker!=null) 
+			  { 
+				broker.close();
+			    brokerCloses++; 
+			  }
+			}
 		// showEvent(""+lastEventId, request, response);
 		 actionRedirect = new ActionRedirect(mapping.findForward("showRedirect"));
 		 actionRedirect.addParameter("mode", "show");
@@ -292,13 +308,24 @@ public class EventsAction extends Action
 	  if ("update".equals(mode))
 	  {
 		 EventDb edb = new EventDb(request);
-		 PersistenceBroker broker = PersistenceBrokerFactory.defaultPersistenceBroker();
-		 brokerOpens++;
-		 broker.beginTransaction();
-		 broker.store(edb, ObjectModification.UPDATE);
-		 broker.commitTransaction();
-		 broker.close();
-		 brokerCloses++;
+		 PersistenceBroker broker =null;
+		 try
+		 {
+		   broker = PersistenceBrokerFactory.defaultPersistenceBroker();
+		   brokerOpens++;
+		   broker.beginTransaction();
+		   broker.store(edb, ObjectModification.UPDATE);
+		   broker.commitTransaction();
+		 }
+		 finally 
+			{
+			  if (broker!=null) 
+			  { 
+				broker.close();
+			    brokerCloses++; 
+			  }
+			}
+		 
 	     request.setAttribute("EventDb", edb);
 	     setEditPrivleges(edb, edb.getMember_id(), request);
 	     actionRedirect = new ActionRedirect(mapping.findForward("showRedirect"));
@@ -738,14 +765,18 @@ public class EventsAction extends Action
 	private EventDb getEvent(int id)
 	{
       Settings settings = new Settings();
-	  PersistenceBroker broker = PersistenceBrokerFactory.defaultPersistenceBroker();
-	  brokerOpens++;
+	  PersistenceBroker broker = null;
 	  EventDb edb=null;
-	  Criteria criteria = new Criteria();
-	  criteria.addEqualTo("id", id);
-	  QueryByCriteria query = new QueryByCriteria(EventDb.class, criteria);
-	  edb=(EventDb)broker.getObjectByQuery(query);
-	  if (edb!=null);
+	  try
+	  {
+	    broker = PersistenceBrokerFactory.defaultPersistenceBroker();
+	    brokerOpens++;
+	  
+	    Criteria criteria = new Criteria();
+	    criteria.addEqualTo("id", id);
+	    QueryByCriteria query = new QueryByCriteria(EventDb.class, criteria);
+	    edb=(EventDb)broker.getObjectByQuery(query);
+	    if (edb!=null);
 	     {
 	       MemberDb mdb = getMember(broker, edb.getMember_id());
 	       if (mdb!=null)
@@ -762,8 +793,16 @@ public class EventsAction extends Action
 	       edb.setPhotoPresent(isEventPhotoPresent(edb.getId()));
 		   } catch(Exception e) { e.printStackTrace();}
 	     }
-	  broker.close();
-	  brokerCloses++;
+	  }
+	  finally 
+		{
+		  if (broker!=null) 
+		  { 
+			broker.close();
+		    brokerCloses++; 
+		  }
+		}
+	 
 	  return edb;
 	}
 	
@@ -771,17 +810,20 @@ public class EventsAction extends Action
 	{
 		ArrayList events = new ArrayList();
       Settings settings = new Settings();
-	  PersistenceBroker broker = PersistenceBrokerFactory.defaultPersistenceBroker();
-	  brokerOpens++;
-	  EventDb edb=null;
-	  Criteria criteria = new Criteria();
-	  criteria.addEqualTo("active", 1);
-	  QueryByCriteria query = new QueryByCriteria(EventDb.class, criteria);
-	  query.addOrderByAscending("start_date");
-	  Collection edbs=(Collection)broker.getCollectionByQuery(query);
-	  Iterator it = edbs.iterator();
-	  while(it.hasNext())
-	  {	 
+	  PersistenceBroker broker =null;
+	  try
+	  {
+	    broker = PersistenceBrokerFactory.defaultPersistenceBroker();
+	    brokerOpens++;
+	    EventDb edb=null;
+	    Criteria criteria = new Criteria();
+	    criteria.addEqualTo("active", 1);
+	    QueryByCriteria query = new QueryByCriteria(EventDb.class, criteria);
+	    query.addOrderByAscending("start_date");
+	    Collection edbs=(Collection)broker.getCollectionByQuery(query);
+	    Iterator it = edbs.iterator();
+	    while(it.hasNext())
+	    {	 
 		  edb = (EventDb)it.next();
 	      MemberDb mdb = getMember(broker, edb.getMember_id());
 	      if (mdb!=null)
@@ -799,10 +841,15 @@ public class EventsAction extends Action
 			   } catch(Exception e) { e.printStackTrace();}
 		   events.add(edb);
 	   }
-	    
-	 
-	  broker.close();
-	  brokerCloses++;
+	  }
+	  finally 
+		{
+		  if (broker!=null) 
+		  { 
+			broker.close();
+		    brokerCloses++; 
+		  }
+		}
 	  
 	  return events;
 	}
