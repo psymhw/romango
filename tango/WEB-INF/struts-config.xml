@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE struts-config PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
+          "http://struts.apache.org/dtds/struts-config_1_2.dtd">
+<!--
+  Default configuration file for examples application.
+  Each module also has its own struts-config under: /WEB-INF/$MODULE/
+  @version $Revision$ $Date$
+-->
+
+ <struts-config>
+   
+  <form-beans type="org.apache.struts.action.ActionFormBean">
+     <form-bean name="AddressForm"            type="address.AddressForm" />
+     <form-bean name="ArticleDb"              type="db.ArticleDb" />
+     <form-bean name="MediaDb"                type="db.MediaDb" />
+      <form-bean name="LinksDb"               type="db.LinksDb" />
+     <form-bean name="CategoryForm"           type="media.CategoryForm" />
+     <form-bean name="LinksCategoryForm"      type="links.LinksCategoryForm" />
+     <form-bean name="LinkCatsDb"              type="db.LinkCatsDb" />
+  </form-beans>
+ 
+  <action-mappings>
+  
+  <action path="/events"
+	type="events.EventsAction">
+  	<forward name="list" path="/struts/events/eventsListMain.jsp" redirect="false" />
+  	<forward name="calendar" path="/struts/events/calendarMain.jsp" redirect="false" />
+	  <forward name="show" path="/struts/events/eventShowMain.jsp" redirect="false" />
+	  <forward name="edit" path="/struts/events/eventEditMain.jsp" redirect="false" />
+	  <forward name="map" path="/struts/map/mapMain.jsp" redirect="false" />
+	  <forward name="about" path="/struts/members/aboutMain.jsp" redirect="false" />
+	  <forward name="accessError" path="/struts/events/eventAccessErrorMain.jsp" redirect="false" />
+	  <forward name="myEvents" path="/struts/events/myEventsMain.jsp" redirect="false" />
+	  <forward name="unsupportedForward" path="/struts/common/unsupportedForward.jsp" redirect="false" />
+	  <forward name="testConnections" path="/struts/common/testConnections.jsp" redirect="false" />
+	  <forward name="showRedirect" path="/events.do" redirect="true" />
+	</action>
+ 
+ <action path="/music" type="music.MusicAction" name="ArticleDb">
+	 <forward name="list" path="/struts/music/musicListMain.jsp" redirect="false" />
+	 <forward name="edit" path="/struts/music/musicEditMain.jsp" redirect="false" />
+	 <forward name="show" path="/struts/music/musicShowMain.jsp" redirect="false" />
+ </action>
+ 
+ <action path="/media"  name="CategoryForm" type="media.MediaListAction">
+	 <forward name="list" path="/struts/media/mediaListMain.jsp" redirect="false" />
+ </action>
+ 
+ <action path="/mediaEdit"  name="MediaDb" type="media.MediaAction">
+	
+	 <forward name="edit" path="/struts/media/mediaEditMain.jsp" redirect="false" />
+	 <forward name="show" path="/struts/media/mediaShowMain.jsp" redirect="false" />
+ </action>
+
+<action path="/links"  name="LinksCategoryForm" type="links.LinksListAction">
+	 <forward name="list" path="/struts/links/linksListMain.jsp" redirect="false" />
+ </action>
+ 
+ <action path="/linksEdit"  name="LinksDb" type="links.LinksAction">
+	 <forward name="edit" path="/struts/links/linksEditMain.jsp" redirect="false" />
+	 <forward name="show" path="/struts/links/linksShowMain.jsp" redirect="false" />
+	 <forward name="list" path="/links.do" redirect="false" />
+ </action>
+ 
+ <action path="/linkcats"  name="LinkCatsDb" type="links.LinkCatsAction">
+	 <forward name="list" path="/struts/links/linkCatsListMain.jsp" redirect="false" />
+ </action>
+	
+	<action path="/instructors"
+	type="instructors.InstructorsAction">
+	<forward name="list" path="/struts/instructors/instructorsListMain.jsp" redirect="false" />
+	<forward name="listRedirect" path="/instructors.do" redirect="true" />
+	<forward name="edit" path="/struts/instructors/instructorEditMain.jsp" redirect="false" />
+	<forward name="accessDenied" path="/struts/common/accessDenied.jsp" redirect="false" />
+	<forward name="unsupportedForward" path="/struts/common/unsupportedForward.jsp" redirect="false" />
+	</action>
+	
+	<action path="/djs"
+	type="djs.DjAction">
+	<forward name="list" path="/struts/djs/djListMain.jsp" redirect="false" />
+	<forward name="unsupportedForward" path="/struts/common/unsupportedForward.jsp" redirect="false" />
+	</action>
+	
+	<action path="/login"
+	type="login.LoginAction">
+	<forward name="eventList" path="/events.do" redirect="true" />
+	<forward name="loginError" path="/struts/login/loginErrorMain.jsp" redirect="false" />
+	 <forward name="unsupportedForward" path="/struts/common/unsupportedForward.jsp" redirect="false" />
+	</action>
+	
+	<action path="/market"
+	type="market.MarketAction">
+	<forward name="list" path="/struts/market/marketMain.jsp" redirect="false" />
+	</action>
+	
+	<action path="/admin/members"
+	type="admin.MembersAction">
+	<forward name="list" path="/struts/admin/members/memberListMain.jsp" redirect="false" />
+	<forward name="edit" path="/struts/admin/members/memberEditMain.jsp" redirect="false" />
+	<forward name="show" path="/struts/admin/members/memberShowMain.jsp" redirect="false" />
+	<forward name="accessDenied" path="/struts/common/accessDenied.jsp" redirect="false" />
+	<forward name="unsupportedForward" path="/struts/common/unsupportedForward.jsp" redirect="false" />
+	</action>
+	
+   
+  </action-mappings>
+  
+  
+  <message-resources parameter="MessageResources" />
+  
+  <plug-in className="org.apache.struts.tiles.TilesPlugin" >
+      <set-property property="definitions-config" value="/WEB-INF/tiles-defs.xml,/WEB-INF/tiles-tests-defs.xml" />
+      <set-property property="definitions-parser-validate" value="true" />
+      <set-property property="moduleAware" value="true" />
+   </plug-in>
+  
+   <!--
+  	<plug-in className="org.apache.struts.validator.ValidatorPlugIn" >
+      <set-property property="pathnames" value="/WEB-INF/validator-rules.xml,/WEB-INF/validation.xml" />
+    </plug-in>
+  -->
+ 
+ </struts-config>

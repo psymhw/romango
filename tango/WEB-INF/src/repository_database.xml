@@ -1,0 +1,100 @@
+<!-- @version $Id$ -->
+
+<!--
+/* Copyright 2002-2005 The Apache Software Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+<!--
+Define all database connections here.
+One defined connection should be defined as the default one,
+by setingt default-connection="true" - this could be done at runtime too.
+
+It is possible to set user/password at
+runtime or to let different users login at runtime
+using the same database.
+Use PBKey objects for the same jcdAlias name,
+but with different user/password.
+
+It is also possible to add jdbc-connection-descriptor elements
+at runtime,  using the MetadataManager.
+-->
+
+    <!-- This connection is used as the default one within OJB -->
+ <jdbc-connection-descriptor 
+	jcd-alias="default" 
+	default-connection="true"
+    platform="MySQL" 
+	jdbc-level="3.0"
+    jndi-datasource-name="java:comp/env/jdbc/rickb_mysql"
+    eager-release="false" batch-mode="false" useAutoCommit="1"
+    ignoreAutoCommitExceptions="false">
+  
+
+ 
+        <!--
+            On initialization of connections the ConnectionFactory change the 'autoCommit'
+            state dependent of the used 'useAutoCommit' setting. This doesn't work in all
+            situations/environments, thus for useAutoCommit="1" the ConnectionFactory does
+            no longer set autoCommit to true on connection creation.
+            To use the old behavior (OJB version 1.0.3 or earlier) set this property
+            to 'true', then OJB change the autoCommit state (if needed) of
+            new obtained connections at connection initialization to 'true'.
+            If 'false' or this property is removed, OJB don't try to change connection
+            autoCommit state at connection initialization.
+        -->
+        <attribute attribute-name="initializationCheck" attribute-value="true" />
+
+        <!-- alternative cache implementations, see docs section "Caching" -->
+        <object-cache class="org.apache.ojb.broker.cache.ObjectCacheTwoLevelImpl">
+            <!-- meaning of attributes, please see docs section "Caching" -->
+            <!-- common attributes -->
+            <attribute attribute-name="cacheExcludes" attribute-value=""/>
+
+            <!-- ObjectCacheTwoLevelImpl attributes -->
+            <attribute attribute-name="applicationCache" attribute-value="org.apache.ojb.broker.cache.ObjectCacheDefaultImpl"/>
+            <attribute attribute-name="copyStrategy" attribute-value="org.apache.ojb.broker.cache.ObjectCacheTwoLevelImpl$CopyStrategyImpl"/>
+            <attribute attribute-name="forceProxies" attribute-value="false"/>
+            
+            <!-- ObjectCacheDefaultImpl attributes -->
+            <attribute attribute-name="timeout" attribute-value="900"/>
+            <attribute attribute-name="autoSync" attribute-value="true"/>
+            <attribute attribute-name="cachingKeyType" attribute-value="0"/>
+            <attribute attribute-name="useSoftReferences" attribute-value="true"/>
+        </object-cache>
+
+         <sequence-manager
+       className="org.apache.ojb.broker.util.sequence.SequenceManagerNativeImpl"/>
+    </jdbc-connection-descriptor>
+	 
+        
+  
+
+   <!-- Datasource example -->
+    <!-- jdbc-connection-descriptor
+        jcd-alias="default"
+        default-connection="true"
+   		platform="Hsqldb"
+   		jdbc-level="2.0"
+   		jndi-datasource-name="java:DefaultDS"
+   		username="sa"
+   		password=""
+        batch-mode="false"
+        useAutoCommit="0"
+        ignoreAutoCommitExceptions="false"
+   >
+        Add the other elements like object-cache, connection-pool, sequence-manager here.
+
+   </jdbc-connection-descriptor -->
+
