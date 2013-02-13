@@ -1,0 +1,474 @@
+<!-- Please keep user defined mappings in this file only
+     to avoid mixing user defined and system mappings. -->
+<!-- Mapping of User defined classes starts here -->
+<!--
+#/* Copyright 2002-2004 The Apache Software Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+<!-- This file usually contains the mappings for the application classes. -->
+
+	
+	<class-descriptor 
+	class="db.ArticleDb"
+	 	table="article"
+>
+    <field-descriptor id="1"
+		name="id"
+		column="id"
+		jdbc-type="INTEGER"
+		primarykey="true"
+		autoincrement="true" access="readonly"
+    />
+    
+    
+    <field-descriptor 
+    		name="title"
+		column="title"
+		jdbc-type="VARCHAR"
+    />
+    
+    <field-descriptor 
+    		name="summary"
+		column="summary"
+		jdbc-type="VARCHAR"
+    />
+    
+    <field-descriptor name="article_date" column="article_date"	jdbc-type="DATE"/> 
+    
+    <field-descriptor 
+    		name="author"
+		column="author"
+		jdbc-type="VARCHAR"
+    />
+    
+    <field-descriptor 
+    		name="category"
+		column="category"
+		jdbc-type="VARCHAR"
+    />
+    
+    <field-descriptor 
+    		name="body"
+		column="body"
+		jdbc-type="VARCHAR"
+    />
+    
+    
+    <field-descriptor 
+		name="active"
+		column="active"
+		jdbc-type="INTEGER"
+    />
+    
+    <field-descriptor 
+    		name="admin_notes"
+		column="admin_notes"
+		jdbc-type="VARCHAR"
+    />
+	</class-descriptor>		
+
+	<class-descriptor 
+	class="db.LinksDb"
+	 	table="links"
+>
+    <field-descriptor id="1"
+		name="id"
+		column="id"
+		jdbc-type="INTEGER"
+		primarykey="true"
+		autoincrement="true" access="readonly"
+    />
+    
+    
+    <field-descriptor 
+    		name="title"
+		column="title"
+		jdbc-type="VARCHAR"
+    />
+    
+    <field-descriptor 
+    		name="description"
+		column="description"
+		jdbc-type="VARCHAR"
+    />
+    
+    <field-descriptor name="post_date" 
+    column="post_date"	
+    jdbc-type="DATE"/> 
+    
+    <field-descriptor 
+    		name="url"
+		column="url"
+		jdbc-type="VARCHAR"
+    />
+    
+    <field-descriptor 
+    		name="category"
+		column="category"
+		jdbc-type="VARCHAR"
+    />
+    
+    <field-descriptor 
+    		name="member_id"
+		column="member_id"
+		jdbc-type="INTEGER"
+    />
+    
+    <field-descriptor 
+    		name="seq"
+		column="seq"
+		jdbc-type="INTEGER"
+    />
+    
+   
+	</class-descriptor>		
+	
+<class-descriptor 
+	class="db.LinkCatsDb"
+	 	table="link_categories"
+>
+    <field-descriptor id="1"
+		name="id"
+		column="id"
+		jdbc-type="INTEGER"
+		primarykey="true"
+		autoincrement="true" access="readonly"
+    />
+    
+    <field-descriptor 
+    		name="category"
+		column="category"
+		jdbc-type="VARCHAR"
+    />
+    
+    <field-descriptor 
+    		name="seq"
+		column="seq"
+		jdbc-type="INTEGER"
+    />
+    
+      
+	</class-descriptor>		
+	
+	
+	<class-descriptor 
+	class="db.MediaDb"
+	 	table="media"
+>
+    <field-descriptor id="1"
+		name="id"
+		column="id"
+		jdbc-type="INTEGER"
+		primarykey="true"
+		autoincrement="true" access="readonly"
+    />
+    
+    
+    <field-descriptor 
+    		name="title"
+		column="title"
+		jdbc-type="VARCHAR"
+    />
+    
+    <field-descriptor 
+    		name="description"
+		column="description"
+		jdbc-type="VARCHAR"
+    />
+    
+    
+    <field-descriptor 
+    		name="category"
+		column="category"
+		jdbc-type="VARCHAR"
+    />
+    
+    <field-descriptor 
+    		name="embed"
+		column="embed"
+		jdbc-type="VARCHAR"
+    />
+    
+       
+    <field-descriptor 
+		name="member_id"
+		column="member_id"
+		jdbc-type="INTEGER"
+		
+    />
+   
+	</class-descriptor>		
+	
+	
+	<class-descriptor 
+	class="db.EventDb"
+	 	table="event"
+>
+    <field-descriptor id="1"
+		name="id"
+		column="id"
+		jdbc-type="INTEGER"
+		primarykey="true"
+		autoincrement="true" access="readonly"
+    />
+    
+     <field-descriptor 
+		name="member_id"
+		column="member_id"
+		jdbc-type="INTEGER"
+		
+    />
+    
+     <field-descriptor 
+		name="location_id"
+		column="location_id"
+		jdbc-type="INTEGER"
+		
+    />
+    
+     <field-descriptor 
+		name="type_id"
+		column="type_id"
+		jdbc-type="INTEGER"
+		
+    />
+    
+    <field-descriptor 
+    		name="day_of_week"
+		column="day_of_week"
+		jdbc-type="VARCHAR"
+    />
+    
+     <field-descriptor name="start_date" 
+    column="start_date"	
+    jdbc-type="DATE"/> 
+    <!--  
+     <field-descriptor name="last_date" 
+    column="last_date"	
+    jdbc-type="DATE"/> 
+    -->
+     <field-descriptor name="entry_date" 
+    column="entry_date"	
+    jdbc-type="DATE"/> 
+    
+     <field-descriptor name="expire_date" 
+    column="expire_date"	
+    jdbc-type="DATE"/> 
+    
+     <field-descriptor 
+    		name="description"
+		column="description"
+		jdbc-type="VARCHAR"
+    />
+    
+    
+        
+    
+    <field-descriptor 
+    		name="title"
+		column="title"
+		jdbc-type="VARCHAR"
+    />
+    
+    
+    <field-descriptor 
+    		name="venue_name"
+		column="venue_name"
+		jdbc-type="VARCHAR"
+    />
+    
+    <field-descriptor 
+    		name="venue_csz"
+		column="venue_csz"
+		jdbc-type="VARCHAR"
+    />
+   
+   <field-descriptor 
+    		name="venue_addr"
+		column="venue_addr"
+		jdbc-type="VARCHAR"
+    />
+    
+    
+     <field-descriptor 
+		name="active"
+		column="active"
+		jdbc-type="INTEGER"
+		
+    />
+    
+        <field-descriptor 
+		name="first"
+		column="first"
+		jdbc-type="INTEGER"
+		
+    />
+       
+    <field-descriptor 
+		name="second"
+		column="second"
+		jdbc-type="INTEGER"
+		
+    />
+    
+     <field-descriptor 
+		name="third"
+		column="third"
+		jdbc-type="INTEGER"
+		
+    />
+   
+   
+    <field-descriptor 
+		name="fourth"
+		column="fourth"
+		jdbc-type="INTEGER"
+		
+    />
+    
+     <field-descriptor 
+		name="fifth"
+		column="fifth"
+		jdbc-type="INTEGER"
+		
+    />
+    
+     <field-descriptor 
+		name="all_x"
+		column="all_x"
+		jdbc-type="INTEGER"
+		
+    />
+    
+     <field-descriptor 
+		name="drop_in"
+		column="drop_in"
+		jdbc-type="INTEGER"
+		
+    />
+    
+    <field-descriptor 
+    		name="short_title"
+		column="short_title"
+		jdbc-type="VARCHAR"
+    />
+    
+    
+	</class-descriptor>		
+	
+	<class-descriptor 
+	class="db.MemberDb"
+	 	table="member"
+>
+    <field-descriptor id="1"
+		name="id"
+		column="id"
+		jdbc-type="INTEGER"
+		primarykey="true"
+		autoincrement="true" access="readonly"
+    />
+    
+    
+    <field-descriptor 
+    		name="last_name"
+		column="last_name"
+		jdbc-type="VARCHAR"
+    />
+    
+    <field-descriptor 
+    		name="first_name"
+		column="first_name"
+		jdbc-type="VARCHAR"
+    />
+    
+    <field-descriptor 
+    		name="email"
+		column="email"
+		jdbc-type="VARCHAR"
+    />
+    
+    <field-descriptor 
+		name="location_id"
+		column="location_id"
+		jdbc-type="INTEGER"
+    />
+    
+    <field-descriptor 
+		name="instructor"
+		column="instructor"
+		jdbc-type="INTEGER"
+    />
+    
+    <field-descriptor 
+    		name="password"
+		column="password"
+		jdbc-type="VARCHAR"
+    />
+    
+    <field-descriptor 
+		name="host"
+		column="host"
+		jdbc-type="INTEGER"
+    />
+    
+    <field-descriptor 
+    		name="description"
+		column="description"
+		jdbc-type="VARCHAR"
+    />
+    
+    
+    <field-descriptor 
+		name="admin"
+		column="admin"
+		jdbc-type="INTEGER"
+    />
+    
+    <field-descriptor 
+		name="active"
+		column="active"
+		jdbc-type="INTEGER"
+    />
+    
+    <field-descriptor 
+    		name="username"
+		column="username"
+		jdbc-type="VARCHAR"
+    />
+    
+    <field-descriptor 
+    		name="caption"
+		column="caption"
+		jdbc-type="VARCHAR"
+    />
+    
+    <field-descriptor 
+    		name="photoType"
+		column="photoType"
+		jdbc-type="VARCHAR"
+    />
+	</class-descriptor>		
+
+<!-- Mapping of User defined classes ends here -->
+<!-- 
+<field-descriptor name="" column=""	jdbc-type="BIGINT"/> 
+<field-descriptor name="" column=""	jdbc-type="INTEGER"/> 
+<field-descriptor name="" column=""	jdbc-type="DOUBLE"/> 
+<field-descriptor name="" column=""	jdbc-type="VARCHAR"/> 
+<field-descriptor name="" column=""	jdbc-type="DATE"/> 
+<field-descriptor name="" column=""	jdbc-type=""/> 
+<field-descriptor name="" column=""	jdbc-type=""/> 
+
+-->
