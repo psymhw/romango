@@ -7,7 +7,7 @@ String brokerCloses= (String)request.getAttribute("brokerCloses");
 
 <html>
 <body>
-out.println("<h1>Test Connections</h1>"); 
+<h1>Test Connections</h1>
 <%
 out.println("brokerOpens: "+brokerOpens); 
 out.println("<br>brokerCloses: "+brokerCloses); 
