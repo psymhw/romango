@@ -49,6 +49,8 @@
 <tr><td colspan='5' height='30px' valign='bottom'><a href='https://www.facebook.com/groups/184260995654/'>Eugene Tango on <img src="<%=request.getContextPath()%>/images/facebook_logo.jpg"  height='20' /></a></td></tr>
 <tr >
 </table>
+<img src="images/et_top_pic.png" alt="Eugene Tango" />
+
 <table width="100%" border="0" cellspacing="0" >
 
 <%
