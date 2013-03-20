@@ -134,7 +134,7 @@
           <li>Located in Eugene, Oregon area but remote fitting is available.</li>
 		  <li>Able to fit feet that are long, short, wide, narrow etc. </li>
 		  <li>Can build to accommodate orthopedic inserts</li>
-		  <li>Pricing:  dance shoes & Chelsea boots: $600, men's dress shoes: $800, cowboy & womens boots: $1,200. </li>
+		  <li>Pricing:  dance shoes & Chelsea boots: $600, men's dress shoes: $950, cowboy & womens boots: $1,200. </li>
 		  <li>Exotic leathers (alligator, python, crocadile, ostrich) available at additional cost. </li>
         </ul>
 		</td>
