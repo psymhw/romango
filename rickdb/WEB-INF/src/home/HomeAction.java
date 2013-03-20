@@ -31,65 +31,99 @@ public class HomeAction extends Action
     
     ActionForward noAccess = mapping.findForward("noAccess");   
     
-    PersistenceBroker broker= PersistenceBrokerFactory.defaultPersistenceBroker();
-    getRecentAddressList(request, broker);
+    getRecentAddressList(request);
     
     
     HttpSession session = request.getSession();
     String user = (String)session.getAttribute("user");
-    if (user==null) { broker.close(); return noAccess; }
+    if (user==null) { return noAccess; }
     
     
    // PersistenceBroker broker= PersistenceBrokerFactory.defaultPersistenceBroker();
     
-    if (!getUser(broker).equals(user)) { broker.close(); return noAccess; }
+    if (!getUser().equals(user)) {  return noAccess; }
     
-    getRecentAddressList(request, broker);
-    getRecentNotesList(request, broker);
-    getImageList(request, broker);
+    getRecentAddressList(request);
+    getRecentNotesList(request);
+    getImageList(request);
     
-    broker.close();
     request.setAttribute("CurrentMenuItem", "home");
     return home;
   }
   
-  private void getRecentAddressList(HttpServletRequest request, PersistenceBroker broker)
+  private void getRecentAddressList(HttpServletRequest request)
   {
-    Criteria criteria = new Criteria();
-    QueryByCriteria query = new QueryByCriteria(AddressDb.class, criteria);
-    query.addOrderByDescending("last_touch");
-    query.setEndAtIndex(4);
-    Collection addressList =broker.getCollectionByQuery(query);
-    request.setAttribute("AddressList", addressList);
+	PersistenceBroker broker=null;
+	try
+	{
+  	  broker= PersistenceBrokerFactory.defaultPersistenceBroker();
+      Criteria criteria = new Criteria();
+      QueryByCriteria query = new QueryByCriteria(AddressDb.class, criteria);
+      query.addOrderByDescending("last_touch");
+      query.setEndAtIndex(4);
+      Collection addressList =broker.getCollectionByQuery(query);
+      request.setAttribute("AddressList", addressList);
+	}
+	finally 
+	{
+	  if (broker!=null) broker.close();
+	}
   }
   
-  private void getRecentNotesList(HttpServletRequest request, PersistenceBroker broker)
+  private void getRecentNotesList(HttpServletRequest request)
   {
-    Criteria criteria = new Criteria();
-    QueryByCriteria query = new QueryByCriteria(NotesDb.class, criteria);
-    query.addOrderByDescending("note_date");
-    query.setEndAtIndex(4);
-    Collection notesList =broker.getCollectionByQuery(query);
-    request.setAttribute("NotesList", notesList);
+	PersistenceBroker broker=null;
+	try
+	{
+	  broker= PersistenceBrokerFactory.defaultPersistenceBroker();
+      Criteria criteria = new Criteria();
+      QueryByCriteria query = new QueryByCriteria(NotesDb.class, criteria);
+      query.addOrderByDescending("note_date");
+      query.setEndAtIndex(4);
+      Collection notesList =broker.getCollectionByQuery(query);
+      request.setAttribute("NotesList", notesList);
+    }
+	finally 
+	{
+	  if (broker!=null) broker.close();
+	}
    }
   
-  private void getImageList(HttpServletRequest request, PersistenceBroker broker)
+  private void getImageList(HttpServletRequest request)
   {
-    Criteria criteria = new Criteria();
-    QueryByCriteria query = new QueryByCriteria(ImageRefDb.class, criteria);
-    query.addOrderByDescending("id");
-    query.setEndAtIndex(8);
-    Collection images =(Collection)broker.getCollectionByQuery(query);
-    request.setAttribute("ImageList", images);
-    request.setAttribute("ImageLayout", "home");
+	PersistenceBroker broker=null;
+    try
+    {
+      broker= PersistenceBrokerFactory.defaultPersistenceBroker();
+      Criteria criteria = new Criteria();
+      QueryByCriteria query = new QueryByCriteria(ImageRefDb.class, criteria);
+      query.addOrderByDescending("id");
+      query.setEndAtIndex(8);
+      Collection images =(Collection)broker.getCollectionByQuery(query);
+      request.setAttribute("ImageList", images);
+      request.setAttribute("ImageLayout", "home");
+	}
+	finally 
+	{
+	  if (broker!=null) broker.close();
+	}
   }
   
-  String getUser(PersistenceBroker broker)
+  String getUser()
   {
+	PersistenceBroker broker=null;
+	try
+	{
+	  broker= PersistenceBrokerFactory.defaultPersistenceBroker();		
 	  Criteria criteria = new Criteria();
       criteria.addEqualTo("id", 1);
       QueryByCriteria query = new QueryByCriteria(PasswordDb.class, criteria);
       PasswordDb pdb = (PasswordDb)broker.getObjectByQuery(query);
       return pdb.getUser();
+	}
+	finally 
+	{
+	  if (broker!=null) broker.close();
+	}
   }
 }
