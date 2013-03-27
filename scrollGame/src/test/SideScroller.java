@@ -136,7 +136,7 @@ public class SideScroller extends Application {
 				
             };
             KeyValue keyValueX = new KeyValue(Sliding.this.rotateProperty(),0);
-            KeyFrame keyFrame = new KeyFrame(new Duration(100), onFinished , keyValueX); //, keyValueY);
+            KeyFrame keyFrame = new KeyFrame(new Duration(50), onFinished , keyValueX); //, keyValueY);
             anim.getKeyFrames().add(keyFrame);
             anim.play();
         }
