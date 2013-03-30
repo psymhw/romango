@@ -1,19 +1,29 @@
 package test;
 
-import javafx.animation.*;
+//import sandboxfx.SandboxFX;
+import javafx.animation.Animation;
+import javafx.animation.Interpolator;
+import javafx.animation.RotateTransition;
+import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Arc;
+import javafx.scene.shape.ArcBuilder;
+import javafx.scene.shape.ArcType;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -28,15 +38,16 @@ public class SideScroller extends Application {
 
     protected int width = 500;
     protected int height = 400;
-
-    /**
-     * @param args the command line arguments
-     */
+    private Boy boy;
+    
     public static void main(String[] args) {
         Application.launch(SideScroller.class, args);
     }
     double SUNX = 100;
     double SUNY = 300;
+    
+    int FORWARD = 0;
+    int REVERSE = 1;
 
     @Override
     public void start(Stage primaryStage) {
@@ -44,11 +55,94 @@ public class SideScroller extends Application {
         Group root = new Group();
         Scene scene = new Scene(root, width, height, Color.TRANSPARENT);
 
-        Rectangle sky = new Rectangle(width, height);
-        sky.setFill(new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, new Stop(0.0, Color.LIGHTBLUE), new Stop(0.7, Color.LIGHTYELLOW), new Stop(1.0, Color.YELLOW)));
+        Rectangle sky = getSky();
+        Group sun = getSun();
+        Sliding cloudSlider = getClouds();
+        Rectangle ground = getGround();
+        Sliding forest = getTrees();
+        
         root.getChildren().add(sky);
+        root.getChildren().add(sun);
+        root.getChildren().addAll(cloudSlider);
+        root.getChildren().add(ground);
+        root.getChildren().add(forest);
+        
+        boy=new Boy();
+        root.getChildren().add(boy);
+        
+        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent ke) 
+            {
+              if (ke.getCode()==KeyCode.RIGHT) 
+              {
+                boy.setDirection(FORWARD);
+                boy.makeRun();
+                boy.setTranslateX(boy.getTranslateX()+5);	
+                
+              }
+              if (ke.getCode()==KeyCode.LEFT) 
+              {
+                boy.setDirection(REVERSE);
+                boy.makeRun();
+                boy.setTranslateX(boy.getTranslateX()-5);	
+              }
+            }
+        });     
+        
+        scene.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent ke) 
+            {
+              if (ke.getCode()==KeyCode.RIGHT) 
+              {
+            	  
+               boy.makeWalk();
+                
+              }
+              if (ke.getCode()==KeyCode.LEFT) 
+              {
+                boy.makeWalk();
+              }
+            }
+        });     
+        
+        
+        
+        
+        scene.setCamera(new PerspectiveCamera());
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
 
-        Group sun = new Group();
+	private Sliding getTrees() {
+		Tree[] trees = new Tree[]{new Tree(20, 320), new Tree(80, 280), new Tree(120, 330), new Tree(140, 280), new Tree(180, 310), new Tree(220, 320),
+            new Tree(260, 280), new Tree(280, 320), new Tree(300, 300), new Tree(400, 320), new Tree(500, 280), new Tree(500, 320)
+        };
+        Sliding forest = new Sliding(trees, width, 50);
+		return forest;
+	}
+
+	private Rectangle getGround() {
+		Rectangle ground = new Rectangle(width, 100);
+
+        ground.setTranslateY(300);
+        ground.setFill(new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, new Stop(0.2, Color.OLIVE), new Stop(0.1, Color.DARKOLIVEGREEN)));
+		return ground;
+	}
+
+	private Sliding getClouds() {
+		Cloud[] clouds = new Cloud[]{new Cloud(100, 100), new Cloud(150, 20), new Cloud(220, 150), new Cloud(260, 200), new Cloud(310, 40), new Cloud(390, 150), new Cloud(450, 30), new Cloud(550, 100)};
+        Sliding cloudSlider = new Sliding(clouds, width, 100);
+		return cloudSlider;
+	}
+
+	private Rectangle getSky() {
+		Rectangle sky = new Rectangle(width, height);
+        sky.setFill(new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, new Stop(0.0, Color.LIGHTBLUE), new Stop(0.7, Color.LIGHTYELLOW), new Stop(1.0, Color.YELLOW)));
+		return sky;
+	}
+
+	private Group getSun() {
+		Group sun = new Group();
         Circle sunCircle = new Circle(SUNX, SUNY, 60);
         sunCircle.setFill(Color.YELLOW);
         sun.getChildren().add(sunCircle);
@@ -62,8 +156,6 @@ public class SideScroller extends Application {
             Arc a = ab.startAngle(2 * i * (360 / 24)).build();
             sun.getChildren().add(a);
         }
-        root.getChildren().add(sun);
-
         RotateTransition rotateTransition = new RotateTransition(Duration.millis(100 * 360), sun);
         rotateTransition.setFromAngle(0);
         rotateTransition.setToAngle(360);        
@@ -71,74 +163,10 @@ public class SideScroller extends Application {
         rotateTransition.setCycleCount(Timeline.INDEFINITE);
         rotateTransition.play();
 
-        Cloud[] clouds = new Cloud[]{new Cloud(100, 100), new Cloud(150, 20), new Cloud(220, 150), new Cloud(260, 200), new Cloud(310, 40), new Cloud(390, 150), new Cloud(450, 30), new Cloud(550, 100)};
-        Sliding cloudSlider = new Sliding(clouds, width);
-        root.getChildren().addAll(cloudSlider);
+		return sun;
+	}
 
-        Rectangle ground = new Rectangle(width, 100);
+ 
 
-        ground.setTranslateY(300);
-        ground.setFill(new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, new Stop(0.2, Color.OLIVE), new Stop(0.1, Color.DARKOLIVEGREEN)));
-        root.getChildren().add(ground);
-
-        Tree[] trees = new Tree[]{new Tree(20, 320), new Tree(80, 280), new Tree(120, 330), new Tree(140, 280), new Tree(180, 310), new Tree(220, 320),
-            new Tree(260, 280), new Tree(280, 320), new Tree(300, 300), new Tree(400, 320), new Tree(500, 280), new Tree(500, 320)
-        };
-        Sliding forest = new Sliding(trees, width);
-        root.getChildren().add(forest);
-        scene.setCamera(new PerspectiveCamera());
-        primaryStage.setScene(scene);
-        
-        primaryStage.show();
-    }
-
-    /* a cloud is like an ellipse */
-    class Cloud extends Ellipse {
-
-        public Cloud(double centerX, double centerY) {
-            super(0, 0, 50, 25);
-            this.setTranslateX(centerX);
-            this.setTranslateY(centerY);
-            this.setFill(Color.WHITESMOKE);
-            this.setOpacity(0.5);
-        }
-    }
-
-    class Tree extends Polygon {
-
-        public Tree(double x, double y) {
-            super(0, 0, 10, 30, -10, 30);
-            this.setTranslateX(x);
-            this.setTranslateY(y);
-        }
-    }
     
-    class Sliding extends Group {
-    
-        final Node[] content;
-        Timeline anim = new Timeline();
-
-        public Sliding(final Node[] content,final int width) {
-            this.content = content;
-            this.getChildren().addAll(content);
-            anim.setCycleCount(Timeline.INDEFINITE);
-            @SuppressWarnings("rawtypes")
-			EventHandler onFinished = new EventHandler() {
-                public void handle(Event t) {
-                    for(Node n : content) {
-                        n.setTranslateX(n.getTranslateX() - 1.0);
-                        if(n.getLayoutX() + n.getTranslateX() + n.getBoundsInLocal().getWidth() <= 0) {
-                            n.setTranslateX(width - n.getLayoutX());
-                        }
-                    }
-                }
-
-				
-            };
-            KeyValue keyValueX = new KeyValue(Sliding.this.rotateProperty(),0);
-            KeyFrame keyFrame = new KeyFrame(new Duration(50), onFinished , keyValueX); //, keyValueY);
-            anim.getKeyFrames().add(keyFrame);
-            anim.play();
-        }
-       }
 }
