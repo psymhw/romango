@@ -18,7 +18,6 @@ public  class BoxSprite extends Sprite
 	public void update() 
 	{
 	  r.setTranslateX(r.getTranslateX()-5);
-	  System.out.println("update: "+counter++);
 	}
   
 	public Rectangle getImage()
