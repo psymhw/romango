@@ -18,6 +18,7 @@ public abstract class Sprite {
  
     /** Animation for the node */
     public List animations = new ArrayList<>();
+    public String type="";
  
     /** Current display node */
     public Node node;

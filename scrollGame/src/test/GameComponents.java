@@ -1,11 +1,14 @@
 package test;
 
 //import tutorial.Sprite;
+
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -15,6 +18,7 @@ public class GameComponents extends GameWorld
 	Image garages;
 	Background front;
 	Background front2;
+	BoySprite boy;
 	int lastFront=0;
 	boolean addFlag=false;
 	int GAME_WIDTH=800;
@@ -56,12 +60,26 @@ public class GameComponents extends GameWorld
       getSceneNodes().getChildren().add(front.getImageView());
       getSceneNodes().getChildren().add(front2.getImageView());
       
-      box = new BoxSprite();
-      getSceneNodes().getChildren().add(box.getImage());
+     
       
-     // Boy boy = new Boy();
-     // getSpriteManager().addSprites(boy);
+     // box = new BoxSprite();
+     // getSceneNodes().getChildren().add(box.getImage());
       
+      boy = new BoySprite();
+      getSpriteManager().addSprites(boy);
+      getSceneNodes().getChildren().add(boy.getImageView());
+      
+      addLineOfCoins();
+	}
+	
+	private void addLineOfCoins()
+	{
+	  for(int i=0; i<5; i++)
+	  {
+		Coin coin = new Coin(850+(i*20), 450);
+		getSpriteManager().addSprites(coin);
+		getSceneNodes().getChildren().add(coin.getCoin());  
+	  }
 	}
 	
 	private Sliding getClouds() {
@@ -103,18 +121,79 @@ public class GameComponents extends GameWorld
         }
     }
     
-    private void setupInput(Stage primaryStage) {
-	 
-	EventHandler keypress = new EventHandler() {
-            public void handle(Event me) 
-            { 
-            	box.update();
-            }
-
-            	
+    private void setupInput(Stage primaryStage) 
+    {
+	  EventHandler<KeyEvent> keypress = new EventHandler<KeyEvent>() 
+	  {
+        public void handle(KeyEvent event) 
+        { 
+          if (event.getCode()==KeyCode.RIGHT) 
+          {
+        	boy.makeRun();
+        	front.setRate(3);
+        	front2.setRate(3);
+          }
+          if (event.getCode()==KeyCode.UP) 
+          {
+        	boy.up=true;
+          }
+          if (event.getCode()==KeyCode.ESCAPE) { System.exit(0); }
+        }
+        
+        
     };
-    primaryStage.getScene().setOnKeyPressed(keypress);
     
+    EventHandler<KeyEvent> keyrelease = new EventHandler<KeyEvent>() 
+    {
+      public void handle(KeyEvent event) 
+      { 
+        if (event.getCode()==KeyCode.RIGHT) 
+    	{
+    	  boy.makeWalk();
+      	  front.setRate(2);
+      	  front2.setRate(2);
+    	}
+        
+        if (event.getCode()==KeyCode.UP) 
+    	{
+          boy.suspendFall=false;
+          boy.up=false;
+    	}
+      }
+
+    	        
+    	            	
+    	    };
+    primaryStage.getScene().setOnKeyPressed(keypress);
+    primaryStage.getScene().setOnKeyReleased(keyrelease);
+    
+    }
+    
+    protected boolean handleCollision(Sprite spriteA, Sprite spriteB) 
+    {
+    	//System.out.println("handle collisions");
+      if (spriteA != spriteB) 
+      {
+    	    
+    	 if (spriteA.collide(spriteB)) 
+    	{
+    		// if ("coin".equals(spriteA.type)) System.out.println("A coin collision");
+        	// if ("coin".equals(spriteB.type)) System.out.println("B coin collision");
+        
+    		
+          if (spriteA instanceof Coin)
+          {
+        	System.out.println("A is Coin");  
+          }
+          if (spriteB instanceof Coin)
+          {
+        	System.out.println("B is Coin");  
+          }
+    		
+    		return true;  	
+        }
+      }
+      return false;
     }
 
 }

@@ -24,4 +24,12 @@ public class Background extends Sprite
 		return imageView;
 	}
 
+	public int getRate() {
+		return rate;
+	}
+
+	public void setRate(int rate) {
+		this.rate = rate;
+	}
+
 }
