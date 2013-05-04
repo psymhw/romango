@@ -91,6 +91,7 @@ public class Artist
 	  if (inStr.toLowerCase().contains("d'agostino"))  return new Artist("Angel",     "D'Agostino",            tusj, SMALL);
 	  if (inStr.toLowerCase().contains("tanturi"))     return new Artist("Ricardo",    "Tanturi",              tusj, MEDIUM);
 	  if (inStr.toLowerCase().contains("pugliese"))    return new Artist("Osvaldo",    "Pugliese",             tusj, MEDIUM);
+	  if (inStr.toLowerCase().contains("troilo"))      return new Artist("Anibal",      "Troilo",             tusj, MAX);
 	  if (inStr.toLowerCase().contains("quinteto pirincho"))    return new Artist("",  "Quinteto Pirincho",    tusj, VERY_SMALL);
 
 	
