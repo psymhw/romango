@@ -9,6 +9,7 @@ import java.util.Iterator;
 
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -20,11 +21,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -99,12 +103,22 @@ public class TangoDJ extends Application
     final Button play = new Button("Play");
     final Button stop = new Button("Stop");
     final Button info = new Button("Info Window");
+    final RadioButton rb1 = new RadioButton("Mark");
+    final RadioButton rb2 = new RadioButton("Play");
+    final ToggleGroup modeGroup = new ToggleGroup();
+    
+    
     private HBox hbox;
     private Slider volumeSlider;
     private CurrentTimeListener currentTimeListener;
     private Label currentTimeLabel;
     private MediaPlayer player;
     private double volume=.75;
+    
+    public final static int MARK = 0;
+    public final static int PLAY = 1;
+    
+    int mode=PLAY;
     
     public static void main(String[] args) 
     {
@@ -124,6 +138,14 @@ public class TangoDJ extends Application
     	progress.setMaxWidth(300);
     	progress2.setMaxWidth(300);
     	progress2.setPrefHeight(100);
+    	
+    	//Font myFont = new Font("Arial", 12);
+    	
+    	
+    	setupModeButtons();
+    	
+    	
+    	
     	
         Scene scene = new Scene(new Group());
         stage.setTitle("Tango DJ");
@@ -165,7 +187,10 @@ public class TangoDJ extends Application
         progress.setProgress(0);
         progress2.setProgress(0);
        // mediaView = new MediaView(createMediaPlayer(TangoDJ.class.getResource("/resources/sounds/Who1.mp3").toExternalForm(), false));
-        HBox hb = HBoxBuilder.create().spacing(10).alignment(Pos.CENTER).children(info, skip, play, stop, volumeSlider, progress, currentTimeLabel ).build();
+       Label modeLabel = new Label("MODE: ");
+       modeLabel.setTextFill(Color.WHITE);
+        
+        HBox hb = HBoxBuilder.create().spacing(10).alignment(Pos.CENTER).children(modeLabel, rb1, rb2, new Label("       "), info, skip, play, stop, volumeSlider, progress, currentTimeLabel ).build();
         vbox.getChildren().add(hb);
   
         stop.setDisable(true);
@@ -177,6 +202,37 @@ public class TangoDJ extends Application
         
        
     }
+
+
+private void setupModeButtons() 
+{
+	rb1.setToggleGroup(modeGroup);
+	rb1.setId("mark");
+	rb2.setId("play");
+	rb2.setToggleGroup(modeGroup);
+	rb2.setSelected(true);
+	rb1.setTextFill(Color.WHITE);
+	rb2.setTextFill(Color.WHITE);
+	
+	modeGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
+	    public void changed(ObservableValue<? extends Toggle> ov,
+	        Toggle old_toggle, Toggle new_toggle) {
+	            if (modeGroup.getSelectedToggle() != null) 
+	            {
+	             //	System.out.println(modeGroup.getSelectedToggle().getUserData().toString()); 
+	             String selectedStr=modeGroup.getSelectedToggle().toString();
+	             if (selectedStr.contains("mark")) mode=MARK;
+	             if (selectedStr.contains("play")) mode=PLAY;
+	             
+	             if (mode==MARK)
+	             System.out.println("mode: mark");   
+	             if (mode==PLAY)
+		             System.out.println("mode: play");  
+	                
+	            }                
+	        }
+	});
+}
 
 	private void setupButtonActions() 
 	{
@@ -479,7 +535,7 @@ public class TangoDJ extends Application
 		playlist.addTrackRow( new TrackRow(td.name, td.artist, path, td.grouping, td.time, trackNumber));
 	  }
 	  playlist.finalize();
-	  //printTandas();
+	  printTandas();
 	}
 	
 	
