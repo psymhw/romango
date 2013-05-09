@@ -18,6 +18,8 @@
   -fx-alignment: center-left;
 }
 
+
+
 .eqSlider {
   -fx-background-radius: 5;
   -fx-background-color: #222, #888, black;
