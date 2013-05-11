@@ -8,6 +8,13 @@ import javafx.scene.Group;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.LinearGradientBuilder;
+import javafx.scene.paint.Stop;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 
 public class Playlist 
 {
@@ -26,9 +33,21 @@ public class Playlist
   private double scrollPaneContentsHeight=0;
   private int numberOfTandas=0;
   private boolean playing=false;
+  public int tandaFirstTrackMark=-1;
+  public int tandaLastTrackMark=-1;
+  private Rectangle trackHighlightBox;
+  
+  public Playlist()
+  {
+	setupTrackHightlightBox();
+  }
 	
   public void addTrackRow(TrackRow trackRow)
   {
+	trackRows.add(trackRow);
+	trackNumber++; 
+	
+	/*
     if (newTanda)
     {
       Tanda t = new Tanda(trackRow.getArtist(), trackRow.getGrouping()); 
@@ -48,8 +67,51 @@ public class Playlist
 	  newTanda=true;
 	  tandaTrackNumber=0;
 	}
+	*/
   }
 	
+  public void addTanda()
+  {
+	TrackRow trackRow=null;
+	int tandaTrack=0;
+	Tanda tanda = new Tanda("ARTIST", "GROUPING"); 
+	for(int i=tandaFirstTrackMark; i<(tandaLastTrackMark+1); i++)
+	{
+	  trackRow = trackRows.get(i);
+	  trackRow.setTandaInfo(tandas.size(), tandaTrack, i);
+	  tanda.addTrackRow(trackRow);
+	  tandaTrack++;
+	}
+	
+	double pos=0;
+    double rowHeight=(scrollPaneContentsHeight)/getNumberOfTracks();
+	pos=tandaFirstTrackMark*(rowHeight);
+	tanda.setPosition(pos);
+
+	displayGroup.getChildren().add(tanda.getTandaHighlightBox());
+	// test: displayGroup.getChildren().remove(tanda.getTandaHighlightBox());
+	
+	tandas.add(tanda);
+	//calcPositions();
+	
+	numberOfTandas=tandas.size();
+	
+	tandaFirstTrackMark=-1;
+	tandaLastTrackMark=-1;
+	
+	trackHighlightBox.setVisible(false);
+	tanda.highlight(true);
+  }
+  
+  public void highlightFirstTrack()
+  {
+	  double pos=0;
+	  double rowHeight=(scrollPaneContentsHeight)/getNumberOfTracks();
+	  pos=tandaFirstTrackMark*(rowHeight); 
+	  trackHighlightBox.setY(pos);
+	  System.out.println("first track pos: "+pos);
+	  trackHighlightBox.setVisible(true);
+  }
 	
   public void incrementSelected()
   {
@@ -136,20 +198,24 @@ public class Playlist
   public void calcPositions() 
   {
     int trackNumber=0;
-	Tanda t;
+	Tanda tanda;
 	tandaPositions = new double[tandas.size()];
 	int i=0;
 	double pos=0;
     double rowHeight=(scrollPaneContentsHeight)/getNumberOfTracks();
-        
+    
+    
 	Iterator<Tanda> it = tandas.iterator();
 	while(it.hasNext())
 	{
-	  t=it.next();
+	  tanda=it.next();
+	  
 	  pos=trackNumber*(rowHeight);
-	  t.setPosition(pos);
+	  tanda.setPosition(pos);
 	  tandaPositions[i]=pos;
-	  trackNumber+=t.getTrackRows().size();
+	  trackNumber+=tanda.getTrackRows().size();
+	  
+	  System.out.println("Tanda: "+tanda.artist.lastName+" pos: "+pos);
 	  i++;
 	}
   }
@@ -163,9 +229,11 @@ public class Playlist
   public void finalize()
   {
 	displayGroup= new Group();
-	setTrackRows();
+	//setTrackRows();
 	displayGroup.getChildren().add(getTrackGrid());
-	  
+	displayGroup.getChildren().add(trackHighlightBox);
+	 
+	/*
  	Tanda tanda;
 	  
 	Iterator<Tanda> it = tandas.iterator();
@@ -176,6 +244,7 @@ public class Playlist
 	}
 	
 	numberOfTandas=tandas.size();
+	*/
   }
 
   public double[] getTandaPositions() {
@@ -195,6 +264,7 @@ public class Playlist
 	  return displayGroup;
 	}
 	
+	/*
 	private GridPane getTrackGrid()
 	{
 	  Tanda tanda;
@@ -228,6 +298,39 @@ public class Playlist
 		  row++;
 		}
 	  }  
+	  
+	 return trackGrid;
+	
+	}
+	*/
+	
+	private GridPane getTrackGrid()
+	{
+		TrackRow tr;
+		
+		 int row=0;
+		  int numberOfTracksInPlaylist=0;
+		  
+		  
+		  GridPane trackGrid = new GridPane();
+			
+		  trackGrid.setPadding(new Insets(0, 0, 0, 10));
+		  trackGrid.setVgap(0);
+		  trackGrid.setHgap(0);
+		
+		Iterator<TrackRow> itx = trackRows.iterator();
+		while(itx.hasNext())
+		{
+		  tr = itx.next();
+		  trackGrid.add(tr.getIndicator(), 0, row);
+		  trackGrid.add(tr.getTrackNumberLabel(), 1, row);
+		  trackGrid.add(tr.getGroupingLabel(), 2, row);
+		  trackGrid.add(tr.getArtistLabel(), 3, row);
+		  trackGrid.add(tr.getTrackTitleLabel(), 4, row);
+		  numberOfTracksInPlaylist++;  
+		  row++;
+		}
+	   
 	  
 	 return trackGrid;
 	
@@ -395,7 +498,7 @@ public class Playlist
 
 	public void setScrollPaneContentsHeight(double scrollPaneContentsHeight) {
 		this.scrollPaneContentsHeight = scrollPaneContentsHeight;
-		calcPositions();
+		//calcPositions();
 	}
 
 
@@ -424,4 +527,33 @@ public class Playlist
 	  return -1;
 	}
 
+	
+	private void setupTrackHightlightBox()
+	{
+	  trackHighlightBox = new Rectangle(560, 22.188);
+      trackHighlightBox.setX(15);
+      trackHighlightBox.setY(0);
+      trackHighlightBox.setFill(linearGradient_REFLECT);
+      trackHighlightBox.setOpacity(.3);
+      trackHighlightBox.setStroke(Color.BLACK);
+      trackHighlightBox.setStrokeWidth(3);
+      trackHighlightBox.setStrokeType(StrokeType.INSIDE);
+      trackHighlightBox.setVisible(false);
+      trackHighlightBox.setArcHeight(10);
+      trackHighlightBox.setArcWidth(10);
+	}
+	
+	 LinearGradient linearGradient_REFLECT
+	  = LinearGradientBuilder.create()
+	  .startX(275)
+	  .startY(50)
+	  .endX(250)
+	  .endY(100)
+	  .proportional(false)
+	  .cycleMethod(CycleMethod.REFLECT)
+	  .stops(
+	      new Stop(0.1f, Color.rgb(255, 0, 255, 0.9)),
+	      new Stop(1.0f, Color.rgb(0, 255, 0, 1.0)))
+	  .build();
+	  
  }

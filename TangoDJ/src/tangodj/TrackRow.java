@@ -11,6 +11,13 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.LinearGradientBuilder;
+import javafx.scene.paint.Stop;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 
 public class TrackRow 
@@ -45,6 +52,7 @@ public class TrackRow
 	private StackPane indicator = new StackPane();
 	private int tandaNumber=0;
 	private int tandaTrackIndex=0;
+	
 	
 	
 	public int getTandaNumber() {
@@ -149,7 +157,7 @@ public class TrackRow
 		
 	}
 	
-	
+
 	private void setIndex()
 	{
 		//System.out.println("TrackRow: "+index);
