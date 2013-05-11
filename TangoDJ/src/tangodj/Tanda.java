@@ -18,16 +18,20 @@ public class Tanda
   private double position;
   private ArrayList<TrackRow> trackRows = new ArrayList<TrackRow>();
   private double height=0;
-  Rectangle tandaHighlightBox;
+  private Rectangle tandaHighlightBox;
   
   public Tanda(String artistStr, String group)
   {
 	this.artist = Artist.getArtist(artistStr);
 	this.group=group; 
+	setupHighlightBoxes();
+  }
+
+private void setupHighlightBoxes() 
+{
 	tandaHighlightBox = new Rectangle(560, height);
     tandaHighlightBox.setX(15);
     tandaHighlightBox.setY(0);
-    //tandaHighlightBox.setFill(Color.HOTPINK);
     tandaHighlightBox.setFill(linearGradient_REFLECT);
     tandaHighlightBox.setOpacity(.3);
     tandaHighlightBox.setStroke(Color.BLACK);
@@ -36,8 +40,9 @@ public class Tanda
     tandaHighlightBox.setVisible(false);
     tandaHighlightBox.setArcHeight(10);
     tandaHighlightBox.setArcWidth(10);
+    
 
-  }
+}
   
   LinearGradient linearGradient_REFLECT
   = LinearGradientBuilder.create()
@@ -54,14 +59,17 @@ public class Tanda
   
   public void addTrackRow(TrackRow t)
   {
-	if   (t.getGrouping()!=null)
-	if (t.getGrouping().equalsIgnoreCase("vals")||
-			t.getGrouping().equalsIgnoreCase("tango")||
-			t.getGrouping().equalsIgnoreCase("milonga")||
-			t.getGrouping().equalsIgnoreCase("alternative")) tracksInTanda++;
+	//if   (t.getGrouping()!=null)
+	//if (t.getGrouping().equalsIgnoreCase("vals")||
+	//		t.getGrouping().equalsIgnoreCase("tango")||
+	//		t.getGrouping().equalsIgnoreCase("milonga")||
+	//		t.getGrouping().equalsIgnoreCase("alternative")) tracksInTanda++;
 	trackRows.add(t);  
 	height+=22.188;
 	tandaHighlightBox.setHeight(height);
+	tracksInTanda++;
+	
+	//System.out.println("tanda height: "+height);
   }
 
   public ArrayList<TrackRow> getTrackRows() 
@@ -81,7 +89,9 @@ public double getPosition() {
 public void setPosition(double position) 
 {
 	this.position = position;
-	this.tandaHighlightBox.setY(position);
+	tandaHighlightBox.setY(position);
+	
+	
 }
 
 public double getHeight() {
@@ -100,4 +110,6 @@ public void highlight(boolean choice)
 public int getTracksInTanda() {
 	return tracksInTanda;
 }
+
+
 }

@@ -19,7 +19,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBuilder;
 import javafx.scene.control.Label;
+import javafx.scene.control.LabelBuilder;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
@@ -43,7 +45,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import data.ItunesTrackData;
 import data.PlaylistData;
@@ -117,6 +121,8 @@ public class TangoDJ extends Application
     
     public final static int MARK = 0;
     public final static int PLAY = 1;
+    private Stage dialog = null;
+    private Stage primaryStage;
     
     int mode=PLAY;
     
@@ -128,7 +134,7 @@ public class TangoDJ extends Application
   
    public void start(Stage stage) 
    {
-    	
+    	primaryStage=stage;
     	loadFonts();
     	parser = new iTunesParser(data);
 		parser.parseFile();
@@ -144,8 +150,8 @@ public class TangoDJ extends Application
     	
     	setupModeButtons();
     	
-    	
-    	
+    	setupDialog();
+    	 
     	
         Scene scene = new Scene(new Group());
         stage.setTitle("Tango DJ");
@@ -202,6 +208,9 @@ public class TangoDJ extends Application
         
        
     }
+
+
+
 
 
 private void setupModeButtons() 
@@ -317,6 +326,7 @@ private void setupModeButtons()
 	      info.setDisable(true);
 		  createPlaylist(index);
 		  scrollPane.setContent(playlist.getDisplay());
+		  
 		  playlist.selectFirstTrack();
 		  play.setDisable(false);
 		}
@@ -509,7 +519,26 @@ private void setupModeButtons()
         if (event.isPrimaryButtonDown())
         {	 
           //playlist.selectedTrack=trackIndex;
-          playlist.selectTrack(trackIndex);
+          if (mode==PLAY) playlist.selectTrack(trackIndex);
+          if (mode==MARK)
+          {
+        	if (event.isShiftDown())
+        	{
+        	  playlist.tandaLastTrackMark=trackIndex;
+        	  if ((playlist.tandaFirstTrackMark!=-1)
+        	    &&(playlist.tandaLastTrackMark>playlist.tandaFirstTrackMark)) 
+        	  {
+        	    playlist.addTanda();
+                dialog.show();
+        	  }
+        	}
+        	else
+        	{
+        	  playlist.tandaFirstTrackMark=trackIndex;
+        	  playlist.highlightFirstTrack();
+        	  playlist.tandaLastTrackMark=-1;
+        	}
+          }
         }
         
         
@@ -535,7 +564,7 @@ private void setupModeButtons()
 		playlist.addTrackRow( new TrackRow(td.name, td.artist, path, td.grouping, td.time, trackNumber));
 	  }
 	  playlist.finalize();
-	  printTandas();
+	  //printTandas();
 	}
 	
 	
@@ -609,5 +638,39 @@ private void setupModeButtons()
 	    return label;
 	  }
 	
+	private void setupDialog() 
+	{
+	  dialog = new Stage(StageStyle.UTILITY);
+	  dialog.initModality(Modality.WINDOW_MODAL);
+	  dialog.initOwner(primaryStage);
+	  dialog.setWidth(500);
+      dialog.setHeight(300);
+	  dialog.setScene(
+	  new Scene(
+		HBoxBuilder.create().styleClass("modal-dialog").children(
+		LabelBuilder.create().text("Will you like this page?").build(),
+		ButtonBuilder.create().text("Yes").defaultButton(true).onAction(new EventHandler<ActionEvent>() {
+		@Override public void handle(ActionEvent actionEvent) {
+		// take action and close the dialog.
+		System.out.println("Liked: ");
+		primaryStage.getScene().getRoot().setEffect(null);
+		dialog.close();
+		}
+		}).build(),
+		
+	  ButtonBuilder.create().text("No").cancelButton(true).onAction(new EventHandler<ActionEvent>() {
+	  @Override public void handle(ActionEvent actionEvent) {
+		// abort action and close the dialog.
+	  System.out.println("Disliked: ");
+	  primaryStage.getScene().getRoot().setEffect(null);
+	  dialog.close();
+		}
+		}).build()
+		).build()
+		, Color.TRANSPARENT
+		)
+		);
+		 dialog.getScene().getStylesheets().add(getClass().getResource("modal-dialog.css").toExternalForm());
+	}
 	
 } 
