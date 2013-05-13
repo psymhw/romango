@@ -36,10 +36,13 @@ public class Playlist
   public int tandaFirstTrackMark=-1;
   public int tandaLastTrackMark=-1;
   private Rectangle trackHighlightBox;
+  public Rectangle tandaHighlightBox;
   
   public Playlist()
   {
 	setupTrackHightlightBox();
+	setupTandaHighlightBox();
+	
   }
 	
   public void addTrackRow(TrackRow trackRow)
@@ -70,15 +73,32 @@ public class Playlist
 	*/
   }
 	
-  public void addTanda()
+  public void addTanda(String orchestra, String style)
   {
 	TrackRow trackRow=null;
 	int tandaTrack=0;
-	Tanda tanda = new Tanda("ARTIST", "GROUPING"); 
+	Tanda tanda = new Tanda(orchestra, style); 
 	for(int i=tandaFirstTrackMark; i<(tandaLastTrackMark+1); i++)
 	{
 	  trackRow = trackRows.get(i);
 	  trackRow.setTandaInfo(tandas.size(), tandaTrack, i);
+	  if (tandaTrack==0)
+	  {
+	    trackRow.setArtist(orchestra);
+	    trackRow.setGrouping(style);
+	    trackRow.setGroupingLabel(style);
+	    trackRow.setBackgroundColor(style);
+	  }
+	  else if (tandaTrack==tandaLastTrackMark-tandaFirstTrackMark)
+	  {
+		trackRow.setGroupingLabel("CORTINA"); 
+		trackRow.setBackgroundColor("CORTINA");
+	  }
+	  else
+	  {
+		trackRow.setArtist(""); 
+		trackRow.setBackgroundColor(style);
+	  }
 	  tanda.addTrackRow(trackRow);
 	  tandaTrack++;
 	}
@@ -100,7 +120,7 @@ public class Playlist
 	tandaLastTrackMark=-1;
 	
 	trackHighlightBox.setVisible(false);
-	tanda.highlight(true);
+	//tanda.highlight(true);
   }
   
   public void highlightFirstTrack()
@@ -109,8 +129,22 @@ public class Playlist
 	  double rowHeight=(scrollPaneContentsHeight)/getNumberOfTracks();
 	  pos=tandaFirstTrackMark*(rowHeight); 
 	  trackHighlightBox.setY(pos);
-	  System.out.println("first track pos: "+pos);
+	//  System.out.println("first track pos: "+pos);
+	  tandaHighlightBox.setVisible(false);
 	  trackHighlightBox.setVisible(true);
+  }
+  
+  public void highlightTandaBlock()
+  {
+	  double pos=0;
+	  double rowHeight=(scrollPaneContentsHeight)/getNumberOfTracks();
+	  pos=tandaFirstTrackMark*(rowHeight); 
+	  tandaHighlightBox.setY(pos);
+	  
+	  tandaHighlightBox.setHeight((tandaLastTrackMark-tandaFirstTrackMark+1)*22.188);
+	 // System.out.println("tanda highlight pos: "+pos);
+	  trackHighlightBox.setVisible(false);
+	  tandaHighlightBox.setVisible(true);
   }
 	
   public void incrementSelected()
@@ -232,6 +266,7 @@ public class Playlist
 	//setTrackRows();
 	displayGroup.getChildren().add(getTrackGrid());
 	displayGroup.getChildren().add(trackHighlightBox);
+	displayGroup.getChildren().add(tandaHighlightBox);
 	 
 	/*
  	Tanda tanda;
@@ -556,4 +591,21 @@ public class Playlist
 	      new Stop(1.0f, Color.rgb(0, 255, 0, 1.0)))
 	  .build();
 	  
+	 private void setupTandaHighlightBox() 
+	 {
+	   tandaHighlightBox = new Rectangle(560, 22.188);
+	   tandaHighlightBox.setX(15);
+	   tandaHighlightBox.setY(0);
+	   tandaHighlightBox.setFill(linearGradient_REFLECT);
+	   tandaHighlightBox.setOpacity(.3);
+	   tandaHighlightBox.setStroke(Color.BLACK);
+	   tandaHighlightBox.setStrokeWidth(3);
+	   tandaHighlightBox.setStrokeType(StrokeType.INSIDE);
+	   tandaHighlightBox.setVisible(false);
+	   tandaHighlightBox.setArcHeight(10);
+	   tandaHighlightBox.setArcWidth(10);
+	 }
+	   
+	   
+	   
  }
