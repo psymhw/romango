@@ -3,6 +3,10 @@ package tangodj;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
+import org.farng.mp3.MP3File;
+import org.farng.mp3.id3.FrameBodyTIT1;
+import org.farng.mp3.id3.ID3v2_3Frame;
+
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -54,6 +58,7 @@ public class TrackRow
 	private int tandaNumber=0;
 	private int tandaTrackIndex=0;
 	String cssBkgColor = "tangoBkg";
+	private MP3File mp3;
 	
 	public int getTandaNumber() {
 		return tandaNumber;
@@ -65,19 +70,21 @@ public class TrackRow
 
 	public TrackRow clone(TrackRow tr)
 	{
-	   return new TrackRow(tr.getTrackTitle(), tr.getArtist(), tr.getPath(), tr.getGrouping(), tr.getTime(), tr.getTrackNumber());
+	   return new TrackRow(tr.getMp3(), tr.getTrackTitle(), tr.getArtist(), tr.getPath(), tr.getGrouping(), tr.getTime(), tr.getTrackNumber());
 	}
 	
 	
 
-	public TrackRow(String trackTitle, String artist, String path, String grouping, int time, int trackNumber) 
+	public TrackRow(MP3File mp3, String trackTitle, String artist, String path, String grouping, int time, int trackNumber) 
 	{
+		
 	  this.trackNumber=trackNumber;
 	  this.trackTitle = trackTitle;
 	  this.artist=artist;
 	  this.grouping=grouping;
 	  this.path=path;
 	  this.time=time;
+	  this.mp3=mp3;
 	  
 	  
 	  
@@ -314,6 +321,37 @@ public class TrackRow
 
 	public int getTandaTrackIndex() {
 		return tandaTrackIndex;
+	}
+
+	public MP3File getMp3() {
+		return mp3;
+	}
+
+	public void setMp3(MP3File mp3) {
+		this.mp3 = mp3;
+	}
+	
+	public String getGroupingFromMp3()
+	{
+	  ID3v2_3Frame ivf=null;
+	  FrameBodyTIT1 grouping;
+	  
+	  try 
+	  {
+		ivf = (ID3v2_3Frame)mp3.getID3v2Tag().getFrame("TIT1");
+		grouping = (FrameBodyTIT1)ivf.getBody();
+	    return grouping.getText();
+	  } catch (Exception e)  { 	return "no grouping";	}
+	}
+	
+	public void setGroupingInMp3(String style)
+	{
+	  FrameBodyTIT1 newTiT1body = new FrameBodyTIT1();
+	  newTiT1body.setText(style);
+	  newTiT1body.setTextEncoding((byte)0);
+		
+	  ID3v2_3Frame newFrame = new ID3v2_3Frame(newTiT1body);
+
 	}
 }
 

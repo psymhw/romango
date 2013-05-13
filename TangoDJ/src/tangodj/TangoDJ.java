@@ -588,21 +588,19 @@ private void setupModeButtons()
 		{ path = URLDecoder.decode(path,"UTF-8"); } catch (Exception e) { e.printStackTrace(); }
 		File temp = new File(path);
 		
+	    MP3File mp3=null;
+	    ID3v2_3Frame ivf=null;
 
 		FrameBodyTIT1 grouping;
 		FrameBodyTIT1 newTiT1body = new FrameBodyTIT1();
 		newTiT1body.setText("Tango");
 		newTiT1body.setTextEncoding((byte)0);
 		
-		   System.out.println(counter+ ": "+ newTiT1body.getText());
-		    System.out.println(counter+ ": "+ newTiT1body.getIdentifier());
-		    System.out.println(counter+ ": "+ newTiT1body.getDescription());
-		ID3v2_3Frame ivf=null;
 		ID3v2_3Frame newFrame = new ID3v2_3Frame(newTiT1body);
 		
 		try 
 		{
-		  MP3File mp3 = new MP3File(temp);
+		  mp3 = new MP3File(temp);
 		  //if (mp3.hasID3v2Tag()) System.out.println(counter+" has ID3v2");
 		 // else if (mp3.hasID3v1Tag()) System.out.println(counter+ "has ID3v1");
 		  try 
@@ -641,7 +639,7 @@ private void setupModeButtons()
 		
 		
 		path=temp.toURI().toString();
-		playlist.addTrackRow( new TrackRow(td.name, td.artist, path, td.grouping, td.time, trackNumber));
+		playlist.addTrackRow( new TrackRow(mp3, td.name, td.artist, path, td.grouping, td.time, trackNumber));
 	  }
 	  playlist.finalize();
 	  //printTandas();
