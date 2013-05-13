@@ -24,10 +24,10 @@ public class Tanda
   {
 	this.artist = Artist.getArtist(artistStr);
 	this.group=group; 
-	setupHighlightBoxes();
+	setupHighlightBox();
   }
 
-private void setupHighlightBoxes() 
+private void setupHighlightBox() 
 {
 	tandaHighlightBox = new Rectangle(560, height);
     tandaHighlightBox.setX(15);
@@ -40,8 +40,6 @@ private void setupHighlightBoxes()
     tandaHighlightBox.setVisible(false);
     tandaHighlightBox.setArcHeight(10);
     tandaHighlightBox.setArcWidth(10);
-    
-
 }
   
   LinearGradient linearGradient_REFLECT

@@ -7,6 +7,14 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.farng.mp3.MP3File;
+import org.farng.mp3.id3.FrameBodyTIT1;
+import org.farng.mp3.id3.ID3v2_3Frame;
+
+
+
+import np.com.ngopal.control.AutoFillTextBox;
+
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -29,6 +37,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -57,6 +66,7 @@ import data.iTunesParser;
 public class TangoDJ extends Application 
 {
 	int test=0;
+	String style="cancelled";
     PlaylistData pd=null;
 	String path=null;
 	String destFileName;
@@ -187,7 +197,7 @@ public class TangoDJ extends Application
         final URL stylesheet = getClass().getResource("style.css");
         scene.getStylesheets().add(stylesheet.toString());
         scene.setFill(Color.BLACK);
-        stage.setScene(scene);
+        primaryStage.setScene(scene);
         
         setupButtonActions();
         progress.setProgress(0);
@@ -420,6 +430,7 @@ private void setupModeButtons()
 	      System.out.println("path: " + thisPath);
 	    }});
 	    mp.setAutoPlay(autoPlay);
+	    
 	    return mp;
     }
 	
@@ -491,6 +502,20 @@ private void setupModeButtons()
 	    	//playlist.calcPositions();
 	    	playlist.highlightTanda();
 	    }
+	    if (ke.getCode()==KeyCode.ENTER) 
+	    {
+	      if (mode==MARK)
+	      {
+	    	if (playlist!=null)
+	    	{
+	    	  if (playlist.tandaHighlightBox.isVisible())
+	    	  {
+	    		dialog.show();
+	    	  }
+	    	}
+	      }
+	    	
+	    }
 	  }
 	};
 	
@@ -528,8 +553,9 @@ private void setupModeButtons()
         	  if ((playlist.tandaFirstTrackMark!=-1)
         	    &&(playlist.tandaLastTrackMark>playlist.tandaFirstTrackMark)) 
         	  {
-        	    playlist.addTanda();
-                dialog.show();
+        	    style="cancelled";
+        	    playlist.highlightTandaBlock();
+                //dialog.show();
         	  }
         	}
         	else
@@ -551,6 +577,7 @@ private void setupModeButtons()
 	  ItunesTrackData td = null;
 	  String path=null;
 	  playlist = new Playlist();
+	  int counter=0;
 	  	  	   
 	  // populate Tandas and TrackRows
 	  for(int trackNumber=0; trackNumber<pd.tracks.length; trackNumber++)
@@ -560,6 +587,59 @@ private void setupModeButtons()
 		try 
 		{ path = URLDecoder.decode(path,"UTF-8"); } catch (Exception e) { e.printStackTrace(); }
 		File temp = new File(path);
+		
+
+		FrameBodyTIT1 grouping;
+		FrameBodyTIT1 newTiT1body = new FrameBodyTIT1();
+		newTiT1body.setText("Tango");
+		newTiT1body.setTextEncoding((byte)0);
+		
+		   System.out.println(counter+ ": "+ newTiT1body.getText());
+		    System.out.println(counter+ ": "+ newTiT1body.getIdentifier());
+		    System.out.println(counter+ ": "+ newTiT1body.getDescription());
+		ID3v2_3Frame ivf=null;
+		ID3v2_3Frame newFrame = new ID3v2_3Frame(newTiT1body);
+		
+		try 
+		{
+		  MP3File mp3 = new MP3File(temp);
+		  //if (mp3.hasID3v2Tag()) System.out.println(counter+" has ID3v2");
+		 // else if (mp3.hasID3v1Tag()) System.out.println(counter+ "has ID3v1");
+		  try 
+		  {
+			ivf = (ID3v2_3Frame)mp3.getID3v2Tag().getFrame("TIT1");
+			
+			grouping = (FrameBodyTIT1)ivf.getBody();
+		 
+		    System.out.println(counter+ ": "+ grouping.getText());
+		    System.out.println(counter+ ": "+ grouping.getIdentifier());
+		    System.out.println(counter+ ": "+ grouping.getDescription());
+		    grouping.setText("Tango");
+		    mp3.getID3v2Tag().getFrame("TIT1").setBody(grouping);
+		   // mp3.save();
+		  } catch (Exception e) 
+		  { 
+			  mp3.getID3v2Tag().setFrame(newFrame);
+			  mp3.save();
+			  System.out.println(counter+ " problem getting grouping tag for "+td.name);
+			}
+		  
+		  
+		//  Iterator it = mp3.getID3v2Tag().iterator();
+		//  while(it.hasNext())
+		//  {
+		//	  System.out.println(counter+ ": "+it.next().toString());
+		//  }
+		  
+		  counter++;
+		} catch (Exception e) { e.printStackTrace(); }
+		
+		
+		 // if (temp.exists()) System.out.println("file exists");
+		//  else System.out.println("cant find: "+path);
+		
+		
+		
 		path=temp.toURI().toString();
 		playlist.addTrackRow( new TrackRow(td.name, td.artist, path, td.grouping, td.time, trackNumber));
 	  }
@@ -640,37 +720,129 @@ private void setupModeButtons()
 	
 	private void setupDialog() 
 	{
+	  
 	  dialog = new Stage(StageStyle.UTILITY);
 	  dialog.initModality(Modality.WINDOW_MODAL);
 	  dialog.initOwner(primaryStage);
-	  dialog.setWidth(500);
-      dialog.setHeight(300);
-	  dialog.setScene(
-	  new Scene(
-		HBoxBuilder.create().styleClass("modal-dialog").children(
-		LabelBuilder.create().text("Will you like this page?").build(),
-		ButtonBuilder.create().text("Yes").defaultButton(true).onAction(new EventHandler<ActionEvent>() {
-		@Override public void handle(ActionEvent actionEvent) {
-		// take action and close the dialog.
-		System.out.println("Liked: ");
-		primaryStage.getScene().getRoot().setEffect(null);
-		dialog.close();
-		}
-		}).build(),
-		
-	  ButtonBuilder.create().text("No").cancelButton(true).onAction(new EventHandler<ActionEvent>() {
-	  @Override public void handle(ActionEvent actionEvent) {
-		// abort action and close the dialog.
-	  System.out.println("Disliked: ");
-	  primaryStage.getScene().getRoot().setEffect(null);
-	  dialog.close();
-		}
-		}).build()
-		).build()
-		, Color.TRANSPARENT
-		)
-		);
-		 dialog.getScene().getStylesheets().add(getClass().getResource("modal-dialog.css").toExternalForm());
-	}
+	  
+	  dialog.setX(primaryStage.getX()+600);
+	  dialog.setWidth(300);
+      dialog.setHeight(150);
+      
+      Group dialogGroup = new Group();
+      HBox mainHBox = new HBox();
+      
+      ObservableList data = FXCollections.observableArrayList();
+      String[] s = new String[]{
+    		  
+    		  "Biagi",
+    		  "Calo",
+    		  "Canaro",
+    		  "Castillo",
+    		  "D'Agostino",
+    		  "D'Arienzo",
+    		  "De Caro",
+    		  "De Angelise", 
+    		  "De Caro",
+    		  "Di Sarli",
+    		  "Donato",
+    		  "Firpo", 
+    		  "Lomuto",
+    		  "Orquesta Tipica Victor",
+    		  "Pugliese",
+    		  "Quinteto Pirincho",
+    		  "Rodriguez",
+    		  "Tanturi",
+    		  "Troilo",
+    		  };
+
+          for(int j=0; j<s.length; j++){
+              data.add(s[j]);
+          }
+
+          final AutoFillTextBox box = new AutoFillTextBox(data);
+      
+      HBox hbox_1 = new HBox();
+      hbox_1.setSpacing(5);
+      hbox_1.setPadding(new Insets(5, 5, 5, 5));
+      hbox_1.getChildren().add(new Label("Orchestra: "));
+      TextField orchestra = new TextField();
+     // orchestra.setScaleX(200);
+      hbox_1.getChildren().add(box);
+      
+      
+      final RadioButton rb1 = new RadioButton("Tango");
+      final RadioButton rb2 = new RadioButton("Vals");
+      final RadioButton rb3 = new RadioButton("Milonga");
+      final RadioButton rb4 = new RadioButton("Alternative");
+      final RadioButton rb5 = new RadioButton("Cleanup");
+      
+      final ToggleGroup radioButtonGroup = new ToggleGroup();
+      
+  	
+  	rb1.setId("tango");
+  	rb2.setId("vals");
+  	rb3.setId("milonga");
+  	rb4.setId("alternative");
+  	rb5.setId("cleanup");
+  	
+  	rb1.setToggleGroup(radioButtonGroup);
+  	rb2.setToggleGroup(radioButtonGroup);
+  	rb3.setToggleGroup(radioButtonGroup);
+  	rb4.setToggleGroup(radioButtonGroup);
+  	rb5.setToggleGroup(radioButtonGroup);
+  	
+  	rb1.setSelected(true);
+  	//rb1.setTextFill(Color.WHITE);
+  	//rb2.setTextFill(Color.WHITE);
+  	
+  	radioButtonGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
+  	    public void changed(ObservableValue<? extends Toggle> ov,
+  	        Toggle old_toggle, Toggle new_toggle) {
+  	            if (radioButtonGroup.getSelectedToggle() != null) 
+  	            {
+  	              String selectedStr=radioButtonGroup.getSelectedToggle().toString();
+  	              if (selectedStr.contains("tango")) style="tango";
+  	              else if (selectedStr.contains("vals")) style="vals";
+  	              else if (selectedStr.contains("milonga")) style="milonga";
+  	              else if (selectedStr.contains("alternative")) style="alternative";
+  	              else if (selectedStr.contains("cleanup")) style="cleanup";
+  	            }                
+  	        }
+  	});
+      
+  	VBox buttonBox = new VBox();
+  	buttonBox.getChildren().add(rb1);
+  	buttonBox.getChildren().add(rb2);
+  	buttonBox.getChildren().add(rb3);
+  	buttonBox.getChildren().add(rb4);
+  	buttonBox.getChildren().add(rb5);
+  	
+  	mainHBox.getChildren().add(hbox_1);
+  	mainHBox.getChildren().add(buttonBox);
+  	
+  	Button button = new Button("Ok");
+  	
+  	button.setOnAction(new EventHandler<ActionEvent>() 
+      {
+        public void handle(ActionEvent actionEvent) 
+        {
+           dialog.close();
+           playlist.tandaHighlightBox.setVisible(false);
+           playlist.addTanda(box.getText().toString(), style);
+          // System.out.println("Orchestra: "+box.getText().toString());
+           //System.out.println("Style: "+style);
+        }
+      });
+  	
+  	mainHBox.getChildren().add(button);
+  	dialogGroup.getChildren().add(mainHBox);
+      
+    Scene dialogScene = new Scene(dialogGroup);
+    dialogScene.getStylesheets().add("/test/control.css");
+      
+	dialog.setScene(dialogScene);
+	dialog.getScene().getStylesheets().add(getClass().getResource("modal-dialog.css").toExternalForm());
+  }
 	
 } 

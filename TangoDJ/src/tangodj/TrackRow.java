@@ -1,5 +1,6 @@
 package tangodj;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import javafx.event.EventHandler;
@@ -52,8 +53,7 @@ public class TrackRow
 	private StackPane indicator = new StackPane();
 	private int tandaNumber=0;
 	private int tandaTrackIndex=0;
-	
-	
+	String cssBkgColor = "tangoBkg";
 	
 	public int getTandaNumber() {
 		return tandaNumber;
@@ -72,7 +72,6 @@ public class TrackRow
 
 	public TrackRow(String trackTitle, String artist, String path, String grouping, int time, int trackNumber) 
 	{
-		
 	  this.trackNumber=trackNumber;
 	  this.trackTitle = trackTitle;
 	  this.artist=artist;
@@ -80,88 +79,68 @@ public class TrackRow
 	  this.path=path;
 	  this.time=time;
 	  
-		greenLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/green_light.png"));
-		noLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/no_light.png"));
-		greyLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/gray_light.png"));
-		selectedArrowImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/selected_arrow.png"));
+	  
+	  
+	  
+	  greenLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/green_light.png"));
+	  noLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/no_light.png"));
+	  greyLightImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/gray_light.png"));
+	  selectedArrowImage = new Image(TangoDJ.class.getResourceAsStream("/resources/images/selected_arrow.png"));
 		
-		String cssBkgColor = "tangoBkg";
-		
-		indicator.getChildren().add(selectedImage);
-		indicator.getChildren().add(playingImage);
-		
-		
-		//EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
-	    //      public void handle(MouseEvent event)  { setIndex(); }};
-	          
+	  
+	  indicator.getChildren().add(selectedImage);
+	  indicator.getChildren().add(playingImage);
 			          
-		if (grouping!=null)
+	  if (grouping!=null)
+	  {
+		if (grouping.toLowerCase().equals("vals"))    cssBkgColor = "valsBkg";
+		else if (grouping.toLowerCase().equals("milonga")) cssBkgColor = "milongaBkg";
+		else if (grouping.toLowerCase().equals("cortina")) cssBkgColor = "cortinaBkg";
+		else if (grouping.toLowerCase().equals("padding")) cssBkgColor = "paddingBkg";
+		else if (grouping.toLowerCase().equals("alternative")) cssBkgColor = "alternativeBkg";
+		else cssBkgColor = "tangoBkg";
+		  
+		  
+		if (!lastGrouping.equals(grouping))
 		{
-		       if (grouping.toLowerCase().equals("vals"))    cssBkgColor = "valsBkg";
-		  else if (grouping.toLowerCase().equals("milonga")) cssBkgColor = "milongaBkg";
-		  else if (grouping.toLowerCase().equals("cortina")) cssBkgColor = "cortinaBkg";
-		  else if (grouping.toLowerCase().equals("padding")) cssBkgColor = "paddingBkg";
-		  else if (grouping.toLowerCase().equals("alternative")) cssBkgColor = "alternativeBkg";
-		  else cssBkgColor = "tangoBkg";
-		  
-		  
-		  if (!lastGrouping.equals(grouping))
-			{
-			  groupingLabel=textLabel(grouping, 100, cssBkgColor);
-			  lastGrouping=grouping;
-			}
-			else groupingLabel=textLabel("", 100, cssBkgColor);
+		  groupingLabel=textLabel(grouping, 100, cssBkgColor);
+		  lastGrouping=grouping;
+		}
+		else groupingLabel=textLabel("", 100, cssBkgColor);
 			
-			if (grouping.toLowerCase().equals("padding")) 
-			{	
-				//System.out.println("padding");
-			  groupingLabel.setText("");
-			}
-		//	groupingLabel.setOnMouseClicked(bHandler);
-		}
-		else 
+		if (grouping.toLowerCase().equals("padding")) 
 		{	
-		   groupingLabel=textLabel("", 100, cssBkgColor);
-		   grouping=lastGrouping;
-		}	
-		
-		if (grouping==null) grouping="General";
-		
-		this.trackTitleLabel=textLabel(trackTitle, 200, cssBkgColor);
-		
-		
-		  // holds the name even though it might be surpressed in the table view.
-		if (!lastArtist.equals(artist))
-		{
-		  this.artistLabel=textLabel(artist, 200, cssBkgColor);
-		  lastArtist=artist;
+		  groupingLabel.setText("");
 		}
-		else this.artistLabel=textLabel("", 200, cssBkgColor);
+	  }
+	  else 
+	  {	
+		groupingLabel=textLabel("", 100, cssBkgColor);
+		grouping=lastGrouping;
+	  }	
 		
-		//this.artist=textLabel(iartist, 200, cssBkgColor);
+	  if (grouping==null) grouping="General";
 		
+	  this.trackTitleLabel=textLabel(trackTitle, 200, cssBkgColor);
 		
-		timeLabel=textLabel(getTimeStr(time), 100, cssBkgColor);
+	  // holds the name even though it might be surpressed in the table view.
+	  if (!lastArtist.equals(artist))
+	  {
+		this.artistLabel=textLabel(artist, 200, cssBkgColor);
+		lastArtist=artist;
+	  }
+	  else this.artistLabel=textLabel("", 200, cssBkgColor);
 		
-		this.trackNumberLabel=textLabel(""+(trackNumber+1)+") ", 50, cssBkgColor);
-		trackNumberLabel.setAlignment(Pos.CENTER_RIGHT);
-		
-		//this.trackNumberLabel.setOnMouseClicked(bHandler);
-		//this.trackTitleLabel.setOnMouseClicked(bHandler);
-		//this.artistLabel.setOnMouseClicked(bHandler);
-		
-		//timeLabel.setOnMouseClicked(bHandler);
-		//playingImage.setOnMouseClicked(bHandler);
-	//	selectedImage.setOnMouseClicked(bHandler);
-		playingImage.setImage(noLightImage);
-		
+	  timeLabel=textLabel(getTimeStr(time), 100, cssBkgColor);
+	  this.trackNumberLabel=textLabel(""+(trackNumber+1)+") ", 50, cssBkgColor);
+	  trackNumberLabel.setAlignment(Pos.CENTER_RIGHT);
+	  playingImage.setImage(noLightImage);
 	}
 	
 
 	private void setIndex()
 	{
-		//System.out.println("TrackRow: "+index);
-		pIndex=trackNumber;
+	  pIndex=trackNumber;
 	}
 	
 	public static int getPindex()
@@ -241,6 +220,10 @@ public class TrackRow
 	public void setGroupingLabel(Label groupingLabel) {
 		this.groupingLabel = groupingLabel;
 	}
+	
+	public void setGroupingLabel(String grouping) {
+		this.groupingLabel.setText(grouping);
+	}
 
 	public Label getTrackNumberLabel() {
 		return trackNumberLabel;
@@ -262,7 +245,8 @@ public class TrackRow
 		return grouping;
 	}
 
-	public void setGrouping(String grouping) {
+	public void setGrouping(String grouping) 
+	{
 		this.grouping = grouping;
 	}
 
@@ -305,6 +289,28 @@ public class TrackRow
 		else
 		selectedImage.setImage(noLightImage);
 	}
+	
+	public void setArtist(String artist)
+	{
+	  this.artist=artist;
+	  artistLabel.setText(artist);
+	}
+	
+	public void setBackgroundColor(String grouping)
+	{
+		if (grouping.toLowerCase().equals("vals"))    cssBkgColor = "valsBkg";
+		else if (grouping.toLowerCase().equals("milonga")) cssBkgColor = "milongaBkg";
+		else if (grouping.toLowerCase().equals("cortina")) cssBkgColor = "cortinaBkg";
+		else if (grouping.toLowerCase().equals("padding")) cssBkgColor = "paddingBkg";
+		else if (grouping.toLowerCase().equals("alternative")) cssBkgColor = "alternativeBkg";
+		else cssBkgColor = "tangoBkg";
+		
+		artistLabel.getStyleClass().add(cssBkgColor);
+		groupingLabel.getStyleClass().add(cssBkgColor);
+		trackTitleLabel.getStyleClass().add(cssBkgColor);
+		trackNumberLabel.getStyleClass().add(cssBkgColor);
+	}
+	
 
 	public int getTandaTrackIndex() {
 		return tandaTrackIndex;
