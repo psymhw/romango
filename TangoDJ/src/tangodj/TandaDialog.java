@@ -1,0 +1,6 @@
+package tangodj;
+
+class TandaDialog
+{
+	
+}
