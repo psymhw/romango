@@ -35,10 +35,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextAreaBuilder;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -143,6 +146,7 @@ public class GoClient extends Application
   AudioClip stoneSound;
   AudioClip errorSound;
   AudioClip cuckooSound;
+  AudioClip chirp;
    
   Group visibleMoves;
   Group boardGroup; 
@@ -279,6 +283,11 @@ public class GoClient extends Application
   int pieceNumbering=OFF;
   Group grid = new Group();
   
+  final RadioButton rb1 = new RadioButton("On");
+  final RadioButton rb2 = new RadioButton("Off");
+  final ToggleGroup soundGroup = new ToggleGroup();
+  int sound=ON;
+  
  
   
   public void start(final Stage stage) throws Exception  
@@ -288,6 +297,8 @@ public class GoClient extends Application
     importImages();
     getResources();
     
+    
+    
     Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
    // System.out.println("screen: "+primaryScreenBounds.getHeight()+" x "+primaryScreenBounds.getWidth());
     
@@ -295,6 +306,7 @@ public class GoClient extends Application
     stoneSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/stone.wav"));
     errorSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/error.wav"));
     cuckooSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/cuckoo.wav"));
+    chirp = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/chirp.wav"));
 
     turnImageView = new ImageView(blackStoneImage);
 	  
@@ -583,7 +595,7 @@ public void stop()
       //System.out.println("timed refresh: currentMessage "+dragonAccess.currentMessage);
       if (dragonAccess.currentMessage) 
       {  
-    	  cuckooSound.play();
+    	  if (sound==ON) cuckooSound.play();
     	  minFeedbackText.setFill(Color.RED);
     	  feedbackArea.insertText(0, "*"+lastSgfMove.getBoardPosition()+"\t"+dragonAccess.message);
       }
@@ -662,7 +674,7 @@ public void stop()
 	//System.out.println("startup refresh: currentMessage "+dragonAccess.currentMessage);
 	if (dragonAccess.currentMessage)
 	{	
-	  cuckooSound.play();
+		if (sound==ON) cuckooSound.play();
 	  minFeedbackText.setFill(Color.RED);
 	}
 	else minFeedbackText.setFill(Color.BLACK);
@@ -991,14 +1003,50 @@ private GridPane getRightPane()
 	    bx.setFill(c);
 	   // new Color("DAE6F3")
 	    feedbackLabelGroup = new Group();
-	    
-	    Text dragonInfoLabel = new Text("Dragon Info");
-	    dragonInfoLabel.setFont(Font.font("Serif", 20));
-	    dragonInfoLabel.setX(10);
-	    dragonInfoLabel.setY(25);
+	    HBox hb = new HBox();
+	    hb.setPadding(new Insets(3, 3, 3, 3));
+	   // Text dragonInfoLabel = new Text("Dragon Info");
+	   // dragonInfoLabel.setFont(Font.font("Serif", 20));
+	  //  dragonInfoLabel.setX(10);
+	  //  dragonInfoLabel.setY(25);
 	    
 	    feedbackLabelGroup.getChildren().add(bx);
-	    feedbackLabelGroup.getChildren().add(dragonInfoLabel);
+	   // hb.getChildren().add(dragonInfoLabel);
+	    Text soundText = new Text("  Sound:  ");
+	    soundText.setFont(Font.font("Serif", 20));
+	    rb1.setToggleGroup(soundGroup);
+		rb1.setId("on");
+		rb2.setId("off");
+		rb2.setToggleGroup(soundGroup);
+		rb1.setSelected(true);
+		
+		rb1.setPrefWidth(75);
+		
+		soundGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
+		    public void changed(ObservableValue<? extends Toggle> ov,
+		        Toggle old_toggle, Toggle new_toggle) {
+		            if (soundGroup.getSelectedToggle() != null) 
+		            {
+		             //	System.out.println(modeGroup.getSelectedToggle().getUserData().toString()); 
+		             String selectedStr=soundGroup.getSelectedToggle().toString();
+		             if (selectedStr.contains("on")) sound=ON;
+		             if (selectedStr.contains("off")) sound=OFF;
+		             
+		             if (sound==ON) {
+		             System.out.println("sound: on");    chirp.play(); }
+		             if (sound==OFF)
+			             System.out.println("sound: off");  
+		                
+		            }                
+		        }
+		});
+		
+	    rb1.setFont(Font.font("Serif", 18));
+	    rb2.setFont(Font.font("Serif", 18));
+	    hb.getChildren().add(soundText);
+	    hb.getChildren().add(rb1);
+	    hb.getChildren().add(rb2);
+	    feedbackLabelGroup.getChildren().add(hb);
 	    
   }
   
@@ -1597,7 +1645,7 @@ private GridPane getRightPane()
     	    if (stoneGroup.liberties==0) 
     	    { 
     		  // System.out.println("liberties 0");  
-    	      errorSound.play(); 
+    	      if (sound==ON) errorSound.play(); 
     	      restoreMoveMap(savedBoardMap.get());
     	      feedbackArea.insertText(0, "illegal move\n");
     	      return;  // can't move here... no liberties and nothing captured.
@@ -1607,7 +1655,7 @@ private GridPane getRightPane()
           {  
             if (checkForKo()) 
             {
-      	      errorSound.play(); 
+            	if (sound==ON) errorSound.play(); 
               restoreMoveMap(savedBoardMap.get());
     	      feedbackArea.insertText(0, "ko. can't move here.\n");
     	      return;  // can't move here... ko fight. 
@@ -1620,7 +1668,7 @@ private GridPane getRightPane()
       
         placeStone(move);
 	    localMoves++;
-	    stoneSound.play();
+	    if (sound==ON) stoneSound.play();
 	    markLocalMove();
 	    updateControls();
       }
@@ -2122,7 +2170,7 @@ void restoreMoveMap(int[][] savedMoveMap)
      handicapVal.setText(""+handicap);
      moveNoVal.setText(""+lastSgfMoveNumber);
      markLastStone();
-     if (stoneSoundActive) stoneSound.play();
+     if (stoneSoundActive)  { if (sound==ON) stoneSound.play(); else chirp.play() ;}
      stoneSoundActive=true;
      lastSgfMove = dragonAccess.getLastSgfMove();
      
