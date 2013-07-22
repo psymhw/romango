@@ -331,6 +331,7 @@ public class TrackRow
 		this.mp3 = mp3;
 	}
 	
+	boolean debug=true;
 	public String getGroupingFromMp3()
 	{
 	  ID3v2_3Frame ivf=null;
@@ -340,17 +341,45 @@ public class TrackRow
 	  {
 		ivf = (ID3v2_3Frame)mp3.getID3v2Tag().getFrame("TIT1");
 		grouping = (FrameBodyTIT1)ivf.getBody();
+		if (debug) System.out.println("Got grouping for "+mp3.getID3v2Tag().getSongTitle());
 	    return grouping.getText();
-	  } catch (Exception e)  { 	return "no grouping";	}
+	  } catch (Exception e)  
+	  { 	
+		  if (debug) System.out.println("grouping not found for "+mp3.getID3v2Tag().getSongTitle());
+		  return "no grouping";	
+		  }
 	}
 	
 	public void setGroupingInMp3(String style)
 	{
-	  FrameBodyTIT1 newTiT1body = new FrameBodyTIT1();
-	  newTiT1body.setText(style);
-	  newTiT1body.setTextEncoding((byte)0);
-		
-	  ID3v2_3Frame newFrame = new ID3v2_3Frame(newTiT1body);
+	  String currentGrouping = getGroupingFromMp3();
+	  FrameBodyTIT1 grouping;
+	  
+	  if ("no grouping".equals(currentGrouping))
+	  {
+		try 
+		{
+	      FrameBodyTIT1 newTiT1body = new FrameBodyTIT1();
+	      newTiT1body.setText(style);
+	      newTiT1body.setTextEncoding((byte)0);
+	      ID3v2_3Frame newFrame = new ID3v2_3Frame(newTiT1body);
+	      mp3.getID3v2Tag().setFrame(newFrame);
+		  mp3.save();
+		  if (debug) System.out.println("added new grouping for "+mp3.getID3v2Tag().getSongTitle());
+		} catch (Exception e) { e.printStackTrace(); }
+	  }
+	  else
+	  {
+		try 
+		{
+		  ID3v2_3Frame ivf = (ID3v2_3Frame)mp3.getID3v2Tag().getFrame("TIT1");
+		  grouping = (FrameBodyTIT1)ivf.getBody();
+		  grouping.setText("Tango");
+		  mp3.getID3v2Tag().getFrame("TIT1").setBody(grouping);
+		  mp3.save();
+		  if (debug) System.out.println("updated grouping for "+mp3.getID3v2Tag().getSongTitle());
+		} catch (Exception e) { e.printStackTrace(); }
+	  }
 
 	}
 }
