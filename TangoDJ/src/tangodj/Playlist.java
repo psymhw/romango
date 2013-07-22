@@ -86,17 +86,20 @@ public class Playlist
 	  {
 	    trackRow.setArtist(orchestra);
 	    trackRow.setGrouping(style);
+	    //trackRow.setGroupingInMp3(style);
 	    trackRow.setGroupingLabel(style);
 	    trackRow.setBackgroundColor(style);
 	  }
 	  else if (tandaTrack==tandaLastTrackMark-tandaFirstTrackMark)
 	  {
 		trackRow.setGroupingLabel("CORTINA"); 
+		//trackRow.setGroupingInMp3(style);
 		trackRow.setBackgroundColor("CORTINA");
 	  }
 	  else
 	  {
 		trackRow.setArtist(""); 
+		//trackRow.setGroupingInMp3(style);
 		trackRow.setBackgroundColor(style);
 	  }
 	  tanda.addTrackRow(trackRow);
@@ -112,6 +115,7 @@ public class Playlist
 	// test: displayGroup.getChildren().remove(tanda.getTandaHighlightBox());
 	
 	tandas.add(tanda);
+	
 	//calcPositions();
 	
 	numberOfTandas=tandas.size();

@@ -579,6 +579,7 @@ private void setupModeButtons()
 	  playlist = new Playlist();
 	  int counter=0;
 	  	  	   
+	  System.out.println("Tanda id: "+index);
 	  // populate Tandas and TrackRows
 	  for(int trackNumber=0; trackNumber<pd.tracks.length; trackNumber++)
 	  {
@@ -589,55 +590,16 @@ private void setupModeButtons()
 		File temp = new File(path);
 		
 	    MP3File mp3=null;
-	    ID3v2_3Frame ivf=null;
-
-		FrameBodyTIT1 grouping;
-		FrameBodyTIT1 newTiT1body = new FrameBodyTIT1();
-		newTiT1body.setText("Tango");
-		newTiT1body.setTextEncoding((byte)0);
+	   /*
+	    try { 
+	    	  System.out.println(path);
+	    	  mp3 = new MP3File(temp); 
+	          System.out.println("identifier: "+mp3.getID3v2Tag().getIdentifier());
+	          
+	    } catch (Exception e) { e.printStackTrace(); }
 		
-		ID3v2_3Frame newFrame = new ID3v2_3Frame(newTiT1body);
-		
-		try 
-		{
-		  mp3 = new MP3File(temp);
-		  //if (mp3.hasID3v2Tag()) System.out.println(counter+" has ID3v2");
-		 // else if (mp3.hasID3v1Tag()) System.out.println(counter+ "has ID3v1");
-		  try 
-		  {
-			ivf = (ID3v2_3Frame)mp3.getID3v2Tag().getFrame("TIT1");
-			
-			grouping = (FrameBodyTIT1)ivf.getBody();
-		 
-		    System.out.println(counter+ ": "+ grouping.getText());
-		    System.out.println(counter+ ": "+ grouping.getIdentifier());
-		    System.out.println(counter+ ": "+ grouping.getDescription());
-		    grouping.setText("Tango");
-		    mp3.getID3v2Tag().getFrame("TIT1").setBody(grouping);
-		   // mp3.save();
-		  } catch (Exception e) 
-		  { 
-			  mp3.getID3v2Tag().setFrame(newFrame);
-			  mp3.save();
-			  System.out.println(counter+ " problem getting grouping tag for "+td.name);
-			}
-		  
-		  
-		//  Iterator it = mp3.getID3v2Tag().iterator();
-		//  while(it.hasNext())
-		//  {
-		//	  System.out.println(counter+ ": "+it.next().toString());
-		//  }
-		  
-		  counter++;
-		} catch (Exception e) { e.printStackTrace(); }
-		
-		
-		 // if (temp.exists()) System.out.println("file exists");
-		//  else System.out.println("cant find: "+path);
-		
-		
-		
+	    */
+	    
 		path=temp.toURI().toString();
 		playlist.addTrackRow( new TrackRow(mp3, td.name, td.artist, path, td.grouping, td.time, trackNumber));
 	  }
@@ -790,7 +752,7 @@ private void setupModeButtons()
   	rb4.setToggleGroup(radioButtonGroup);
   	rb5.setToggleGroup(radioButtonGroup);
   	
-  	rb1.setSelected(true);
+  	//rb1.setSelected(true);
   	//rb1.setTextFill(Color.WHITE);
   	//rb2.setTextFill(Color.WHITE);
   	
@@ -825,9 +787,11 @@ private void setupModeButtons()
       {
         public void handle(ActionEvent actionEvent) 
         {
+        		
            dialog.close();
            playlist.tandaHighlightBox.setVisible(false);
            playlist.addTanda(box.getText().toString(), style);
+           printTandas();
           // System.out.println("Orchestra: "+box.getText().toString());
            //System.out.println("Style: "+style);
         }
