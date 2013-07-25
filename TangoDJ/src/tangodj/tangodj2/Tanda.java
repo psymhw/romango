@@ -76,7 +76,7 @@ public class Tanda
    {
 	 tandaTracksData.add(tandaTrack);
    }
-   
+      
    public VBox getTanda()
    {
 	 return vbox;

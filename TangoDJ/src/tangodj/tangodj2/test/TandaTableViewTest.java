@@ -68,9 +68,6 @@ public class TandaTableViewTest extends Application
         
         table.setItems(data);
         table.getColumns().add(mainCol);
-        
-        
-        
  
         final VBox vbox = new VBox();
         vbox.setSpacing(5);
