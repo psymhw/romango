@@ -99,7 +99,7 @@ public class iTunesTransfer extends JFrame
 	 	          String artist=oID3V1_0Tag.getArtist();
 	 	      //   System.out.println("Artist 1: "+oID3V1_0Tag.getArtist());
 	 	      // set this v1.0 tag in the media file object
-	 	          
+	 	         
 	 	         oMediaFile.setID3Tag(oID3V1_0Tag);
 
 
