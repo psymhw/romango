@@ -39,15 +39,18 @@ import javafx.stage.Stage;
 
 public class TangoDJ2 extends Application 
 {
-  private TableView<Track> table = new TableView<Track>();
-  private final static ObservableList<Track> data = FXCollections.observableArrayList();
+ // private TableView<Track> table = new TableView<Track>();
+ // private final static ObservableList<Track> data = FXCollections.observableArrayList();
   Stage primaryStage;
   Tanda tanda;
+  AllTracks allTracks;
+  SharedValues sharedValues = new SharedValues();
 	
   public static void main(String[] args) 
   {
     try { new CreateDatabase(); } catch (Exception e) { e.printStackTrace(); }
-    setData();
+    
+    //setData();
     launch(args);
   }
 	
@@ -60,7 +63,16 @@ public class TangoDJ2 extends Application
       TabPane tabPane = new TabPane();
       BorderPane mainPane = new BorderPane();
       
-      setupAllTracksTable();
+      allTracks = new AllTracks();
+      allTracks.setData();
+      
+      setupListeners();
+      
+      
+      
+      
+      
+     // setupAllTracksTable();
       
      
       Tab tabA = new Tab();
@@ -103,8 +115,8 @@ public class TangoDJ2 extends Application
              {
             	
               	TrackLoader trackLoader = new TrackLoader(selectedDirectory.toPath().toString());
-              	data.clear(); 
-              	setData();
+              	allTracks.clearTable(); 
+              	allTracks.setData();
               } catch (Exception ex) {ex.printStackTrace();}
           }
         }
@@ -117,7 +129,7 @@ public class TangoDJ2 extends Application
       
       final VBox vbox = new VBox();
       vbox.setPadding(new Insets(10, 0, 0, 10));
-      vbox.getChildren().addAll(label, table, addButton);
+      vbox.getChildren().addAll(label, allTracks.getTable(), addButton);
       
       HBox hbox =  new HBox();
       hbox.setPadding(new Insets(10, 0, 0, 10));
@@ -135,6 +147,32 @@ public class TangoDJ2 extends Application
       primaryStage.show();
   }
 
+private void setupListeners() 
+{
+  ChangeListener cl = new ChangeListener() 
+  {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+        tanda.addTrack(new TandaTrack(sharedValues.title.get()));
+      }
+    };   
+    
+    sharedValues.playlistTrackAdd.addListener(cl);
+    
+    ChangeListener cl2 = new ChangeListener() 
+    {
+        public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+        {
+          System.out.println("selected Path Hash: "+sharedValues.pathHash.get());
+        }
+      };   
+      
+      sharedValues.pathHash.addListener(cl2);
+  	
+	
+}
+
+  /*
 private void setupAllTracksTable() 
 {
 	double tableWidth=setupAllTracksColumns()+43;
@@ -303,7 +341,6 @@ private void setupAllTracksTable()
  	  }
  	};
  	
-     
   
   private static void setData()
   {
@@ -334,6 +371,6 @@ private void setupAllTracksTable()
     } catch (Exception e) { e.printStackTrace();}
   }
   
-  
+  */
 
 }

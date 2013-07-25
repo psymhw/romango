@@ -4,20 +4,28 @@ import javafx.beans.property.SimpleStringProperty;
 
 public class Track
 {
-		private final SimpleStringProperty title;
+	private final SimpleStringProperty title;
     private final SimpleStringProperty artist;
     private final SimpleStringProperty album;
     private final SimpleStringProperty genre;
     private final SimpleStringProperty comment;
+    private final SimpleStringProperty pathHash;
     
-    public Track(String titleStr, String artistStr, String albumStr, String genreStr, String commentStr)
+    public Track(String titleStr, String artistStr, String albumStr, String genreStr, String commentStr, String pathHashStr)
     {
       this.title = new SimpleStringProperty(titleStr);
       this.artist = new SimpleStringProperty(artistStr);
       this.album = new SimpleStringProperty(albumStr);
       this.genre = new SimpleStringProperty(genreStr);
       this.comment = new SimpleStringProperty(commentStr);
+      this.pathHash = new SimpleStringProperty(pathHashStr);
     }
+    
+    public String getPathHash() {
+    	return pathHash.get(); }
+    
+    public void setPathHash(String pathHashStr) {
+    	pathHash.set(pathHashStr); }
     
     public String getComment() {
     	return comment.get(); }
