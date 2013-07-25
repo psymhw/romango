@@ -422,6 +422,7 @@ private void setupModeButtons()
       final String thisPath=path;
       Media  media = new Media(path);
 	  final MediaPlayer mp = new MediaPlayer(media);
+	  mp.getTotalDuration();
 	  mp.setOnError(new Runnable() 
 	  {
 	    public void run() 
@@ -590,6 +591,7 @@ private void setupModeButtons()
 		File temp = new File(path);
 		
 	    MP3File mp3=null;
+	    System.out.println(path);
 	   /*
 	    try { 
 	    	  System.out.println(path);
