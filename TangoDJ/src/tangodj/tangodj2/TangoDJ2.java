@@ -156,8 +156,7 @@ private void setupListeners()
         tanda.addTrack(new TandaTrack(sharedValues.title.get()));
       }
     };   
-    
-    sharedValues.playlistTrackAdd.addListener(cl);
+      sharedValues.playlistTrackAdd.addListener(cl);
     
     ChangeListener cl2 = new ChangeListener() 
     {
