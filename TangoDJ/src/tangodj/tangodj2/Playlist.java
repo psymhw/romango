@@ -7,8 +7,15 @@ import javafx.beans.property.SimpleStringProperty;
 
 public class Playlist 
 {
-	private final SimpleIntegerProperty id;
+	private final int id=0;
 	private final SimpleStringProperty name;
-	private final Date date;
+	private final SimpleStringProperty location;
+	private final Date date=null;
+	
+	public Playlist(String name, String location)
+	{
+	  this.name=new SimpleStringProperty(name);
+	  this.location=new SimpleStringProperty(location);
+	}
 	
 }
