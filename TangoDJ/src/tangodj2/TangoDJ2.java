@@ -42,6 +42,7 @@ public class TangoDJ2 extends Application
   static Stage primaryStage;
   SharedValues sharedValues = new SharedValues();
   static AllTracksTab allTracksTab;
+  static AllPlaylistsTab allPlaylistsTab;
 	
   public static void main(String[] args) 
   {
@@ -62,11 +63,11 @@ public class TangoDJ2 extends Application
      
       allTracksTab = new AllTracksTab();
       tabPane.getTabs().add(allTracksTab.getTab());
+      
+      allPlaylistsTab = new AllPlaylistsTab();
+      tabPane.getTabs().add(allPlaylistsTab.getTab());
     
-      Tab tabB = new Tab();
-      tabB.setText("Playlists");
-      tabPane.getTabs().add(tabB);
-    
+          
       Tab tabC = new Tab();
       tabC.setText("Tab C");
       tabPane.getTabs().add(tabC);

@@ -6,7 +6,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class CreateDatabase 
+public class NewTableCreator 
 {
 	private boolean exists=false;
 	static Connection connection;
@@ -14,19 +14,13 @@ public class CreateDatabase
 	public static final String JDBC_URL ="jdbc:derby:tango_db;create=true";
 
 	
-	public CreateDatabase() throws ClassNotFoundException, SQLException, IOException
+	public NewTableCreator() throws ClassNotFoundException, SQLException, IOException
 	{
-	  File test = new File("tango_db");
-	  if (test!=null)
-	  {
-		if (test.exists()) exists=true;
-	  }
 	  
-	  if (exists) System.out.println("database found");
-	  else
-	  {
 		Class.forName(DRIVER);
 		 connection = DriverManager.getConnection(JDBC_URL);
+		 
+		 /*
 	    connection.createStatement().execute("create table tracks(" +
 	    		"id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
 	    		"path varchar(300), " +
@@ -37,7 +31,7 @@ public class CreateDatabase
 	    		"genre varchar(40), " +
 	    		"comment varchar(100) " +
 	    		")");
-	    
+	    */
 	    connection.createStatement().execute("CREATE UNIQUE INDEX pathInd ON TRACKS(PATHHASH)");
 	    
 	    connection.createStatement().execute("create table playlists(" +
@@ -48,8 +42,8 @@ public class CreateDatabase
 	    		")");
 	    
 	    connection.close();
-	    System.out.println("database initiallized");
-	  }
+	    System.out.println("table created");
+	  
 	}
 	
 	public static void main(String[] args) 
@@ -57,7 +51,7 @@ public class CreateDatabase
 	  try
 	  {
 		 
-	    new CreateDatabase();
+	    new NewTableCreator();
 	  } catch (Exception e) { e.printStackTrace(); }
 	}
 
