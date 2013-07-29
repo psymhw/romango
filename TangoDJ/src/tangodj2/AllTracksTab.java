@@ -25,7 +25,6 @@ public class AllTracksTab
 	 	
 	public AllTracksTab()
 	{
-		
 		  tab = new Tab();
 	      tab.setText("All Tracks");
 	      allTracks = new AllTracks();
