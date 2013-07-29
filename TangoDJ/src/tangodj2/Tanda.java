@@ -41,7 +41,7 @@ public class Tanda
      titleCol.setPrefWidth(150);
      titleCol.setCellValueFactory(
          new PropertyValueFactory<TandaTrack, String>("title"));
-     titleCol.setCellFactory(TextFieldTableCell.forTableColumn());
+    // titleCol.setCellFactory(TextFieldTableCell.forTableColumn());
      titleCol.setOnEditCommit(
          new EventHandler<CellEditEvent<TandaTrack, String>>() {
              @Override

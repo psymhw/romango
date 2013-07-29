@@ -28,7 +28,8 @@ public class AllTracks
 	
 	public AllTracks()
 	{
-		setupAllTracksTable();
+	  setupAllTracksTable();
+	  setData();
 	}
 	
 	
