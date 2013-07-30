@@ -43,19 +43,29 @@ public class AllPlaylistsTab
             .build();
 
      nameCol.setCellValueFactory(new PropertyValueFactory<Track, String>("name"));
-     nameCol.setCellFactory(TextFieldTableCell.forTableColumn());
-     nameCol.setOnEditCommit(
-      new EventHandler<CellEditEvent<Playlist, String>>() {
-      @Override
-       public void handle(CellEditEvent<Playlist, String> t) {
-           ((Playlist) t.getTableView().getItems().get(
-           t.getTablePosition().getRow())
-            ).setName(t.getNewValue());
-           }
-        }
-       );
+    
+     
+     TableColumn idCol = TableColumnBuilder.create()
+             .text("ID")
+             .minWidth(100)
+             .prefWidth(150)
+             .build();
 
-     allPlaylistsTable.getColumns().add(nameCol);
+      idCol.setCellValueFactory(new PropertyValueFactory<Track, String>("id"));
+     
+    
+      TableColumn locationCol = TableColumnBuilder.create()
+              .text("Location")
+              .minWidth(100)
+              .prefWidth(150)
+              .build();
+
+       locationCol.setCellValueFactory(new PropertyValueFactory<Track, String>("location"));
+       
+       
+
+     allPlaylistsTable.getColumns().addAll(idCol, nameCol, locationCol);
+     
      allPlaylistsTable.setItems(allPlaylistsData);  
 	
 	setData();
