@@ -85,7 +85,7 @@ public class AllPlaylistsTab
     
     final VBox vbox = new VBox();
     vbox.setPadding(new Insets(10, 0, 0, 10));
-    vbox.getChildren().addAll(label, allPlaylistsTable, addButton);
+    vbox.getChildren().addAll(label, allPlaylistsTable, getEntryBox(), addButton);
     
     tab.setContent(vbox);
   }
@@ -122,6 +122,25 @@ public class AllPlaylistsTab
 public Tab getTab()
   {
     return tab;
+  }
+
+  private VBox getEntryBox()
+  {
+	VBox vbox = new VBox();
+	final Label label = new Label("New Playlist");
+    label.setFont(new Font("Arial", 20));
+    vbox.getChildren().add(label);
+    
+    HBox hb1 = new HBox();
+    final Label label2 = new Label(" Name: ");
+    label2.setFont(new Font("Arial", 18));
+    hb1.getChildren().add(label2);
+    
+    vbox.getChildren().add(hb1);
+ 
+    
+   
+	return vbox;
   }
   
   private void addPlaylist()
