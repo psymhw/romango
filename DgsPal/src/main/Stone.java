@@ -19,6 +19,9 @@ public class Stone extends Group
   private static Image white_stone_image=null;
   private static Image black_move_image=null;
   private static Image white_move_image=null;
+  
+  private static Image black_ghost_image=null;
+  
   private static Image b1=null;
  
   private static Image bx=null;
@@ -33,6 +36,7 @@ public class Stone extends Group
   private double sceneY=0;
   private Move move;
   private ImageView stoneImageView = new ImageView();
+  private ImageView ghostImageView = new ImageView();
   private Label stoneNumberLabel = new Label();
   private Label subsetStoneNumberLabel = new Label();
   private int moveNumber=0;
@@ -66,6 +70,9 @@ public class Stone extends Group
     this.getChildren().add(stoneImageView);
     this.getChildren().add(stoneNumberLabel);
     this.getChildren().add(subsetStoneNumberLabel);
+    ghostImageView.setVisible(false);
+    this.getChildren().add(ghostImageView);
+    
   }
   
   
@@ -108,6 +115,7 @@ public class Stone extends Group
       if (black_move_image==null)   black_move_image = new Image(Stone.class.getResourceAsStream(src+"/images/bm.gif"));
       if (white_move_image==null)   white_move_image = new Image(Stone.class.getResourceAsStream(src+"/images/wm.gif"));
       
+      if (black_ghost_image==null)  black_ghost_image = new Image(Stone.class.getResourceAsStream(src+"/images/b_ghost.png")); 
      
       if (bx==null) bx = new Image(Stone.class.getResourceAsStream(src+"/images/bx.gif"));
       if (bcheck==null) bcheck = new Image(Stone.class.getResourceAsStream(src+"/images/bcheck.gif"));
@@ -118,10 +126,12 @@ public class Stone extends Group
       if (stoneColor==GoClient.WHITE)
       {
     	  stoneImageView.setImage(white_stone_image);
+    	  ghostImageView.setImage(black_ghost_image);
       }
       else
       {
     	  stoneImageView.setImage(black_stone_image);
+    	  ghostImageView.setImage(black_ghost_image);
       }
       
       /*
@@ -139,7 +149,9 @@ public class Stone extends Group
       */
       
       stoneImageView.setX(sceneX);
-      stoneImageView.setY(sceneY);   
+      stoneImageView.setY(sceneY);  
+      ghostImageView.setX(sceneX);
+      ghostImageView.setY(sceneY);  
       
     }
     
