@@ -20,6 +20,7 @@ import java.util.ListIterator;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -29,8 +30,6 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
-import javafx.scene.ImageCursor;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
@@ -61,8 +60,8 @@ import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+
+import com.leapmotion.leap.Controller;
 
 
 public class GoClient extends Application  
@@ -70,6 +69,11 @@ public class GoClient extends Application
   final static int OPEN = 0;
   final static int BLACK = 1;
   final static int WHITE = 2;
+  
+  final static int RESET =0;
+  final static int MAKE_MOVE=1;
+  final static int SWIPE_RIGHT=2;
+  final static int SWIPE_LEFT=3;
    
   final static int START=0;
   final static int NORTH=1;
@@ -98,6 +102,7 @@ public class GoClient extends Application
   final static int GAME_OVER =-7;
   
   private ImageView quit;
+  //private ImageView leapCursor;
   
   Image board_top_image;
   Image board_left_image;
@@ -288,7 +293,24 @@ public class GoClient extends Application
   final ToggleGroup soundGroup = new ToggleGroup();
   int sound=ON;
   
- 
+//  static LeapListener listener;
+//  static Controller controller;
+  private Group mainGroup = new Group();
+ // private float lastZ=0;
+ // private boolean leapMoveFlag=false;
+//  private double leapMoveX=0;
+//  private double leapMoveY=0;
+//  private boolean leapCoordinateFreeze=false;
+   LeapCursor leapCursor = new LeapCursor();
+  
+  public static void main(final String[] arguments)  
+  {  
+	// listener = new LeapListener();
+	// controller = new Controller();
+	// controller.addListener(listener);
+    Application.launch(arguments);  
+  }
+
   
   public void start(final Stage stage) throws Exception  
   {  
@@ -309,6 +331,8 @@ public class GoClient extends Application
     chirp = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/chirp.wav"));
 
     turnImageView = new ImageView(blackStoneImage);
+    
+   
 	  
     timedUpdateText = new Text("update Off");
 	timedUpdateText.setFont(Font.font("Serif", 18));
@@ -389,8 +413,10 @@ public class GoClient extends Application
      setupRightPane();
      setupMinSizeBottomBox();
      
+     
      mainBox.getChildren().add(hBox);
      mainBox.getChildren().add(rightPane);
+     
    //  setupSmallRightPane();  
    mainBox.widthProperty().addListener(new ChangeListener<Number>() 
    {
@@ -421,8 +447,9 @@ public class GoClient extends Application
      
     
    
+     mainGroup.getChildren().add(mainBox);
+     scrollPane.setContent(mainGroup);
      
-     scrollPane.setContent(mainBox);
     // scrollPane.setFitToHeight(true);
     // scrollPane.setFitToWidth(true);
     
@@ -474,11 +501,102 @@ public class GoClient extends Application
 		feedbackArea.insertText(0, "User ID and password not set. Click on user icon in upper right corner.");
 		return;
 	}
-      
+    startLeapCursor();
   } // end of start method
 
  
   
+  private void startLeapCursor() 
+  {
+	//String src="/resources";
+	//  Image black_ghost_image = new Image(Stone.class.getResourceAsStream(src+"/images/b_ghost.png")); 
+	//  leapCursor = new ImageView(black_ghost_image);
+	//  final int imageOffset=8;
+	  
+ 	//  leapCursor.setX(imageOffset);
+	//  leapCursor.setY(imageOffset);
+
+	  mainGroup.getChildren().add(leapCursor);
+	  
+	  ChangeListener cl2 = new ChangeListener() 
+	    {
+	      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+	      {
+	        switch(leapCursor.action.get())
+	        {
+	          case RESET: 
+	        	  System.out.println("Reset");
+	        	  break; // reset, do nothing
+	          case SWIPE_RIGHT:
+	        	   System.out.println("Swipe Right");
+	        	   leapCursor.resetAction();
+	        	   if (!commitButton.isDisabled()) commit();
+	        	   break;
+	          case SWIPE_LEFT:
+	        	   System.out.println("Swipe Left");
+	        	   leapCursor.resetAction();
+	        	   if (!deleteLastMoveButton.isDisabled()) deleteLastMove();
+	        	   break;
+	          case MAKE_MOVE:
+	        	      moveRequest(leapCursor.getMove(getMoveColor()));
+	        	      break;
+	        	      
+	        }
+	      }
+	    };   
+	    leapCursor.action.addListener(cl2);
+	 
+	  
+	    
+	/*
+	 * Timeline timeline = new Timeline();
+	timeline.setCycleCount(Timeline.INDEFINITE);
+	
+	KeyFrame keyFrame= new KeyFrame(Duration.millis(5), new EventHandler()
+	{
+	  public void handle(Event event) 
+	  {
+	    	MyFinger myFinger = listener.getFinger();
+	    	if (myFinger!=null)
+	    	{
+	    	  if (myFinger.z<0)
+	    	  {	  
+	    		if (!leapCursor.coordinateFreeze)
+	    		{
+	    		  leapCursor.savePosition(myFinger.x,  myFinger.y);
+	    		}
+	    		if (!leapCursor.moveFlag)
+	    		{	  
+	    		  if (myFinger.z<(-30)) 
+	    		  {
+	    			System.out.println("MOVE: "+myFinger.z);
+	    	        moveRequest(leapCursor.makeMove(getMoveColor()));
+	    		  }
+	    		}
+	    	  }
+	    	  else
+	    	  {
+	    		leapCursor.setPosition(myFinger.x, myFinger.y);
+	    	  }
+	    	  leapCursor.lastZ=myFinger.z;
+	    	}
+	    	
+	      }
+	    });
+		 
+		timeline.getKeyFrames().add(keyFrame);
+	    timeline.play();
+	 */
+	
+  }
+
+  public int getMoveColor()
+  {
+	int thisMoveColor=0;
+	if (lastMoveColor==BLACK) thisMoveColor=WHITE;  else thisMoveColor=BLACK;
+	return thisMoveColor;
+  }
+
   private void toggleScore() 
   {
 	 System.out.println("toggle score");
@@ -1083,6 +1201,7 @@ private GridPane getRightPane()
 	  boardGroup.getChildren().add(board);
 	  boardGroup.getChildren().add(grid);
 	  boardGroup.getChildren().add(visibleMoves);  
+	  
 	  setupMouse(boardGroup);
 	  
   }
@@ -1615,62 +1734,8 @@ private GridPane getRightPane()
       
       if (mb==MouseButton.PRIMARY)
       {
-        int thisMoveColor=0;
-        if (lastMoveColor==BLACK) thisMoveColor=WHITE;  else thisMoveColor=BLACK;
-        Move move = new Move(t.getX(),t.getY(), thisMoveColor);
-        move.setMoveNumber(moveNumber);
-        if (moveMap[move.x][move.y]!=OPEN) 
-        { 
-      	  StoneGroup stoneGroup = new StoneGroup(move.x, move.y, moveMap);
-          feedbackArea.insertText(0,"group liberties: "+stoneGroup.liberties+"\n");
-          markGroup(stoneGroup.groupPositions);
-  	      return;        
-        }
-      
-        if (gameOver) return;
-      
-        boolean testForIllegalMoves=true;
-
-        if (testForIllegalMoves)
-        {
-          BoardMap savedBoardMap = new BoardMap(moveMap);
-      
-          moveMap[move.x][move.y]=move.color;	
-          boolean captures = checkLibertiesOfNeighbors(move.x, move.y, TRIAL);
-            
-        //System.out.println("captures: "+captures);
-          if (captures==false)
-          {
-        	StoneGroup stoneGroup = new StoneGroup(move.x, move.y, moveMap);         
-    	    if (stoneGroup.liberties==0) 
-    	    { 
-    		  // System.out.println("liberties 0");  
-    	      if (sound==ON) errorSound.play(); 
-    	      restoreMoveMap(savedBoardMap.get());
-    	      feedbackArea.insertText(0, "illegal move\n");
-    	      return;  // can't move here... no liberties and nothing captured.
-    	    }
-          }
-          else 
-          {  
-            if (checkForKo()) 
-            {
-            	if (sound==ON) errorSound.play(); 
-              restoreMoveMap(savedBoardMap.get());
-    	      feedbackArea.insertText(0, "ko. can't move here.\n");
-    	      return;  // can't move here... ko fight. 
-            }
-            // System.out.println("no ko");
-          }
-          restoreMoveMap(savedBoardMap.get());  // return moveMap to original state.
-          //System.out.println("");
-        }  // end of testing illegal moves
-      
-        placeStone(move);
-	    localMoves++;
-	    if (sound==ON) stoneSound.play();
-	    markLocalMove();
-	    updateControls();
+    	Move move = new Move(t.getX(),t.getY(), getMoveColor());
+        if (moveRequest(move)==false) return;
       }
       
       if (mb==MouseButton.SECONDARY) 
@@ -1689,6 +1754,64 @@ private GridPane getRightPane()
     }
     });
      
+  }
+  
+  private boolean moveRequest(Move move)
+  {
+      move.setMoveNumber(moveNumber);
+      if (moveMap[move.x][move.y]!=OPEN) 
+      { 
+    	  StoneGroup stoneGroup = new StoneGroup(move.x, move.y, moveMap);
+        feedbackArea.insertText(0,"group liberties: "+stoneGroup.liberties+"\n");
+        markGroup(stoneGroup.groupPositions);
+	      return false;        
+      }
+    
+      if (gameOver) return false;
+    
+      boolean testForIllegalMoves=true;
+
+      if (testForIllegalMoves)
+      {
+        BoardMap savedBoardMap = new BoardMap(moveMap);
+    
+        moveMap[move.x][move.y]=move.color;	
+        boolean captures = checkLibertiesOfNeighbors(move.x, move.y, TRIAL);
+          
+      //System.out.println("captures: "+captures);
+        if (captures==false)
+        {
+      	StoneGroup stoneGroup = new StoneGroup(move.x, move.y, moveMap);         
+  	    if (stoneGroup.liberties==0) 
+  	    { 
+  		  // System.out.println("liberties 0");  
+  	      if (sound==ON) errorSound.play(); 
+  	      restoreMoveMap(savedBoardMap.get());
+  	      feedbackArea.insertText(0, "illegal move\n");
+  	      return false;  // can't move here... no liberties and nothing captured.
+  	    }
+        }
+        else 
+        {  
+          if (checkForKo()) 
+          {
+          	if (sound==ON) errorSound.play(); 
+            restoreMoveMap(savedBoardMap.get());
+  	      feedbackArea.insertText(0, "ko. can't move here.\n");
+  	      return false;  // can't move here... ko fight. 
+          }
+          // System.out.println("no ko");
+        }
+        restoreMoveMap(savedBoardMap.get());  // return moveMap to original state.
+        //System.out.println("");
+      }  // end of testing illegal moves
+    
+      placeStone(move);
+	    localMoves++;
+	    if (sound==ON) stoneSound.play();
+	    markLocalMove();
+	    updateControls();
+       return true;
   }
   
   private void markGroup(List<SimplePosition> groupPositions) 
@@ -1864,7 +1987,16 @@ void restoreMoveMap(int[][] savedMoveMap)
     deleteLastMoveButton = new Button("< x");
     EventHandler bHandler2 = new EventHandler<ActionEvent>() { public void handle(ActionEvent event) 
     {
-      unmarkGroup();
+    	deleteLastMove();
+    }};
+    deleteLastMoveButton.setOnAction(bHandler2);
+    deleteLastMoveButton.setPrefHeight(28);
+    deleteLastMoveButton.setTooltip(new Tooltip("Delete Last Move"));
+  }
+  
+  private void deleteLastMove()
+  {
+	  unmarkGroup();
       if (resignPlayed)
       {
     	  moves.remove(moves.size()-1);
@@ -1881,11 +2013,7 @@ void restoreMoveMap(int[][] savedMoveMap)
       }
       else
       deleteLastStone(); 
-      updateControls();
-    }};
-    deleteLastMoveButton.setOnAction(bHandler2);
-    deleteLastMoveButton.setPrefHeight(28);
-    deleteLastMoveButton.setTooltip(new Tooltip("Delete Last Move"));
+      updateControls(); 
   }
   
   @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -2977,11 +3105,7 @@ void playNextStone()
     }
   }
   
-   public static void main(final String[] arguments)  
-   {  
-      Application.launch(arguments);  
-   }
-
+ 
     private void checkLibertiesOfNeighbors(int x, int y) 
     {
       checkLibertiesOfNeighbors(x, y, LIVE);

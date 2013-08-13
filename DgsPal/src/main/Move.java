@@ -55,6 +55,10 @@ public class Move
 	this.y=calcY();
   }
   
+  public void setColor(int color)
+  {
+	  this.color=color;
+  }
   
   public Move(int color)
   {
@@ -118,6 +122,17 @@ public class Move
     char yyy = sgfPosition.charAt(1);
     return yyy-97;
   }
+  public int calcX(String sgfPos)
+  {
+    char xxx = sgfPos.charAt(0);
+    return xxx-97;
+  }
+
+  public int calcY(String sgfPos)
+  {
+    char yyy = sgfPos.charAt(1);
+    return yyy-97;
+  }
   
   public int calcSceneX()
   {
@@ -129,6 +144,20 @@ public class Move
   public int calcSceneY()
   {
 	char yChar = sgfPosition.charAt(1);
+  	int yInt = yChar;
+	return (yInt-97)*35;
+  }
+  
+  static public int calcSceneX(String sgfPos)
+  {
+	char xChar = sgfPos.charAt(0);
+  	int xInt = xChar;
+	return (xInt-97)*35;
+  }
+  
+  static public int calcSceneY(String sgfPos)
+  {
+	char yChar = sgfPos.charAt(1);
   	int yInt = yChar;
 	return (yInt-97)*35;
   }
