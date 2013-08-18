@@ -6,6 +6,11 @@
  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
  <script type="text/javascript" src="js/jquery.easing.1.3.js"></script>	
  <script type="text/javascript" src="js/menu.js"></script>	
+ 
+ <script src="js/jquery-1.10.2.min.js"></script>
+<script src="js/lightbox-2.6.min.js"></script>
+ <link href="lightbox.css" rel="stylesheet" />
+ 
  <link rel="stylesheet" type="text/css" href="style.css" media="screen"/>
 <title>Romango Handmade Shoes</title>
 <jsp:include page="metatags.html" />
@@ -49,9 +54,87 @@
 	 
 	 
     <div id="container">
-      <div style="position: relative; left: 1px; top: 1px; ">
-        <img name="backgorund" src="image/background.png" id="background" border="0" />
+      
+     
+	 
+	  <div style="position: absolute; left: 25px; top: 20px; ">
+	  <img  src='image/home/smx_DSC_3696-1.jpg' border='0'/>
 	  </div>
+	   <div style="position: absolute; left: 25px; top: 420px; ">
+	  <table border='1' width='700px'>
+	  <tr>
+	  
+	     <td>
+	        <a href="image/home/big_IMG_7978.JPG" data-lightbox="big_IMG_7978" title="French Calf, English Welt Derby">
+	          <img  src='image/home/smx_IMG_7978.jpg' border='0'/>
+	        </a>
+	     </td>
+	     
+	     
+	     <td>
+	       <a href="image/home/big_DSC_2719.jpg" data-lightbox="big_DSC_2719" title="Alligator and Cordovan Oxford">
+	         <img  src='image/home/smx_DSC_2719.jpg' border='0'/>
+	       </a>
+	     </td>
+	     
+	     <td>
+	       <a href="image/home/big_IMG_5585.JPG" data-lightbox="big_IMG_5585" title="Dance Shoes">
+	         <img  src='image/home/smx_IMG_5584.jpg' border='0'/>
+	       </a>
+	     </td>
+	     
+	  </tr>
+	  
+	  <tr>
+	     <td>
+	       <a href="image/home/big_IMG_6523.jpg" data-lightbox="big_IMG_6523" title="West End Derby">
+	         <img  src='image/home/smx_IMG_6523.jpg' border='0'/>
+	     </td>
+	     
+	     <td>
+	       <a href="image/home/big_DSC_3250.jpg" data-lightbox="big_DSC_3250" title="Water Buffalo, Full Brogue Oxford">
+	         <img  src='image/home/smx_DSC_3250.jpg' border='0'/>
+	       </a>
+	     </td>
+	     
+	     
+	     <td>
+	       <a href="image/home/big_DSC_2952.jpg" data-lightbox="big_DSC_2952" title="French Calf, Chelsea Boots">
+	         <img  src='image/home/smx_DSC_2952.jpg' border='0'/>
+	       </a>
+	     </td>
+	  </tr>
+	  
+	  </table>
+	  <br/>
+	  <font size="+1">
+	  <table border="0">
+        <tr>
+          <td>
+            <a href='men_dress.html'>More Dress Shoes </a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+          </td>
+          <td>
+            <a href='mens_dance.html'>More Dance Shoes </a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+          </td>
+          <td>
+            <a href='chelsea.html'>More Chelsea Boots </a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+          </td>
+          <td>
+            <a href='cowboy.html'>Cowboy Boots </a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+          </td>
+          
+        </tr>
+	  
+	  </table>
+	  </font>
+	  
+	  </div>
+	  
+	 
 	  <!-- large hidden images 
    <div style="position: absolute; left: 175px; top: 175px; ">
     <img id='cowboy_large' src='image/cowboy_large.png' border='0'/>
@@ -86,6 +169,8 @@
   </div>
   -->
 	  
+	
+	<!--  
 	   <div style="position: absolute; left: 292px; top: 10px; title='Cowboy Boots'">
 	    <a href='cowboy.html'><img id='cowboy_small' src='image/cowboy_small.png' border='0/'></a>
 	  </div>
@@ -117,13 +202,14 @@
 	   <div style="position: absolute; left: 95px; bottom: 95px; title='Design'">
 	    <a href='womens_dance.html'><img id='women_dance_small' src='image/women_dance_small.png' border='0'/></a>
 	  </div>
-	 
+	 -->
 	 <!-- 
 	  <div class="text_box" id="center_tip">&nbsp;&nbsp;Western Boots&nbsp;&nbsp;</div>
 	   -->
  
   </div>
   
+     
   <div id="container3">
   	
 	
@@ -134,7 +220,7 @@
           <li>Located in Eugene, Oregon area but remote fitting is available.</li>
 		  <li>Able to fit feet that are long, short, wide, narrow etc. </li>
 		  <li>Can build to accommodate orthopedic inserts</li>
-		  <li>Pricing:  dance shoes & Chelsea boots: $600, men's dress shoes: $950, cowboy & womens boots: $1,200. </li>
+		  <li>Pricing:  Dance Shoes: $600, Dress Shoes: $950,  Chelsea Boots: $800, Cowboy Boots: $1,200. </li>
 		  <li>Exotic leathers (alligator, python, crocadile, ostrich) available at additional cost. </li>
         </ul>
 		</td>
@@ -173,7 +259,7 @@
 	</p>
 	<br/>
   	<hr/>
-	<div class="left">Copyright &copy; 2007-2011 <a href="index.jsp">romangoshoes.com</a></div>
+	<div class="left">Copyright &copy; 2007-2013 <a href="index.jsp">romangoshoes.com</a></div>
     <div class="right">All rights reserved</div>
 	<div class="clearer"></div>
   </div>

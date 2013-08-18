@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>DGS Pal</title>
+<meta name="generator" content="Bluefish 2.0.0" >
+<meta name="author" content="rick" >
+<meta name="date" content="2013-02-02T12:16:19-0800" >
+<meta name="keywords" content="">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+
+
+</head>
+<body>
+
+<p><h1>DGS Pal</h1>
+DGS Pal is a Java Application client for The Dragon Go Server.
+</p>
+<img src="example_board.png" alt="example board" />
+<p>
+The program was written to play Go on-line the way I want to play. I've been using the DGS web client for many years and it was deficient, 
+from my perspective, in a several ways. 
+
+<ol>
+	<li>I only play one game at a time and I want that game to stay on my screen and not go away when I make a move.</li>
+	<li>I want moves from my opponent to arrive on my board spontaneously with audible notification.</li>
+	<li>I want to be able to play ahead to test out sequences in advance of commiting to a move.</li>
+	<li>I want to be able to play ahead even when it is not my move.</li>
+</ol> 
+
+</p>
+
+
+<p>
+Due partially to limitations of the API provided by the creator of Dragon Go Server and partially that I have not implemented 
+all the feature possible, DGS Pal cannot do everything. You must start games using the DGS web client. You must also score them using
+the web client.
+</p>
+
+<h2>System Requirements</h2>
+
+DGS Pal <b>requires</b> Java 7, update 13 or later
+<br /><br />
+
+Download the DGS Pal JAR file here:  Be sure to check back periodically for newer versions.
+
+<br/>New Version (2/2/13) DGS Pal JAR file here: <a href="DgsPal-1.33.jar">DgsPal_1.33.jar</a>
+
+<h2>Using DGS Pal</h2>
+
+<ul>
+<li>To avoid confusion initially, make sure you have one and only one game in progress on DGS. </li>
+<li>Run the program by double clicking the JAR file. Resolve any run time issues. You may wish to put this in a .bat file for ease of access.</li>
+<li>Click on the User Icon <img src="user_icon.png" alt="" /> and enter your DGS username and password. This is a one time operation. Close and restart the application.</li>
+<li>You should now see your game. You may play ahead if it is your turn or not your turn. You may only commit a move if it is your turn.</li>
+<li>If you have played ahead and you press commit, your first move will be played and the board will revert to actual positions.</li>
+<li>The * button always returns you to actual positions.</li>
+<li>You may rewind and forward through already played moves with the < and > buttons.</li>
+<li>After you make your move, DGS Pal querys the DGS server at 1 minute intervals, then 2 minutes, then 4 minutes. Pressing the * button will requery DGS 
+immediately, unless it is too soon and be in violation of DGS excessive usage policies.</li>
+</ul>
+
+If you have any comments or questions: <a href="mailto:rick@romangoshoes.com">rick@romangoshoes.com</a>
+<br /><br />
+If you would like to support and encourage future enhancements, select the donate button below.  
+<br /><br />
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="FLYB754NJCVWA">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+<br /><br /><br />
+
+</body>
+</html>
