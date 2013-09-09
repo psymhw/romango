@@ -84,6 +84,8 @@ public class TrackLoader
 		      if (pathStr.endsWith(".mp3")) 
 		      {
 		          File file = path.toFile();
+		          
+		          
 		          try { mp3= new MP3File(file); } catch (Exception e) { errors++; out.write(counter+" Could not create MP3File class: "+pathStr+"\n"); return FileVisitResult.CONTINUE;  }
 		          try { tag = mp3.getID3v2Tag();  } catch (Exception e2) {  errors++; out.write(counter+" Could not get ID3v2 tag: "+pathStr+"\n"); return FileVisitResult.CONTINUE;  }
 		          

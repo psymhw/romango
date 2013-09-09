@@ -37,6 +37,12 @@ import javafx.scene.text.Font;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
+/* TODO 
+ * 
+ * iTunes playlist import?
+ * 
+*/ 
+
 public class TangoDJ2 extends Application 
 {
   static Stage primaryStage;

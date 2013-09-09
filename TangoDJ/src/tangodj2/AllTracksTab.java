@@ -122,7 +122,7 @@ public class AllTracksTab
 	                 {
 	              	    public void changed(ObservableValue observable, Object oldValue, Object newValue) {
 	              		Track selectedTrack = (Track)newValue;
-	              		//System.out.println("selected: "+selectedTrack.getTitle());
+	              		System.out.println("selected: "+selectedTrack.getTitle());
 	              		//tanda.addTrack(new TandaTrack(selectedTrack.getTitle()));
 	              		sharedValues.title.set(selectedTrack.getTitle());
 	              		sharedValues.pathHash.set(selectedTrack.getPathHash());
