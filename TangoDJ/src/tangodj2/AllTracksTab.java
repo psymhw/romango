@@ -60,7 +60,7 @@ public class AllTracksTab
 	     {
 	       try
 	       {
-	         TrackLoader trackLoader = new TrackLoader(selectedDirectory.toPath().toString());
+	         TrackLoader2 trackLoader = new TrackLoader2(selectedDirectory.toPath().toString());
 	         clearTable(); 
 	         setData();
 	       } catch (Exception ex) {ex.printStackTrace();}
@@ -220,9 +220,16 @@ public class AllTracksTab
 	              }
 	          }
 	      );
-
+	      
+	      TableColumn durationCol = new TableColumn("Length");
+	      durationCol.setMinWidth(50);
+	      durationCol.setPrefWidth(100);
+	      durationCol.setCellValueFactory(
+	          new PropertyValueFactory<Track, String>("duration"));
+	      durationCol.setCellFactory(TextFieldTableCell.forTableColumn());
+	      
 	     
-	  allTracksTable.getColumns().addAll(titleCol, artistCol, albumCol, genreCol, commentCol);
+	  allTracksTable.getColumns().addAll(titleCol, durationCol, artistCol, albumCol, genreCol, commentCol);
 	      
 	  return titleCol.getWidth()+artistCol.getWidth()+albumCol.getWidth()+genreCol.getWidth()+commentCol.getWidth();
   }
@@ -266,6 +273,8 @@ public class AllTracksTab
 	 	    String genre;
 	 	    String comment;
 	 	    String pathHash;
+	 	    String path;
+	 	    int duration=0;
 	 	    
 	 	    try
 	 	    {
@@ -280,7 +289,9 @@ public class AllTracksTab
 	 			  genre = resultSet.getString("genre");
 	 			  comment = resultSet.getString("comment");
 	 			  pathHash = resultSet.getString("pathHash");
-	 			  allTracksData.add(new Track(title, artist, album, genre, comment, pathHash));
+	 			  path = resultSet.getString("path");
+	 			  duration=resultSet.getInt("duration");
+	 			  allTracksData.add(new Track(title, artist, album, genre, comment, pathHash, path, duration));
 	 			  
 	 			  //System.out.println("added: "+title);
 	 			}

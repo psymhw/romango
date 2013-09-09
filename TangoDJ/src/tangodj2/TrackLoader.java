@@ -1,5 +1,10 @@
 package tangodj2;
 
+/**
+ * @deprecated  replaced by
+ * trackLoader2
+ * @see #fooBar(String)
+ */
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.File;
