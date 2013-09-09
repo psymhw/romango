@@ -7,6 +7,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -19,8 +24,15 @@ import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableMap;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Color;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -34,15 +46,29 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import org.farng.mp3.MP3File;
+import org.farng.mp3.id3.AbstractID3v1;
+import org.farng.mp3.id3.AbstractID3v2;
 import org.tritonus.share.sampled.TAudioFormat;
 import org.tritonus.share.sampled.file.TAudioFileFormat;
 
 import tangodj2.Hasher;
+import tangodj2.TangoDJ2;
+import tangodj2.TrackLoader;
+
 
 public class MP3LengthCheck extends Application
 {
-	File file = new File("C:\\music\\tango\\ClaroDeLuna.mp3");
+	File file = new File("C:\\music\\tango\\Carabelli\\Cuatro Palabras\\Alma.mp3");
 	Media media=null;
+	ChangeListener cl2;
+	MediaPlayer mp;
+	boolean changed=false;
+	String str="NOT SET";
+	static int errors=0;
+	static int counter=0;
+	private static Hasher hasher = new Hasher();
+	
 	public static void main(String[] args) 
     {
         launch(args);
@@ -51,55 +77,61 @@ public class MP3LengthCheck extends Application
 	 public void start(Stage stage) 
 	 {
 		// getInfo(); 
-		 getLength2();
+		//getLength2();
+		processDirectory();
+		Group root = new Group();
+		
+		final Button addButton = new Button("Check");
+		 addButton.setOnAction(new EventHandler<ActionEvent>() 
+		 {
+		   public void handle(ActionEvent e) 
+		   {
+		     System.out.println("TimeGetters: "+TimeGetter.counter);
+		     
+		   }
+		 });
+		
+		root.getChildren().add(addButton);
+		Scene scene = new Scene(root, 950, 550, Color.WHITE);
+		stage.setScene(scene);
+		stage.show();
 	 }
 	 
-	void getLength()
-	{
-	   try
-	   {
-	     AudioInputStream ais = AudioSystem.getAudioInputStream(file);
-	     float durationInMillis = 1000 * ais.getFrameLength() / ais.getFormat().getFrameRate();
-	     System.out.println("Duration: "+durationInMillis/1000);
-	   }
-	   catch(Exception ex)
-	   { 
-		 System.out.println("Error with playing sound.");
-	     ex.printStackTrace();
-	    }
-	}
-	
+	 
+	 
+	 void processDirectory()
+	 {
+		try {
+			new TrackLoader2("C:\\music\\tango\\Carabelli\\Cuatro Palabras");
+		} catch(Exception e) { e.printStackTrace(); }
+		
+	 }
+	 
 	void getLength2()
 	{
-		  if (file.exists()) System.out.println("File Found");
-		  else System.out.println("File NOT Found");
-      
+	  if (file.exists()) System.out.println("File Found"); else System.out.println("File NOT Found");
+	  changed=false;
+	  str="NOT SET";
+		  
+	  cl2 = new ChangeListener() 
+	  {
+		 public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+		 {
+		  	Duration duration = media.durationProperty().get(); 
+		  	str=formatIntoHHMMSS(duration.toSeconds());
+		    System.out.println("Duration: "+str);
+		    media.durationProperty().removeListener(cl2);
+		    mp=null;
+		    changed=true;
+		 }
+	   };
 	
 	  media = new Media(file.toURI().toString());
-
-	  ChangeListener cl2 = new ChangeListener() 
-	    {
-	      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
-	      {
-	    	Duration duration = media.durationProperty().get();  
-	        System.out.println("Duration: "+formatIntoHHMMSS(duration.toSeconds()));
-	      }
-	    };   
-	    
-	    media.durationProperty().addListener(cl2);
-      
-     // ObservableMap map = media.getMetadata();
-      
-     // System.out.println("Map size: "+map.size());
-      
-      MediaPlayer mp = new MediaPlayer(media);
-      
-     // System.out.println("Duration: "+mp.totalDurationProperty().get());
-      
-     // mp.play();
-      
-      
+	  media.durationProperty().addListener(cl2);
+      mp = new MediaPlayer(media);
  	}
+	
+	
 	
 	static String formatIntoHHMMSS(double secsIn)
 	{
@@ -236,5 +268,20 @@ public class MP3LengthCheck extends Application
 		
 		
 
+	}
+	
+	void getLength()
+	{
+	   try
+	   {
+	     AudioInputStream ais = AudioSystem.getAudioInputStream(file);
+	     float durationInMillis = 1000 * ais.getFrameLength() / ais.getFormat().getFrameRate();
+	     System.out.println("Duration: "+durationInMillis/1000);
+	   }
+	   catch(Exception ex)
+	   { 
+		 System.out.println("Error with playing sound.");
+	     ex.printStackTrace();
+	    }
 	}
 }

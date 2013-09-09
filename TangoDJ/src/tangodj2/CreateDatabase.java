@@ -34,6 +34,7 @@ public class CreateDatabase
 	    		"title varchar(100), " +
 	    		"artist varchar(40), " +
 	    		"album varchar(100), " +
+	    		"duration integer, " +
 	    		"genre varchar(40), " +
 	    		"comment varchar(100) " +
 	    		")");

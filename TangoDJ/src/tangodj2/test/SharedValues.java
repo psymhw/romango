@@ -1,4 +1,4 @@
-package tangodj2;
+package tangodj2.test;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;

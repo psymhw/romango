@@ -1,5 +1,6 @@
 package tangodj2;
 
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public class Track
@@ -10,8 +11,10 @@ public class Track
     private final SimpleStringProperty genre;
     private final SimpleStringProperty comment;
     private final SimpleStringProperty pathHash;
+    private final SimpleStringProperty path;
+    private final SimpleIntegerProperty duration;
     
-    public Track(String titleStr, String artistStr, String albumStr, String genreStr, String commentStr, String pathHashStr)
+    public Track(String titleStr, String artistStr, String albumStr, String genreStr, String commentStr, String pathHashStr, String path, int duration)
     {
       this.title = new SimpleStringProperty(titleStr);
       this.artist = new SimpleStringProperty(artistStr);
@@ -19,6 +22,8 @@ public class Track
       this.genre = new SimpleStringProperty(genreStr);
       this.comment = new SimpleStringProperty(commentStr);
       this.pathHash = new SimpleStringProperty(pathHashStr);
+      this.path = new SimpleStringProperty(path);
+      this.duration = new SimpleIntegerProperty(duration);
     }
     
     public String getPathHash() {
@@ -57,5 +62,22 @@ public class Track
     public void setAlbum(String albumStr) {
     	album.set(albumStr); }
     
+    public String getDuration()
+    {
+    	return formatIntoMMSS(duration.get());
+    }
+    
+    static String formatIntoMMSS(double secsIn)
+	{
+
+	int hours = (int)secsIn / 3600,
+	remainder = (int)secsIn % 3600,
+	minutes = remainder / 60,
+	seconds = remainder % 60;
+
+	return ( (minutes < 10 ? "0" : "") + minutes
+	+ ":" + (seconds< 10 ? "0" : "") + seconds );
+
+	}
 
 }
