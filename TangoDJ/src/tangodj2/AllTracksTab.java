@@ -36,14 +36,14 @@ public class AllTracksTab
   SharedValues sharedValues = new SharedValues();
   private TableView<Track> allTracksTable = new TableView<Track>();
   private final static ObservableList<Track> allTracksData = FXCollections.observableArrayList();
-
+  TrackLoader2 trackLoader = new TrackLoader2();
 	 	
    public AllTracksTab()
    {
 	 tab = new Tab();
 	 tab.setText("All Tracks");
 	 setupAllTracksTable();
-	 setData();
+	 loadData();
 	      
 	 final Button addButton = new Button("Add");
 	 addButton.setOnAction(new EventHandler<ActionEvent>() 
@@ -60,9 +60,7 @@ public class AllTracksTab
 	     {
 	       try
 	       {
-	         TrackLoader2 trackLoader = new TrackLoader2(selectedDirectory.toPath().toString());
-	         clearTable(); 
-	         setData();
+	         trackLoader.process(selectedDirectory.toPath().toString());
 	       } catch (Exception ex) {ex.printStackTrace();}
 	     }
 	   }
@@ -122,10 +120,13 @@ public class AllTracksTab
 	                 {
 	              	    public void changed(ObservableValue observable, Object oldValue, Object newValue) {
 	              		Track selectedTrack = (Track)newValue;
-	              		System.out.println("selected: "+selectedTrack.getTitle());
+	              		if (selectedTrack!=null)
+	              		{
+	              		  System.out.println("selected: "+selectedTrack.getTitle());
 	              		//tanda.addTrack(new TandaTrack(selectedTrack.getTitle()));
-	              		sharedValues.title.set(selectedTrack.getTitle());
-	              		sharedValues.pathHash.set(selectedTrack.getPathHash());
+	              		  sharedValues.title.set(selectedTrack.getTitle());
+	              		  sharedValues.pathHash.set(selectedTrack.getPathHash());
+	              		}
 	              	}
 	             });
 	    
@@ -223,7 +224,8 @@ public class AllTracksTab
 	      
 	      TableColumn durationCol = new TableColumn("Length");
 	      durationCol.setMinWidth(50);
-	      durationCol.setPrefWidth(100);
+	      durationCol.setPrefWidth(50);
+	     
 	      durationCol.setCellValueFactory(
 	          new PropertyValueFactory<Track, String>("duration"));
 	      durationCol.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -265,7 +267,13 @@ public class AllTracksTab
 			return allTracksTable;
 		}
 	 	
-	 	public static void setData()
+	 	public static void reloadData()
+	 	{
+	 		allTracksData.clear();
+	 		loadData();
+	 	}
+	 	
+	 	public static void loadData()
 	 	  {
 	 	    String title;
 	 	    String artist;
@@ -300,9 +308,6 @@ public class AllTracksTab
 	 	    } catch (Exception e) { e.printStackTrace();}
 	 	  }
 	 	
-	 	public void clearTable()
-	 	{
-	 	  allTracksData.clear();
-	 	}
+	 	
 	  
 	}
