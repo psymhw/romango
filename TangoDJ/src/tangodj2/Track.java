@@ -1,5 +1,7 @@
 package tangodj2;
 
+import java.text.DecimalFormat;
+
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -74,9 +76,12 @@ public class Track
 	remainder = (int)secsIn % 3600,
 	minutes = remainder / 60,
 	seconds = remainder % 60;
-
-	return ( (minutes < 10 ? "0" : "") + minutes
-	+ ":" + (seconds< 10 ? "0" : "") + seconds );
+	DecimalFormat sec = new DecimalFormat( "00" );
+	DecimalFormat min = new DecimalFormat( "##" );
+	//return ( (minutes < 10 ? "0" : "") + minutes
+	//+ ":" + (seconds< 10 ? "0" : "") + seconds );
+	
+	return min.format(minutes)+":"+sec.format(seconds);
 
 	}
 

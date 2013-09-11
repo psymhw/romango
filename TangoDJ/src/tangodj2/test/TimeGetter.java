@@ -29,16 +29,16 @@ public class TimeGetter
 	  try 
 	  {
 		File file = new File(path);
-		 if (!file.exists()) 
-		 {
-			 System.out.println("File NOT Found");
-			 return;
-		 }
+		if (!file.exists()) 
+		{
+		  System.out.println("File NOT Found");
+		  return;
+		}
 		media = new Media(file.toURI().toString());
 		if (media==null)
 		{
-			 System.out.println("Media is null");
-			 return;
+		  System.out.println("Media is null");
+		  return;
 		}
 	//	System.out.println("Track: "+path);
 	  } catch (Exception exx) { System.out.println("Trouble w media;"); return; }
