@@ -80,7 +80,7 @@ public class MediaMetaGetter
 	 media.getMetadata().removeListener(metaChangeListener);
 	 mp=null;
 	 media=null;
-	 
+	 trackMeta.metaComplete=true;
 	 timeline=null;
 	 SharedValues.loadMonitor.set(SharedValues.loadMonitor.get()-1);
   }
