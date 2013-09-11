@@ -7,9 +7,10 @@ public class TrackMeta
   public  String album="";
   public String comment="";
   public String genre="";
-  public int duration;
+  public int duration=0;
   public String pathHash="";
   public String path;
+  public boolean metaComplete=false;
   
   public TrackMeta(String title, 
 		           String artist, 

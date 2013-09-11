@@ -16,9 +16,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.util.Duration;
 
 import org.farng.mp3.MP3File;
 import org.farng.mp3.id3.AbstractID3v1;
@@ -31,7 +36,10 @@ public class TrackLoader2
   public static final String DRIVER2 ="org.apache.derby.jdbc.EmbeddedDriver";
   public static final String JDBC_URL2 ="jdbc:derby:tango_db;create=false";
   static Connection connection;
- 
+  private Timeline timeline;
+  int seconds=0;
+  int timelineCycles=0;
+  
   static int errors=0;
   static int counter=0;
   private static Hasher hasher = new Hasher();
@@ -41,6 +49,7 @@ public class TrackLoader2
 	
   public TrackLoader2()
   {
+	  /*
 	  SharedValues.loadMonitor.set(0); //initiallize counter
 		ChangeListener changeListener = new ChangeListener() 
 		{
@@ -62,8 +71,51 @@ public class TrackLoader2
 		  }};
 			 
 		  SharedValues.loadMonitor.addListener(changeListener);
+		  */
+	  
+		  seconds=0;
+		  timeline = new Timeline();
+		  timeline.setCycleCount(Timeline.INDEFINITE);
+		  KeyFrame keyFrame= new KeyFrame(Duration.seconds(1), new EventHandler() 
+		  {
+			       public void handle(Event event) 
+			       {
+			         seconds++;
+			         timelineCycles++;
+			         if (metaLoaded()) 
+			         {
+			        	 timeline.stop();
+			        	 System.out.println("timeline stopped. Cycles: "+timelineCycles);
+			        	 listTrackInfo();
+			        	 cleanupTrackInfo();
+			        	 insertRecords();
+			        	 AllTracksTab.reloadData();
+			         }
+			         if (seconds>=3) 
+			         {
+			          // if not done in 3 sec, kill it	 
+			          // complete();	 
+			         }
+			       }});
+			      
+		  timeline.getKeyFrames().add(keyFrame);
+		  
   }
   
+  private boolean metaLoaded()
+  {
+	  TrackMeta trackMeta;
+	   int counter=0;
+	   Iterator<TrackMeta> it = trackInfo.iterator();
+	   String tStr;
+	   while(it.hasNext())
+	   {
+		 trackMeta=it.next();
+		 if (trackMeta.duration==0) return false;
+		 if (trackMeta.metaComplete==false) return false;
+	  }  
+	   return true;
+  }
   
   public void process(String inPath) throws ClassNotFoundException, IOException, SQLException
   {
@@ -92,6 +144,8 @@ public class TrackLoader2
 		      else System.out.println(errors+" Errors\n");
 	   
 	   assignTimes();
+	   timelineCycles=0;
+	   timeline.playFromStart();
 		}
 	 
   
@@ -106,7 +160,9 @@ public class TrackLoader2
 		 trackMeta=it.next();
 		 SharedValues.loadMonitor.set(SharedValues.loadMonitor.get()+1);
 		 new TimeGetter(trackMeta);
-		 if (!isSet(trackMeta.title)) { new MediaMetaGetter(trackMeta); }
+		 if (!isSet(trackMeta.title)) 
+		 { new MediaMetaGetter(trackMeta); }
+		 else trackMeta.metaComplete=true;
 	  }
 	 }
   
