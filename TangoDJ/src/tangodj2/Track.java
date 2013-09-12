@@ -15,8 +15,10 @@ public class Track
     private final SimpleStringProperty pathHash;
     private final SimpleStringProperty path;
     private final SimpleIntegerProperty duration;
+    private int cortina=0;
     
-    public Track(String titleStr, String artistStr, String albumStr, String genreStr, String commentStr, String pathHashStr, String path, int duration)
+    
+	public Track(String titleStr, String artistStr, String albumStr, String genreStr, String commentStr, String pathHashStr, String path, int duration, int cortina)
     {
       this.title = new SimpleStringProperty(titleStr);
       this.artist = new SimpleStringProperty(artistStr);
@@ -26,6 +28,7 @@ public class Track
       this.pathHash = new SimpleStringProperty(pathHashStr);
       this.path = new SimpleStringProperty(path);
       this.duration = new SimpleIntegerProperty(duration);
+      this.cortina=cortina;
     }
     
     public String getPathHash() {
@@ -68,6 +71,15 @@ public class Track
     {
     	return formatIntoMMSS(duration.get());
     }
+    
+    public int getCortina() {
+		return cortina;
+	}
+
+	public void setCortina(int cortina) {
+		this.cortina = cortina;
+	}
+
     
     static String formatIntoMMSS(double secsIn)
 	{

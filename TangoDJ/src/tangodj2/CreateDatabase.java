@@ -12,22 +12,55 @@ public class CreateDatabase
 	static Connection connection;
 	public static final String DRIVER ="org.apache.derby.jdbc.EmbeddedDriver";
 	public static final String JDBC_URL ="jdbc:derby:tango_db;create=true";
-
 	
 	public CreateDatabase() throws ClassNotFoundException, SQLException, IOException
 	{
 	  File test = new File("tango_db");
-	  if (test!=null)
-	  {
-		if (test.exists()) exists=true;
-	  }
+	  if (test!=null) { if (test.exists()) exists=true; }
 	  
 	  if (exists) System.out.println("database found");
 	  else
 	  {
-		Class.forName(DRIVER);
-		 connection = DriverManager.getConnection(JDBC_URL);
-	    connection.createStatement().execute("create table tracks(" +
+		connect();
+	    
+		createTracksTable();
+		createPlaylistsTable();
+	    
+	    connection.close();
+	    System.out.println("database initiallized");
+	  }
+	}
+	
+	public CreateDatabase(boolean partial) throws  SQLException, ClassNotFoundException
+	{
+      connect();
+	 // createTracksTable();
+	 // createPlaylistsTable();
+	  connection.close();  
+	}
+	
+	private void connect()  throws SQLException, ClassNotFoundException
+	{
+	  Class.forName(DRIVER);
+	  connection = DriverManager.getConnection(JDBC_URL);	
+	}
+	
+	
+	
+	private void createPlaylistsTable() throws SQLException
+	{
+		connection.createStatement().execute("create table playlists(" +
+	    		"id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
+	    		"name varchar(100), " +
+	    		"location varchar(100), " +
+	    		"incept TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP" +
+	    		")");	
+		System.out.println("Playlists table created");
+	}
+	
+	private void createTracksTable() throws SQLException
+	{
+		connection.createStatement().execute("create table tracks(" +
 	    		"id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
 	    		"path varchar(300), " +
 	    		"pathHash varchar(32), " +
@@ -36,29 +69,19 @@ public class CreateDatabase
 	    		"album varchar(100), " +
 	    		"duration integer, " +
 	    		"genre varchar(40), " +
+	    		"cortina integer, " +
 	    		"comment varchar(100) " +
 	    		")");
 	    
 	    connection.createStatement().execute("CREATE UNIQUE INDEX pathInd ON TRACKS(PATHHASH)");
-	    
-	    connection.createStatement().execute("create table playlists(" +
-	    		"id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
-	    		"name varchar(100), " +
-	    		"location varchar(100), " +
-	    		"incept TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP" +
-	    		")");
-	    
-	    connection.close();
-	    System.out.println("database initiallized");
-	  }
+	    System.out.println("Tracks table created");
 	}
 	
 	public static void main(String[] args) 
 	{
 	  try
 	  {
-		 
-	    new CreateDatabase();
+	    new CreateDatabase(true);
 	  } catch (Exception e) { e.printStackTrace(); }
 	}
 

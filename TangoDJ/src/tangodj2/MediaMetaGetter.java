@@ -6,6 +6,7 @@ import java.util.Iterator;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.MapChangeListener;
 import javafx.collections.MapChangeListener.Change;
 import javafx.event.Event;
@@ -24,8 +25,11 @@ public class MediaMetaGetter
   private boolean artistNeeded=true;
   private boolean genreNeeded=true;
   private boolean albumNeeded=true;
+  private boolean durationNeeded=true;
   private Timeline timeline;
   private int seconds=0;
+  ChangeListener timeChangeListener;
+  boolean useMetaChangeListener=false;
 	
   public MediaMetaGetter(TrackMeta trackMeta)
   {
@@ -35,13 +39,25 @@ public class MediaMetaGetter
 	try 
 	{
 	  File file = new File(trackMeta.path);
-	  if (!file.exists()) { System.out.println("File NOT Found"); return; }
+	  if (!file.exists()) { System.out.println("File NOT Found: "+trackMeta.path); return; }
 		
 	  media = new Media(file.toURI().toString());
 	  if (media==null) { System.out.println("Media is null"); return;	}
 		
 	} catch (Exception exx) { System.out.println("Trouble w media;"); return; }
 	  
+	  timeChangeListener = new ChangeListener() 
+	  {
+	    public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+		{
+		  Duration duration = media.durationProperty().get(); 
+		  setDuration((int)duration.toSeconds());
+		  durationNeeded=false;
+		  complete();
+		 // checkForCompletion();
+		}
+    };
+	
 	metaChangeListener = new MapChangeListener<String, Object>() 
 	{
 	  public void onChanged(Change<? extends String, ? extends Object> ch) 
@@ -54,35 +70,49 @@ public class MediaMetaGetter
 	};
 						
 	mp = new MediaPlayer(media);
-	media.getMetadata().addListener(metaChangeListener);
 	
+	if (titleNeeded) { useMetaChangeListener=true; media.getMetadata().addListener(metaChangeListener); }
+	else trackMeta.metaComplete=true;
+	
+	media.durationProperty().addListener(timeChangeListener);
 	 
-	 timeline = new Timeline();
-	  timeline.setCycleCount(Timeline.INDEFINITE);
-	  KeyFrame keyFrame= new KeyFrame(Duration.seconds(1), new EventHandler() 
-	     {
-		       public void handle(Event event) 
-		       {
-		         seconds++;
-		         if (seconds>=3) 
-		         {
-		          // if not done in 3 sec, kill it	 
-		           complete();	 
-		         }
-		       }});
+	timeline = new Timeline();
+	timeline.setCycleCount(Timeline.INDEFINITE);
+	KeyFrame keyFrame= new KeyFrame(Duration.seconds(1), new EventHandler() 
+	{
+	   public void handle(Event event) 
+	   {
+		 seconds++;
+		 if (seconds>=10) 
+		 {
+		   timeout();
+		 }
+	   }});
 		      
 	  timeline.getKeyFrames().add(keyFrame);
 	  timeline.playFromStart();
   }
+  
+  private void setDuration(int seconds)
+  {
+	  trackMeta.duration=seconds;
+  }
+  
+  private void timeout()
+  {
+	  System.out.println("MediaMetaGetter timeout: "+trackMeta.path); 
+      complete();	  
+  }
+  
   private void complete()
   {
 	 timeline.stop();
-	 media.getMetadata().removeListener(metaChangeListener);
+	 if (useMetaChangeListener) media.getMetadata().removeListener(metaChangeListener);
+	 media.durationProperty().removeListener(timeChangeListener);
 	 mp=null;
 	 media=null;
 	 trackMeta.metaComplete=true;
 	 timeline=null;
-	 SharedValues.loadMonitor.set(SharedValues.loadMonitor.get()-1);
   }
   
 	private void handleMetadata(String key, Object value) 
@@ -95,6 +125,7 @@ public class MediaMetaGetter
 	  if((titleNeeded==false)
 	   &&(albumNeeded==false)
 	   &&(artistNeeded==false)
+	   &&(durationNeeded==false)
 	   &&(genreNeeded==false)) complete();  // got everything, kill it.
 	}
 	

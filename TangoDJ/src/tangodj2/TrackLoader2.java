@@ -18,9 +18,6 @@ import java.util.List;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.util.Duration;
@@ -28,8 +25,6 @@ import javafx.util.Duration;
 import org.farng.mp3.MP3File;
 import org.farng.mp3.id3.AbstractID3v1;
 import org.farng.mp3.id3.AbstractID3v2;
-
-import tangodj2.Hasher;
 
 public class TrackLoader2 
 {
@@ -44,62 +39,36 @@ public class TrackLoader2
   static int counter=0;
   private static Hasher hasher = new Hasher();
   private static List<TrackMeta> trackInfo = new ArrayList<TrackMeta>();
- // private boolean needMissingMeta=true;
- // private static SimpleBooleanProperty needMissingMeta = new SimpleBooleanProperty(true);
 	
   public TrackLoader2()
   {
-	  /*
-	  SharedValues.loadMonitor.set(0); //initiallize counter
-		ChangeListener changeListener = new ChangeListener() 
+	seconds=0;
+	timeline = new Timeline();
+	timeline.setCycleCount(Timeline.INDEFINITE);
+	KeyFrame keyFrame= new KeyFrame(Duration.seconds(1), new EventHandler() 
+	{
+	  public void handle(Event event) 
+	  {
+	    seconds++;
+	    timelineCycles++;
+	    if (metaLoaded()) 
+	    {
+	      timeline.stop();
+		  System.out.println("timeline stopped. Cycles: "+timelineCycles);
+		 // listTrackInfo();
+		  sqlReadyTrackInfo();
+		  insertRecords();
+		  AllTracksTab.reloadData();
+		}
+		if (seconds>=30) 
 		{
-		  public void changed(ObservableValue observable, Object oldValue, Object newValue) 
-		  {
-			int oldInt = (int)oldValue;
-			int newInt = (int)newValue;
-			if (newInt<oldInt) 
-			{	  
-			  if (newInt==0)
-			  {
-				System.out.println("Assignment Complete.");
-				listTrackInfo();
-				cleanupTrackInfo();
-				insertRecords();
-				AllTracksTab.reloadData();
-			  }
-			}
-		  }};
-			 
-		  SharedValues.loadMonitor.addListener(changeListener);
-		  */
-	  
-		  seconds=0;
-		  timeline = new Timeline();
-		  timeline.setCycleCount(Timeline.INDEFINITE);
-		  KeyFrame keyFrame= new KeyFrame(Duration.seconds(1), new EventHandler() 
-		  {
-			       public void handle(Event event) 
-			       {
-			         seconds++;
-			         timelineCycles++;
-			         if (metaLoaded()) 
-			         {
-			        	 timeline.stop();
-			        	 System.out.println("timeline stopped. Cycles: "+timelineCycles);
-			        	 listTrackInfo();
-			        	 cleanupTrackInfo();
-			        	 insertRecords();
-			        	 AllTracksTab.reloadData();
-			         }
-			         if (seconds>=3) 
-			         {
-			          // if not done in 3 sec, kill it	 
-			          // complete();	 
-			         }
-			       }});
+		  timeline.stop();
+		  System.out.println("ERROR: timeline stopped. Cycles: "+timelineCycles);
+		  listTrackInfo();
+		}
+	  }});
 			      
-		  timeline.getKeyFrames().add(keyFrame);
-		  
+	  timeline.getKeyFrames().add(keyFrame);
   }
   
   private boolean metaLoaded()
@@ -121,19 +90,6 @@ public class TrackLoader2
   {
 	Class.forName(DRIVER2);
 	trackInfo.clear();
-	SharedValues.loadMonitor.set(0);
-	/*
-	 * The SharedValues.loadMonitor is an integer that increments for each mp3 file found.
-	 * Most of the info is set in a TrackMeta and added to a list: trackInfo but...
-	 * the track length (duration) is set in a lazy fashion by the TimeGetter class
-	 * which finds the appropriate TrackMeta in the list, assign the time and decrments the
-	 * SharedValues.loadMonitor value. 
-	 * 
-	 * A change listener on SharedValues.loadMonitor (directly below) detects the value has decreased to 0
-	 * which means all of the times are assigned and I can now use the list to add records to the DB.
-	 */
-	
-	
 	
 	 
 	  FileVisitor<Path> fileProcessor = new ProcessFile();
@@ -143,13 +99,13 @@ public class TrackLoader2
 	   if (errors==0) System.out.println(" No Errors\n");
 		      else System.out.println(errors+" Errors\n");
 	   
-	   assignTimes();
+	   getMetaData();
 	   timelineCycles=0;
 	   timeline.playFromStart();
 		}
 	 
   
-  void assignTimes()
+  void getMetaData()
 	 {
 	   TrackMeta trackMeta;
 	   int counter=0;
@@ -158,12 +114,8 @@ public class TrackLoader2
 	   while(it.hasNext())
 	   {
 		 trackMeta=it.next();
-		 SharedValues.loadMonitor.set(SharedValues.loadMonitor.get()+1);
-		 new TimeGetter(trackMeta);
-		 if (!isSet(trackMeta.title)) 
-		 { new MediaMetaGetter(trackMeta); }
-		 else trackMeta.metaComplete=true;
-	  }
+		 new MediaMetaGetter(trackMeta);
+	   }
 	 }
   
   
@@ -188,24 +140,25 @@ public class TrackLoader2
 		   if (inStr.length()==0) return false;
 		   return true;
 		}
-	 void cleanupTrackInfo()
+	 void sqlReadyTrackInfo()
 	 {
 	   TrackMeta trackMeta;
 	   Iterator<TrackMeta> it = trackInfo.iterator();
 	   while(it.hasNext())
 	   {
 		 trackMeta=it.next();
-		 trackMeta.title    = cleanString(trackMeta.title);
-		 trackMeta.artist   = cleanString(trackMeta.artist);
-		 trackMeta.album    = cleanString(trackMeta.album);
-		 trackMeta.comment  = cleanString(trackMeta.comment);
-		 trackMeta.path      = cleanString(trackMeta.path);
+		 trackMeta.title    = sqlReadyString(trackMeta.title);
+		 trackMeta.artist   = sqlReadyString(trackMeta.artist);
+		 trackMeta.album    = sqlReadyString(trackMeta.album);
+		 trackMeta.comment  = sqlReadyString(trackMeta.comment);
+		 trackMeta.path     = sqlReadyString(trackMeta.path);
 	  }
 			
 	 }
 	 
 	 void insertRecords() 
 	 {
+		int cortina=0;  // TODO set this on load
 	try{	 
 	   connection = DriverManager.getConnection(JDBC_URL2);
 	   TrackMeta trackMeta;
@@ -213,8 +166,8 @@ public class TrackLoader2
 	   while(it.hasNext())
 	   {
 		 trackMeta=it.next();
-		 String sql="insert into tracks(path, pathHash, title, artist, album, duration, genre, comment) "
-		 		+"values ('"+trackMeta.path
+		 String sql="insert into tracks(cortina, path, pathHash, title, artist, album, duration, genre, comment) "
+		 		+"values ("+cortina+", '"+trackMeta.path
 	              +"', '"+trackMeta.pathHash
 	              +"', '"+trackMeta.title
 	              +"', '"+trackMeta.artist
@@ -234,8 +187,7 @@ public class TrackLoader2
 
 	 void processDirectory()
 	 {
-		 
-	      FileVisitor<Path> fileProcessor = new ProcessFile();
+	   FileVisitor<Path> fileProcessor = new ProcessFile();
 	 }
 	 
 	private static final class ProcessFile extends SimpleFileVisitor<Path> 
@@ -272,30 +224,7 @@ public class TrackLoader2
 		    	  album=tag.getAlbumTitle();
 		    	 	          
 		    	  pathStr2=path.toString();
-		    	  pathStr2=pathStr2.replace("'","''");
-		    	 
-		        	 
-		    	  
-		    	  /*
-				  title = title.replace("'","''");
-				  artist= artist.replace("'","''");
-				  album=album.replace("'","''");
-				  comment=comment.replace("'","''");
-				  
-				  pathStr2=path.toString();
-				  pathStr2=pathStr2.replace("'","''");
-				  
-				  title = title.replace("ÿþ","");
-				  artist = artist.replace("ÿþ","");
-				  album = album.replace("ÿþ","");
-				  
-				  
-				  char tChar=0;
-				  title = removeChar(title, tChar);
-				  artist = removeChar(artist, tChar);
-				  album = removeChar(album, tChar);
-				 */
-		    	  
+		    			    	  
 				  pathHash = hasher.getMd5Hash(pathStr2.getBytes());
 				  
 				  int duration = 0;
@@ -303,14 +232,7 @@ public class TrackLoader2
 				  
 				  trackInfo.add(new TrackMeta(title, artist, album, comment, genre, pathHash, pathStr2));
 				  
-				//  new TimeGetter(pathStr2, trackInfo, pathHash);	
-				 
-				 
-				 	    		  
-		   	  
-		    	//	 System.out.println(" inserting: "+sql);
-		    	//  SharedValues.loadMonitor.set(SharedValues.loadMonitor.get()+1);
-		          counter++;
+				  counter++;
 		       }
 		      else
 		      {
@@ -326,7 +248,7 @@ public class TrackLoader2
 		    }
 		}
 		    
-	public static String cleanString(String inStr)
+	public static String sqlReadyString(String inStr)
 	{
 	   String returnStr = inStr.replace("'","''");
 	   returnStr = returnStr.replace("ÿþ","");

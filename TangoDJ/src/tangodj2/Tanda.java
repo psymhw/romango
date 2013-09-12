@@ -22,6 +22,7 @@ public class Tanda
    String artist;
    VBox vbox = new VBox();
    
+   
    private final  ObservableList<TandaTrack> tandaTracksData = FXCollections.observableArrayList();
    private TableView<TandaTrack> tandaTracksTable = new TableView<TandaTrack>();
    
@@ -34,6 +35,11 @@ public class Tanda
 	 final Label label = new Label(artist+" - "+style);
 	 label.setFont(new Font("Arial", 20));
 	 
+	 //vbox.setPrefHeight(500);
+	// vbox.setMinHeight(500);
+	// vbox.setMaxHeight(500);
+	 vbox.setStyle("-fx-background-color: CC66FF; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
+
 	 vbox.getChildren().addAll(label, tandaTracksTable);
 	 
 	 TableColumn titleCol = new TableColumn("Title");
@@ -54,7 +60,7 @@ public class Tanda
      );
      tandaTracksTable.getColumns().add(titleCol);
      tandaTracksTable.setItems(tandaTracksData);
-     tandaTracksTable.setPrefHeight(100);
+    // tandaTracksTable.setPrefHeight(100);
      
      
      tandaTracksTable.widthProperty().addListener(new ChangeListener<Number>() {
