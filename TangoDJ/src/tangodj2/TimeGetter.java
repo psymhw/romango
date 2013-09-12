@@ -16,6 +16,9 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
+/*
+ * deprecated see MediaMetaGetter
+ */
 public class TimeGetter 
 {
 	Media media=null;
@@ -126,7 +129,6 @@ public class TimeGetter
 	      media.getMetadata().removeListener(metaChangeListener);
 	      mp=null;
 	      media=null;
-	      SharedValues.loadMonitor.set(SharedValues.loadMonitor.get()-1);
 		}
 	//  }
 	}
@@ -137,7 +139,6 @@ public class TimeGetter
 	     // media.getMetadata().removeListener(metaChangeListener);
 	      mp=null;
 	      media=null;
-	      SharedValues.loadMonitor.set(SharedValues.loadMonitor.get()-1);
 	}
 	
 	private void setDuration(int seconds)

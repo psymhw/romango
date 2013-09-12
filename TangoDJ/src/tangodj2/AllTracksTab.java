@@ -45,7 +45,7 @@ public class AllTracksTab
 	 setupAllTracksTable();
 	 loadData();
 	      
-	 final Button addButton = new Button("Add");
+	 final Button addButton = new Button("Add Tracks");
 	 addButton.setOnAction(new EventHandler<ActionEvent>() 
 	 {
 	   public void handle(ActionEvent e) 
@@ -70,12 +70,19 @@ public class AllTracksTab
 	 label.setFont(new Font("Arial", 20));
 	      
 	 final VBox vbox = new VBox();
-	 vbox.setPadding(new Insets(10, 0, 0, 10));
+	 vbox.setPadding(new Insets(10, 10, 10, 10));
+	 vbox.setSpacing(20);
+	 vbox.setStyle("-fx-background-color: DAE6F3; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
+
+	 
 	 vbox.getChildren().addAll(label, getTable(), addButton);
 	      
 	 HBox hbox =  new HBox();
-	 hbox.setPadding(new Insets(10, 0, 0, 10));
+	 hbox.setPadding(new Insets(10, 10, 10, 10));
+	 hbox.setSpacing(20);
 	 hbox.getChildren().add(vbox);
+	 hbox.setStyle("-fx-background-color: CC99CC; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
+
 	      
      tanda = new Tanda("Canaro", "Vals");
      hbox.getChildren().add(tanda.getTanda());
@@ -282,13 +289,14 @@ public class AllTracksTab
 	 	    String comment;
 	 	    String pathHash;
 	 	    String path;
+	 	    int cortina;
 	 	    int duration=0;
 	 	    
 	 	    try
 	 	    {
 	 			Connection connection = DriverManager.getConnection("jdbc:derby:tango_db;create=false");
 	 			Statement statement = connection.createStatement();
-	 			ResultSet resultSet = statement.executeQuery("select * from tracks");
+	 			ResultSet resultSet = statement.executeQuery("select * from tracks order by artist, album, title");
 	 			while(resultSet.next())
 	 			{
 	 			  title=resultSet.getString("title");
@@ -299,7 +307,8 @@ public class AllTracksTab
 	 			  pathHash = resultSet.getString("pathHash");
 	 			  path = resultSet.getString("path");
 	 			  duration=resultSet.getInt("duration");
-	 			  allTracksData.add(new Track(title, artist, album, genre, comment, pathHash, path, duration));
+	 			  cortina=resultSet.getInt("cortina");
+	 			  allTracksData.add(new Track(title, artist, album, genre, comment, pathHash, path, duration, cortina));
 	 			  
 	 			  //System.out.println("added: "+title);
 	 			}
