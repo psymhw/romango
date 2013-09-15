@@ -24,6 +24,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.DirectoryChooser;
@@ -85,7 +86,11 @@ public class AllTracksTab
 
 	      
      tanda = new Tanda("Canaro", "Vals");
-     hbox.getChildren().add(tanda.getTanda());
+     
+     VBox tandaBox = tanda.getTanda();
+     
+     hbox.getChildren().add(tandaBox);
+     hbox.setHgrow(tandaBox, Priority.ALWAYS);
 	      
 	      //((Group) scene.getRoot()).getChildren().addAll(vbox);
      setupListeners();

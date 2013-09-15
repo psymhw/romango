@@ -28,9 +28,9 @@ import org.farng.mp3.id3.AbstractID3v2;
 
 public class TrackLoader2 
 {
-  public static final String DRIVER2 ="org.apache.derby.jdbc.EmbeddedDriver";
-  public static final String JDBC_URL2 ="jdbc:derby:tango_db;create=false";
-  static Connection connection;
+ public static final String DRIVER2 ="org.apache.derby.jdbc.EmbeddedDriver";
+ public static final String JDBC_URL2 ="jdbc:derby:tango_db;create=false";
+ static Connection connection;
   private Timeline timeline;
   int seconds=0;
   int timelineCycles=0;
@@ -45,6 +45,9 @@ public class TrackLoader2
 	seconds=0;
 	timeline = new Timeline();
 	timeline.setCycleCount(Timeline.INDEFINITE);
+	
+	
+	
 	KeyFrame keyFrame= new KeyFrame(Duration.seconds(1), new EventHandler() 
 	{
 	  public void handle(Event event) 
@@ -88,7 +91,7 @@ public class TrackLoader2
   
   public void process(String inPath) throws ClassNotFoundException, IOException, SQLException
   {
-	Class.forName(DRIVER2);
+	//Class.forName(DRIVER2);
 	trackInfo.clear();
 	
 	 
@@ -159,7 +162,8 @@ public class TrackLoader2
 	 void insertRecords() 
 	 {
 		int cortina=0;  // TODO set this on load
-	try{	 
+	try{
+		//Db.connect();
 	   connection = DriverManager.getConnection(JDBC_URL2);
 	   TrackMeta trackMeta;
 	   Iterator<TrackMeta> it = trackInfo.iterator();
@@ -178,9 +182,11 @@ public class TrackLoader2
 	              +"')";
 		 try {
 		 if (isSet(trackMeta.title)) connection.createStatement().execute(sql);
-		 } catch (Exception ex) { System.out.println("SQL ERROR: "+sql); } 
+		 } catch (Exception ex) { System.out.println("SQL ERROR: "+sql); 
+		 ex.printStackTrace(); } 
 	  }
 		connection.close();	
+	 // Db.disconnect();
 	} catch (Exception e) { e.printStackTrace(); }
 }
 	  
