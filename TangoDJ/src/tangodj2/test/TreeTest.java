@@ -27,10 +27,12 @@ import org.farng.mp3.id3.AbstractID3v1;
 import org.farng.mp3.id3.AbstractID3v2;
 
 
-public class MP3TagCheck extends Application
+public class TreeTest extends Application
 {
   static Stage primaryStage;
   File file;
+  TreeItem<Text> canaro;
+  TreeItem<Text> newitem;
   
   public static void main(String[] args) {  launch(args);}
   
@@ -44,25 +46,30 @@ public class MP3TagCheck extends Application
 	primaryStage.setScene(scene);
 	
 	Button btn = new Button();
-	btn.setText("Open FileChooser'");
+	btn.setText("Add Item");
 	btn.setOnAction(new EventHandler<ActionEvent>() 
 	{
       public void handle(ActionEvent event) 
       {
-	    FileChooser fileChooser = new FileChooser();
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("MP3 files (*.mp3)", "*.mp3");
-        fileChooser.getExtensionFilters().add(extFilter);
-        fileChooser.setInitialDirectory(new File("C:\\music\\tango"));
-        file = fileChooser.showOpenDialog(null);
-        check(file.getPath());
+    	  newitem = new TreeItem<Text>(new Text("New Item"));
+    	  canaro.getChildren().add(newitem);
       }
     });
 	      
+	Button btn2 = new Button();
+	btn2.setText("Remove Item");
+	btn2.setOnAction(new EventHandler<ActionEvent>() 
+	{
+      public void handle(ActionEvent event) 
+      {
+    	  canaro.getChildren().remove(newitem);
+      }
+    });
 	      
 	TreeItem<Text> treeRoot = new TreeItem<Text>(new Text("Test Playlist"));
 	treeRoot.setExpanded(true);
 	
-	TreeItem<Text> canaro = new TreeItem<Text>(new Text("Canaro - VALS"));
+	canaro = new TreeItem<Text>(new Text("Canaro - VALS"));
 
 	Text track1_text = new Text("Track 1");
 	track1_text.setFont(Font.font("Serif", 20));
@@ -74,12 +81,15 @@ public class MP3TagCheck extends Application
 	          new TreeItem<Text>(new Text("Di Sarli - Tango")),
 	          new TreeItem<Text>(new Text("Biagi - Milonga"))
 	      );
-	TreeViewWithItems treeView = new TreeViewWithItems(treeRoot);
+	//TreeViewWithItems treeView = new TreeViewWithItems(treeRoot);
+	TreeView treeView = new TreeView(treeRoot);
+
 	//treeView.setShowRoot(false);
 	
 	
 	
 	vbox.getChildren().add(btn);
+	vbox.getChildren().add(btn2);
 	vbox.getChildren().add(treeView);
 	
 	primaryStage.show();

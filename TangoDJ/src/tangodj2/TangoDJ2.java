@@ -1,5 +1,7 @@
 package tangodj2;
 
+import java.sql.SQLException;
+
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -14,6 +16,8 @@ import javafx.stage.Stage;
 /* TODO 
  * 
  * iTunes playlist import?
+ * No duplicate hash codes in all tracks
+ * Db close on window close
  * 
 */ 
 
@@ -38,7 +42,12 @@ public class TangoDJ2 extends Application
       TabPane tabPane = new TabPane();
       BorderPane mainPane = new BorderPane();
           
-      try { new CreateDatabase(); } catch (Exception e) { e.printStackTrace(); }
+      CreateDatabase cb = new CreateDatabase();
+    
+      try {if (!cb.exists()) cb.create(); } catch (Exception e) { e.printStackTrace(); }
+      
+      
+      
       setupListeners();
      
       allTracksTab = new AllTracksTab();

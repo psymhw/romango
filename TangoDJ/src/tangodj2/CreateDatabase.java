@@ -13,32 +13,37 @@ public class CreateDatabase
 	public static final String DRIVER ="org.apache.derby.jdbc.EmbeddedDriver";
 	public static final String JDBC_URL ="jdbc:derby:tango_db;create=true";
 	
-	public CreateDatabase() throws ClassNotFoundException, SQLException, IOException
+	public boolean exists()
 	{
-	  File test = new File("tango_db");
-	  if (test!=null) { if (test.exists()) exists=true; }
-	  
-	  if (exists) System.out.println("database found");
-	  else
-	  {
+		 File test = new File("tango_db");
+		  if (test!=null) 
+		  { 
+			  if (test.exists()) 
+			  {
+				  System.out.println("database found");
+				  return true; 
+			  }
+		  }
+		  return false;
+		}
+	
+	public void create() throws ClassNotFoundException, SQLException
+	{
 		connect();
-	    
-		createTracksTable();
+	   	createTracksTable();
 		createPlaylistsTable();
-	    
-	    connection.close();
-	    System.out.println("database initiallized");
-	  }
+		createStateTable();
+		disconnect();
+	   //Db.disconnect();
+	    System.out.println("database initiallized");	
 	}
 	
-	public CreateDatabase(boolean partial) throws  SQLException, ClassNotFoundException
+	
+	
+	private void disconnect() throws SQLException
 	{
-      connect();
-	 // createTracksTable();
-	 // createPlaylistsTable();
-	  connection.close();  
+		connection.close();
 	}
-	
 	private void connect()  throws SQLException, ClassNotFoundException
 	{
 	  Class.forName(DRIVER);
@@ -56,6 +61,16 @@ public class CreateDatabase
 	    		"incept TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP" +
 	    		")");	
 		System.out.println("Playlists table created");
+	}
+	
+	private void createStateTable() throws SQLException
+	{
+		connection.createStatement().execute("create table state(" +
+	    		"id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
+	    		"name varchar(50), " +
+	    		"value varchar(50) " +
+	    		")");	
+		System.out.println("State table created");
 	}
 	
 	private void createTracksTable() throws SQLException
@@ -81,7 +96,7 @@ public class CreateDatabase
 	{
 	  try
 	  {
-	    new CreateDatabase(true);
+	    new CreateDatabase();
 	  } catch (Exception e) { e.printStackTrace(); }
 	}
 
