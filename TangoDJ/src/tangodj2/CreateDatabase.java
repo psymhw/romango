@@ -33,6 +33,7 @@ public class CreateDatabase
 	   	createTracksTable();
 		createPlaylistsTable();
 		createStateTable();
+		createTandasTable();
 		disconnect();
 	   //Db.disconnect();
 	    System.out.println("database initiallized");	
@@ -60,7 +61,7 @@ public class CreateDatabase
 	    		"location varchar(100), " +
 	    		"incept TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP" +
 	    		")");	
-		connection.createStatement().execute("insert into playlists (name, location) values('Text Playlist', 'Eugene')");
+		connection.createStatement().execute("insert into playlists (name, location) values('Test Playlist', 'Eugene')");
 		System.out.println("Playlists table created");
 
 	}
@@ -92,6 +93,22 @@ public class CreateDatabase
 	    
 	    connection.createStatement().execute("CREATE UNIQUE INDEX pathInd ON TRACKS(PATHHASH)");
 	    System.out.println("Tracks table created");
+	}
+	
+	private void createTandasTable() throws SQLException
+	{
+		String sql="create table tandas(" +
+	    		"id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
+	    		"playlistId INTEGER, " +
+	    		"position INTEGER, " +
+	    		"emptyPlaylist INTEGER, " +
+	    		"artist varchar(40), " +
+	    		"style varchar(15), " +
+	    		"cortinaHash varchar(32) " +
+	    		")";
+		System.out.println(sql);
+		connection.createStatement().execute(sql);	
+		System.out.println("Tandas table created");
 	}
 	
 	public static void main(String[] args) 
