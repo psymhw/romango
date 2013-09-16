@@ -60,7 +60,9 @@ public class CreateDatabase
 	    		"location varchar(100), " +
 	    		"incept TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP" +
 	    		")");	
+		connection.createStatement().execute("insert into playlists (name, location) values('Text Playlist', 'Eugene')");
 		System.out.println("Playlists table created");
+
 	}
 	
 	private void createStateTable() throws SQLException
