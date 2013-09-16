@@ -6,6 +6,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import tangodj2.PlaylistTree.PlaylistTree;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -19,6 +21,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
@@ -27,6 +30,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 
 
@@ -85,12 +89,16 @@ public class AllTracksTab
 	 hbox.setStyle("-fx-background-color: CC99CC; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
 
 	      
-     tanda = new Tanda("Canaro", "Vals");
+	 PlaylistTree playListTree = new PlaylistTree(SharedValues.currentPlaylist);
+	 
+    // tanda = new Tanda("Canaro", "Vals");
      
-     VBox tandaBox = tanda.getTanda();
+    // VBox tandaBox = tanda.getTanda();
+	 
+	 TreeView<Text> treeView = playListTree.getTreeView();
      
-     hbox.getChildren().add(tandaBox);
-     hbox.setHgrow(tandaBox, Priority.ALWAYS);
+     hbox.getChildren().add(treeView);
+     hbox.setHgrow(treeView, Priority.ALWAYS);
 	      
 	      //((Group) scene.getRoot()).getChildren().addAll(vbox);
      setupListeners();
@@ -268,9 +276,8 @@ public class AllTracksTab
 	 	    }
 	 	    if (ke.getCode()==KeyCode.RIGHT) 
 	 	    {
-	 	    	
 	 	      sharedValues.playlistTrackAdd.set(sharedValues.playlistTrackAdd.get()+1);  
-	 	     System.out.println("RIGHT Pressed: "+sharedValues.playlistTrackAdd.get());
+	 	      System.out.println("RIGHT Pressed: "+sharedValues.playlistTrackAdd.get());
 	 	    }
 	 	  }
 	 	};

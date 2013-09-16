@@ -10,7 +10,7 @@ public class SharedValues
   public static SimpleIntegerProperty playlistTrackAdd = new SimpleIntegerProperty(0);
   public static String DRIVER ="org.apache.derby.jdbc.EmbeddedDriver";
   public static String JDBC_URL ="jdbc:derby:tango_db;create=false";
-  public static int currentPlaylist = 0;
+  public static int currentPlaylist = 1;
 }
 
 
