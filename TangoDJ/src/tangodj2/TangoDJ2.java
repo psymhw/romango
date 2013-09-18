@@ -48,7 +48,7 @@ public class TangoDJ2 extends Application
       
       
       
-      setupListeners();
+     // setupListeners();
      
       allTracksTab = new AllTracksTab();
       tabPane.getTabs().add(allTracksTab.getTab());
@@ -71,6 +71,7 @@ public class TangoDJ2 extends Application
       primaryStage.show();
   }
 
+  /*
   private void setupListeners() 
   {
     ChangeListener cl2 = new ChangeListener() 
@@ -82,4 +83,5 @@ public class TangoDJ2 extends Application
     };   
     sharedValues.pathHash.addListener(cl2);
   }
+  */
 }

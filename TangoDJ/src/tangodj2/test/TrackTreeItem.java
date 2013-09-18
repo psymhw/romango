@@ -1,18 +1,23 @@
 package tangodj2.test;
 
+import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
+import javafx.scene.image.Image;
 import javafx.scene.text.Text;
 
 public class TrackTreeItem extends TreeItem<Text>
 {
   private String trackHash;
-  private int type = 0;;
+  private int type = 0;
+  
 
-  public TrackTreeItem(Text text)
+  public TrackTreeItem(Text text, Node image)
    {
-	 super(text);
+	 super(text, image);
    }
 
+
+  
 public String getTrackHash() {
 	return trackHash;
 }

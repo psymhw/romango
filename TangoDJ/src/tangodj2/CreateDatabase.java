@@ -101,12 +101,11 @@ public class CreateDatabase
 	    		"id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
 	    		"playlistId INTEGER, " +
 	    		"position INTEGER, " +
-	    		"emptyPlaylist INTEGER, " +
 	    		"artist varchar(40), " +
-	    		"style varchar(15), " +
+	    		"styleId INTEGER, " +
 	    		"cortinaHash varchar(32) " +
 	    		")";
-		System.out.println(sql);
+		//System.out.println(sql);
 		connection.createStatement().execute(sql);	
 		System.out.println("Tandas table created");
 	}

@@ -10,13 +10,20 @@ import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -25,6 +32,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 import org.farng.mp3.MP3File;
 import org.farng.mp3.id3.AbstractID3v1;
@@ -85,7 +93,12 @@ public class TreeTest extends Application
 	
 	Text track1_text = new Text("Track 1");
 	track1_text.setFont(Font.font("Serif", 20));
-	TrackTreeItem track1 = new TrackTreeItem(track1_text);
+	Image nodeImage = new Image(
+	          getClass().getResourceAsStream("/resources/images/small_flags.png"));
+	TrackTreeItem track1 = new TrackTreeItem(track1_text, new ImageView(nodeImage));
+	
+	
+	
 	track1.setTrackHash("1234567");
 	tandas.get(0).getChildren().add(track1);
 	tandas.get(0).getChildren().add(new TreeItem<Text>(new Text("Track 2")));
@@ -105,6 +118,15 @@ public class TreeTest extends Application
 	 */
 	 
 	treeView = new TreeView(playlist);
+	
+	 treeView.setCellFactory(new Callback<TreeView<String>,TreeCell<String>>(){
+         @Override
+         public TreeCell<String> call(TreeView<String> p) {
+             return new TextFieldTreeCellImpl();
+         }
+     });
+	
+	
 	treeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 	
 
@@ -144,5 +166,23 @@ public class TreeTest extends Application
 	treeView.getSelectionModel().selectedItemProperty().addListener(cl);
 	
   
+}
+  
+  private final class TextFieldTreeCellImpl extends TreeCell<String> {
+	  
+      private TextField textField;
+      private ContextMenu addMenu = new ContextMenu();
+
+      public TextFieldTreeCellImpl() {
+          MenuItem addMenuItem = new MenuItem("Add Employee");
+          addMenu.getItems().add(addMenuItem);
+          addMenuItem.setOnAction(new EventHandler() {
+              public void handle(Event t) {
+                  TreeItem newEmployee = 
+                      new TreeItem<String>("New Employee");
+                          getTreeItem().getChildren().add(newEmployee);
+              }
+          });
+      }
 }
 }

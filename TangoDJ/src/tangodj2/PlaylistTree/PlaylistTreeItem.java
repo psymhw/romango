@@ -1,15 +1,15 @@
 package tangodj2.PlaylistTree;
 
-import javafx.scene.control.TreeItem;
-import javafx.scene.text.Text;
 
-public class PlaylistTreeItem  extends TreeItem<Text>
+public class PlaylistTreeItem  extends BaseTreeItem
 {
   private int id=0;
   private String title;
+  
   public PlaylistTreeItem(int id, String title)
   {
-	super(new Text(title));
+	super(title);  
+	this.setTreeType("playlist");
     this.id = id;
     this.title=title;
   }
@@ -31,4 +31,6 @@ public class PlaylistTreeItem  extends TreeItem<Text>
   {
 	return "PlaylisTreeItem - title: "+title;  
   }
+
+
 }
