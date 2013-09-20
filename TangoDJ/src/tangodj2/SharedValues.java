@@ -5,16 +5,21 @@ import java.util.Arrays;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class SharedValues 
 {
+  public final static ObservableList<Track> allTracksData = FXCollections.observableArrayList();
   public static SimpleStringProperty title = new SimpleStringProperty();
   public static SimpleStringProperty selectedPathHash = new SimpleStringProperty();
-  public static SimpleIntegerProperty playlistTrackAdd = new SimpleIntegerProperty(0);
+ // public static SimpleIntegerProperty playlistTrackAdd = new SimpleIntegerProperty(0);
   public static String DRIVER ="org.apache.derby.jdbc.EmbeddedDriver";
   public static String JDBC_URL ="jdbc:derby:tango_db;create=false";
   public static int currentPlaylist = 1;
   public static int selectedTanda = -1;
+  public static int selectedTrack = -1;
+  
   
   public final static int TANGO = 0;
   public final static int VALS = 1;

@@ -1,22 +1,12 @@
 package tangodj2;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-
-
-
-import tangodj2.PlaylistTree.BaseTreeItem;
-import tangodj2.PlaylistTree.PlaylistTree;
-import tangodj2.PlaylistTree.TandaTreeItem;
-import tangodj2.test.TrackTreeItem;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -28,20 +18,17 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -57,16 +44,22 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import tangodj2.PlaylistTree.BaseTreeItem;
+import tangodj2.PlaylistTree.PlaylistTreeItem;
+import tangodj2.PlaylistTree.TandaTreeItem;
 
 public class AllTracksTab 
 {
   Tab tab;
   SharedValues sharedValues = new SharedValues();
   private TableView<Track> allTracksTable = new TableView<Track>();
-  private final static ObservableList<Track> allTracksData = FXCollections.observableArrayList();
+  
+  //private static ObservableList<Track> allTracksData=null;
+
   TrackLoader2 trackLoader = new TrackLoader2();
   private Button newTandaButton;
-  PlaylistTree playlistTree;
+  private PlaylistTreeItem playlistTreeItem;
+  
   TreeView<String> treeView;
 	 	
    public AllTracksTab()
@@ -74,7 +67,8 @@ public class AllTracksTab
 	 tab = new Tab();
 	 tab.setText("All Tracks");
 	 setupAllTracksTable();
-	 loadData();
+	 Db.loadAllTracks();
+	// loadData();
 	      
 	 final Button addButton = new Button("Add Tango Tracks");
 	 addButton.setOnAction(new EventHandler<ActionEvent>() 
@@ -115,7 +109,25 @@ public class AllTracksTab
 	 hbox.setStyle("-fx-background-color: CC99CC; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
 
 	      
-	 playlistTree = new PlaylistTree(SharedValues.currentPlaylist);
+	// playlistTree = new PlaylistTree(SharedValues.currentPlaylist);
+	 playlistTreeItem =  Db.getPlaylist(SharedValues.currentPlaylist);
+		
+		treeView = new TreeView<String>(playlistTreeItem);
+		treeView.getSelectionModel().select(playlistTreeItem);
+		treeView.setShowRoot(true);
+		ArrayList<TandaTreeItem> tandaTreeItems=null;
+		try 
+		{
+		  tandaTreeItems = Db.getTandaTreeItems(SharedValues.currentPlaylist);
+		} catch (ClassNotFoundException | SQLException e) { e.printStackTrace();}
+		
+		Iterator<TandaTreeItem> it = tandaTreeItems.iterator();
+		
+		
+		if (tandaTreeItems.size()>0)
+		{
+		  playlistTreeItem.getChildren().addAll(tandaTreeItems);
+		}
 	 
     // tanda = new Tanda("Canaro", "Vals");
      
@@ -123,13 +135,12 @@ public class AllTracksTab
      playlistBox.setPadding(new Insets(10, 10, 10, 10));
      playlistBox.setSpacing(20);
      
-     
 	 
 	 setupTandaButton();
      
 	 playlistBox.getChildren().add(newTandaButton);
 	 
-	 treeView = playlistTree.getTreeView();
+	 //treeView = playlistTree.getTreeView();
 	 treeView.setCellFactory(new Callback<TreeView<String>,TreeCell<String>>()
 	 {
 	   @Override
@@ -140,7 +151,7 @@ public class AllTracksTab
 	 });
 	 
 	 /* 
-	  * Detects treen item selected
+	  * Detect tree item selected
 	  */
 	 ChangeListener<TreeItem<String>> cl = new ChangeListener<TreeItem<String>>() 
 	 {
@@ -149,12 +160,24 @@ public class AllTracksTab
 		 if (newItem!=null)
 		 {
 		   BaseTreeItem bti = (BaseTreeItem)newItem;
-		   BaseTreeItem parent = (BaseTreeItem)bti.getParent();
-		   if ("tanda".equals(bti.getTreeType())) SharedValues.selectedTanda=bti.getPosition();
-		   int parentPos=-1;
-		   if (parent!=null) parentPos=parent.getPosition();
-		   
-		   System.out.println("Selected: " + newItem.getValue()+" Position: "+bti.getPosition()+" Type: "+bti.getTreeType()+" parent pos: "+parentPos); 
+		   SharedValues.selectedTrack=-1;
+		   if ("tanda".equals(bti.getTreeType())) SharedValues.selectedTanda=playlistTreeItem.getTandaPosition((TandaTreeItem)bti);
+		   else if ("track".equals(bti.getTreeType())) 
+		   {
+			 TandaTreeItem parent = (TandaTreeItem)bti.getParent();
+			 SharedValues.selectedTrack=parent.getTrackPosition(bti);
+
+			 int parentPos=-1;
+			 if (parent!=null) parentPos=playlistTreeItem.getTandaPosition((TandaTreeItem)parent);
+			 SharedValues.selectedTanda=parentPos;
+		   }
+		   else
+		   {
+			 SharedValues.selectedTanda=0; 
+		   }
+		   System.out.println("Tanda/Track: "
+		            +SharedValues.selectedTanda+"/"+SharedValues.selectedTrack+" - "
+				   + newItem.getValue()); 
 		 }
 	   }
 					
@@ -179,28 +202,56 @@ public class AllTracksTab
 	 playlistBox.getChildren().add(treeView);
      hbox.getChildren().add(playlistBox);
      hbox.setHgrow(treeView, Priority.ALWAYS);
-     setupListeners();
+    // setupListeners();
      tab.setContent(hbox);
    }
 	
-   private final class MyCellFactory extends TreeCell<String> {
-	   
-       private TextField textField;
-       private ContextMenu addMenu = new ContextMenu();
+   private final class MyCellFactory extends TreeCell<String> 
+   {
+       private ContextMenu tandaContextMenu = new ContextMenu();
+       
 
        public MyCellFactory() 
        {
-         MenuItem addMenuItem = new MenuItem("Add Employee");
-         addMenu.getItems().add(addMenuItem);
-         addMenuItem.setOnAction(new EventHandler() 
+    	 MenuItem moveUp = new MenuItem("Move Tanda Up"); 
+         MenuItem moveDown = new MenuItem("Move Tanda Down");
+         MenuItem delete = new MenuItem("Delete Tanda" );
+        
+         tandaContextMenu.getItems().addAll(moveUp, moveDown, delete);
+         moveUp.setOnAction(new EventHandler() 
          {
-            public void handle(Event t) {
-                   TreeItem newEmployee = 
-                       new TreeItem<String>("New Employee");
-                           getTreeItem().getChildren().add(newEmployee);
-               }
-           });
-       }
+            public void handle(Event t) 
+            {
+              playlistTreeItem.moveTandaUp(SharedValues.selectedTanda);   
+              try 
+              {
+				Db.updateTandaPositions(playlistTreeItem);
+			  } catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
+            }
+          });
+         moveDown.setOnAction(new EventHandler() 
+         {
+            public void handle(Event t) 
+            {
+              playlistTreeItem.moveTandaDown(SharedValues.selectedTanda);   
+              try 
+              {
+				Db.updateTandaPositions(playlistTreeItem);
+			  } catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
+            }
+          });
+         delete.setOnAction(new EventHandler() 
+         {
+            public void handle(Event t) 
+            {
+              playlistTreeItem.deleteTanda(SharedValues.selectedTanda);   
+              try 
+              {
+				Db.updateTandaPositions(playlistTreeItem);
+			  } catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
+            }
+          });
+         }
 
        
        @Override
@@ -218,12 +269,15 @@ public class AllTracksTab
            setText(getString());
            BaseTreeItem bti = (BaseTreeItem)getTreeItem();
            if ("playlist".equals(bti.getTreeType())) setFont(Font.font("Serif", 20));
-           if ("tanda".equals(bti.getTreeType())) setFont(Font.font("Serif", 16));
-           setGraphic(getTreeItem().getGraphic());
-           if (!getTreeItem().isLeaf())
-           {
-             setContextMenu(addMenu);
+           if ("tanda".equals(bti.getTreeType())) 
+           {	   
+        	 if (playlistTreeItem.getTandaPosition((TandaTreeItem)bti)==0) tandaContextMenu.getItems().get(0).setDisable(true);  // disable move up
+        	 if (playlistTreeItem.getTandaPosition((TandaTreeItem)bti)==playlistTreeItem.getTandaCount()-1) tandaContextMenu.getItems().get(1).setDisable(true); // disable move down
+        	 setFont(Font.font("Serif", 16));
+        	 setContextMenu(tandaContextMenu);
            }
+           setGraphic(getTreeItem().getGraphic());
+           
          }
        }
       
@@ -307,8 +361,9 @@ public class AllTracksTab
         	 {
         	   styleId= Integer.parseInt(numStr);
         	 } catch (Exception e) {}
-             TandaTreeItem tandaTreeItem = new TandaTreeItem(artist, styleId, playlistTree.getTandaCounter(), true);
-         	 playlistTree.addTanda(tandaTreeItem);
+            // TandaTreeItem tandaTreeItem = new TandaTreeItem(artist, styleId);
+         	 playlistTreeItem.addTanda(artist, styleId);
+         	// tandaTreeItem.insert();
              myDialog.close();
            }
          });
@@ -341,6 +396,7 @@ public class AllTracksTab
 	 return tab;
    }
 	
+   /*
    private void setupListeners() 
    {
 	 ChangeListener cl = new ChangeListener() 
@@ -352,13 +408,13 @@ public class AllTracksTab
 	 };   
 	 sharedValues.playlistTrackAdd.addListener(cl);
    }
-	
+	*/
 	
    private void setupAllTracksTable() 
    {
 	 double tableWidth=setupAllTracksColumns()+43;
 	    
-	 allTracksTable.setItems(allTracksData);
+	 allTracksTable.setItems(SharedValues.allTracksData);
 	 allTracksTable.setPrefWidth(tableWidth);
 	 allTracksTable.setMinWidth(tableWidth);
 	 allTracksTable.setMaxWidth(tableWidth);
@@ -481,8 +537,16 @@ public class AllTracksTab
 	          new PropertyValueFactory<Track, String>("duration"));
 	      durationCol.setCellFactory(TextFieldTableCell.forTableColumn());
 	      
+	      TableColumn yearCol = new TableColumn("Year");
+	      yearCol.setMinWidth(50);
+	      yearCol.setPrefWidth(50);
 	     
-	  allTracksTable.getColumns().addAll(titleCol, durationCol, artistCol, albumCol, genreCol, commentCol);
+	      yearCol.setCellValueFactory(
+	          new PropertyValueFactory<Track, String>("track_year"));
+	      yearCol.setCellFactory(TextFieldTableCell.forTableColumn());
+	      
+	     
+	  allTracksTable.getColumns().addAll(titleCol, durationCol, yearCol, artistCol, albumCol, genreCol, commentCol);
 	      
 	  return titleCol.getWidth()+artistCol.getWidth()+albumCol.getWidth()+genreCol.getWidth()+commentCol.getWidth();
   }
@@ -507,10 +571,15 @@ public class AllTracksTab
 	 	    }
 	 	    if (ke.getCode()==KeyCode.RIGHT) 
 	 	    {
-	 	      sharedValues.playlistTrackAdd.set(sharedValues.playlistTrackAdd.get()+1);  
-	 	      System.out.println("RIGHT Pressed: "+sharedValues.playlistTrackAdd.get());
-	 	      playlistTree.addTrack();
-	 	      
+	 	     // sharedValues.playlistTrackAdd.set(sharedValues.playlistTrackAdd.get()+1);  
+	 	    //  System.out.println("RIGHT Pressed: "+sharedValues.playlistTrackAdd.get());
+	 	    //  playlistTree.addTrack();
+	 	     if (playlistTreeItem.getTandaCount()>0)
+	 	     {	 
+	 	       if (SharedValues.selectedTanda==-1)	SharedValues.selectedTanda=0;
+	 	 	   TandaTreeItem tandaTreeItem = (TandaTreeItem)playlistTreeItem.getChildren().get(SharedValues.selectedTanda);
+	 		   tandaTreeItem.addTrack(SharedValues.selectedPathHash.get());
+	 	     }
 	 	    }
 	 	  }
 	 	};
@@ -521,10 +590,13 @@ public class AllTracksTab
 	 	
 	 	public static void reloadData()
 	 	{
-	 		allTracksData.clear();
-	 		loadData();
+	 		SharedValues.allTracksData.clear();
+	 		Db.loadAllTracks();
 	 	}
 	 	
+	 	/*
+	 	 * TODO MOVE TO DB class
+	 	 
 	 	public static void loadData()
 	 	  {
 	 	    String title;
@@ -534,6 +606,7 @@ public class AllTracksTab
 	 	    String comment;
 	 	    String pathHash;
 	 	    String path;
+	 	    String track_year;
 	 	    int cortina;
 	 	    int duration=0;
 	 	    
@@ -549,11 +622,13 @@ public class AllTracksTab
 	 			  album = resultSet.getString("album");
 	 			  genre = resultSet.getString("genre");
 	 			  comment = resultSet.getString("comment");
+	 			  track_year = resultSet.getString("track_year");
+	 			  //System.out.println("track_year: "+track_year);
 	 			  pathHash = resultSet.getString("pathHash");
 	 			  path = resultSet.getString("path");
 	 			  duration=resultSet.getInt("duration");
 	 			  cortina=resultSet.getInt("cortina");
-	 			  allTracksData.add(new Track(title, artist, album, genre, comment, pathHash, path, duration, cortina));
+	 			  allTracksData.add(new Track(title, artist, album, genre, comment, pathHash, path, duration, cortina, track_year));
 	 			  
 	 			  //System.out.println("added: "+title);
 	 			}
@@ -562,6 +637,6 @@ public class AllTracksTab
 	 	    } catch (Exception e) { e.printStackTrace();}
 	 	  }
 	 	
-	 	
+	 	*/
 	  
 	}

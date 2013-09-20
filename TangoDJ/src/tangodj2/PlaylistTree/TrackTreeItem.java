@@ -1,19 +1,30 @@
 package tangodj2.PlaylistTree;
 
+import java.sql.SQLException;
+
+import javafx.util.Duration;
+import tangodj2.Db;
 import tangodj2.SharedValues;
+import tangodj2.TrackMeta;
 
 public class TrackTreeItem extends BaseTreeItem
 {
   private String trackHash;
   private int type = 0;
-  private int tandaId=-1;
-
-  public TrackTreeItem()
+  private int tandaDbId=-1;
+  
+  
+  public TrackTreeItem(String trackHash, int position)
   {
 	super();
+	this.trackHash=trackHash;
 	this.setTreeType("track");
-	this.setValue(SharedValues.selectedPathHash.get());
+	//System.out.println("trackTreeItem - position: "+position);
+	//setPosition(position);
+	TrackMeta trackMeta=Db.getTrackInfo(trackHash);
+	this.setValue(trackMeta.title+" "+formatDuration(trackMeta.duration));
   }
+    
 
   public String getTrackHash() {
 	return trackHash;
@@ -31,11 +42,19 @@ public class TrackTreeItem extends BaseTreeItem
 	this.type = type;
   }
 
-public int getTandaId() {
-	return tandaId;
+    
+  private String formatDuration(int sec) {
+    
+    int seconds = (int)( sec  % 60);
+    int minutes = (int) (sec /  60);
+    return String.format("%02d:%02d", minutes, seconds);
+  }
+
+public int getTandaDbId() {
+	return tandaDbId;
 }
 
-public void setTandaId(int tandaId) {
-	this.tandaId = tandaId;
+public void setTandaDbId(int tandaDbId) {
+	this.tandaDbId = tandaDbId;
 }
 }

@@ -1,10 +1,12 @@
 package tangodj2.PlaylistTree;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+
+import javafx.scene.control.TreeItem;
 
 import tangodj2.Db;
 import tangodj2.SharedValues;
-import javafx.scene.control.TreeItem;
 
 public class TandaTreeItem extends BaseTreeItem
 {
@@ -12,9 +14,16 @@ public class TandaTreeItem extends BaseTreeItem
    private int styleId;
    private String style;
    private int dbId=0;
-   private int trackCount=0;
-      
    
+   private ArrayList<String> trackHashCodes = new ArrayList<String>();
+   //private int numberOfTracks=0;
+   
+   private String cortinaHashCode;
+   private int cortinaStart=0;
+   private int cortinaStop;
+   private String treeType="";
+      
+   /*
    public TandaTreeItem(String artist, int styleId, int position, boolean insert)
    {
 	 super();
@@ -25,8 +34,6 @@ public class TandaTreeItem extends BaseTreeItem
 	 this.setPosition(position);
 	 this.setValue(artist + " - "+style);
 	 
-	 
-	 
 	 if (insert)
 	 {
 	   try 
@@ -35,11 +42,60 @@ public class TandaTreeItem extends BaseTreeItem
 	   } catch (ClassNotFoundException | SQLException e) {	e.printStackTrace(); }
 	 }
    }
-
-public String getArtist() {
+   */
+   
+   public TandaTreeItem(String artist, int styleId)
+   {
+	 super();
+	 
+	 this.setTreeType("tanda");
+	 this.artist=artist;
+	 this.styleId=styleId;
+	 this.style=SharedValues.styles.get(styleId) ;
+	 this.setValue(artist + " - "+style);
+   }
+   
+   
+  public String getArtist() {
 	return artist;
-}
+  }
+  
+  public void addTrack(String trackHash)
+  {
+	if (trackHash==null) return;  
+	trackHashCodes.add(trackHash);
+	TrackTreeItem tti = new TrackTreeItem(trackHash, trackHashCodes.size());
+	getChildren().add(tti);
+	setExpanded(true);
+	try 
+	{
+	  Db.updateTandaTracks(this);
+	} catch (ClassNotFoundException | SQLException e) {	e.printStackTrace();}
+	//numberOfTracks++;
+  }
+  
+  public void loadTrack(String trackHash)
+  {
+	if (trackHash==null) return;  
+	trackHashCodes.add(trackHash);
+	TrackTreeItem tti = new TrackTreeItem(trackHash, trackHashCodes.size());
+	getChildren().add(tti);
+	setExpanded(true);
+	//numberOfTracks++;
+  }
+  
+  public int getTrackPosition(BaseTreeItem bti)
+  {
+	 TrackTreeItem tti= (TrackTreeItem) bti; 
+	 return trackHashCodes.indexOf(tti.getTrackHash());
+  }
 
+
+  public String getTrackHash(int i)
+  {
+	  return trackHashCodes.get(i);
+  }
+  
 public void setArtist(String artist) {
 	this.artist = artist;
 }
@@ -70,23 +126,55 @@ public void setDbId(int dbId) {
 
 public String toString()
 {
-  String str=artist+ ", position: "+this.getPosition()+", styleId: "+styleId+", dbId: "+dbId;
+  String str=artist+ ", styleId: "+styleId+", dbId: "+dbId;
   return str;
 }
 
-public int getTrackCount() {
-	return trackCount;
+
+
+public ArrayList<String> getTrackHashCodes() {
+	return trackHashCodes;
 }
 
-public void setTrackCount(int trackCount) {
-	this.trackCount = trackCount;
+
+
+public int getNumberOfTracks() {
+	return trackHashCodes.size();
 }
 
-public void incrementTrackCount()
-{
-  trackCount++;	
+
+
+public String getCortinaHashCode() {
+	return cortinaHashCode;
 }
 
+public void setCortinaHashCode(String cortinaHashCode) {
+	this.cortinaHashCode = cortinaHashCode;
+}
+
+public int getCortinaStart() {
+	return cortinaStart;
+}
+
+public void setCortinaStart(int cortinaStart) {
+	this.cortinaStart = cortinaStart;
+}
+
+public int getCortinaStop() {
+	return cortinaStop;
+}
+
+public void setCortinaStop(int cortinaStop) {
+	this.cortinaStop = cortinaStop;
+}
+
+public String getTreeType() {
+	return treeType;
+}
+
+public void setTreeType(String treeType) {
+	this.treeType = treeType;
+}
 
 
    

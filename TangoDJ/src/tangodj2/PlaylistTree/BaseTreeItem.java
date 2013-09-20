@@ -6,7 +6,7 @@ import javafx.scene.control.TreeItem;
 public class BaseTreeItem extends TreeItem<String>
 {
 	private String treeType="";
-	private int position=0;
+	//private int position=0;
 	
 	public BaseTreeItem()
 	{
@@ -31,6 +31,7 @@ public void setTreeType(String treeType) {
 	this.treeType = treeType;
 }
 
+/*
 public int getPosition() {
 	return position;
 }
@@ -38,4 +39,5 @@ public int getPosition() {
 public void setPosition(int position) {
 	this.position = position;
 }
+*/
 }
