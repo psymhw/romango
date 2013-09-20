@@ -155,6 +155,7 @@ public class TrackLoader2
 		 trackMeta.album    = sqlReadyString(trackMeta.album);
 		 trackMeta.comment  = sqlReadyString(trackMeta.comment);
 		 trackMeta.path     = sqlReadyString(trackMeta.path);
+		 trackMeta.track_year     = sqlReadyString(trackMeta.track_year);
 	  }
 			
 	 }
@@ -170,7 +171,7 @@ public class TrackLoader2
 	   while(it.hasNext())
 	   {
 		 trackMeta=it.next();
-		 String sql="insert into tracks(cortina, path, pathHash, title, artist, album, duration, genre, comment) "
+		 String sql="insert into tracks(cortina, path, pathHash, title, artist, album, duration, genre, comment, track_year) "
 		 		+"values ("+cortina+", '"+trackMeta.path
 	              +"', '"+trackMeta.pathHash
 	              +"', '"+trackMeta.title
@@ -179,6 +180,7 @@ public class TrackLoader2
 	              +"', "+trackMeta.duration
 	              +", '"+trackMeta.genre
 	              +"', '"+trackMeta.comment
+	              +"', '"+trackMeta.track_year
 	              +"')";
 		 try {
 		 if (isSet(trackMeta.title)) connection.createStatement().execute(sql);
@@ -208,6 +210,7 @@ public class TrackLoader2
 			  String album="";
 			  String comment="";
 			  String genre="";
+			  String track_year="";
 			  
 			  String pathHash="";
 			  MP3File mp3 = null;
@@ -228,6 +231,8 @@ public class TrackLoader2
 		          genre=tag.getSongGenre();
 		          artist=tag.getLeadArtist();
 		    	  album=tag.getAlbumTitle();
+		    	  track_year=tag.getYearReleased();
+		    	  //System.out.println(track_year);
 		    	 	          
 		    	  pathStr2=path.toString();
 		    			    	  
@@ -236,7 +241,7 @@ public class TrackLoader2
 				  int duration = 0;
 				  boolean success=false;
 				  
-				  trackInfo.add(new TrackMeta(title, artist, album, comment, genre, pathHash, pathStr2));
+				  trackInfo.add(new TrackMeta(title, artist, album, comment, genre, pathHash, pathStr2, track_year));
 				  
 				  counter++;
 		       }

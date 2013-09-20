@@ -86,6 +86,10 @@ public class CreateDatabase
 	    		"artist varchar(40), " +
 	    		"album varchar(100), " +
 	    		"duration integer, " +
+	    		"track_year varchar(4), " +
+	    		"playlist_count integer, " +
+	    		"rating float, " +
+	    		"delay integer, " +
 	    		"genre varchar(40), " +
 	    		"cortina integer, " +
 	    		"comment varchar(100) " +
@@ -103,6 +107,19 @@ public class CreateDatabase
 	    		"position INTEGER, " +
 	    		"artist varchar(40), " +
 	    		"styleId INTEGER, " +
+	    		"trackHash_0 varchar(32), " +
+	    		"trackHash_1 varchar(32), " +
+	    		"trackHash_2 varchar(32), " +
+	    		"trackHash_3 varchar(32), " +
+	    		"trackHash_4 varchar(32), " +
+	    		"trackHash_5 varchar(32), " +
+	    		"trackHash_6 varchar(32), " +
+	    		"trackHash_7 varchar(32), " +
+	    		"trackHash_8 varchar(32), " +
+	    		"trackHash_9 varchar(32), " +
+	    		"cortinaStart INTEGER, " +
+	    		"cortinaStop INTEGER, " +
+	    		"track_count INTEGER, " +
 	    		"cortinaHash varchar(32) " +
 	    		")";
 		//System.out.println(sql);
