@@ -47,6 +47,7 @@ import javafx.util.Callback;
 import tangodj2.PlaylistTree.BaseTreeItem;
 import tangodj2.PlaylistTree.PlaylistTreeItem;
 import tangodj2.PlaylistTree.TandaTreeItem;
+import tangodj2.PlaylistTree.TrackTreeItem;
 
 public class AllTracksTab 
 {
@@ -107,40 +108,42 @@ public class AllTracksTab
 	 hbox.setSpacing(20);
 	 hbox.getChildren().add(vbox);
 	 hbox.setStyle("-fx-background-color: CC99CC; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
-
-	      
-	// playlistTree = new PlaylistTree(SharedValues.currentPlaylist);
-	 playlistTreeItem =  Db.getPlaylist(SharedValues.currentPlaylist);
-		
-		treeView = new TreeView<String>(playlistTreeItem);
-		treeView.getSelectionModel().select(playlistTreeItem);
-		treeView.setShowRoot(true);
-		ArrayList<TandaTreeItem> tandaTreeItems=null;
-		try 
-		{
-		  tandaTreeItems = Db.getTandaTreeItems(SharedValues.currentPlaylist);
-		} catch (ClassNotFoundException | SQLException e) { e.printStackTrace();}
-		
-		Iterator<TandaTreeItem> it = tandaTreeItems.iterator();
-		
-		
-		if (tandaTreeItems.size()>0)
-		{
-		  playlistTreeItem.getChildren().addAll(tandaTreeItems);
-		}
 	 
-    // tanda = new Tanda("Canaro", "Vals");
-     
+	 setupTreeView();
+	
      VBox playlistBox = new VBox();
      playlistBox.setPadding(new Insets(10, 10, 10, 10));
      playlistBox.setSpacing(20);
+     setupTandaButton();
+     playlistBox.getChildren().add(newTandaButton);
+     playlistBox.getChildren().add(treeView);
+     hbox.getChildren().add(playlistBox);
+     hbox.setHgrow(treeView, Priority.ALWAYS);
+    // setupListeners();
+     tab.setContent(hbox);
+	
      
-	 
-	 setupTandaButton();
-     
-	 playlistBox.getChildren().add(newTandaButton);
-	 
-	 //treeView = playlistTree.getTreeView();
+   }
+   
+   private void setupTreeView()
+   {
+     playlistTreeItem =  Db.getPlaylist(SharedValues.currentPlaylist);
+	 treeView = new TreeView<String>(playlistTreeItem);
+	 treeView.getSelectionModel().select(playlistTreeItem);
+	 treeView.setShowRoot(true);
+	 ArrayList<TandaTreeItem> tandaTreeItems=null;
+	 try 
+	 {
+	   tandaTreeItems = Db.getTandaTreeItems(SharedValues.currentPlaylist);
+	 } catch (ClassNotFoundException | SQLException e) { e.printStackTrace();}
+		
+	 Iterator<TandaTreeItem> it = tandaTreeItems.iterator();
+		
+	 if (tandaTreeItems.size()>0)
+	 {
+	   playlistTreeItem.getChildren().addAll(tandaTreeItems);
+	 }
+		 
 	 treeView.setCellFactory(new Callback<TreeView<String>,TreeCell<String>>()
 	 {
 	   @Override
@@ -148,8 +151,8 @@ public class AllTracksTab
 	   {
 		 return new MyCellFactory();
 	   }
-	 });
-	 
+	  });
+		 
 	 /* 
 	  * Detect tree item selected
 	  */
@@ -157,8 +160,10 @@ public class AllTracksTab
 	 {
 	   public void changed(ObservableValue<? extends TreeItem<String>> observableValue, TreeItem<String> oldItem, TreeItem<String> newItem) 
 	   {
+		   System.out.println("SELECTION!");
 		 if (newItem!=null)
 		 {
+		  	 
 		   BaseTreeItem bti = (BaseTreeItem)newItem;
 		   SharedValues.selectedTrack=-1;
 		   if ("tanda".equals(bti.getTreeType())) SharedValues.selectedTanda=playlistTreeItem.getTandaPosition((TandaTreeItem)bti);
@@ -198,94 +203,150 @@ public class AllTracksTab
 	 };
 						 
 	 treeView.getSelectionModel().selectedItemProperty().addListener(cl);
-	 
-	 playlistBox.getChildren().add(treeView);
-     hbox.getChildren().add(playlistBox);
-     hbox.setHgrow(treeView, Priority.ALWAYS);
-    // setupListeners();
-     tab.setContent(hbox);
    }
-	
+		
    private final class MyCellFactory extends TreeCell<String> 
    {
-       private ContextMenu tandaContextMenu = new ContextMenu();
-       
+     private ContextMenu tandaContextMenu =  new ContextMenu();
+     private ContextMenu trackContextMenu =  new ContextMenu();
 
-       public MyCellFactory() 
-       {
-    	 MenuItem moveUp = new MenuItem("Move Tanda Up"); 
-         MenuItem moveDown = new MenuItem("Move Tanda Down");
-         MenuItem delete = new MenuItem("Delete Tanda" );
-        
-         tandaContextMenu.getItems().addAll(moveUp, moveDown, delete);
-         moveUp.setOnAction(new EventHandler() 
-         {
-            public void handle(Event t) 
-            {
-              playlistTreeItem.moveTandaUp(SharedValues.selectedTanda);   
-              try 
-              {
-				Db.updateTandaPositions(playlistTreeItem);
-			  } catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
-            }
-          });
-         moveDown.setOnAction(new EventHandler() 
-         {
-            public void handle(Event t) 
-            {
-              playlistTreeItem.moveTandaDown(SharedValues.selectedTanda);   
-              try 
-              {
-				Db.updateTandaPositions(playlistTreeItem);
-			  } catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
-            }
-          });
-         delete.setOnAction(new EventHandler() 
-         {
-            public void handle(Event t) 
-            {
-              playlistTreeItem.deleteTanda(SharedValues.selectedTanda);   
-              try 
-              {
-				Db.updateTandaPositions(playlistTreeItem);
-			  } catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
-            }
-          });
-         }
-
-       
-       @Override
-       public void updateItem(String item, boolean empty) 
-       {
-         super.updateItem(item, empty);
-
-         if (empty) 
-         {
-           setText(null);
-           setGraphic(null);
-         } 
-         else 
-         {
-           setText(getString());
-           BaseTreeItem bti = (BaseTreeItem)getTreeItem();
-           if ("playlist".equals(bti.getTreeType())) setFont(Font.font("Serif", 20));
-           if ("tanda".equals(bti.getTreeType())) 
-           {	   
-        	 if (playlistTreeItem.getTandaPosition((TandaTreeItem)bti)==0) tandaContextMenu.getItems().get(0).setDisable(true);  // disable move up
-        	 if (playlistTreeItem.getTandaPosition((TandaTreeItem)bti)==playlistTreeItem.getTandaCount()-1) tandaContextMenu.getItems().get(1).setDisable(true); // disable move down
-        	 setFont(Font.font("Serif", 16));
-        	 setContextMenu(tandaContextMenu);
-           }
-           setGraphic(getTreeItem().getGraphic());
-           
-         }
-       }
+     public MyCellFactory() 
+     {
+       setupTandaContextMenu(tandaContextMenu);
+       setupTrackContextMenu(trackContextMenu);
       
-       private String getString() 
+     }
+       
+     @Override
+     public void updateItem(String item, boolean empty) 
+     {
+       super.updateItem(item, empty);
+
+       if (empty) 
        {
-         return getItem() == null ? "" : getItem().toString();
+         setText(null);
+         setGraphic(null);
+       } 
+       else 
+       {
+         setText(getString());
+         BaseTreeItem bti = (BaseTreeItem)getTreeItem();
+         if ("playlist".equals(bti.getTreeType())) setFont(Font.font("Serif", 20));
+         else if ("tanda".equals(bti.getTreeType())) 
+         {	   
+           if (playlistTreeItem.getTandaPosition((TandaTreeItem)bti)==0) tandaContextMenu.getItems().get(0).setDisable(true);  // disable move up
+           if (playlistTreeItem.getTandaPosition((TandaTreeItem)bti)==playlistTreeItem.getTandaCount()-1) tandaContextMenu.getItems().get(1).setDisable(true); // disable move down
+           setFont(Font.font("Serif", 16));
+           //Kludge alert
+           tandaContextMenu.setId(""+playlistTreeItem.getTandaPosition((TandaTreeItem)bti));
+           setContextMenu(tandaContextMenu);
+         }
+         else if ("track".equals(bti.getTreeType()))
+         {
+           setFont(Font.font("Serif", 14));
+           TrackTreeItem trackTreeItem = (TrackTreeItem)bti;
+         
+           int trackCount=((TandaTreeItem)trackTreeItem.getParent()).getTrackCount();
+           int trackPosition=trackTreeItem.getTrackPosition(trackTreeItem);
+           
+           if (trackPosition==0) trackContextMenu.getItems().get(0).setDisable(true);  // disable move up
+           if (trackPosition==trackCount-1) trackContextMenu.getItems().get(1).setDisable(true); // disable move down
+           //Kludge alert
+           trackContextMenu.setId(trackTreeItem.getTandaAndTrackPosition(trackTreeItem));
+           setContextMenu(trackContextMenu);
+         }
+         setGraphic(getTreeItem().getGraphic());
        }
+     }
+      
+     private String getString() 
+     {
+       return getItem() == null ? "" : getItem().toString();
+     }
    }
+   
+   private void setupTandaContextMenu(final ContextMenu tandaContextMenu)
+   {
+	 MenuItem moveUp = new MenuItem("Move Tanda Up"); 
+     MenuItem moveDown = new MenuItem("Move Tanda Down");
+     MenuItem delete = new MenuItem("Delete Tanda" );
+     tandaContextMenu.setOnShowing(new EventHandler() 
+     {
+       public void handle(Event e) 
+       {
+         SharedValues.selectedTanda= Integer.parseInt(tandaContextMenu.getId());
+       }
+     });
+     tandaContextMenu.getItems().addAll(moveUp, moveDown, delete);
+     moveUp.setOnAction(new EventHandler() 
+     {
+       public void handle(Event t) 
+       {
+    	  
+         playlistTreeItem.moveTandaUp(SharedValues.selectedTanda);   
+        
+       }
+     });
+     moveDown.setOnAction(new EventHandler() 
+     {
+       public void handle(Event t) 
+       {
+         playlistTreeItem.moveTandaDown(SharedValues.selectedTanda);   
+         
+       }
+     });
+     delete.setOnAction(new EventHandler() 
+     {
+       public void handle(Event t) 
+       {
+         playlistTreeItem.deleteTanda(SharedValues.selectedTanda);   
+       }
+     });
+   } 
+   
+   private void setupTrackContextMenu(final ContextMenu trackContextMenu)
+   {
+	 MenuItem moveUp = new MenuItem("Move Track Up"); 
+     MenuItem moveDown = new MenuItem("Move Track Down");
+     MenuItem delete = new MenuItem("Remove Track" );
+     trackContextMenu.setOnShowing(new EventHandler() 
+     {
+       public void handle(Event e) 
+       {
+    	 String trackId = trackContextMenu.getId();  
+    	 String[] tokens = trackId.split(",");
+    	 
+    	 for (int i = 0; i < tokens.length; i++)
+    	 {
+    	   if (i==0) SharedValues.selectedTanda=Integer.parseInt(tokens[i]);
+    	   if (i==1) SharedValues.selectedTrack=Integer.parseInt(tokens[i]);
+         }
+    	 
+       }
+     });
+     trackContextMenu.getItems().addAll(moveUp, moveDown, delete);
+     moveUp.setOnAction(new EventHandler() 
+     {
+       public void handle(Event t) 
+       {
+    	   playlistTreeItem.getTanda(SharedValues.selectedTanda).moveTrackUp(SharedValues.selectedTrack);
+       }
+     });
+     moveDown.setOnAction(new EventHandler() 
+     {
+       public void handle(Event t) 
+       {
+    	   playlistTreeItem.getTanda(SharedValues.selectedTanda).moveTrackDown(SharedValues.selectedTrack);
+       }
+     });
+     delete.setOnAction(new EventHandler() 
+     {
+       public void handle(Event t) 
+       {
+    	   playlistTreeItem.getTanda(SharedValues.selectedTanda).deleteTrack(SharedValues.selectedTrack);
+       }
+     });
+   } 
    
    private void setupTandaButton() 
    {

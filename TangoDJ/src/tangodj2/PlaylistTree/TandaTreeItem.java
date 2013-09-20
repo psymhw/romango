@@ -55,6 +55,63 @@ public class TandaTreeItem extends BaseTreeItem
 	 this.setValue(artist + " - "+style);
    }
    
+   public void moveTrackUp(int index)
+   {
+ 	 TrackTreeItem tti =  (TrackTreeItem)getChildren().get(index);
+ 	 getChildren().remove(index);
+ 	 getChildren().add(index-1, tti);
+ 	 
+ 	 String trackHashCode = trackHashCodes.get(index);
+ 	 trackHashCodes.remove(index);
+ 	 trackHashCodes.add(index-1, trackHashCode);
+ 	 
+ 	 try 
+      {
+ 	   Db.updateTandaTracks(this);
+ 	} catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
+   }
+   
+   public void moveTrackDown(int index)
+   {
+ 	 TrackTreeItem tti =  (TrackTreeItem)getChildren().get(index);
+ 	String trackHashCode = trackHashCodes.get(index);
+ 	 
+ 	getChildren().remove(index);
+ 	trackHashCodes.remove(index);
+ 	 
+ 	if (getTrackCount()<index)
+ 	{	
+	  getChildren().add(tti);
+	  trackHashCodes.add(trackHashCode);
+ 	}
+	else
+	{
+	  trackHashCodes.add(index+1, trackHashCode);
+	  getChildren().add(index+1, tti);
+	}
+ 	 try 
+      {
+ 	   Db.updateTandaTracks(this);
+ 	} catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
+   }
+   
+   public void deleteTrack(int index)
+   {
+ 	 TrackTreeItem tti =  (TrackTreeItem)getChildren().get(index);
+ 	 getChildren().remove(index);
+ 	 trackHashCodes.remove(index);
+	 
+ 	 try 
+     {
+	   Db.updateTandaTracks(this);
+	} catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
+   }
+   
+   
+   public int getTrackCount()
+   {
+ 	return getChildren().size();
+   }
    
   public String getArtist() {
 	return artist;
