@@ -3,6 +3,7 @@ package tangodj2.PlaylistTree;
 import java.sql.SQLException;
 
 import tangodj2.Db;
+import tangodj2.SharedValues;
 
 
 public class PlaylistTreeItem  extends BaseTreeItem
@@ -63,13 +64,18 @@ public class PlaylistTreeItem  extends BaseTreeItem
 	return getChildren().size();
   }
 
-
+   public TandaTreeItem getTanda(int i)
+   {
+	 return (TandaTreeItem)getChildren().get(i);  
+   }
 
   public void moveTandaUp(int index)
   {
+	System.out.println(" SharedValues.selectedTanda: "+SharedValues.selectedTanda);
 	TandaTreeItem tti =  (TandaTreeItem)getChildren().get(index);
 	getChildren().remove(index);
 	getChildren().add(index-1, tti);
+	System.out.println("number of tandas: "+getChildren().size());
 	try 
     {
 	  Db.updateTandaPositions(this);

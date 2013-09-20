@@ -9,13 +9,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
-import tangodj2.PlaylistTree.PlaylistTree;
 import tangodj2.PlaylistTree.PlaylistTreeItem;
 import tangodj2.PlaylistTree.TandaTreeItem;
-import tangodj2.PlaylistTree.TrackTreeItem;
 
 public class Db 
 {
@@ -225,7 +220,7 @@ public class Db
 	  String sql="select * from tandas where playlistId="+playlistId+" order by position";
 	  connection.createStatement().execute(sql);
 	 
-      System.out.println("sql: "+sql);
+     // System.out.println("sql: "+sql);
       Statement statement = connection.createStatement();
       ResultSet resultSet = statement.executeQuery(sql);
       
@@ -312,7 +307,7 @@ public class Db
 	   StringBuffer sql = new StringBuffer("update tandas set");
 	   sql.append(" position = "+position);
 	   sql.append(" where id = "+tandaTreeItem.getDbId());
-	   System.out.println(sql);
+	 //  System.out.println(sql);
 	   
 	   connect();
 	   connection.createStatement().execute(sql.toString());
@@ -323,7 +318,7 @@ public class Db
 	{
 	   StringBuffer sql = new StringBuffer("delete from tandas");
 	   sql.append(" where id = "+tandaTreeItem.getDbId());
-	   System.out.println(sql);
+	 //  System.out.println(sql);
 	   
 	   connect();
 	   connection.createStatement().execute(sql.toString());

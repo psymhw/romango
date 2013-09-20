@@ -25,6 +25,21 @@ public class TrackTreeItem extends BaseTreeItem
 	this.setValue(trackMeta.title+" "+formatDuration(trackMeta.duration));
   }
     
+  public String getTandaAndTrackPosition(TrackTreeItem tti)
+  {
+	TandaTreeItem tandaTreeItem = (TandaTreeItem)getParent();
+	PlaylistTreeItem playlistTreeItem = (PlaylistTreeItem)tandaTreeItem.getParent();
+	int tandaIndex = playlistTreeItem.getTandaPosition(tandaTreeItem);
+	int trackIndex = tandaTreeItem.getChildren().indexOf(tti);
+	return tandaIndex+","+trackIndex;
+  }
+  
+  public int getTrackPosition(TrackTreeItem tti)
+  {
+	  TandaTreeItem tandaTreeItem = (TandaTreeItem)getParent();
+	  int trackIndex = tandaTreeItem.getChildren().indexOf(tti);
+	  return trackIndex;
+  }
 
   public String getTrackHash() {
 	return trackHash;
