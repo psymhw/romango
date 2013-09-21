@@ -35,8 +35,8 @@ import javafx.scene.text.Font;
 public class AllPlaylistsTab 
 {
   Tab tab;
-  private TableView<Playlist> allPlaylistsTable = new TableView<Playlist>();
-  private final static ObservableList<Playlist> allPlaylistsData = FXCollections.observableArrayList();
+  private TableView<PlaylistData> allPlaylistsTable = new TableView<PlaylistData>();
+  private final static ObservableList<PlaylistData> allPlaylistsData = FXCollections.observableArrayList();
 
 	
   public AllPlaylistsTab()
@@ -130,7 +130,7 @@ public class AllPlaylistsTab
  			  location = resultSet.getString("location");
  			  incept = resultSet.getDate("incept");
  			  id = resultSet.getInt("id");
- 			 allPlaylistsData.add(new Playlist(name, location, incept, id));
+ 			 allPlaylistsData.add(new PlaylistData(name, location, incept, id));
  			  
  			//  System.out.println("added: "+name);
  			}

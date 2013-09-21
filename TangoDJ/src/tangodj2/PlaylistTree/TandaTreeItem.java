@@ -4,6 +4,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javafx.scene.control.TreeItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import tangodj2.Db;
 import tangodj2.SharedValues;
@@ -22,37 +24,18 @@ public class TandaTreeItem extends BaseTreeItem
    private int cortinaStart=0;
    private int cortinaStop;
    private String treeType="";
+   private static Image flagsImage;
       
-   /*
-   public TandaTreeItem(String artist, int styleId, int position, boolean insert)
-   {
-	 super();
-	 this.setTreeType("tanda");
-	 this.artist=artist;
-	 this.styleId=styleId;
-	 this.style=SharedValues.styles.get(styleId) ;
-	 this.setPosition(position);
-	 this.setValue(artist + " - "+style);
-	 
-	 if (insert)
-	 {
-	   try 
-	   {
-	     dbId=Db.insertTanda(artist, styleId, position);
-	   } catch (ClassNotFoundException | SQLException e) {	e.printStackTrace(); }
-	 }
-   }
-   */
-   
    public TandaTreeItem(String artist, int styleId)
    {
-	 super();
-	 
-	 this.setTreeType("tanda");
-	 this.artist=artist;
-	 this.styleId=styleId;
-	 this.style=SharedValues.styles.get(styleId) ;
-	 this.setValue(artist + " - "+style);
+  	 super();
+  	 this.setTreeType("tanda");
+  	 this.artist=artist;
+  	 this.styleId=styleId;
+  	 if (flagsImage==null) flagsImage = new Image(getClass().getResourceAsStream("/resources/images/small_flags.png"));
+  	 setGraphic(new ImageView(flagsImage));
+  	 this.style=SharedValues.styles.get(styleId) ;
+  	 this.setValue(artist + " - "+style);
    }
    
    public void moveTrackUp(int index)
@@ -97,11 +80,11 @@ public class TandaTreeItem extends BaseTreeItem
    
    public void deleteTrack(int index)
    {
- 	 TrackTreeItem tti =  (TrackTreeItem)getChildren().get(index);
- 	 getChildren().remove(index);
- 	 trackHashCodes.remove(index);
-	 
- 	 try 
+   	 TrackTreeItem tti =  (TrackTreeItem)getChildren().get(index);
+   	 getChildren().remove(index);
+   	 trackHashCodes.remove(index);
+  	 
+   	 try 
      {
 	   Db.updateTandaTracks(this);
 	} catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
@@ -119,25 +102,25 @@ public class TandaTreeItem extends BaseTreeItem
   
   public void addTrack(String trackHash)
   {
-	if (trackHash==null) return;  
-	trackHashCodes.add(trackHash);
-	TrackTreeItem tti = new TrackTreeItem(trackHash, trackHashCodes.size());
-	getChildren().add(tti);
-	setExpanded(true);
-	try 
-	{
-	  Db.updateTandaTracks(this);
-	} catch (ClassNotFoundException | SQLException e) {	e.printStackTrace();}
-	//numberOfTracks++;
-  }
-  
+    if (trackHash==null) return;  
+  	trackHashCodes.add(trackHash);
+  	TrackTreeItem tti = new TrackTreeItem(trackHash, trackHashCodes.size());
+  	getChildren().add(tti);
+  	setExpanded(true);
+  	try 
+  	{
+  	  Db.updateTandaTracks(this);
+  	} catch (ClassNotFoundException | SQLException e) {	e.printStackTrace();}
+  	//numberOfTracks++;
+    }
+    
   public void loadTrack(String trackHash)
   {
-	if (trackHash==null) return;  
-	trackHashCodes.add(trackHash);
-	TrackTreeItem tti = new TrackTreeItem(trackHash, trackHashCodes.size());
-	getChildren().add(tti);
-	setExpanded(true);
+  	if (trackHash==null) return;  
+  	trackHashCodes.add(trackHash);
+  	TrackTreeItem tti = new TrackTreeItem(trackHash, trackHashCodes.size());
+  	getChildren().add(tti);
+  	setExpanded(true);
 	//numberOfTracks++;
   }
   
