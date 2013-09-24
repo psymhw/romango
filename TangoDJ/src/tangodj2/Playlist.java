@@ -34,6 +34,20 @@ public class Playlist
 	public Playlist()
 	{
 		setupTreeView();	
+		
+	}
+	
+	public void printTracks()
+	{
+	  int i=0;
+	  while( true)
+	  {
+	    
+	    BaseTreeItem ti = (BaseTreeItem)treeView.getTreeItem(i);
+	    if (ti==null) break;
+	    System.out.println(i+") "+ti.getTreeType());
+	    i++;
+	  }
 	}
 	
 	public TreeView<String> getTreeView()
@@ -60,6 +74,7 @@ public class Playlist
 	{
 	  playlistTreeItem =  Db.getPlaylist(SharedValues.currentPlaylist);
 	  treeView = new TreeView<String>(playlistTreeItem);
+	  treeView.getStyleClass().add("playlistTree");
 	 	treeView.getSelectionModel().select(playlistTreeItem);
 		treeView.setShowRoot(true);
 		ArrayList<TandaTreeItem> tandaTreeItems=null;
@@ -181,6 +196,11 @@ public class Playlist
 	       {
 	         setText(getString());
 	         BaseTreeItem bti = (BaseTreeItem)getTreeItem();
+	         if (isSelected()) 
+	         {
+	           TreeItem treeItem = (TreeItem)bti;
+	           System.out.println("selected tree cell: "+treeItem.getValue());
+	         }
 	         if ("playlist".equals(bti.getTreeType())) setFont(Font.font("Serif", 20));
 	         else if ("tanda".equals(bti.getTreeType())) 
 	         {	   
@@ -195,6 +215,7 @@ public class Playlist
 	         else if ("track".equals(bti.getTreeType()))
 	         {
 	           setFont(Font.font("Serif", 16));
+	           
 	           TrackTreeItem trackTreeItem = (TrackTreeItem)bti;
 	         
 	           int trackCount=((TandaTreeItem)trackTreeItem.getParent()).getTrackCount();

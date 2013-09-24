@@ -1,7 +1,5 @@
 package tangodj2;
 
-import java.io.File;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -13,8 +11,6 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -24,10 +20,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBuilder;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import tangodj2.PlaylistTree.TandaTreeItem;
 
 public class AllTracksTab 
 {
@@ -35,37 +29,17 @@ public class AllTracksTab
   SharedValues sharedValues = new SharedValues();
   AllTracksTable allTracksTable;
   Playlist playlist = new Playlist();
-
-  TrackLoader2 trackLoader = new TrackLoader2();
+  
+  
+  //TrackLoader2 trackLoader = new TrackLoader2();
   private Button newTandaButton;
 	 	
   public AllTracksTab()
   {
-	tab = new Tab();
-	tab.setText("All Tracks");
-	allTracksTable = new AllTracksTable(playlist);
-	      
-	final Button addButton = new Button("Add Tango Tracks");
-	addButton.setOnAction(new EventHandler<ActionEvent>() 
-	{
-	   public void handle(ActionEvent e) 
-	   {
-	     DirectoryChooser directoryChooser = new DirectoryChooser();
-	     directoryChooser.setInitialDirectory(new File("C:\\music\\tango"));  // temporary 
-	     File selectedDirectory = 
-	     directoryChooser.showDialog(TangoDJ2.primaryStage);
-	              
-	     if(selectedDirectory == null) { System.out.println("No Directory selected"); } 
-	     else
-	     {
-	       try
-	       {
-	         trackLoader.process(selectedDirectory.toPath().toString());
-	       } catch (Exception ex) {ex.printStackTrace();}
-	     }
-	   }
-	 });
-
+	  tab = new Tab();
+	  tab.setText("All Tracks");
+	  allTracksTable = new AllTracksTable(playlist);
+	  
 	 final Label label = new Label("All Tracks");
 	 label.setFont(new Font("Arial", 20));
 	      
@@ -73,9 +47,12 @@ public class AllTracksTab
 	 vbox.setPadding(new Insets(10, 10, 10, 10));
 	 vbox.setSpacing(20);
 	 vbox.setStyle("-fx-background-color: DAE6F3; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
-
+	 PlayerControls playerControls_1 = new PlayerControls(SharedValues.selectedAllTracksPathHash);
 	 
-	 vbox.getChildren().addAll(label, allTracksTable.getTable(), addButton);
+	// HBox belowAllTracksTableBox = new HBox();
+	// belowAllTracksTableBox.getChildren().add(addButton);
+	 //belowAllTracksTableBox.getChildren().add(playerControls_1.get());
+	 vbox.getChildren().addAll(label, allTracksTable.getTable());
 	      
 	 HBox hbox =  new HBox();
 	 hbox.setPadding(new Insets(10, 10, 10, 10));
@@ -85,20 +62,50 @@ public class AllTracksTab
 	 
 	// setupTreeView();
 	
-     VBox playlistBox = new VBox();
-     playlistBox.setPadding(new Insets(10, 10, 10, 10));
-     playlistBox.setSpacing(20);
+    // VBox playlistBox = new VBox();
+   //  playlistBox.setPadding(new Insets(10, 10, 10, 10));
+   //  playlistBox.setSpacing(20);
      setupTandaButton();
-     playlistBox.getChildren().add(newTandaButton);
-     playlistBox.getChildren().add(playlist.getTreeView());
-     hbox.getChildren().add(playlistBox);
+     
+     
+     
+     
+    // playlistBox.getChildren().add(getTestButton());
+   //  HBox belowPlaylistTreeBox = new HBox();
+   //  belowPlaylistTreeBox.getChildren().add(newTandaButton);
+   //  playlistBox.getChildren().add(playlist.getTreeView());
+   //  playlistBox.getChildren().add(belowPlaylistTreeBox);
+     hbox.getChildren().add(playlist.getTreeView());
      hbox.setHgrow(playlist.getTreeView(), Priority.ALWAYS);
     // setupListeners();
-     tab.setContent(hbox);
+     
+     final VBox mainBox = new VBox();
+     mainBox.getChildren().add(hbox);
+     mainBox.setPadding(new Insets(10, 10, 10, 10));
+     mainBox.setSpacing(20);
+     mainBox.setStyle("-fx-background-color: #4169e1; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
+     
+    
+     mainBox.getChildren().add(playerControls_1.get());
+     tab.setContent(mainBox);
 	
      
    }
   
+  private Button getTestButton()
+  {
+     Button testButton = new Button("Test"); 
+     
+     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() 
+         {
+           public void handle(MouseEvent event) 
+           {
+             playlist.printTracks();
+           }
+         };
+         testButton.setOnMouseClicked(bHandler);
+         return testButton;
+  }
    
    private void setupTandaButton() 
    {
@@ -208,8 +215,5 @@ public class AllTracksTab
    }
 	
    
-  
-	 	
-		 	
 	  
 	}
