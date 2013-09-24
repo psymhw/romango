@@ -6,7 +6,7 @@ import javafx.scene.control.TreeItem;
 public class BaseTreeItem extends TreeItem<String>
 {
 	private String treeType="";
-	 private boolean selected=false;
+	 //private boolean selected=false;
 	//private int position=0;
 	
 	public BaseTreeItem()
@@ -32,6 +32,7 @@ public void setTreeType(String treeType) {
 	this.treeType = treeType;
 }
 
+/*
 public boolean isSelected()
 {
   return selected;
@@ -42,6 +43,7 @@ public void setSelected(boolean selected)
 {
   this.selected = selected;
 }
+*/
 /*
 public int getPosition() {
 	return position;

@@ -54,7 +54,8 @@ public class AllTracksTable
 	              		  System.out.println("selected: "+selectedTrack.getTitle());
 	              		//tanda.addTrack(new TandaTrack(selectedTrack.getTitle()));
 	              		  SharedValues.title.set(selectedTrack.getTitle());
-	              		  SharedValues.selectedPathHash.set(selectedTrack.getPathHash());
+	              		  SharedValues.selectedAllTracksPathHash.set(selectedTrack.getPathHash());
+	              		  
 	              		}
 	              	}
 	             });
@@ -186,7 +187,7 @@ public class AllTracksTable
 			 	 	{	 
 			 	 	  if (SharedValues.selectedTanda==-1)	SharedValues.selectedTanda=0;
 			 	 	  TandaTreeItem tandaTreeItem = playlist.getTanda(SharedValues.selectedTanda);
-			 	 	  tandaTreeItem.addTrack(SharedValues.selectedPathHash.get());
+			 	 	  tandaTreeItem.addTrack(SharedValues.selectedAllTracksPathHash.get());
 			 	 	}
 			 	   }
 			 	 }

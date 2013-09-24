@@ -182,6 +182,7 @@ public class TrackLoader2
 	              +"', '"+trackMeta.comment
 	              +"', '"+trackMeta.track_year
 	              +"')";
+		//System.out.println("Db: "+sql);
 		 try {
 		 if (isSet(trackMeta.title)) connection.createStatement().execute(sql);
 		 } catch (Exception ex) { System.out.println("SQL ERROR: "+sql); 
@@ -263,7 +264,7 @@ public class TrackLoader2
 	{
 	   String returnStr = inStr.replace("'","''");
 	   returnStr = returnStr.replace("ÿþ","");
-	   returnStr = returnStr.replace("\\","\\\\");
+	  // returnStr = returnStr.replace("\\","\\\\");
 	   
 	   char tChar=0;
 	   returnStr = removeChar(returnStr, tChar);
