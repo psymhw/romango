@@ -1,5 +1,7 @@
 package tangodj2;
 
+import java.sql.SQLException;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -28,14 +30,15 @@ public class AllTracksTab
   Tab tab;
   SharedValues sharedValues = new SharedValues();
   AllTracksTable allTracksTable;
-  Playlist playlist = new Playlist();
   
+  Playlist playlist;
   
   //TrackLoader2 trackLoader = new TrackLoader2();
   private Button newTandaButton;
 	 	
-  public AllTracksTab()
+  public AllTracksTab(Playlist playlist)
   {
+    this.playlist=playlist;
 	  tab = new Tab();
 	  tab.setText("All Tracks");
 	  allTracksTable = new AllTracksTable(playlist);
@@ -47,7 +50,7 @@ public class AllTracksTab
 	 vbox.setPadding(new Insets(10, 10, 10, 10));
 	 vbox.setSpacing(20);
 	 vbox.setStyle("-fx-background-color: DAE6F3; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
-	 PlayerControls playerControls_1 = new PlayerControls(SharedValues.selectedAllTracksPathHash);
+	 //PlayerControls playerControls_1 = new PlayerControls(SharedValues.selectedAllTracksPathHash);
 	 
 	// HBox belowAllTracksTableBox = new HBox();
 	// belowAllTracksTableBox.getChildren().add(addButton);
@@ -79,15 +82,15 @@ public class AllTracksTab
      hbox.setHgrow(playlist.getTreeView(), Priority.ALWAYS);
     // setupListeners();
      
-     final VBox mainBox = new VBox();
-     mainBox.getChildren().add(hbox);
-     mainBox.setPadding(new Insets(10, 10, 10, 10));
-     mainBox.setSpacing(20);
-     mainBox.setStyle("-fx-background-color: #4169e1; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
+   //  final VBox mainBox = new VBox();
+   //  mainBox.getChildren().add(hbox);
+   //  mainBox.setPadding(new Insets(10, 10, 10, 10));
+   //  mainBox.setSpacing(20);
+   //  mainBox.setStyle("-fx-background-color: #4169e1; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
      
     
-     mainBox.getChildren().add(playerControls_1.get());
-     tab.setContent(mainBox);
+   //  mainBox.getChildren().add(playerControls_1.get());
+     tab.setContent(hbox);
 	
      
    }

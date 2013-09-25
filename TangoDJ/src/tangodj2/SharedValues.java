@@ -13,12 +13,13 @@ public class SharedValues
   public final static ObservableList<Track> allTracksData = FXCollections.observableArrayList();
   public static SimpleStringProperty title = new SimpleStringProperty();
   public static SimpleStringProperty selectedAllTracksPathHash = new SimpleStringProperty();
- // public static SimpleIntegerProperty playlistTrackAdd = new SimpleIntegerProperty(0);
+  public static SimpleIntegerProperty playlistFocus = new SimpleIntegerProperty(0);
+ // public static Playlist playlist;
   public static String DRIVER ="org.apache.derby.jdbc.EmbeddedDriver";
   public static String JDBC_URL ="jdbc:derby:tango_db;create=false";
   public static int currentPlaylist = 1;
   public static int selectedTanda = -1;
-  public static int selectedTrack = -1;
+  public static int selectedPlaylistTrack = -1;
   
   
   public final static int TANGO = 0;
@@ -57,7 +58,7 @@ public class SharedValues
 		  new Artist("Pedro",     "Laurenz",13),
 		  new Artist("Francisco", "Lomuto",14),
 		  new Artist("",          "Orquesta Tipica Victor",15),
-		  new Artist("",          "Quinteto Pirincho",16),
+		//  new Artist("",          "Quinteto Pirincho",16),
 		  new Artist("Enrique",   "Rodriguez",17)
 		  ));
 		 

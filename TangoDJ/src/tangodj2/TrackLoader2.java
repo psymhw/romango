@@ -155,6 +155,7 @@ public class TrackLoader2
 		 trackMeta.album    = sqlReadyString(trackMeta.album);
 		 trackMeta.comment  = sqlReadyString(trackMeta.comment);
 		 trackMeta.path     = sqlReadyString(trackMeta.path);
+		 //trackMeta.path = new File(trackMeta.path).toURI().toString();
 		 trackMeta.track_year     = sqlReadyString(trackMeta.track_year);
 	  }
 			

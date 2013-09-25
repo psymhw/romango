@@ -100,6 +100,10 @@ public class TandaTreeItem extends BaseTreeItem
 	return artist;
   }
   
+  public String getArtistAndStyle() {
+    return artist+" - "+style;
+    }
+  
   public void addTrack(String trackHash)
   {
     if (trackHash==null) return;  

@@ -5,10 +5,13 @@ import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.media.EqualizerBand;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 public class Equalizer 
 {
@@ -18,18 +21,27 @@ public class Equalizer
     private SpectrumBar[] spectrumBars;
     private SpectrumListener spectrumListener;
     GridPane gp = new GridPane();
+    BorderPane borderPane = new BorderPane();
     
     public Equalizer(MediaPlayer mp)
     {
+     gp.getStyleClass().addAll("pane","grid");
+    // gp.getStyleClass().add("pane");
+     // gp.setStyle("-fx-background-color: #bfc2c7;");
     	createEQBands(mp);
-        createSpectrumBars( mp);
-        spectrumListener = new SpectrumListener(START_FREQ, mp, spectrumBars);
-        mp.setAudioSpectrumListener(spectrumListener);
+      createSpectrumBars( mp);
+      spectrumListener = new SpectrumListener(START_FREQ, mp, spectrumBars);
+      mp.setAudioSpectrumListener(spectrumListener);
+      borderPane.setLayoutY(100);
+      // KLUDGE
+      Rectangle r = new Rectangle(1000, 75, Color.BLACK);
+      borderPane.setTop(r);
+      borderPane.setCenter(gp);
     }
     
-    public GridPane getGridPane()
+    public BorderPane getGridPane()
     {
-    	return gp;
+    	return borderPane;
     }
 
 	private void createEQBands(MediaPlayer mp) {
