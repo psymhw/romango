@@ -18,7 +18,18 @@
   -fx-alignment: center-left;
 }
 
+.pane {
+    -fx-background-color: black;
+}
 
+.grid {
+    -fx-background-color: black;
+    -fx-background-radius: 5.0;
+    -fx-background-insets: 0.0 5.0 0.0 5.0;
+    -fx-padding: 10;
+    -fx-hgap: 10;
+    -fx-vgap: 10;
+}
 
 .eqSlider {
   -fx-background-radius: 5;
@@ -45,7 +56,7 @@
 
 .playlistTree
 {
-	-fx-background-color: red;
+	-fx-background-color: white;
 }
 
 .playerButton {

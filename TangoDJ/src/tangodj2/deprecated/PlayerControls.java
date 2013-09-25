@@ -29,7 +29,7 @@ public class PlayerControls
   private double volume=.75;
   private MediaView mediaView=null;
   SimpleStringProperty source;
-  private Slider volumeSlider;
+  private Slider volumeSlider = new Slider(0, 1, 0);
   private Slider progressSlider = new Slider(0,1,0);
   private Label currentTimeLabel;
   private CurrentTimeListener currentTimeListener;
@@ -107,67 +107,21 @@ public class PlayerControls
          });
      
      
-  // Time slider
-     final Slider timeSlider = new Slider();
-     HBox.setHgrow(timeSlider, Priority.ALWAYS);
-     timeSlider.setMinWidth(50);
-     timeSlider.setMaxWidth(Double.MAX_VALUE);
-     timeSlider.valueProperty().addListener(new InvalidationListener() {
-         public void invalidated(Observable ov) {
-             if (timeSlider.isValueChanging()) {
-                 // multiply duration by percentage calculated by slider position
-                 if(duration!=null) {
-                     player.seek(duration.multiply(timeSlider.getValue() / 100.0));
-                 }
-                 updateValues();
-            }
-         }
-     });
-    
-     
-     
-     VBox volumeBox = new VBox();
-     volumeSlider = createSlider("volumeSlider");
-     volumeSlider.setValue(volume);
-     
+  //
      VBox progressBox = new VBox();
      currentTimeLabel = createLabel("00:00", "mediaText");
      progressBox.getChildren().addAll(progressSlider, currentTimeLabel);
     
      
      hbox.setSpacing(10);
-     
+     VBox volumeBox = new VBox();
      volumeBox.getChildren().add(volumeSlider);
      volumeBox.getChildren().add(new Label("Volume"));
      
      hbox.getChildren().addAll(playerRewButton, playerStopButton, playerPlayPauseButton, playerFwdButton, volumeBox, progressBox);
    }
    
-   protected void updateValues() {
-     if (playTime != null && timeSlider != null && volumeSlider != null && duration != null) {
-         Platform.runLater(new Runnable() {
-             public void run() {
-                 Duration currentTime = mp.getCurrentTime();
-                 playTime.setText(formatTime(currentTime, duration));
-                 timeSlider.setDisable(duration.isUnknown());
-                 if (!timeSlider.isDisabled() && duration.greaterThan(Duration.ZERO) && !timeSlider.isValueChanging()) {
-                     timeSlider.setValue(currentTime.divide(duration).toMillis() * 100.0);
-                 }
-                 if (!volumeSlider.isValueChanging()) {
-                     volumeSlider.setValue((int) Math.round(mp.getVolume() * 100));
-                 }
-             }
-         });
-     }
- }
- ...
- mp.currentTimeProperty().addListener(new ChangeListener<Duration>() {
-     @Override
-         public void changed(ObservableValue<? extends Duration> observable, Duration oldValue, Duration newValue) {
-             updateValues();
-     }
- });
-     
+  
    
    public HBox get()
    {

@@ -79,15 +79,14 @@ public class Db
 	  else connection = DriverManager.getConnection(JDBC_URL2);
 	}
 	
-	public static PlaylistTreeItem getPlaylist(int id)
+	public static PlaylistTreeItem getPlaylist(int id) throws SQLException, ClassNotFoundException
 	{
 	  String name;	
 	  String location;
 	  Date incept;
 	  PlaylistTreeItem playlistTreeItem=null;
-	  try
-	  {
-	    connect();
+	  
+	  connect();
 	 	Statement statement = connection.createStatement();
 	 	ResultSet resultSet = statement.executeQuery("select * from playlists where id = "+id);
 	 	if(resultSet.next())
@@ -102,7 +101,7 @@ public class Db
 	 	if (statement!=null) statement.close();
 	 	
 	 	disconnect();
-	  } catch (Exception e) { e.printStackTrace();}
+	  
 	  System.out.println("DB - "+playlistTreeItem.toString());
 	  
 	  return playlistTreeItem;

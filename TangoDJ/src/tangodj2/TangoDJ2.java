@@ -2,6 +2,7 @@ package tangodj2;
 
 import java.io.File;
 import java.net.URL;
+import java.sql.SQLException;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -37,6 +38,7 @@ public class TangoDJ2 extends Application
   MenuBar menuBar;
   TrackLoader2 trackLoader = new TrackLoader2();
   public static Tab tabC;
+  Playlist playlist;
  
 	
   public static void main(String[] args) 
@@ -62,8 +64,13 @@ public class TangoDJ2 extends Application
       
       
      // setupListeners();
+      
+      try { playlist = new Playlist();} 
+      catch (SQLException se) { System.out.println("PROGRAMALREADY RUNNING"); } 
+      catch (ClassNotFoundException e) { e.printStackTrace(); }
+      
      
-      allTracksTab = new AllTracksTab();
+      allTracksTab = new AllTracksTab(playlist);
       tabPane.getTabs().add(allTracksTab.getTab());
       
       allPlaylistsTab = new AllPlaylistsTab();
@@ -71,11 +78,16 @@ public class TangoDJ2 extends Application
     
           
       tabC = new Tab();
+      tabC.setStyle("-fx-background-color: #bfc2c7;");
       tabC.setText("Equalizer");
       tabPane.getTabs().add(tabC);
     
       mainPane.setCenter(tabPane);
-    
+      
+      
+      Player player = new Player(playlist);
+      mainPane.setBottom(player.get());
+      
       mainPane.prefHeightProperty().bind(scene.heightProperty());
       mainPane.prefWidthProperty().bind(scene.widthProperty());
     
