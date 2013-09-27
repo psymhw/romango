@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -16,18 +15,10 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
-/* TODO 
- * 
- * iTunes playlist import?
- * No duplicate hash codes in all tracks
- * Db close on window close
- * 
-*/ 
 
 public class TangoDJ2 extends Application 
 {
@@ -103,6 +94,7 @@ public class TangoDJ2 extends Application
    
     MenuItem menuAddTangoDir = new MenuItem("Add Tango Directory");
     MenuItem menuAddTangoFile = new MenuItem("Add Tango Track");
+    MenuItem menuAddCortinaFile = new MenuItem("Add Cortina\\Cleanup Track");
    
     Menu menuEdit = new Menu("Edit");
     Menu menuView = new Menu("View");
@@ -110,24 +102,46 @@ public class TangoDJ2 extends Application
     
     menuAddTangoDir.setOnAction(new EventHandler<ActionEvent>() 
     {
-       public void handle(ActionEvent t) 
-       {
-         DirectoryChooser directoryChooser = new DirectoryChooser();
-         directoryChooser.setInitialDirectory(new File("C:\\music\\tango"));  // temporary 
-         File selectedDirectory = 
-         directoryChooser.showDialog(primaryStage);
+      public void handle(ActionEvent t) 
+      {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setInitialDirectory(new File("C:\\music\\tango"));  // temporary 
+        File selectedDirectory = 
+        directoryChooser.showDialog(primaryStage);
                   
-         if(selectedDirectory == null) { System.out.println("No Directory selected"); } 
-         else
-         {
-           try
-           {
-             trackLoader.process(selectedDirectory.toPath().toString());
-           } catch (Exception ex) {ex.printStackTrace();}
-         }
-    }
-  });   
-    menuFile.getItems().addAll(menuAddTangoDir, menuAddTangoFile);
+        if(selectedDirectory == null) { System.out.println("No Directory selected"); } 
+        else
+        {
+          try
+          {
+            trackLoader.process(selectedDirectory.toPath().toString(), false);
+          } catch (Exception ex) {ex.printStackTrace();}
+        }
+      }
+    });   
+    
+    menuAddTangoFile.setOnAction(new EventHandler<ActionEvent>() 
+    {
+      public void handle(ActionEvent t) 
+      {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File("C:\\music\\tango"));  // temporary 
+        File selectedFile = 
+        fileChooser.showOpenDialog(primaryStage);
+                  
+        if(selectedFile == null) { System.out.println("No File selected"); } 
+        else
+        {
+          try
+          {
+            trackLoader.process(selectedFile.toPath().toString(), true);
+          } catch (Exception ex) {ex.printStackTrace();}
+        }
+      }
+    });   
+    
+    
+    menuFile.getItems().addAll(menuAddTangoDir, menuAddTangoFile,menuAddCortinaFile);
   }
 
   /*

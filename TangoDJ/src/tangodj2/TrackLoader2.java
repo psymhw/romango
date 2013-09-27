@@ -89,37 +89,41 @@ public class TrackLoader2
 	   return true;
   }
   
-  public void process(String inPath) throws ClassNotFoundException, IOException, SQLException
+  public void process(String inPath, boolean singleFile) throws ClassNotFoundException, IOException, SQLException
   {
-	//Class.forName(DRIVER2);
-	trackInfo.clear();
-	
-	 
+    trackInfo.clear();
+    
+    if (singleFile)
+    {
+      File f = new File(inPath);
+      processSingleFile(f.toPath());
+    }
+    else
+    {
 	  FileVisitor<Path> fileProcessor = new ProcessFile();
-
 	  Files.walkFileTree(Paths.get(inPath), fileProcessor);
-		      
-	   if (errors==0) System.out.println(" No Errors\n");
+    }	      
+	if (errors==0) System.out.println(" No Errors\n");
 		      else System.out.println(errors+" Errors\n");
 	   
-	   getMetaData();
-	   timelineCycles=0;
-	   timeline.playFromStart();
-		}
+	getMetaData();
+	timelineCycles=0;
+	timeline.playFromStart();
+  }
 	 
   
   void getMetaData()
-	 {
-	   TrackMeta trackMeta;
-	   int counter=0;
-	   Iterator<TrackMeta> it = trackInfo.iterator();
-	   String tStr;
-	   while(it.hasNext())
-	   {
-		 trackMeta=it.next();
-		 new MediaMetaGetter(trackMeta);
-	   }
-	 }
+  {
+    TrackMeta trackMeta;
+	int counter=0;
+	Iterator<TrackMeta> it = trackInfo.iterator();
+	String tStr;
+	while(it.hasNext())
+	{
+	  trackMeta=it.next();
+	  new MediaMetaGetter(trackMeta);
+    }
+  }
   
   
 	 void listTrackInfo()
@@ -202,10 +206,12 @@ public class TrackLoader2
 	 
 	private static final class ProcessFile extends SimpleFileVisitor<Path> 
 	{
-	   public FileVisitResult visitFile(Path path, BasicFileAttributes aAttrs) throws IOException 
+	  public FileVisitResult visitFile(Path path, BasicFileAttributes aAttrs) throws IOException 
 	   {
-		      //System.out.println(""+counter+": Processing file:" + path);
-		      String pathStr = path.toString().trim().toLowerCase();
+		  
+	   return processSingleFile(path);
+		  /*
+       String pathStr = path.toString().trim().toLowerCase();
 		      String pathStr2="";
 			  String title="";
 			  String artist="";
@@ -252,6 +258,7 @@ public class TrackLoader2
 		    	  System.out.println(counter+" Not an MP3 file: "+pathStr+"\n");
 		      }
 		      return FileVisitResult.CONTINUE;
+		      */
 		    }
 		    
 		    public FileVisitResult preVisitDirectory(Path aDir, BasicFileAttributes aAttrs) throws IOException 
@@ -261,6 +268,8 @@ public class TrackLoader2
 		    }
 		}
 		    
+	
+	
 	public static String sqlReadyString(String inStr)
 	{
 	   String returnStr = inStr.replace("'","''");
@@ -282,6 +291,58 @@ public class TrackLoader2
 	  }
 	  return r;
     }
-		    
+	
+    public static FileVisitResult processSingleFile(Path path)
+    {
+     // File f = new File(inPath);
+     // Path path = f.toPath();
+      String pathStr = path.toString().trim().toLowerCase();
+      String pathStr2="";
+	  String title="";
+	  String artist="";
+	  String album="";
+	  String comment="";
+	  String genre="";
+	  String track_year="";
+	  
+	  String pathHash="";
+	  MP3File mp3 = null;
+	  AbstractID3v2 tag;
+	  AbstractID3v1 tag2;
+    
+    if (pathStr.endsWith(".mp3")) 
+    {
+        File file = path.toFile();
+        pathStr2=path.toString();
+        
+        try { mp3= new MP3File(file); } catch (Exception e) { errors++; System.out.println(counter+" Could not create MP3File class: "+pathStr+"\n"); counter++; return FileVisitResult.CONTINUE;  }
+        try { tag = mp3.getID3v2Tag();  } catch (Exception e2) {  errors++; System.out.println(counter+" Could not get ID3v2 tag: "+pathStr+"\n"); counter++; return FileVisitResult.CONTINUE;  }
+       
+        
+        title=tag.getSongTitle();
+        comment= tag.getSongComment();
+        genre=tag.getSongGenre();
+        artist=tag.getLeadArtist();
+  	  album=tag.getAlbumTitle();
+  	  track_year=tag.getYearReleased();
+  	  //System.out.println(track_year);
+  	 	          
+  	  pathStr2=path.toString();
+  			    	  
+		  pathHash = hasher.getMd5Hash(pathStr2.getBytes());
+		  
+		  int duration = 0;
+		  boolean success=false;
+		  
+		  trackInfo.add(new TrackMeta(title, artist, album, comment, genre, pathHash, pathStr2, track_year));
+		  
+		  counter++;
+     }
+    else
+    {
+  	  System.out.println(counter+" Not an MP3 file: "+pathStr+"\n");
+    }
+    return FileVisitResult.CONTINUE;
+  }
 	
 }
