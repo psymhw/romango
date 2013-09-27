@@ -39,6 +39,7 @@ public class TrackLoader2
   static int counter=0;
   private static Hasher hasher = new Hasher();
   private static List<TrackMeta> trackInfo = new ArrayList<TrackMeta>();
+  public boolean isTango=true;
 	
   public TrackLoader2()
   {
@@ -89,8 +90,9 @@ public class TrackLoader2
 	   return true;
   }
   
-  public void process(String inPath, boolean singleFile) throws ClassNotFoundException, IOException, SQLException
+  public void process(String inPath, boolean singleFile, boolean isTango) throws ClassNotFoundException, IOException, SQLException
   {
+	  this.isTango=isTango;
     trackInfo.clear();
     
     if (singleFile)
@@ -168,6 +170,7 @@ public class TrackLoader2
 	 void insertRecords() 
 	 {
 		int cortina=0;  // TODO set this on load
+		if (!isTango) cortina=1;
 	try{
 		//Db.connect();
 	   connection = DriverManager.getConnection(JDBC_URL2);
@@ -207,66 +210,16 @@ public class TrackLoader2
 	private static final class ProcessFile extends SimpleFileVisitor<Path> 
 	{
 	  public FileVisitResult visitFile(Path path, BasicFileAttributes aAttrs) throws IOException 
-	   {
-		  
-	   return processSingleFile(path);
-		  /*
-       String pathStr = path.toString().trim().toLowerCase();
-		      String pathStr2="";
-			  String title="";
-			  String artist="";
-			  String album="";
-			  String comment="";
-			  String genre="";
-			  String track_year="";
-			  
-			  String pathHash="";
-			  MP3File mp3 = null;
-			  AbstractID3v2 tag;
-			  AbstractID3v1 tag2;
-		      
-		      if (pathStr.endsWith(".mp3")) 
-		      {
-		          File file = path.toFile();
-		          pathStr2=path.toString();
-		          
-		          try { mp3= new MP3File(file); } catch (Exception e) { errors++; System.out.println(counter+" Could not create MP3File class: "+pathStr+"\n"); counter++; return FileVisitResult.CONTINUE;  }
-		          try { tag = mp3.getID3v2Tag();  } catch (Exception e2) {  errors++; System.out.println(counter+" Could not get ID3v2 tag: "+pathStr+"\n"); counter++; return FileVisitResult.CONTINUE;  }
-		         
-		          
-		          title=tag.getSongTitle();
-		          comment= tag.getSongComment();
-		          genre=tag.getSongGenre();
-		          artist=tag.getLeadArtist();
-		    	  album=tag.getAlbumTitle();
-		    	  track_year=tag.getYearReleased();
-		    	  //System.out.println(track_year);
-		    	 	          
-		    	  pathStr2=path.toString();
-		    			    	  
-				  pathHash = hasher.getMd5Hash(pathStr2.getBytes());
-				  
-				  int duration = 0;
-				  boolean success=false;
-				  
-				  trackInfo.add(new TrackMeta(title, artist, album, comment, genre, pathHash, pathStr2, track_year));
-				  
-				  counter++;
-		       }
-		      else
-		      {
-		    	  System.out.println(counter+" Not an MP3 file: "+pathStr+"\n");
-		      }
-		      return FileVisitResult.CONTINUE;
-		      */
-		    }
+	  {
+	    return processSingleFile(path);
+	  }
 		    
-		    public FileVisitResult preVisitDirectory(Path aDir, BasicFileAttributes aAttrs) throws IOException 
-		    {
-		      System.out.println("Processing directory:" + aDir);
-		      return FileVisitResult.CONTINUE;
-		    }
-		}
+	  public FileVisitResult preVisitDirectory(Path aDir, BasicFileAttributes aAttrs) throws IOException 
+	  {
+		System.out.println("Processing directory:" + aDir);
+		return FileVisitResult.CONTINUE;
+	  }
+	}
 		    
 	
 	
@@ -294,8 +247,6 @@ public class TrackLoader2
 	
     public static FileVisitResult processSingleFile(Path path)
     {
-     // File f = new File(inPath);
-     // Path path = f.toPath();
       String pathStr = path.toString().trim().toLowerCase();
       String pathStr2="";
 	  String title="";
@@ -310,8 +261,8 @@ public class TrackLoader2
 	  AbstractID3v2 tag;
 	  AbstractID3v1 tag2;
     
-    if (pathStr.endsWith(".mp3")) 
-    {
+      if (pathStr.endsWith(".mp3")) 
+      {
         File file = path.toFile();
         pathStr2=path.toString();
         
@@ -323,26 +274,25 @@ public class TrackLoader2
         comment= tag.getSongComment();
         genre=tag.getSongGenre();
         artist=tag.getLeadArtist();
-  	  album=tag.getAlbumTitle();
-  	  track_year=tag.getYearReleased();
-  	  //System.out.println(track_year);
+  	    album=tag.getAlbumTitle();
+  	    track_year=tag.getYearReleased();
+  	    //System.out.println(track_year);
   	 	          
-  	  pathStr2=path.toString();
+  	    pathStr2=path.toString();
   			    	  
-		  pathHash = hasher.getMd5Hash(pathStr2.getBytes());
+		pathHash = hasher.getMd5Hash(pathStr2.getBytes());
 		  
-		  int duration = 0;
-		  boolean success=false;
+		int duration = 0;
+		boolean success=false;
 		  
-		  trackInfo.add(new TrackMeta(title, artist, album, comment, genre, pathHash, pathStr2, track_year));
+		trackInfo.add(new TrackMeta(title, artist, album, comment, genre, pathHash, pathStr2, track_year));
 		  
-		  counter++;
-     }
-    else
-    {
-  	  System.out.println(counter+" Not an MP3 file: "+pathStr+"\n");
+		counter++;
+      }
+      else
+      {
+  	    System.out.println(counter+" Not an MP3 file: "+pathStr+"\n");
+      }
+      return FileVisitResult.CONTINUE;
     }
-    return FileVisitResult.CONTINUE;
-  }
-	
 }

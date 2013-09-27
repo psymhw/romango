@@ -114,7 +114,7 @@ public class TangoDJ2 extends Application
         {
           try
           {
-            trackLoader.process(selectedDirectory.toPath().toString(), false);
+            trackLoader.process(selectedDirectory.toPath().toString(), false, true);
           } catch (Exception ex) {ex.printStackTrace();}
         }
       }
@@ -134,13 +134,32 @@ public class TangoDJ2 extends Application
         {
           try
           {
-            trackLoader.process(selectedFile.toPath().toString(), true);
+            trackLoader.process(selectedFile.toPath().toString(), true, true);
           } catch (Exception ex) {ex.printStackTrace();}
         }
       }
     });   
     
-    
+    menuAddCortinaFile.setOnAction(new EventHandler<ActionEvent>() 
+    {
+      public void handle(ActionEvent t) 
+      {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File("C:\\music\\tango"));  // temporary 
+        File selectedFile = 
+        fileChooser.showOpenDialog(primaryStage);
+                  
+        if(selectedFile == null) { System.out.println("No File selected"); } 
+        else
+        {
+          try
+          {
+            trackLoader.process(selectedFile.toPath().toString(), true, false);
+          } catch (Exception ex) {ex.printStackTrace();}
+        }
+      }
+    });   
+    	    
     menuFile.getItems().addAll(menuAddTangoDir, menuAddTangoFile,menuAddCortinaFile);
   }
 

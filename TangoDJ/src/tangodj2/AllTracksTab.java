@@ -1,10 +1,9 @@
 package tangodj2;
 
-import java.sql.SQLException;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -55,7 +54,7 @@ public class AllTracksTab
 	// HBox belowAllTracksTableBox = new HBox();
 	// belowAllTracksTableBox.getChildren().add(addButton);
 	 //belowAllTracksTableBox.getChildren().add(playerControls_1.get());
-	 vbox.getChildren().addAll(label, allTracksTable.getTable());
+	 vbox.getChildren().addAll(getSearchAndFilterBar(), allTracksTable.getTable());
 	      
 	 HBox hbox =  new HBox();
 	 hbox.setPadding(new Insets(10, 10, 10, 10));
@@ -108,6 +107,39 @@ public class AllTracksTab
          };
          testButton.setOnMouseClicked(bHandler);
          return testButton;
+  }
+  
+  private HBox getSearchAndFilterBar()
+  {
+	final Label label = new Label("All Tracks");
+	label.setFont(new Font("Arial", 20));
+	final RadioButton rb1 = new RadioButton("Tango");
+	final RadioButton rb2 = new RadioButton("Cortina\\Cleanup");
+    final ToggleGroup styleGroup = new ToggleGroup();
+    
+    rb1.setToggleGroup(styleGroup);
+    rb2.setToggleGroup(styleGroup);
+    rb1.setFont(new Font("Arial", 16));
+    rb2.setFont(new Font("Arial", 16));
+    
+    rb1.setSelected(true);
+    
+	final Label spacer = new Label("       ");
+	spacer.setFont(new Font("Arial", 16));
+	final Label spacer2 = new Label("       ");
+	spacer2.setFont(new Font("Arial", 16));
+	final Label spacer3 = new Label("  ");
+	spacer3.setFont(new Font("Arial", 16));
+	
+	TextField searchBox = new TextField();
+	
+	Button searchButton = new Button("Filter");	
+	HBox hbox = new HBox();
+	hbox.setAlignment(Pos.BASELINE_CENTER);
+	
+	hbox.getChildren().addAll(label,spacer,rb1,spacer3,rb2,spacer2,searchBox, searchButton);
+
+	return hbox;
   }
    
    private void setupTandaButton() 
