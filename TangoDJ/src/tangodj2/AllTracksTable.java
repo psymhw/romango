@@ -22,8 +22,11 @@ public class AllTracksTable
 	  this.playlist=playlist;
 	  setupAllTracksTable();
 	  Db.loadAllTracks();
-	  Track firstTrack = SharedValues.allTracksData.get(0);
-	  SharedValues.selectedAllTracksPathHash.set(firstTrack.getPathHash());
+	  if (SharedValues.allTracksData.size()>0)
+	  {
+	    Track firstTrack = SharedValues.allTracksData.get(0);
+	    SharedValues.selectedAllTracksPathHash.set(firstTrack.getPathHash());
+	  }
   }
 	 
   public static void reloadData()
