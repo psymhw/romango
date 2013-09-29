@@ -26,7 +26,7 @@ public class Db
 	}
 	
 	public static void loadAllTracks()
-	  {
+	{
 		
 	    String title;
 	    String artist;
@@ -43,7 +43,7 @@ public class Db
 	    {
 			connect();
 			Statement statement = connection.createStatement();
-			ResultSet resultSet = statement.executeQuery("select * from tracks order by artist, album, title");
+			ResultSet resultSet = statement.executeQuery("select * from tracks where cortina = "+SharedValues.allTracksType+"order by artist, album, title");
 			while(resultSet.next())
 			{
 			  title=resultSet.getString("title");
@@ -186,31 +186,7 @@ public class Db
 	  return r;
     }
 	
-	/*
 	
-	public static int insertTrack(String artist, int styleId, int position) throws SQLException, ClassNotFoundException
-	{
-		 connect();
-		 String sql="insert into tandas (artist, styleId, playlistId, position) values('"+artist+"', "+styleId+","+SharedValues.currentPlaylist+", "+position+")";
-		// System.out.println("sql: "+sql);
-		 connection.createStatement().execute(sql);
-		 
-		 int maxid=0;
-         sql="select max(id) maxid from tandas";
-         System.out.println("sql: "+sql);
-         Statement statement = connection.createStatement();
-         ResultSet resultSet = statement.executeQuery(sql);
-         if(resultSet.next())
- 	 	 {
-           maxid= resultSet.getInt("maxid");
- 	 	 }
-      	 if (resultSet!=null) resultSet.close();
-	 	 if (statement!=null) statement.close();
-		 disconnect();
-		 // System.out.println("maxid: "+maxid);
-	     return maxid;
-	}
-*/
 	
 	public static ArrayList<TandaTreeItem> getTandaTreeItems(int playlistId)  throws SQLException, ClassNotFoundException
 	{
@@ -237,9 +213,9 @@ public class Db
     		//System.out.println("Db - trackHash Found: "+i+" - "+trackHash);
     		if (trackHash!=null) tandaTreeItem.loadTrack(trackHash);
     	  }
-    	  tandaTreeItem.setCortinaHashCode(resultSet.getString("cortinaHash"));
-    	  tandaTreeItem.setCortinaStart(resultSet.getInt("cortinaStart"));
-    	  tandaTreeItem.setCortinaStop(resultSet.getInt("cortinaStop"));
+    	//  tandaTreeItem.setCortinaHashCode(resultSet.getString("cortinaHash"));
+    	//  tandaTreeItem.setCortinaStart(resultSet.getInt("cortinaStart"));
+    	//  tandaTreeItem.setCortinaStop(resultSet.getInt("cortinaStop"));
     	 // tandaTreeItem.setNumberOfTracks(resultSet.getInt("track_count"));
     	  
     	

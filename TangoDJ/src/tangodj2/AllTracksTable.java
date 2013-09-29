@@ -70,108 +70,51 @@ public class AllTracksTable
 		  
 	   private double setupAllTracksColumns()
 	   {
-		 TableColumn titleCol = new TableColumn("Title");
-		      titleCol.setMinWidth(100);
-		      titleCol.setPrefWidth(150);
-		      titleCol.setCellValueFactory(
-		          new PropertyValueFactory<Track, String>("title"));
-		      titleCol.setCellFactory(TextFieldTableCell.forTableColumn());
-		      titleCol.setOnEditCommit(
-		          new EventHandler<CellEditEvent<Track, String>>() {
-		              @Override
-		              public void handle(CellEditEvent<Track, String> t) {
-		                  ((Track) t.getTableView().getItems().get(
-		                          t.getTablePosition().getRow())
-		                          ).setTitle(t.getNewValue());
-		              }
-		          }
-		      );
-
-		      
+		   TableColumn titleCol = new TableColumn("Title");
+		   titleCol.setMinWidth(100);
+		   titleCol.setPrefWidth(150);
+		   titleCol.setCellValueFactory(new PropertyValueFactory<Track, String>("title"));
+		   titleCol.setCellFactory(TextFieldTableCell.forTableColumn());
+		   
 		       
 		  TableColumn artistCol = new TableColumn("Artist");
-		      artistCol.setMinWidth(50);
-		      artistCol.setPrefWidth(100);
-		      artistCol.setCellValueFactory(
-		          new PropertyValueFactory<Track, String>("artist"));
-		      artistCol.setCellFactory(TextFieldTableCell.forTableColumn());
-		      artistCol.setOnEditCommit(
-		          new EventHandler<CellEditEvent<Track, String>>() {
-		              @Override
-		              public void handle(CellEditEvent<Track, String> t) {
-		                  ((Track) t.getTableView().getItems().get(
-		                      t.getTablePosition().getRow())
-		                      ).setArtist(t.getNewValue());
-		              }
-		          }
-		      );
+		  artistCol.setMinWidth(50);
+		  artistCol.setPrefWidth(100);
+		  artistCol.setCellValueFactory(new PropertyValueFactory<Track, String>("artist"));
+		  artistCol.setCellFactory(TextFieldTableCell.forTableColumn());
+		 
 		      
 		  TableColumn albumCol = new TableColumn("Album");
-		      albumCol.setMinWidth(50);
-		      albumCol.setPrefWidth(150);
-		      albumCol.setCellValueFactory(
-		          new PropertyValueFactory<Track, String>("album"));
-		      albumCol.setCellFactory(TextFieldTableCell.forTableColumn());
-		      albumCol.setOnEditCommit(
-		          new EventHandler<CellEditEvent<Track, String>>() {
-		              @Override
-		              public void handle(CellEditEvent<Track, String> t) {
-		                  ((Track) t.getTableView().getItems().get(
-		                      t.getTablePosition().getRow())
-		                      ).setAlbum(t.getNewValue());
-		              }
-		          }
-		      );
+		  albumCol.setMinWidth(50);
+		  albumCol.setPrefWidth(150);
+		  albumCol.setCellValueFactory(new PropertyValueFactory<Track, String>("album"));
+		  albumCol.setCellFactory(TextFieldTableCell.forTableColumn());
+		   
 		      
 		  TableColumn genreCol = new TableColumn("Genre");
-		      genreCol.setMinWidth(30);
-		      genreCol.setPrefWidth(50);
-		      genreCol.setCellValueFactory(
-		          new PropertyValueFactory<Track, String>("genre"));
-		      genreCol.setCellFactory(TextFieldTableCell.forTableColumn());
-		      genreCol.setOnEditCommit(
-		          new EventHandler<CellEditEvent<Track, String>>() {
-		              @Override
-		              public void handle(CellEditEvent<Track, String> t) {
-		                  ((Track) t.getTableView().getItems().get(
-		                      t.getTablePosition().getRow())
-		                      ).setGenre(t.getNewValue());
-		              }
-		          }
-		      );
+		  genreCol.setMinWidth(30);
+		  genreCol.setPrefWidth(50);
+		  genreCol.setCellValueFactory(new PropertyValueFactory<Track, String>("genre"));
+		  genreCol.setCellFactory(TextFieldTableCell.forTableColumn());
+		  
 		      
 		  TableColumn commentCol = new TableColumn("Comment");
-		      commentCol.setMinWidth(50);
-		      commentCol.setPrefWidth(100);
-		      commentCol.setCellValueFactory(
-		          new PropertyValueFactory<Track, String>("comment"));
-		      commentCol.setCellFactory(TextFieldTableCell.forTableColumn());
-		      commentCol.setOnEditCommit(
-		          new EventHandler<CellEditEvent<Track, String>>() {
-		              @Override
-		              public void handle(CellEditEvent<Track, String> t) {
-		                  ((Track) t.getTableView().getItems().get(
-		                      t.getTablePosition().getRow())
-		                      ).setComment(t.getNewValue());
-		              }
-		          }
-		      );
+		  commentCol.setMinWidth(50);
+		  commentCol.setPrefWidth(100);
+		  commentCol.setCellValueFactory(new PropertyValueFactory<Track, String>("comment"));
+		  commentCol.setCellFactory(TextFieldTableCell.forTableColumn());
+		 		      
+		  TableColumn durationCol = new TableColumn("Length");
+		  durationCol.setMinWidth(50);
+		  durationCol.setPrefWidth(50);
+		  durationCol.setCellValueFactory(new PropertyValueFactory<Track, String>("duration"));
+		  durationCol.setCellFactory(TextFieldTableCell.forTableColumn());
 		      
-		      TableColumn durationCol = new TableColumn("Length");
-		      durationCol.setMinWidth(50);
-		      durationCol.setPrefWidth(50);
-		     
-		      durationCol.setCellValueFactory(
-		          new PropertyValueFactory<Track, String>("duration"));
-		      durationCol.setCellFactory(TextFieldTableCell.forTableColumn());
-		      
-		      TableColumn yearCol = new TableColumn("Year");
-		      yearCol.setMinWidth(50);
-		      yearCol.setPrefWidth(50);
-		     
-		      yearCol.setCellValueFactory(
-		          new PropertyValueFactory<Track, String>("track_year"));
-		      yearCol.setCellFactory(TextFieldTableCell.forTableColumn());
+		  TableColumn yearCol = new TableColumn("Year");
+		  yearCol.setMinWidth(50);
+		  yearCol.setPrefWidth(50);
+		  yearCol.setCellValueFactory(new PropertyValueFactory<Track, String>("track_year"));
+		  yearCol.setCellFactory(TextFieldTableCell.forTableColumn());
 		      
 		     
 		  table.getColumns().addAll(titleCol, durationCol, yearCol, artistCol, albumCol, genreCol, commentCol);

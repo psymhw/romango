@@ -20,6 +20,7 @@ public class SharedValues
   public static int currentPlaylist = 1;
   public static int selectedTanda = -1;
   public static int selectedPlaylistTrack = -1;
+  public static int allTracksType = 0;
   
   
   public final static int TANGO = 0;
