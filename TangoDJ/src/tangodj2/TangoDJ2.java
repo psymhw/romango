@@ -4,7 +4,10 @@ import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
 
+
+import javafx.beans.value.ChangeListener;
 import javafx.application.Application;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -24,12 +27,14 @@ public class TangoDJ2 extends Application
 {
   static Stage primaryStage;
   SharedValues sharedValues = new SharedValues();
-  static AllTracksTab allTracksTab;
+  static PlaylistBuilderTab playlistBuilderTab;
   static AllPlaylistsTab allPlaylistsTab;
   MenuBar menuBar;
   TrackLoader2 trackLoader = new TrackLoader2();
   public static Tab tabC;
+  public static Tab tabD;
   Playlist playlist;
+  AllTracksTable allTracksTable;
  
 	
   public static void main(String[] args) 
@@ -60,9 +65,10 @@ public class TangoDJ2 extends Application
       catch (SQLException se) { System.out.println("PROGRAMALREADY RUNNING"); } 
       catch (ClassNotFoundException e) { e.printStackTrace(); }
       
+      allTracksTable = new AllTracksTable(playlist);
      
-      allTracksTab = new AllTracksTab(playlist);
-      tabPane.getTabs().add(allTracksTab.getTab());
+      playlistBuilderTab = new PlaylistBuilderTab(playlist, allTracksTable);
+      tabPane.getTabs().add(playlistBuilderTab);
       
       allPlaylistsTab = new AllPlaylistsTab();
       tabPane.getTabs().add(allPlaylistsTab.getTab());
@@ -71,7 +77,24 @@ public class TangoDJ2 extends Application
       tabC = new Tab();
       tabC.setStyle("-fx-background-color: #bfc2c7;");
       tabC.setText("Equalizer");
+      
+      tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>()
+      {
+        public void changed(ObservableValue<? extends Tab> arg0, Tab arg1, Tab mostRecentlySelectedTab)
+        {
+          if (mostRecentlySelectedTab.equals(tabD))
+          {
+            playlistBuilderTab.removeTable();
+            tabD.setContent(allTracksTable.getTable());
+          }
+        }
+      });
+      
       tabPane.getTabs().add(tabC);
+      
+      tabD = new Tab();
+      tabD.setText("Test");
+      tabPane.getTabs().add(tabD);
     
       mainPane.setCenter(tabPane);
       

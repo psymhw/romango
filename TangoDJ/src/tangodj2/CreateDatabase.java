@@ -30,13 +30,14 @@ public class CreateDatabase
 	public void create() throws ClassNotFoundException, SQLException
 	{
 		connect();
-	   	createTracksTable();
+	  createTracksTable();
 		createPlaylistsTable();
 		createStateTable();
 		createTandasTable();
+		createCortinasTable();
 		disconnect();
 	   //Db.disconnect();
-	    System.out.println("database initiallized");	
+	  System.out.println("database initiallized");	
 	}
 	
 	
@@ -117,14 +118,28 @@ public class CreateDatabase
 	    		"trackHash_7 varchar(32), " +
 	    		"trackHash_8 varchar(32), " +
 	    		"trackHash_9 varchar(32), " +
-	    		"cortinaStart INTEGER, " +
-	    		"cortinaStop INTEGER, " +
-	    		"track_count INTEGER, " +
-	    		"cortinaHash varchar(32) " +
+	    		"cortinaId INTEGER " +
 	    		")";
 		//System.out.println(sql);
 		connection.createStatement().execute(sql);	
 		System.out.println("Tandas table created");
+	}
+	
+	public void createCortinasTable() throws SQLException
+	{
+	  String sql="create table cortinas(" +
+        "id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
+        "start INTEGER, " +
+        "stop INTEGER, " +
+        "fadein INTEGER, " +
+        "fadeout INTEGER, " +
+        "track_count INTEGER, " +
+        "comment varchar(60), " +
+        "hash varchar(32) " +
+        ")";
+  //System.out.println(sql);
+  connection.createStatement().execute(sql);  
+  System.out.println("Cortinas table created");
 	}
 	
 	public static void main(String[] args) 
