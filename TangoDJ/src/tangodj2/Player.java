@@ -14,16 +14,21 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.Tab;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.media.MediaView;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 public class Player 
@@ -48,15 +53,31 @@ public class Player
     public final static int EVENT_PLAYLIST=3;
     Playlist playlist;
     int nextPlaylistTrack=0;
-    
+    Tab equalizerTab;
+    VBox vbox = new VBox();
     int mode = ALL_TRACKS;
+    GridPane gridPane;
+    Label startPositionValue=null;
+    Label endPositionValue=null;
+    Label playPositionValue=null;
+    Label cortinaLength=null;
+    final int col[] = {0,1,2,3,4,5,6};
+    final int row[] = {0,1,2,3,4,5,6};
+    Duration currentTrackDuration = new Duration(0);
+    Slider startPositionSlider=null;
+    Slider endPositionSlider=null;
+    Slider playPositionSlider=null;
+    
     
    // SimpleStringProperty source = new SimpleStringProperty();
    
 
-    public Player(Playlist playlist) 
+    public Player(Playlist playlist, Tab equalizerTab) 
     {
       this.playlist=playlist;
+      this.equalizerTab=equalizerTab;
+      
+      
       setupListeners();
       mediaBar = new HBox();
       mediaBar.setSpacing(5);
@@ -174,17 +195,128 @@ public class Player
          }
        });
        
+       vbox.getChildren().add(mediaBar);
+       
+       
+       
+    }
+    
+    public void setDefaultTrack()
+    {
+      TrackMeta trackMeta=null;
+      if (SharedValues.allTracksData.size()>0)
+      {
+        Track firstTrack = SharedValues.allTracksData.get(0);
+        SharedValues.selectedAllTracksPathHash.set(firstTrack.getPathHash());
+        trackMeta = Db.getTrackInfo(SharedValues.selectedAllTracksPathHash.get());
+        File file = new File(trackMeta.path);
+        int totalTrackTime=trackMeta.duration;
+        currentTrackDuration = new Duration(totalTrackTime*1000);
+        System.out.println("Default Track Duration: "+formatTime(currentTrackDuration));
+      }
+      
+      
     }
 
+    public void showAdvancedControls(boolean show)
+    {
+      
+      if (show)
+      {
+        setupCortinaControls();
+        vbox.getChildren().add(gridPane);
+      }
+      else vbox.getChildren().remove(gridPane);
+    }
+    
+    
+    
+    GridPane setupCortinaControls()
+    {
+      gridPane = new GridPane();
+      gridPane.setPadding(new Insets(10, 10, 10, 10));
+      gridPane.setStyle("-fx-background-color: DAE6F3; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
+      gridPane.setHgap(15);
+      
+      startPositionSlider = new Slider(0, 1, 0);
+     endPositionSlider = new Slider(0, 1, 1);
+       playPositionSlider = new Slider(0, 1, 0);
+      
+      CheckBox fadeIn = new CheckBox("Fade In");
+      CheckBox fadeOut = new CheckBox("Fade Out");
+      CheckBox delay = new CheckBox("3 Sec delay at end");
+      
+      startPositionValue = new Label("00:00");
+      System.out.println("Default Track Duration2: "+formatTime(currentTrackDuration));
+      endPositionValue = new Label(formatTime(currentTrackDuration));
+      playPositionValue = new Label(Double.toString(playPositionSlider.getValue()));
+      cortinaLength=new Label("0:00");
+    
+      
+      gridPane.add(new Text("Start Position"), col[0], row[0]);
+      gridPane.add(new Text("End Position"),   col[0], row[1]);
+      gridPane.add(new Text("Play Position"),  col[0], row[2]);
+      
+      
+      gridPane.add(startPositionValue,         col[1], row[0]);
+      gridPane.add(endPositionValue,           col[1], row[1]);
+      gridPane.add(playPositionValue,          col[1], row[2]);
+      
+      gridPane.add(startPositionSlider,        col[2], row[0]);
+      gridPane.add(endPositionSlider,          col[2], row[1]);
+      gridPane.add(playPositionSlider,         col[2], row[2]);
+      
+      gridPane.add(fadeIn,                     col[3], row[0]);
+      gridPane.add(fadeOut,                    col[3], row[1]);
+      gridPane.add(delay,                      col[3], row[2]);
+      
+      gridPane.add(new Text("Cortna Length: "),col[4], row[0]);
+      gridPane.add(cortinaLength              ,col[5], row[0]);
+      
+      
+      
+      
+      startPositionSlider.valueProperty().addListener(new ChangeListener<Number>() 
+      {
+          public void changed(ObservableValue<? extends Number> arg0,
+                  Number arg1, Number arg2) 
+          {
+            float sliderPercent  = arg2.floatValue();
+            startPositionValue.setText(formatTime(currentTrackDuration.multiply(sliderPercent))); //new value
+          }
+      });
+      
+      endPositionSlider.valueProperty().addListener(new ChangeListener<Number>() 
+      {
+          public void changed(ObservableValue<? extends Number> arg0,
+                  Number arg1, Number arg2) 
+          {
+            endPositionValue.setText(String.format("%.1f", arg2)); //new value
+          }
+      });
+      
+      playPositionSlider.valueProperty().addListener(new ChangeListener<Number>() 
+      {
+          public void changed(ObservableValue<? extends Number> arg0,
+                  Number arg1, Number arg2) 
+          {
+            playPositionValue.setText(String.format("%.1f", arg2)); //new value
+          }
+      });
+      
+      
+      return gridPane;
+    }
+    
     public void setMode(int mode)
     {
       if (this.mode==mode) return;
       this.mode=mode;
     }
     
-    public HBox get()
+    public VBox get()
     {
-      return mediaBar;
+      return vbox;
     }
     
     private void pauseTrack()
@@ -215,7 +347,7 @@ public class Player
     public void playTrack()
     {
       String sourcePath;
-      TrackMeta trackMeta;
+      TrackMeta trackMeta=null;
       
       if (mode==PLAYLIST)
       {
@@ -237,6 +369,8 @@ public class Player
         System.out.println("Source Path is null");
         return;
       }
+      
+      
       playing=true;
       playButton.setText("||");
       stopButton.setDisable(false);
@@ -245,10 +379,29 @@ public class Player
       
       mediaPlayer = createMediaPlayer(file.toURI().toString(), true);
       mediaPlayer.setVolume(volumeSlider.getValue());
+      
+      int totalTrackTime=trackMeta.duration;
+      
+      currentTrackDuration = new Duration(totalTrackTime*1000);
+      
+      System.out.println("Total Time: "+totalTrackTime);
+      
+      double startFraction = startPositionSlider.getValue();
+      double endFraction = endPositionSlider.getValue();
+      
+      Duration startTime=currentTrackDuration.multiply(startFraction);
+      Duration endTime=currentTrackDuration.multiply(endFraction);
+      
+      Duration cortinaTime = endTime.subtract(startTime);
+      
+      
+      System.out.println("Start Time: "+ startTime);
+      mediaPlayer.setStartTime(startTime);
+      
       mediaView = new MediaView(mediaPlayer);
 
       eq = new Equalizer(mediaPlayer);
-      TangoDJ2.tabC.setContent(eq.getGridPane());
+      equalizerTab.setContent(eq.getGridPane());
       
       /*
       Status status = mediaPlayer.getStatus();
@@ -431,6 +584,32 @@ public class Player
                       elapsedSeconds);
        }
      }
+   }
+  
+  private static String formatTime(Duration duration) 
+  {
+    if (duration.greaterThan(Duration.ZERO)) 
+    {
+      int intDuration = (int) Math.floor(duration.toSeconds());
+      int durationHours = intDuration / (60 * 60);
+      if (durationHours > 0) { intDuration -= durationHours * 60 * 60; }
+      int durationMinutes = intDuration / 60;
+      int durationSeconds = intDuration - durationHours * 60 * 60 - durationMinutes * 60;
+      if (durationHours > 0) 
+      {
+        return String.format("%d:%02d:%02d", 
+                      durationHours, durationMinutes, durationSeconds);
+       } 
+       else 
+       {
+         return String.format("%02d:%02d",
+                     durationMinutes,
+                      durationSeconds);
+       }
+     }
+    else return "00:00";
+    
+     
    }
   
   private void setupListeners() 

@@ -19,22 +19,27 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
+/*
+ * TODO export playlist?
+ */
 public class TangoDJ2 extends Application 
 {
   static Stage primaryStage;
   SharedValues sharedValues = new SharedValues();
   static PlaylistBuilderTab playlistBuilderTab;
-  static AllPlaylistsTab allPlaylistsTab;
+  static PlaylistChoiceTab playlistChoiceTab;
   MenuBar menuBar;
   TrackLoader2 trackLoader = new TrackLoader2();
-  public static Tab tabC;
-  public static Tab tabD;
+  //public static Tab equalizerTab;
   Playlist playlist;
   AllTracksTable allTracksTable;
+  static CortinaTab cortinaTab;
+  Rectangle r = new Rectangle(10,10,10,10);
+  Player player;
  
 	
   public static void main(String[] args) 
@@ -45,69 +50,82 @@ public class TangoDJ2 extends Application
   public void start(Stage stage) 
   {
 	  primaryStage=stage;
-	 // Group root = new Group();
 	  VBox root = new VBox();
-      Scene scene = new Scene(root, 950, 550, Color.WHITE);
-      final URL stylesheet = getClass().getResource("style.css");
-      scene.getStylesheets().add(stylesheet.toString());
-      TabPane tabPane = new TabPane();
-      BorderPane mainPane = new BorderPane();
-          
-      CreateDatabase cb = new CreateDatabase();
+    Scene scene = new Scene(root, 950, 550, Color.WHITE);
+    r.setFill(Color.RED);
+   
+    final URL stylesheet = getClass().getResource("style.css");
+    scene.getStylesheets().add(stylesheet.toString());
     
-      try {if (!cb.exists()) cb.create(); } catch (Exception e) { e.printStackTrace(); }
-      setupMenuBar();
+    TabPane tabPane = new TabPane();
+    BorderPane mainPane = new BorderPane();
+          
+    CreateDatabase cb = new CreateDatabase();
+    
+    try {if (!cb.exists()) cb.create(); } catch (Exception e) { e.printStackTrace(); }
+    
+    setupMenuBar();
       
+    try { playlist = new Playlist();} 
+    catch (SQLException se) { System.out.println("PROGRAMALREADY RUNNING"); } 
+    catch (ClassNotFoundException e) { e.printStackTrace(); }
       
-     // setupListeners();
-      
-      try { playlist = new Playlist();} 
-      catch (SQLException se) { System.out.println("PROGRAMALREADY RUNNING"); } 
-      catch (ClassNotFoundException e) { e.printStackTrace(); }
-      
-      allTracksTable = new AllTracksTable(playlist);
+    allTracksTable = new AllTracksTable(playlist);
+    trackLoader.setAllTracksTable(allTracksTable);
      
-      playlistBuilderTab = new PlaylistBuilderTab(playlist, allTracksTable);
-      tabPane.getTabs().add(playlistBuilderTab);
-      
-      allPlaylistsTab = new AllPlaylistsTab();
-      tabPane.getTabs().add(allPlaylistsTab.getTab());
+    playlistBuilderTab = new PlaylistBuilderTab(playlist, allTracksTable);
+    tabPane.getTabs().add(playlistBuilderTab);
+  //  playlistBuilderTab.addAllTracksTable();  
     
+    playlistChoiceTab = new PlaylistChoiceTab();
+    tabPane.getTabs().add(playlistChoiceTab);
           
-      tabC = new Tab();
-      tabC.setStyle("-fx-background-color: #bfc2c7;");
-      tabC.setText("Equalizer");
+    Tab equalizerTab = new Tab();
+    equalizerTab.setStyle("-fx-background-color: #bfc2c7;");
+    equalizerTab.setText("Equalizer");
+    
+    cortinaTab = new CortinaTab(allTracksTable);
       
-      tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>()
+    tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>()
+    {
+      public void changed(ObservableValue<? extends Tab> arg0, Tab arg1, Tab mostRecentlySelectedTab)
       {
-        public void changed(ObservableValue<? extends Tab> arg0, Tab arg1, Tab mostRecentlySelectedTab)
+        if (mostRecentlySelectedTab.equals(cortinaTab))
         {
-          if (mostRecentlySelectedTab.equals(tabD))
-          {
-            playlistBuilderTab.removeTable();
-            tabD.setContent(allTracksTable.getTable());
-          }
+          playlistBuilderTab.removeAllTracksTable();
+          allTracksTable.setType(1);
+          cortinaTab.addAllTracksTable();
+          player.setDefaultTrack();
+          player.showAdvancedControls(true);
+          
+          
         }
-      });
+        if (mostRecentlySelectedTab.equals(playlistBuilderTab))
+        {
+          cortinaTab.removeAllTracksTable();
+          playlistBuilderTab.addAllTracksTable();
+          player.showAdvancedControls(false);
+        }
+      }
+    });
       
-      tabPane.getTabs().add(tabC);
+    tabPane.getTabs().add(equalizerTab);
       
-      tabD = new Tab();
-      tabD.setText("Test");
-      tabPane.getTabs().add(tabD);
+   
     
-      mainPane.setCenter(tabPane);
-      
-      
-      Player player = new Player(playlist);
-      mainPane.setBottom(player.get());
-      
-      mainPane.prefHeightProperty().bind(scene.heightProperty());
-      mainPane.prefWidthProperty().bind(scene.widthProperty());
+    tabPane.getTabs().add(cortinaTab);
     
-      root.getChildren().addAll(menuBar, mainPane);
-      primaryStage.setScene(scene);
-      primaryStage.show();
+    mainPane.setCenter(tabPane);
+      
+    player = new Player(playlist, equalizerTab);
+    mainPane.setBottom(player.get());
+     
+    mainPane.prefHeightProperty().bind(scene.heightProperty());
+    mainPane.prefWidthProperty().bind(scene.widthProperty());
+    
+    root.getChildren().addAll(menuBar, mainPane);
+    primaryStage.setScene(scene);
+    primaryStage.show();
   }
 
   private void setupMenuBar()

@@ -40,6 +40,7 @@ public class TrackLoader2
   private static Hasher hasher = new Hasher();
   private static List<TrackMeta> trackInfo = new ArrayList<TrackMeta>();
   public boolean isTango=true;
+  AllTracksTable allTracksTable;
 	
   public TrackLoader2()
   {
@@ -62,7 +63,7 @@ public class TrackLoader2
 		 // listTrackInfo();
 		  sqlReadyTrackInfo();
 		  insertRecords();
-		  AllTracksTable.reloadData();
+		  allTracksTable.reloadData();
 		}
 		if (seconds>=30) 
 		{
@@ -294,5 +295,10 @@ public class TrackLoader2
   	    System.out.println(counter+" Not an MP3 file: "+pathStr+"\n");
       }
       return FileVisitResult.CONTINUE;
+    }
+
+    public void setAllTracksTable(AllTracksTable allTracksTable)
+    {
+      this.allTracksTable = allTracksTable;
     }
 }

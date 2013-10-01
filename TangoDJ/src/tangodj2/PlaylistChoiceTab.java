@@ -32,17 +32,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
-public class AllPlaylistsTab 
+public class PlaylistChoiceTab extends Tab
 {
-  Tab tab;
   private TableView<PlaylistData> allPlaylistsTable = new TableView<PlaylistData>();
   private final static ObservableList<PlaylistData> allPlaylistsData = FXCollections.observableArrayList();
 
 	
-  public AllPlaylistsTab()
+  public PlaylistChoiceTab()
   {
-	tab = new Tab();
-	tab.setText("Playlists");
+	   this.setText("Playlists");
 	
 	TableColumn nameCol = TableColumnBuilder.create()
             .text("Name")
@@ -110,7 +108,7 @@ public class AllPlaylistsTab
     vbox.setPadding(new Insets(10, 10, 10, 10));
     vbox.getChildren().addAll(label, allPlaylistsTable, getEntryBox());
     vbox.setMaxWidth(350);
-    tab.setContent(vbox);
+    this.setContent(vbox);
   }
   
   private void setData() 
@@ -139,13 +137,7 @@ public class AllPlaylistsTab
  	    } catch (Exception e) { e.printStackTrace();}
  	  }
 
-	
 
-
-public Tab getTab()
-  {
-    return tab;
-  }
 
   private VBox getEntryBox()
   {

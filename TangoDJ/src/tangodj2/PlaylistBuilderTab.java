@@ -15,8 +15,11 @@ import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 
 public class PlaylistBuilderTab extends Tab
@@ -26,6 +29,7 @@ public class PlaylistBuilderTab extends Tab
   AllTracksTable allTracksTable;
   Playlist playlist;
   final VBox vbox = new VBox();
+  int savedType=0;
   
   public PlaylistBuilderTab(Playlist playlist, AllTracksTable allTracksTable)
   {
@@ -38,7 +42,8 @@ public class PlaylistBuilderTab extends Tab
 	  vbox.setSpacing(20);
 	  vbox.setStyle("-fx-background-color: DAE6F3; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
 	 
-	  vbox.getChildren().addAll(getSearchAndFilterBar(), allTracksTable.getTable());
+	  vbox.getChildren().add(getSearchAndFilterBar());
+	  addAllTracksTable();
 	 
 	  HBox hbox =  new HBox();
 	  hbox.setPadding(new Insets(10, 10, 10, 10));
@@ -53,9 +58,20 @@ public class PlaylistBuilderTab extends Tab
     this.setContent(hbox);
   }
   
-  public void removeTable()
+  public void removeAllTracksTable()
   {
     vbox.getChildren().remove(allTracksTable.getTable());
+  }
+  
+  public void addAllTracksTable()
+  {
+    allTracksTable.setType(savedType);
+    vbox.getChildren().add(allTracksTable.getTable());
+  }
+  
+  public void addRectangle(Rectangle r)
+  {
+    vbox.getChildren().add(r);
   }
   
   public TableView<Track> getTable()
@@ -125,9 +141,16 @@ public class PlaylistBuilderTab extends Tab
         if (trackTypeGroup.getSelectedToggle() != null) 
         {
           String selectedStr=trackTypeGroup.getSelectedToggle().toString();
-          if (selectedStr.contains("tango")) SharedValues.allTracksType=0;
-          else if (selectedStr.contains("cleanup")) SharedValues.allTracksType=1;
-          AllTracksTable.reloadData();
+          if (selectedStr.contains("tango")) 
+          {
+            allTracksTable.setType(0);
+            savedType=0;
+          }
+          else if (selectedStr.contains("cleanup")) 
+          {
+            allTracksTable.setType(1);
+            savedType=1;
+          }
         }                
       }
     });

@@ -25,7 +25,7 @@ public class Equalizer
     
     public Equalizer(MediaPlayer mp)
     {
-     gp.getStyleClass().addAll("pane","grid");
+      gp.getStyleClass().addAll("pane","grid");
     // gp.getStyleClass().add("pane");
      // gp.setStyle("-fx-background-color: #bfc2c7;");
     	createEQBands(mp);

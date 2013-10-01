@@ -11,17 +11,21 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 
 public class AllTracksTable 
 {
   private TableView<Track> table = new TableView<Track>();
   private Playlist playlist;
+  private int type=0; //tango
 	 
   public AllTracksTable(Playlist playlist)
   {
 	  this.playlist=playlist;
+	 
 	  setupAllTracksTable();
-	  Db.loadAllTracks();
+	  Db.loadAllTracks(type);
 	  if (SharedValues.allTracksData.size()>0)
 	  {
 	    Track firstTrack = SharedValues.allTracksData.get(0);
@@ -29,13 +33,18 @@ public class AllTracksTable
 	  }
   }
 	 
-  public static void reloadData()
+  
+  
+  public void reloadData()
   {
     SharedValues.allTracksData.clear();
-    Db.loadAllTracks();
+    Db.loadAllTracks(type);
   }
 	 
-  public TableView<Track> getTable() { return table; }
+  public TableView<Track> getTable() 
+  { 
+    return table; 
+  }
 	
   private void setupAllTracksTable() 
   {
@@ -140,6 +149,17 @@ public class AllTracksTable
 			 	   }
 			 	 }
 			    };
+
+    public int getType()
+    {
+      return type;
+    }
+
+    public void setType(int type)
+    {
+      this.type = type;
+      reloadData();
+    }
 
 
 }

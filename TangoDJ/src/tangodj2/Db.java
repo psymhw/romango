@@ -25,7 +25,7 @@ public class Db
 	
 	}
 	
-	public static void loadAllTracks()
+	public static void loadAllTracks(int type)
 	{
 		
 	    String title;
@@ -43,7 +43,7 @@ public class Db
 	    {
 			connect();
 			Statement statement = connection.createStatement();
-			ResultSet resultSet = statement.executeQuery("select * from tracks where cortina = "+SharedValues.allTracksType+"order by artist, album, title");
+			ResultSet resultSet = statement.executeQuery("select * from tracks where cortina = "+type+"order by artist, album, title");
 			while(resultSet.next())
 			{
 			  title=resultSet.getString("title");
