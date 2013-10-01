@@ -28,6 +28,8 @@ public class AllTracksTable
 	 
 	  setupAllTracksTable();
 	  Db.loadAllTracks(type);
+	  //System.out.println("AllTracksTable - tracks loaded");
+	  /*
 	  if (SharedValues.allTracksData.size()>0)
 	  {
 	    Track firstTrack = SharedValues.allTracksData.get(0);
@@ -37,6 +39,7 @@ public class AllTracksTable
 	    SharedValues.selectedCleanupPathHash.set(firstTrack.getPathHash());
 
 	  }
+	  */
   }
 	 
   
@@ -65,24 +68,22 @@ public class AllTracksTable
     table.setOnKeyReleased(keyEvent);
 	    
     // MOUSE TABLE ROW SELECTION
-    table.getSelectionModel().selectedItemProperty()
-	                 .addListener(new ChangeListener() 
-	                 {
-	              	    public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-	              		Track selectedTrack = (Track)newValue;
-	              		if (selectedTrack!=null)
-	              		{
-	              		  System.out.println("selected: "+selectedTrack.getTitle());
-	              		//tanda.addTrack(new TandaTrack(selectedTrack.getTitle()));
-	              		  SharedValues.title.set(selectedTrack.getTitle());
-	              		 if (type==TANGO)
-	              		  SharedValues.selectedTangoPathHash.set(selectedTrack.getPathHash());
-	              		 if (type==CORTINA)
-		              		  SharedValues.selectedCleanupPathHash.set(selectedTrack.getPathHash());
-		              		  
-	              		}
-	              	}
-	             });
+    table.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
+	  {
+	    public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+	    {
+	      Track selectedTrack = (Track)newValue;
+	      if (selectedTrack!=null)
+	      {
+	       // System.out.println("selected: "+selectedTrack.getTitle());
+     		  SharedValues.title.set(selectedTrack.getTitle());
+	        if (type==TANGO)
+	          SharedValues.selectedTangoPathHash.set(selectedTrack.getPathHash());
+	        if (type==CORTINA)
+		        SharedValues.selectedCleanupPathHash.set(selectedTrack.getPathHash());
+	      }
+	    }
+	  });
 		    
 	   }
 		

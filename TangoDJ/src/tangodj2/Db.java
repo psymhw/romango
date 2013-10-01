@@ -102,7 +102,7 @@ public class Db
 	 	
 	 	disconnect();
 	  
-	  System.out.println("DB - "+playlistTreeItem.toString());
+	 //System.out.println("DB - "+playlistTreeItem.toString());
 	  
 	  return playlistTreeItem;
 	}

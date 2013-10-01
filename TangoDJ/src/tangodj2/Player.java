@@ -26,6 +26,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.media.MediaView;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -60,6 +61,8 @@ public class Player
     Label endPositionValue=null;
     Label playPositionValue=null;
     Label cortinaLength=null;
+    Label trackTitle = new Label("");
+    
     final int col[] = {0,1,2,3,4,5,6};
     final int row[] = {0,1,2,3,4,5,6};
     Duration currentTrackDuration = new Duration(0);
@@ -76,6 +79,9 @@ public class Player
       this.playlist=playlist;
       this.equalizerTab=equalizerTab;
       
+      
+      trackTitle.setFont(new Font("Arial", 18));
+      trackTitle.setStyle("-fx-background-color: #bfc2c7;");
       
       setupListeners();
       mediaBar = new HBox();
@@ -193,9 +199,12 @@ public class Player
            }
          }
        });
+       vbox.setStyle("-fx-background-color: #bfc2c7;");
        
+       vbox.getChildren().add(trackTitle);
        vbox.getChildren().add(mediaBar);
        
+       setDefaultTrack();
        
        
     }
@@ -203,32 +212,41 @@ public class Player
     public void setDefaultTrack()
     {
       TrackMeta trackMeta=null;
-      if (SharedValues.selectedCleanupPathHash.get()==null)
-      {	  
-        if (SharedValues.allTracksData.size()>0)
-        {
-          Track firstTrack = SharedValues.allTracksData.get(0);
-          SharedValues.selectedCleanupPathHash.set(firstTrack.getPathHash());
-          trackMeta = Db.getTrackInfo(SharedValues.selectedCleanupPathHash.get());
-          File file = new File(trackMeta.path);
-          int totalTrackTime=trackMeta.duration;
-          currentTrackDuration = new Duration(totalTrackTime*1000);
-          System.out.println("Default Track Duration: "+formatTime(currentTrackDuration));
-          updateUIValues();
-        }
-      }
-      else
+      Track firstTrack=null;
+      String trackHash=null;
+      //System.out.println("Player - Set Default track");
+      if (SharedValues.allTracksData.size()==0) 
       {
-    	    trackMeta = Db.getTrackInfo(SharedValues.selectedCleanupPathHash.get());
-            File file = new File(trackMeta.path);
-            int totalTrackTime=trackMeta.duration;
-            currentTrackDuration = new Duration(totalTrackTime*1000);
-            System.out.println("Default Track Duration: "+formatTime(currentTrackDuration));
-            updateUIValues();
-      
+        System.out.println("Player - No Tracks");
+        return;
       }
+      firstTrack = SharedValues.allTracksData.get(0);
+      trackHash=firstTrack.getPathHash();
       
       
+      if (mode==CORTINA_CREATE)
+      {
+        //System.out.println("Player - CORTINA_CREATE");
+        if (SharedValues.selectedCleanupPathHash.get()==null)
+          SharedValues.selectedCleanupPathHash.set(trackHash);
+        else trackHash=SharedValues.selectedCleanupPathHash.get();
+        
+      }
+      if (mode==PLAYLIST_CREATE)
+      {
+        //System.out.println("Player - PLAYLIST_CREATE");
+        if (SharedValues.selectedTangoPathHash.get()==null) 
+          SharedValues.selectedTangoPathHash.set(trackHash);
+        else trackHash=SharedValues.selectedTangoPathHash.get();
+      }
+          
+      trackMeta = Db.getTrackInfo(trackHash);
+      File file = new File(trackMeta.path);
+      int totalTrackTime=trackMeta.duration;
+      currentTrackDuration = new Duration(totalTrackTime*1000);
+     // System.out.println("Default Track Duration: "+formatTime(currentTrackDuration));
+      trackTitle.setText(trackMeta.title);
+      updateUIValues(trackMeta.pathHash);
     }
 
     public void showAdvancedControls(boolean show)
@@ -260,7 +278,7 @@ public class Player
       CheckBox delay = new CheckBox("3 Sec delay at end");
       
       startPositionValue = new Label("00:00");
-      System.out.println("Default Track Duration2: "+formatTime(currentTrackDuration));
+      // System.out.println("Default Track Duration2: "+formatTime(currentTrackDuration));
       endPositionValue = new Label(formatTime(currentTrackDuration));
       playPositionValue = new Label(Double.toString(playPositionSlider.getValue()));
       cortinaLength=new Label("0:00");
@@ -294,7 +312,7 @@ public class Player
           public void changed(ObservableValue<? extends Number> arg0,
                   Number arg1, Number arg2) 
           {
-            updateUIValues();
+            updateCortinaUIValues();
           }
 
 		
@@ -305,7 +323,7 @@ public class Player
           public void changed(ObservableValue<? extends Number> arg0,
                   Number arg1, Number arg2) 
           {
-        	updateUIValues();
+        	updateCortinaUIValues();
           }
       });
       
@@ -322,15 +340,27 @@ public class Player
       return gridPane;
     }
     
-    private void updateUIValues() 
+    public void updateUIValues(String pathHash) 
     {
-      startPositionValue.setText(formatTime(currentTrackDuration.multiply(startPositionSlider.getValue()))); 
-      endPositionValue.setText(formatTime(currentTrackDuration.multiply(endPositionSlider.getValue()))); 
+      TrackMeta trackMeta = Db.getTrackInfo(pathHash);
+      trackTitle.setText(trackMeta.title);
+    }
+    
+    private void updateCortinaUIValues() 
+    {
+      if (mode==CORTINA_CREATE)
+      {
+        Duration startDuration =currentTrackDuration.multiply(startPositionSlider.getValue());
+        Duration endDuration = currentTrackDuration.multiply(endPositionSlider.getValue());
+        startPositionValue.setText(formatTime(startDuration)); 
+        endPositionValue.setText(formatTime(endDuration));
+        cortinaLength.setText(formatTime(endDuration.subtract(startDuration)));
+      }
     }
     
     public void setMode(int mode)
     {
-      if (this.mode==mode) 
+      this.mode=mode;
       setDefaultTrack();
       if (mode==CORTINA_CREATE) showAdvancedControls(true);
       else showAdvancedControls(false);
@@ -417,20 +447,22 @@ public class Player
       
       currentTrackDuration = new Duration(totalTrackTime*1000);
       
+     
       System.out.println("Total Time: "+totalTrackTime);
       
-      double startFraction = startPositionSlider.getValue();
-      double endFraction = endPositionSlider.getValue();
+      if (mode==CORTINA_CREATE)
+      {
+        double startFraction = startPositionSlider.getValue();
+        double endFraction = endPositionSlider.getValue();
       
-      Duration startTime=currentTrackDuration.multiply(startFraction);
-      Duration endTime=currentTrackDuration.multiply(endFraction);
-      
-      Duration cortinaTime = endTime.subtract(startTime);
+        Duration startTime=currentTrackDuration.multiply(startFraction);
+        Duration stopTime=currentTrackDuration.multiply(endFraction);
       
       
-      System.out.println("Start Time: "+ startTime);
-      mediaPlayer.setStartTime(startTime);
-      
+       // System.out.println("Start Time: "+ startTime);
+        mediaPlayer.setStartTime(startTime);
+        mediaPlayer.setStopTime(stopTime);
+      }
       mediaView = new MediaView(mediaPlayer);
 
       eq = new Equalizer(mediaPlayer);

@@ -73,18 +73,22 @@ public class TangoDJ2 extends Application
     allTracksTable = new AllTracksTable(playlist);
     trackLoader.setAllTracksTable(allTracksTable);
      
-    playlistBuilderTab = new PlaylistBuilderTab(playlist, allTracksTable);
+    Tab equalizerTab = new Tab();
+    equalizerTab.setStyle("-fx-background-color: #bfc2c7;");
+    equalizerTab.setText("Equalizer");
+    
+    player = new Player(playlist, equalizerTab);
+   
+    playlistBuilderTab = new PlaylistBuilderTab(playlist, allTracksTable, player);
     tabPane.getTabs().add(playlistBuilderTab);
   //  playlistBuilderTab.addAllTracksTable();  
     
     playlistChoiceTab = new PlaylistChoiceTab();
     tabPane.getTabs().add(playlistChoiceTab);
           
-    Tab equalizerTab = new Tab();
-    equalizerTab.setStyle("-fx-background-color: #bfc2c7;");
-    equalizerTab.setText("Equalizer");
     
-    cortinaTab = new CortinaTab(allTracksTable);
+    
+    cortinaTab = new CortinaTab(allTracksTable, player);
       
     // TAB SELECTION LISTENER
     tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>()
@@ -108,14 +112,11 @@ public class TangoDJ2 extends Application
     });
       
     tabPane.getTabs().add(equalizerTab);
-      
-   
-    
     tabPane.getTabs().add(cortinaTab);
     
     mainPane.setCenter(tabPane);
       
-    player = new Player(playlist, equalizerTab);
+   
     mainPane.setBottom(player.get());
      
     mainPane.prefHeightProperty().bind(scene.heightProperty());
@@ -202,17 +203,7 @@ public class TangoDJ2 extends Application
     menuFile.getItems().addAll(menuAddTangoDir, menuAddTangoFile,menuAddCortinaFile);
   }
 
-  /*
-  private void setupListeners() 
-  {
-    ChangeListener cl2 = new ChangeListener() 
-    {
-      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
-      {
-        System.out.println("selected Path Hash: "+sharedValues.pathHash.get());
-      }
-    };   
-    sharedValues.pathHash.addListener(cl2);
-  }
-  */
+ 
+  
+ 
 }
