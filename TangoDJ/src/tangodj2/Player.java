@@ -1,5 +1,3 @@
-
-
 package tangodj2;
 
 import java.io.File;
@@ -48,14 +46,15 @@ public class Player
     final Button previousButton;
     private boolean playing=false;
     private Equalizer eq;
-    public final static int ALL_TRACKS=1;
+    public final static int PLAYLIST_CREATE=1;
     public final static int PLAYLIST=2;
     public final static int EVENT_PLAYLIST=3;
+    public final static int CORTINA_CREATE=4;
     Playlist playlist;
     int nextPlaylistTrack=0;
     Tab equalizerTab;
     VBox vbox = new VBox();
-    int mode = ALL_TRACKS;
+    int mode = PLAYLIST_CREATE;
     GridPane gridPane;
     Label startPositionValue=null;
     Label endPositionValue=null;
@@ -204,15 +203,29 @@ public class Player
     public void setDefaultTrack()
     {
       TrackMeta trackMeta=null;
-      if (SharedValues.allTracksData.size()>0)
+      if (SharedValues.selectedCleanupPathHash.get()==null)
+      {	  
+        if (SharedValues.allTracksData.size()>0)
+        {
+          Track firstTrack = SharedValues.allTracksData.get(0);
+          SharedValues.selectedCleanupPathHash.set(firstTrack.getPathHash());
+          trackMeta = Db.getTrackInfo(SharedValues.selectedCleanupPathHash.get());
+          File file = new File(trackMeta.path);
+          int totalTrackTime=trackMeta.duration;
+          currentTrackDuration = new Duration(totalTrackTime*1000);
+          System.out.println("Default Track Duration: "+formatTime(currentTrackDuration));
+          updateUIValues();
+        }
+      }
+      else
       {
-        Track firstTrack = SharedValues.allTracksData.get(0);
-        SharedValues.selectedAllTracksPathHash.set(firstTrack.getPathHash());
-        trackMeta = Db.getTrackInfo(SharedValues.selectedAllTracksPathHash.get());
-        File file = new File(trackMeta.path);
-        int totalTrackTime=trackMeta.duration;
-        currentTrackDuration = new Duration(totalTrackTime*1000);
-        System.out.println("Default Track Duration: "+formatTime(currentTrackDuration));
+    	    trackMeta = Db.getTrackInfo(SharedValues.selectedCleanupPathHash.get());
+            File file = new File(trackMeta.path);
+            int totalTrackTime=trackMeta.duration;
+            currentTrackDuration = new Duration(totalTrackTime*1000);
+            System.out.println("Default Track Duration: "+formatTime(currentTrackDuration));
+            updateUIValues();
+      
       }
       
       
@@ -239,7 +252,7 @@ public class Player
       gridPane.setHgap(15);
       
       startPositionSlider = new Slider(0, 1, 0);
-     endPositionSlider = new Slider(0, 1, 1);
+      endPositionSlider = new Slider(0, 1, 1);
        playPositionSlider = new Slider(0, 1, 0);
       
       CheckBox fadeIn = new CheckBox("Fade In");
@@ -281,9 +294,10 @@ public class Player
           public void changed(ObservableValue<? extends Number> arg0,
                   Number arg1, Number arg2) 
           {
-            float sliderPercent  = arg2.floatValue();
-            startPositionValue.setText(formatTime(currentTrackDuration.multiply(sliderPercent))); //new value
+            updateUIValues();
           }
+
+		
       });
       
       endPositionSlider.valueProperty().addListener(new ChangeListener<Number>() 
@@ -291,7 +305,7 @@ public class Player
           public void changed(ObservableValue<? extends Number> arg0,
                   Number arg1, Number arg2) 
           {
-            endPositionValue.setText(String.format("%.1f", arg2)); //new value
+        	updateUIValues();
           }
       });
       
@@ -308,10 +322,18 @@ public class Player
       return gridPane;
     }
     
+    private void updateUIValues() 
+    {
+      startPositionValue.setText(formatTime(currentTrackDuration.multiply(startPositionSlider.getValue()))); 
+      endPositionValue.setText(formatTime(currentTrackDuration.multiply(endPositionSlider.getValue()))); 
+    }
+    
     public void setMode(int mode)
     {
-      if (this.mode==mode) return;
-      this.mode=mode;
+      if (this.mode==mode) 
+      setDefaultTrack();
+      if (mode==CORTINA_CREATE) showAdvancedControls(true);
+      else showAdvancedControls(false);
     }
     
     public VBox get()
@@ -346,7 +368,7 @@ public class Player
     
     public void playTrack()
     {
-      String sourcePath;
+      String sourcePath=null;
       TrackMeta trackMeta=null;
       
       if (mode==PLAYLIST)
@@ -358,10 +380,21 @@ public class Player
       }
       else 
       {
-        String trackHash=SharedValues.selectedAllTracksPathHash.get();
+    	if (mode==PLAYLIST_CREATE)  
+    	{
+        String trackHash=SharedValues.selectedTangoPathHash.get();
         if (trackHash==null) return;
-        trackMeta = Db.getTrackInfo(SharedValues.selectedAllTracksPathHash.get());
+        trackMeta = Db.getTrackInfo(trackHash);
         sourcePath=trackMeta.path;
+    	}
+    	if (mode==CORTINA_CREATE)
+    	{
+    	     String trackHash=SharedValues.selectedCleanupPathHash.get();
+    	        if (trackHash==null) return;
+    	        trackMeta = Db.getTrackInfo(trackHash);
+    	        sourcePath=trackMeta.path;
+    	   	
+    	}
       }
       
       if (sourcePath==null)

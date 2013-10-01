@@ -19,6 +19,8 @@ public class AllTracksTable
   private TableView<Track> table = new TableView<Track>();
   private Playlist playlist;
   private int type=0; //tango
+  private int TANGO=0;
+  private int CORTINA=1;
 	 
   public AllTracksTable(Playlist playlist)
   {
@@ -29,7 +31,11 @@ public class AllTracksTable
 	  if (SharedValues.allTracksData.size()>0)
 	  {
 	    Track firstTrack = SharedValues.allTracksData.get(0);
-	    SharedValues.selectedAllTracksPathHash.set(firstTrack.getPathHash());
+	    if (type==TANGO)
+	    SharedValues.selectedTangoPathHash.set(firstTrack.getPathHash());
+	    if (type==CORTINA)
+	    SharedValues.selectedCleanupPathHash.set(firstTrack.getPathHash());
+
 	  }
   }
 	 
@@ -58,6 +64,7 @@ public class AllTracksTable
 	    
     table.setOnKeyReleased(keyEvent);
 	    
+    // MOUSE TABLE ROW SELECTION
     table.getSelectionModel().selectedItemProperty()
 	                 .addListener(new ChangeListener() 
 	                 {
@@ -68,8 +75,11 @@ public class AllTracksTable
 	              		  System.out.println("selected: "+selectedTrack.getTitle());
 	              		//tanda.addTrack(new TandaTrack(selectedTrack.getTitle()));
 	              		  SharedValues.title.set(selectedTrack.getTitle());
-	              		  SharedValues.selectedAllTracksPathHash.set(selectedTrack.getPathHash());
-	              		  
+	              		 if (type==TANGO)
+	              		  SharedValues.selectedTangoPathHash.set(selectedTrack.getPathHash());
+	              		 if (type==CORTINA)
+		              		  SharedValues.selectedCleanupPathHash.set(selectedTrack.getPathHash());
+		              		  
 	              		}
 	              	}
 	             });
@@ -132,10 +142,10 @@ public class AllTracksTable
 	  }
 		
 	   EventHandler<KeyEvent>keyEvent = new EventHandler<KeyEvent>() 
-			   {
-			 	public void handle(KeyEvent ke) 
-			 	{
-			 	  if (ke.getCode()==KeyCode.ESCAPE) { System.out.println("Esc Pressed"); }
+	   {
+	     public void handle(KeyEvent ke) 
+	     {
+		   if (ke.getCode()==KeyCode.ESCAPE) { System.out.println("Esc Pressed"); }
 			 	  if (ke.getCode()==KeyCode.UP)     { System.out.println("UP Pressed");  }
 			 	  if (ke.getCode()==KeyCode.DOWN)   { System.out.println("DOWN Pressed");}
 			 	  if (ke.getCode()==KeyCode.RIGHT)  
@@ -144,7 +154,7 @@ public class AllTracksTable
 			 	 	{	 
 			 	 	  if (SharedValues.selectedTanda==-1)	SharedValues.selectedTanda=0;
 			 	 	  TandaTreeItem tandaTreeItem = playlist.getTanda(SharedValues.selectedTanda);
-			 	 	  tandaTreeItem.addTrack(SharedValues.selectedAllTracksPathHash.get());
+			 	 	  tandaTreeItem.addTrack(SharedValues.selectedTangoPathHash.get());
 			 	 	}
 			 	   }
 			 	 }
