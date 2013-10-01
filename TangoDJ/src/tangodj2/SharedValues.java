@@ -12,7 +12,8 @@ public class SharedValues
 {
   public final static ObservableList<Track> allTracksData = FXCollections.observableArrayList();
   public static SimpleStringProperty title = new SimpleStringProperty();
-  public static SimpleStringProperty selectedAllTracksPathHash = new SimpleStringProperty();
+  public static SimpleStringProperty selectedTangoPathHash = new SimpleStringProperty();
+  public static SimpleStringProperty selectedCleanupPathHash = new SimpleStringProperty();
   public static SimpleIntegerProperty playlistFocus = new SimpleIntegerProperty(0);
  // public static Playlist playlist;
   public static String DRIVER ="org.apache.derby.jdbc.EmbeddedDriver";

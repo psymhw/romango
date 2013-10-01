@@ -86,6 +86,7 @@ public class TangoDJ2 extends Application
     
     cortinaTab = new CortinaTab(allTracksTable);
       
+    // TAB SELECTION LISTENER
     tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>()
     {
       public void changed(ObservableValue<? extends Tab> arg0, Tab arg1, Tab mostRecentlySelectedTab)
@@ -95,16 +96,13 @@ public class TangoDJ2 extends Application
           playlistBuilderTab.removeAllTracksTable();
           allTracksTable.setType(1);
           cortinaTab.addAllTracksTable();
-          player.setDefaultTrack();
-          player.showAdvancedControls(true);
-          
-          
+          player.setMode(Player.CORTINA_CREATE);
         }
         if (mostRecentlySelectedTab.equals(playlistBuilderTab))
         {
           cortinaTab.removeAllTracksTable();
           playlistBuilderTab.addAllTracksTable();
-          player.showAdvancedControls(false);
+          player.setMode(Player.PLAYLIST_CREATE);
         }
       }
     });
