@@ -25,15 +25,17 @@ import javafx.scene.text.Font;
 public class PlaylistBuilderTab extends Tab
 {
   //Tab tab;
-  SharedValues sharedValues = new SharedValues();
+  //SharedValues sharedValues = new SharedValues();
   AllTracksTable allTracksTable;
   Playlist playlist;
   final VBox vbox = new VBox();
   int savedType=0;
+  Player player;
   
-  public PlaylistBuilderTab(Playlist playlist, AllTracksTable allTracksTable)
+  public PlaylistBuilderTab(Playlist playlist, AllTracksTable allTracksTable, Player player)
   {
     this.playlist=playlist;
+    this.player=player;
     this.allTracksTable=allTracksTable;
 	  //tab = new Tab();
 	  this.setText("All Tracks");
@@ -54,7 +56,7 @@ public class PlaylistBuilderTab extends Tab
   
     hbox.getChildren().add(playlist.getTreeView());
     hbox.setHgrow(playlist.getTreeView(), Priority.ALWAYS);
-   
+    setupListeners() ;
     this.setContent(hbox);
   }
   
@@ -157,5 +159,17 @@ public class PlaylistBuilderTab extends Tab
 	  return hbox;
   }
    
+  private void setupListeners() 
+  {
+    ChangeListener tangoHashListener = new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+      //  System.out.println("selected Tango Hash: "+sharedValues.selectedTangoPathHash.get());
+        player.updateUIValues(SharedValues.selectedTangoPathHash.get());
+      }
+    };   
+    SharedValues.selectedTangoPathHash.addListener(tangoHashListener);
+  }
   
 }
