@@ -163,6 +163,7 @@ public class Playlist
         playlistTrack.numberOfTracksInTanda=numberOfTracksInTanda;
         playlistTrack.cortina=false;
         playlistTrack.trackTreeItem=trackTreeItem;
+        playlistTrack.trackHash=trackTreeItem.getTrackHash();
         flatPlaylistTracks.add(playlistTrack);
         tandaTrackCounter++;
       }

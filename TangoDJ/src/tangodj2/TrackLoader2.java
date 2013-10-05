@@ -26,6 +26,9 @@ import org.farng.mp3.MP3File;
 import org.farng.mp3.id3.AbstractID3v1;
 import org.farng.mp3.id3.AbstractID3v2;
 
+import tangodj2.cleanup.CleanupTable;
+import tangodj2.tango.TangoTable;
+
 public class TrackLoader2 
 {
  public static final String DRIVER2 ="org.apache.derby.jdbc.EmbeddedDriver";
@@ -40,14 +43,14 @@ public class TrackLoader2
   private static Hasher hasher = new Hasher();
   private static List<TrackMeta> trackInfo = new ArrayList<TrackMeta>();
   public boolean isTango=true;
-  AllTracksTable allTracksTable;
+  TangoTable tangoTable;
+  CleanupTable cleanupTable;
 	
   public TrackLoader2()
   {
 	seconds=0;
 	timeline = new Timeline();
 	timeline.setCycleCount(Timeline.INDEFINITE);
-	
 	
 	
 	KeyFrame keyFrame= new KeyFrame(Duration.seconds(1), new EventHandler() 
@@ -63,7 +66,8 @@ public class TrackLoader2
 		 // listTrackInfo();
 		  sqlReadyTrackInfo();
 		  insertRecords();
-		  allTracksTable.reloadData();
+		  if (isTango) tangoTable.reloadData();
+		  else cleanupTable.reloadData();
 		}
 		if (seconds>=30) 
 		{
@@ -170,8 +174,8 @@ public class TrackLoader2
 	 
 	 void insertRecords() 
 	 {
-		int cortina=0;  // TODO set this on load
-		if (!isTango) cortina=1;
+		int cleanup=0;  // TODO set this on load
+		if (!isTango) cleanup=1;
 	try{
 		//Db.connect();
 	   connection = DriverManager.getConnection(JDBC_URL2);
@@ -180,8 +184,8 @@ public class TrackLoader2
 	   while(it.hasNext())
 	   {
 		 trackMeta=it.next();
-		 String sql="insert into tracks(cortina, path, pathHash, title, artist, album, duration, genre, comment, track_year) "
-		 		+"values ("+cortina+", '"+trackMeta.path
+		 String sql="insert into tracks(cleanup, path, pathHash, title, artist, album, duration, genre, comment, track_year) "
+		 		+"values ("+cleanup+", '"+trackMeta.path
 	              +"', '"+trackMeta.pathHash
 	              +"', '"+trackMeta.title
 	              +"', '"+trackMeta.artist
@@ -297,8 +301,13 @@ public class TrackLoader2
       return FileVisitResult.CONTINUE;
     }
 
-    public void setAllTracksTable(AllTracksTable allTracksTable)
+    public void setTangoTable(TangoTable tangoTable)
     {
-      this.allTracksTable = allTracksTable;
+      this.tangoTable = tangoTable;
+    }
+    
+    public void setCleanupTable(CleanupTable cleanupTable)
+    {
+      this.cleanupTable = cleanupTable;
     }
 }

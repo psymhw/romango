@@ -92,7 +92,7 @@ public class CreateDatabase
 	    		"rating float, " +
 	    		"delay integer, " +
 	    		"genre varchar(40), " +
-	    		"cortina integer, " +
+	    		"cleanup integer, " +
 	    		"comment varchar(100) " +
 	    		")");
 	    
@@ -134,7 +134,9 @@ public class CreateDatabase
         "fadein INTEGER, " +
         "fadeout INTEGER, " +
         "track_count INTEGER, " +
+        "delay INTEGER, " +
         "comment varchar(60), " +
+        "title varchar(60), " +
         "hash varchar(32) " +
         ")";
   //System.out.println(sql);

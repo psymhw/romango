@@ -2,6 +2,9 @@ package tangodj2;
 
 import java.io.File;
 
+import tangodj2.cortina.Cortina;
+import tangodj2.cortina.CortinaTable;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -12,6 +15,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -20,6 +24,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -39,7 +44,7 @@ public class Player
     private MediaView mediaView = new MediaView();
     private boolean stopRequested = false;
     private boolean atEndOfMedia = false;
-    private Duration duration;
+    //private Duration duration;
     private Slider timeSlider;
     private Label playTime;
     private Slider volumeSlider;
@@ -67,8 +72,7 @@ public class Player
     Label cortinaLength=null;
     Label trackTitle = new Label("");
     
-    private final int col[] = {0,1,2,3,4,5,6};
-    private final int row[] = {0,1,2,3,4,5,6};
+   
     private Duration currentTrackDuration = new Duration(0);
     private Slider startPositionSlider=null;
     private Slider endPositionSlider=null;
@@ -81,8 +85,17 @@ public class Player
     private boolean fadeOut=false;
     double holdVolume=.7;
     Duration stopTime;
-    
+    Duration currentTrackTime = new Duration(0);
+    String currentTrackHash="";
+    String currentTrackTitle="";
+    TrackMeta currentTrackMeta;
+    final static int PLAYLIST_BUILD_TANGO_TABLE=10;
+    final static int PLAYLIST_BUILD_CLEANUP_TABLE=11;
+    final static int PLAYLIST_BUILD_CORTINA_TABLE=12;
+    final static int CORTINA_CREATE_CLEANUP_TABLE=13;
+  
     private static final Duration FADE_DURATION = Duration.seconds(3.0);
+    private boolean advancedControls=false;
     
     
    // SimpleStringProperty source = new SimpleStringProperty();
@@ -92,12 +105,12 @@ public class Player
     {
       this.playlist=playlist;
       this.equalizerTab=equalizerTab;
-      
+     
       
       trackTitle.setFont(new Font("Arial", 18));
       trackTitle.setStyle("-fx-background-color: #bfc2c7;");
       
-      setupListeners();
+     // setupListeners();
       mediaBar = new HBox();
       mediaBar.setSpacing(5);
       mediaBar.setStyle("-fx-background-color: #bfc2c7;");
@@ -142,7 +155,7 @@ public class Player
         public void handle(ActionEvent e) 
         {
           
-          if (mediaPlayer == null) playTrack();
+          if (mediaPlayer == null) playTrack(); //playTrackDelay(5);
           else
           {  
             Status status = mediaPlayer.getStatus();
@@ -210,7 +223,7 @@ public class Player
            if (timeSlider.isValueChanging()) 
            {
              // multiply duration by percentage calculated by slider position
-              mediaPlayer.seek(duration.multiply(timeSlider.getValue() / 100.0));
+              mediaPlayer.seek(currentTrackDuration.multiply(timeSlider.getValue() / 100.0));
            }
          }
        });
@@ -219,11 +232,12 @@ public class Player
        vbox.getChildren().add(trackTitle);
        vbox.getChildren().add(mediaBar);
        
-       setDefaultTrack();
+      // setDefaultTrack();
        
        
     }
     
+    /*
     public void setDefaultTrack()
     {
       TrackMeta trackMeta=null;
@@ -263,26 +277,65 @@ public class Player
       trackTitle.setText(trackMeta.title);
       updateUIValues(trackMeta.pathHash);
     }
-
+*/
     public void showAdvancedControls(boolean show)
     {
       
       if (show)
       {
+        advancedControls=true;
         setupCortinaControls();
         vbox.getChildren().add(gridPane);
       }
-      else vbox.getChildren().remove(gridPane);
+      else 
+      {
+        advancedControls=false;
+        vbox.getChildren().remove(gridPane);
+      }
     }
     
     
     
     GridPane setupCortinaControls()
     {
+      final int col[] = {0,1,2,3,4,5,6,7,8,9,10};
+      final int row[] = {0,1,2,3,4,5,6,7,8,9,10};
       gridPane = new GridPane();
       gridPane.setPadding(new Insets(10, 10, 10, 10));
       gridPane.setStyle("-fx-background-color: DAE6F3; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
       gridPane.setHgap(15);
+      
+      Button setStartButton = new Button("*");
+      Button setStopButton = new Button("*");
+      Button dummyButton = new Button(" ");
+      Button saveCortinaButton = new Button("Save Cortina");
+      
+      saveCortinaButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        public void handle(MouseEvent event)  
+        {
+          Cortina cortina = new Cortina();
+          cortina.start=(int)(startPositionSlider.getValue()*currentTrackDuration.toMillis());
+          cortina.stop=(int)(endPositionSlider.getValue()*currentTrackDuration.toMillis());
+          if (fadeInCheckBox.isSelected()) cortina.fadein=1; else cortina.fadein=0;
+          if (fadeOutCheckBox.isSelected()) cortina.fadeout=1; else cortina.fadeout=0;
+          if (delayCheckBox.isSelected()) cortina.delay=1; else cortina.delay=0;
+          cortina.hash=currentTrackHash;
+         // String cortinaTimes = " ("+cortinaLength.getText()+") "
+         //                          +startPositionValue.getText()+" - "
+         //                          +endPositionValue.getText();
+          if (currentTrackTitle.length()>60)
+          cortina.title=currentTrackTitle.substring(0, 60);
+          else cortina.title=currentTrackTitle;
+         try {
+               int cortinaId=Db.insertCortina(cortina);
+               CortinaTable.addTrack(cortinaId);
+         } catch (Exception e) { e.printStackTrace(); }
+        }
+     });
+      
+      setStartButton.setPrefWidth(30);
+      setStopButton.setPrefWidth(30);
+      dummyButton.setPrefWidth(30);
       
       startPositionSlider = new Slider(0, 1, 0);
       endPositionSlider = new Slider(0, 1, 1);
@@ -312,12 +365,17 @@ public class Player
       gridPane.add(endPositionSlider,          col[2], row[1]);
       gridPane.add(playPositionSlider,         col[2], row[2]);
       
-      gridPane.add(fadeInCheckBox,                     col[3], row[0]);
-      gridPane.add(fadeOutCheckBox,                    col[3], row[1]);
-      gridPane.add(delayCheckBox,                      col[3], row[2]);
+      gridPane.add(setStartButton,             col[3], row[0]);
+      gridPane.add(setStopButton,              col[3], row[1]);
+      gridPane.add(dummyButton,                col[3], row[2]);
       
-      gridPane.add(new Text("Cortna Length: "),col[4], row[0]);
-      gridPane.add(cortinaLength              ,col[5], row[0]);
+      gridPane.add(fadeInCheckBox,             col[4], row[0]);
+      gridPane.add(fadeOutCheckBox,            col[4], row[1]);
+      gridPane.add(delayCheckBox,              col[4], row[2]);
+      
+      gridPane.add(new Text("Cortna Length: "),col[5], row[0]);
+      gridPane.add(cortinaLength              ,col[6], row[0]);
+      gridPane.add(saveCortinaButton          ,col[7], row[1]);
       
       
       
@@ -329,10 +387,16 @@ public class Player
           {
             updateCortinaUIValues();
           }
-
-		
       });
       
+     setStartButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        public void handle(MouseEvent event)  
+        {
+          startPositionSlider.setValue(timeSlider.getValue()/100);
+        }
+     });
+      
+     
       endPositionSlider.valueProperty().addListener(new ChangeListener<Number>() 
       {
           public void changed(ObservableValue<? extends Number> arg0,
@@ -341,6 +405,13 @@ public class Player
         	updateCortinaUIValues();
           }
       });
+      
+      setStopButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        public void handle(MouseEvent event)  
+        {
+          endPositionSlider.setValue(timeSlider.getValue()/100);
+        }
+     });
       
       playPositionSlider.valueProperty().addListener(new ChangeListener<Number>() 
       {
@@ -355,14 +426,13 @@ public class Player
       return gridPane;
     }
     
-    public void updateUIValues(final String pathHash) 
+    public void updateUIValues() 
     {
       Platform.runLater(new Runnable() 
       {
         public void run() 
         {
-          TrackMeta trackMeta = Db.getTrackInfo(pathHash);
-          trackTitle.setText(trackMeta.title);
+          trackTitle.setText(currentTrackMeta.title);
         }
       });
     }
@@ -382,9 +452,11 @@ public class Player
     public void setMode(int mode)
     {
       this.mode=mode;
-      setDefaultTrack();
-      if (mode==CORTINA_CREATE) showAdvancedControls(true);
-      else showAdvancedControls(false);
+      if (mode==CORTINA_CREATE) 
+      {
+        if (!advancedControls) showAdvancedControls(true);
+      }
+        else showAdvancedControls(false);
     }
     
     public VBox get()
@@ -417,19 +489,58 @@ public class Player
       playTrack();
     }
     
+    public void playTrackDelay(final int delayTime)
+    {
+      final Timeline timeline = new Timeline();
+      timeline.setCycleCount(Timeline.INDEFINITE);
+      KeyFrame keyFrame= new KeyFrame(Duration.seconds(1), new EventHandler() 
+      {
+        int seconds=delayTime;
+        public void handle(Event event) 
+        {
+         seconds--;
+         if (seconds<=0) 
+         {
+           timeline.stop();
+           playTrack();
+         }
+         }});
+              
+        timeline.getKeyFrames().add(keyFrame);
+        timeline.playFromStart();
+    }
+    
+    public void setTrack(String pathHash, int type)
+    {
+      currentTrackHash=pathHash;
+      if (type==CORTINA_CREATE_CLEANUP_TABLE) setMode(CORTINA_CREATE);
+      currentTrackMeta=Db.getTrackInfo(currentTrackHash);
+      int totalTrackTime=currentTrackMeta.duration;
+      currentTrackDuration = new Duration(totalTrackTime*1000);
+      currentTrackTitle=currentTrackMeta.title;
+      updateUIValues();
+      if (mode==CORTINA_CREATE) updateCortinaUIValues();
+    }
+    
     public void playTrack()
     {
       String sourcePath=null;
-      TrackMeta trackMeta=null;
       fadeOut=false;
       volumeSlider.setValue(holdVolume);
      
+      if (currentTrackHash==null) return;
+      //trackMeta = Db.getTrackInfo(currentTrackHash);
+      sourcePath=currentTrackMeta.path;
+      
+      /*
       
       if (mode==PLAYLIST)
       {
         PlaylistTrack playlistTrack=playlist.getNextTrack();
         if (playlistTrack==null) return;
         sourcePath=playlistTrack.path;
+        currentTrackHash=playlistTrack.trackHash;
+        currentTrackTitle=playlistTrack.title;
        //System.out.println("Playing from playlist: "+playlistTrack.title);
       }
       else 
@@ -440,6 +551,8 @@ public class Player
         if (trackHash==null) return;
         trackMeta = Db.getTrackInfo(trackHash);
         sourcePath=trackMeta.path;
+        currentTrackHash=trackMeta.pathHash;
+        currentTrackTitle=trackMeta.title;
     	}
     	if (mode==CORTINA_CREATE)
     	{
@@ -447,7 +560,8 @@ public class Player
     	        if (trackHash==null) return;
     	        trackMeta = Db.getTrackInfo(trackHash);
     	        sourcePath=trackMeta.path;
-    	   	
+    	        currentTrackHash=trackMeta.pathHash;
+    	        currentTrackTitle=trackMeta.title;
     	}
       }
       
@@ -457,6 +571,7 @@ public class Player
         return;
       }
       
+      */
       
       playing=true;
       playButton.setText("||");
@@ -490,9 +605,9 @@ public class Player
           )
         );
       */
-      int totalTrackTime=trackMeta.duration;
+     // int totalTrackTime=currentTrackMeta.duration;
       
-      currentTrackDuration = new Duration(totalTrackTime*1000);
+     // currentTrackDuration = new Duration(totalTrackTime*1000);
       
      
      // System.out.println("Total Time: "+totalTrackTime);
@@ -515,6 +630,7 @@ public class Player
       eq = new Equalizer(mediaPlayer);
       equalizerTab.setContent(eq.getGridPane());
       
+      // IMPORTANT
       mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() 
       {
         public void invalidated(Observable ov) 
@@ -523,28 +639,7 @@ public class Player
         }
       });
    
-     // mediaPlayer.setOnPlaying(new Runnable() 
-    //  {
-      //  public void run() 
-       // {
-         // System.out.println("Playlist - mediaPlayer.setOnPlaying");
-          
-         // Duration currentTime = mediaPlayer.getCurrentTime();
-        //  System.out.println("Playlist - mediaPlayer.setOnPlaying currentTime: "+currentTime.toMillis());
-          /*
-          if (stopRequested) 
-          {
-            mediaPlayer.pause();
-            stopRequested = false;
-          } 
-          else 
-          {
-            playButton.setText("||");
-          }
-           */
-       // }
-     // });
-
+     
       mediaPlayer.setOnPaused(new Runnable() 
       {
         public void run() 
@@ -560,7 +655,7 @@ public class Player
       public void run() 
       {
        // System.out.println("Playlist - mediaPlayer.setOnReady");
-        duration = mediaPlayer.getMedia().getDuration();
+        currentTrackDuration = mediaPlayer.getMedia().getDuration();
         updateValues();
       }
     });
@@ -611,19 +706,19 @@ public class Player
          {
            public void run() 
            {
-             Duration currentTime = mediaPlayer.getCurrentTime();
-             playTime.setText(formatTime(currentTime, duration));
-             timeSlider.setDisable(duration.isUnknown());
+             currentTrackTime = mediaPlayer.getCurrentTime();
+             playTime.setText(formatTime(currentTrackTime, currentTrackDuration));
+             timeSlider.setDisable(currentTrackDuration.isUnknown());
              if (!timeSlider.isDisabled()
-                   && duration.greaterThan(Duration.ZERO)
+                   && currentTrackDuration.greaterThan(Duration.ZERO)
                    && !timeSlider.isValueChanging()) 
              {
-                timeSlider.setValue(currentTime.divide(duration.toMillis()).toMillis()* 100.0);
+                timeSlider.setValue(currentTrackTime.divide(currentTrackDuration.toMillis()).toMillis()* 100.0);
              }
              
              if (fadeOut==true)
              {
-               if (currentTime.toSeconds()>=stopTime.subtract(new Duration(5000)).toSeconds())
+               if (currentTrackTime.toSeconds()>=stopTime.subtract(new Duration(5000)).toSeconds())
                {
                  fadeOut=false;
                  System.out.println("Player - Fade Out");
@@ -714,6 +809,7 @@ public class Player
      
    }
   
+  /*
   private void setupListeners() 
   {
     ChangeListener playlistFocusListener = new ChangeListener() 
@@ -726,5 +822,5 @@ public class Player
     };   
     SharedValues.playlistFocus.addListener(playlistFocusListener);
   }
-  
+  */
  }

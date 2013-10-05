@@ -1,5 +1,10 @@
 package tangodj2;
 
+import tangodj2.cleanup.CleanupTable;
+import tangodj2.cleanup.CleanupTrack;
+import tangodj2.cortina.CortinaTable;
+
+import tangodj2.tango.TangoTable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -10,14 +15,16 @@ import javafx.scene.text.Text;
 public class CortinaTab extends Tab
 {
  
-  AllTracksTable allTracksTable;
+  CleanupTable cleanupTable;
+  CortinaTable cortinaTable;
   GridPane gridPane = new GridPane();
-  Player player;
+  final Player player;
   
-  public CortinaTab(AllTracksTable allTracksTable, Player player)
+  public CortinaTab(CleanupTable cleanupTable, CortinaTable cortinaTable, Player player)
   {
     this.setText("Cortinas");
-    this.allTracksTable=allTracksTable;
+    this.cleanupTable=cleanupTable;
+    this.cortinaTable=cortinaTable;
     this.player=player;
     
     gridPane.setGridLinesVisible(true);
@@ -26,27 +33,41 @@ public class CortinaTab extends Tab
     gridPane.setPadding(new Insets(10, 10, 10, 10));
    
     gridPane.setStyle("-fx-background-color: DAE6F3; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
-   
+    gridPane.add(cleanupTable, 0, 1);
     gridPane.add(new Text("Source Tracks"), 0, 0);
+    
+    gridPane.add(cortinaTable, 1, 1);
     //gridPane.add(allTracksTable.getTable(), 1, 0);
     
     
    // hbox.getChildren().add(playlist.getTreeView());
    // hbox.setHgrow(playlist.getTreeView(), Priority.ALWAYS);
-    setupListeners();
+   // setupListeners();
     this.setContent(gridPane);
+    setupListener();
+ 
   }
   
-  public void addAllTracksTable()
+  
+  private void setupListener()
   {
-    gridPane.add(allTracksTable.getTable(), 0, 1);
+ // MOUSE TABLE ROW SELECTION
+    this.cleanupTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+        CleanupTrack selectedTrack = (CleanupTrack)newValue;
+        if (selectedTrack!=null)
+        {
+          player.setTrack(selectedTrack.getPathHash(), Player.CORTINA_CREATE_CLEANUP_TABLE);
+        }
+      }
+    });
   }
   
-  public void removeAllTracksTable()
-  {
-    gridPane.add(new Text("Table Displaced"), 0, 1);
-  }
+}
   
+  /*  
   private void setupListeners() 
   {
     ChangeListener tangoHashListener = new ChangeListener() 
@@ -59,5 +80,5 @@ public class CortinaTab extends Tab
     };   
     SharedValues.selectedCleanupPathHash.addListener(tangoHashListener);
   }
-  
-}
+  */
+

@@ -14,6 +14,7 @@ public class PlaylistTrack
    public int trackInTanda=0;
    public int numberOfTracksInTanda;
    public TrackTreeItem trackTreeItem;
+   public String trackHash;
    
    public boolean cortina=false;
 }
