@@ -4,7 +4,9 @@ import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
 
-
+import tangodj2.cleanup.CleanupTable;
+import tangodj2.cortina.CortinaTable;
+import tangodj2.tango.TangoTable;
 import javafx.beans.value.ChangeListener;
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
@@ -36,7 +38,10 @@ public class TangoDJ2 extends Application
   TrackLoader2 trackLoader = new TrackLoader2();
   //public static Tab equalizerTab;
   Playlist playlist;
-  AllTracksTable allTracksTable;
+ // AllTracksTable allTracksTable;
+  TangoTable tangoTable;
+  CleanupTable cleanupTable;
+  CortinaTable cortinaTable;
   static CortinaTab cortinaTab;
   Rectangle r = new Rectangle(10,10,10,10);
   Player player;
@@ -70,8 +75,13 @@ public class TangoDJ2 extends Application
     catch (SQLException se) { System.out.println("PROGRAMALREADY RUNNING"); } 
     catch (ClassNotFoundException e) { e.printStackTrace(); }
       
-    allTracksTable = new AllTracksTable(playlist);
-    trackLoader.setAllTracksTable(allTracksTable);
+    //allTracksTable = new AllTracksTable(playlist);
+    tangoTable = new TangoTable(playlist);
+    cleanupTable = new CleanupTable(playlist);
+    cortinaTable = new CortinaTable();
+    
+    trackLoader.setTangoTable(tangoTable);
+    trackLoader.setCleanupTable(cleanupTable);
      
     Tab equalizerTab = new Tab();
     equalizerTab.setStyle("-fx-background-color: #bfc2c7;");
@@ -79,16 +89,14 @@ public class TangoDJ2 extends Application
     
     player = new Player(playlist, equalizerTab);
    
-    playlistBuilderTab = new PlaylistBuilderTab(playlist, allTracksTable, player);
+    playlistBuilderTab = new PlaylistBuilderTab(playlist, tangoTable, cleanupTable, player);
     tabPane.getTabs().add(playlistBuilderTab);
   //  playlistBuilderTab.addAllTracksTable();  
     
     playlistChoiceTab = new PlaylistChoiceTab();
     tabPane.getTabs().add(playlistChoiceTab);
-          
     
-    
-    cortinaTab = new CortinaTab(allTracksTable, player);
+    cortinaTab = new CortinaTab(new CleanupTable(playlist), cortinaTable, player);
       
     // TAB SELECTION LISTENER
     tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>()
@@ -97,15 +105,12 @@ public class TangoDJ2 extends Application
       {
         if (mostRecentlySelectedTab.equals(cortinaTab))
         {
-          playlistBuilderTab.removeAllTracksTable();
-          allTracksTable.setType(1);
-          cortinaTab.addAllTracksTable();
+         
           player.setMode(Player.CORTINA_CREATE);
         }
         if (mostRecentlySelectedTab.equals(playlistBuilderTab))
         {
-          cortinaTab.removeAllTracksTable();
-          playlistBuilderTab.addAllTracksTable();
+        
           player.setMode(Player.PLAYLIST_CREATE);
         }
       }

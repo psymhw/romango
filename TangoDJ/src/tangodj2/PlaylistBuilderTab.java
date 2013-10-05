@@ -1,5 +1,9 @@
 package tangodj2;
 
+import tangodj2.cleanup.CleanupTable;
+import tangodj2.cleanup.CleanupTrack;
+import tangodj2.tango.TangoTable;
+import tangodj2.tango.TangoTrack;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -26,18 +30,23 @@ public class PlaylistBuilderTab extends Tab
 {
   //Tab tab;
   //SharedValues sharedValues = new SharedValues();
-  AllTracksTable allTracksTable;
+  //AllTracksTable allTracksTable;
+  TangoTable tangoTable;
+  CleanupTable cleanupTable;
   Playlist playlist;
   final VBox vbox = new VBox();
   int savedType=0;
   Player player;
   
-  public PlaylistBuilderTab(Playlist playlist, AllTracksTable allTracksTable, Player player)
+  public PlaylistBuilderTab(Playlist playlist, TangoTable tangoTable, CleanupTable cleanupTable, Player player)
   {
     this.playlist=playlist;
     this.player=player;
-    this.allTracksTable=allTracksTable;
-	  //tab = new Tab();
+    this.tangoTable=tangoTable;
+    this.cleanupTable=cleanupTable;
+    
+    addTableListeners();
+	  
 	  this.setText("All Tracks");
 	  
 	  vbox.setPadding(new Insets(10, 10, 10, 10));
@@ -59,16 +68,44 @@ public class PlaylistBuilderTab extends Tab
     setupListeners() ;
     this.setContent(hbox);
   }
+
+  private void addTableListeners()
+  {
+    // MOUSE TABLE ROW SELECTION
+    tangoTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+        TangoTrack tangoTrack = (TangoTrack)newValue;
+        if (tangoTrack!=null)
+        {
+          player.setTrack(tangoTrack.getPathHash(), Player.PLAYLIST_BUILD_TANGO_TABLE);
+        }
+      }
+    });
+    
+    // MOUSE TABLE ROW SELECTION
+    cleanupTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+        CleanupTrack cleanupTrack = (CleanupTrack)newValue;
+        if (cleanupTrack!=null)
+        {
+          player.setTrack(cleanupTrack.getPathHash(), Player.PLAYLIST_BUILD_CLEANUP_TABLE);
+        }
+      }
+    });
+  }
   
   public void removeAllTracksTable()
   {
-    vbox.getChildren().remove(allTracksTable.getTable());
+    vbox.getChildren().remove(tangoTable);
   }
   
   public void addAllTracksTable()
   {
-    allTracksTable.setType(savedType);
-    vbox.getChildren().add(allTracksTable.getTable());
+     vbox.getChildren().add(tangoTable);
   }
   
   public void addRectangle(Rectangle r)
@@ -76,9 +113,9 @@ public class PlaylistBuilderTab extends Tab
     vbox.getChildren().add(r);
   }
   
-  public TableView<Track> getTable()
+  public TableView<TangoTrack> getTable()
   {
-    return allTracksTable.getTable();
+    return tangoTable;
   }
   
   private Button getTestButton()
@@ -145,12 +182,14 @@ public class PlaylistBuilderTab extends Tab
           String selectedStr=trackTypeGroup.getSelectedToggle().toString();
           if (selectedStr.contains("tango")) 
           {
-            allTracksTable.setType(0);
+            vbox.getChildren().remove(cleanupTable);
+            vbox.getChildren().add(tangoTable);
             savedType=0;
           }
           else if (selectedStr.contains("cleanup")) 
           {
-            allTracksTable.setType(1);
+            vbox.getChildren().remove(tangoTable);
+            vbox.getChildren().add(cleanupTable);
             savedType=1;
           }
         }                
@@ -166,7 +205,7 @@ public class PlaylistBuilderTab extends Tab
       public void changed(ObservableValue observable, Object oldValue, Object newValue) 
       {
       //  System.out.println("selected Tango Hash: "+sharedValues.selectedTangoPathHash.get());
-        player.updateUIValues(SharedValues.selectedTangoPathHash.get());
+       // player.updateUIValues(SharedValues.selectedTangoPathHash.get());
       }
     };   
     SharedValues.selectedTangoPathHash.addListener(tangoHashListener);

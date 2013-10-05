@@ -9,8 +9,14 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javafx.collections.ObservableList;
+
 import tangodj2.PlaylistTree.PlaylistTreeItem;
 import tangodj2.PlaylistTree.TandaTreeItem;
+import tangodj2.cleanup.CleanupTrack;
+import tangodj2.cortina.Cortina;
+import tangodj2.cortina.CortinaTrack;
+import tangodj2.tango.TangoTrack;
 
 public class Db 
 {
@@ -66,6 +72,153 @@ public class Db
 	    } catch (Exception e) { e.printStackTrace();}
 	  }
 	
+	public static void loadTangoTracks(ObservableList<TangoTrack> tangoTracksData)
+  {
+    String title;
+    String artist;
+    String album;
+    String genre;
+    String comment;
+    String pathHash;
+    String path;
+    String track_year;
+    int cleanup;
+    int duration=0;
+      
+    tangoTracksData.clear();
+      
+    try
+    {
+      connect();
+      Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery("select * from tracks where cleanup = 0 order by artist, album, title");
+      while(resultSet.next())
+      {
+        title=resultSet.getString("title");
+        artist = resultSet.getString("artist");
+        album = resultSet.getString("album");
+        genre = resultSet.getString("genre");
+        comment = resultSet.getString("comment");
+        track_year = resultSet.getString("track_year");
+        //System.out.println("track_year: "+track_year);
+        pathHash = resultSet.getString("pathHash");
+        path = resultSet.getString("path");
+        duration=resultSet.getInt("duration");
+        cleanup=resultSet.getInt("cleanup");
+        tangoTracksData.add(new TangoTrack(title, artist, album, genre, comment, pathHash, path, duration, cleanup, track_year));
+        //System.out.println("added: "+title);
+      }
+      if (resultSet!=null) resultSet.close();
+      if (statement!=null) statement.close();
+      disconnect();
+    } catch (Exception e) { e.printStackTrace();}
+  }
+	
+	public static void loadCleanupTracks(ObservableList<CleanupTrack> cleanupTracksData)
+  {
+    String title;
+    String artist;
+    String album;
+    String genre;
+    String comment;
+    String pathHash;
+    String path;
+    String track_year;
+    int cleanup;
+    int duration=0;
+      
+    cleanupTracksData.clear();
+      
+    try
+    {
+      connect();
+      Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery("select * from tracks where cleanup = 1 order by artist, album, title");
+      while(resultSet.next())
+      {
+        title=resultSet.getString("title");
+        artist = resultSet.getString("artist");
+        album = resultSet.getString("album");
+        genre = resultSet.getString("genre");
+        comment = resultSet.getString("comment");
+        track_year = resultSet.getString("track_year");
+        //System.out.println("track_year: "+track_year);
+        pathHash = resultSet.getString("pathHash");
+        path = resultSet.getString("path");
+        duration=resultSet.getInt("duration");
+        cleanup=resultSet.getInt("cleanup");
+        cleanupTracksData.add(new CleanupTrack(title, artist, album, genre, comment, pathHash, path, duration, cleanup, track_year));
+        //System.out.println("added: "+title);
+      }
+      if (resultSet!=null) resultSet.close();
+      if (statement!=null) statement.close();
+      disconnect();
+    } catch (Exception e) { e.printStackTrace();}
+  }
+  
+	
+	public static void loadCortinaTracks(ObservableList<CortinaTrack> cortinaTracksData)
+  {
+      cortinaTracksData.clear();
+      try
+      {
+      connect();
+      Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery("select * from cortinas " +
+      		"order by title, start");
+      CortinaTrack cortinaTrack;
+      while(resultSet.next())
+      {
+        cortinaTrack= new CortinaTrack(resultSet.getInt("id"), 
+                                       resultSet.getInt("start"),
+                                       resultSet.getInt("stop"), 
+                                       resultSet.getInt("fadein"), 
+                                       resultSet.getInt("fadeout"), 
+                                       resultSet.getInt("delay"), 
+                                       resultSet.getString("title"),
+                                       resultSet.getString("hash"));
+           
+        cortinaTracksData.add(cortinaTrack);
+        
+      }
+      if (resultSet!=null) resultSet.close();
+      if (statement!=null) statement.close();
+      disconnect();
+      System.out.println("Cortina Data: "+cortinaTracksData.size());
+      } catch (Exception e) { e.printStackTrace();}
+    }
+	
+	public static CortinaTrack getCortinaTrack(int id)
+  {
+	  CortinaTrack cortinaTrack=null;
+      try
+      {
+      connect();
+      Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery("select * from cortinas where id = "+id+ 
+          " order by title, start");
+      
+      while(resultSet.next())
+      {
+        cortinaTrack= new CortinaTrack(resultSet.getInt("id"), 
+                                       resultSet.getInt("start"),
+                                       resultSet.getInt("stop"), 
+                                       resultSet.getInt("fadein"), 
+                                       resultSet.getInt("fadeout"), 
+                                       resultSet.getInt("delay"), 
+                                       resultSet.getString("title"),
+                                       resultSet.getString("hash"));
+           
+        
+      }
+      if (resultSet!=null) resultSet.close();
+      if (statement!=null) statement.close();
+      disconnect();
+      } catch (Exception e) { e.printStackTrace();}
+      
+      return cortinaTrack;
+    }
+  
 	
 	public static void connect()  throws SQLException, ClassNotFoundException
 	{
@@ -299,5 +452,36 @@ public class Db
 	   connection.createStatement().execute(sql.toString());
 	   disconnect();
 	}
+
+  public static int insertCortina(Cortina cortina) throws SQLException, ClassNotFoundException
+  {
+    connect();
+    String sql="insert into cortinas (start, stop, fadein, fadeout, delay, title, hash) values("
+    +cortina.start+", "
+    +cortina.stop+", "
+    +cortina.fadein+", "
+    +cortina.fadeout+", "
+    +cortina.delay+", '"
+    +sqlReadyString(cortina.title)+"', '"
+    +cortina.hash+"')";
+   // System.out.println("sql: "+sql);
+    connection.createStatement().execute(sql);
+    
+    int maxid=0;
+    sql="select max(id) maxid from cortinas";
+    System.out.println("sql: "+sql);
+    Statement statement = connection.createStatement();
+    ResultSet resultSet = statement.executeQuery(sql);
+    if(resultSet.next())
+    {
+      maxid= resultSet.getInt("maxid");
+    }  
+    if (resultSet!=null) resultSet.close();
+    if (statement!=null) statement.close();
+    
+    disconnect();
+   
+    return maxid;
+  }
 	
 }

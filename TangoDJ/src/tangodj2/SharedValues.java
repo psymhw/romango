@@ -3,6 +3,8 @@ package tangodj2;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import tangodj2.cortina.Cortina;
+
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -11,6 +13,7 @@ import javafx.collections.ObservableList;
 public class SharedValues 
 {
   public final static ObservableList<Track> allTracksData = FXCollections.observableArrayList();
+  public final static ObservableList<Cortina> cortinaTracksData = FXCollections.observableArrayList();
   public static SimpleStringProperty title = new SimpleStringProperty();
   public static SimpleStringProperty selectedTangoPathHash = new SimpleStringProperty();
   public static SimpleStringProperty selectedCleanupPathHash = new SimpleStringProperty();
