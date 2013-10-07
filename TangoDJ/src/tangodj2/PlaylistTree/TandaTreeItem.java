@@ -16,6 +16,7 @@ public class TandaTreeItem extends BaseTreeItem
    private int styleId;
    private String style;
    private int dbId=0;
+   private int cortinaId=-1;
    
    private ArrayList<String> trackHashCodes = new ArrayList<String>();
    //private int numberOfTracks=0;
@@ -218,6 +219,16 @@ public String getTreeType() {
 
 public void setTreeType(String treeType) {
 	this.treeType = treeType;
+}
+
+public int getCortinaId()
+{
+  return cortinaId;
+}
+
+public void setCortinaId(int cortinaId)
+{
+  this.cortinaId = cortinaId;
 }
 
 

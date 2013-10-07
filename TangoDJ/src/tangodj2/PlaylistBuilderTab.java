@@ -1,22 +1,29 @@
 package tangodj2;
 
+import tangodj2.PlaylistTree.TandaTreeItem;
 import tangodj2.cleanup.CleanupTable;
 import tangodj2.cleanup.CleanupTrack;
 import tangodj2.tango.TangoTable;
 import tangodj2.tango.TangoTrack;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.TreeCell;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -25,6 +32,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.util.Callback;
 
 public class PlaylistBuilderTab extends Tab
 {
@@ -67,8 +75,11 @@ public class PlaylistBuilderTab extends Tab
     hbox.setHgrow(playlist.getTreeView(), Priority.ALWAYS);
     setupListeners() ;
     this.setContent(hbox);
+    
+    
   }
-
+  
+  
   private void addTableListeners()
   {
     // MOUSE TABLE ROW SELECTION
@@ -97,6 +108,9 @@ public class PlaylistBuilderTab extends Tab
       }
     });
   }
+  
+  
+  
   
   public void removeAllTracksTable()
   {
@@ -200,15 +214,68 @@ public class PlaylistBuilderTab extends Tab
    
   private void setupListeners() 
   {
-    ChangeListener tangoHashListener = new ChangeListener() 
+    
+    // TANGO TABLE LISTENER
+    ChangeListener tangoTableListener = new ChangeListener() 
     {
       public void changed(ObservableValue observable, Object oldValue, Object newValue) 
       {
-      //  System.out.println("selected Tango Hash: "+sharedValues.selectedTangoPathHash.get());
-       // player.updateUIValues(SharedValues.selectedTangoPathHash.get());
+        if (!"nada".equals(newValue))
+        {
+          int row = tangoTable.getTableIndex();
+          String action=tangoTable.getAction().get();
+          TangoTrack tangoTrack = tangoTable.getItems().get(row);
+        
+        System.out.println("tangoTable Action: "
+            + action+" row: "
+                  +row+" "+tangoTrack.getTitle());
+        
+        
+        if ("addToPlaylist".equals(action))
+        {
+          if (playlist.getTandaCount()>0)
+          {  
+            TandaTreeItem tandaTreeItem = playlist.getSelectedTanda();
+            tandaTreeItem.addTrack(tangoTrack.getPathHash());
+          }
+        }
+        
+        tangoTable.getAction().set("nada");
+        }
       }
     };   
-    SharedValues.selectedTangoPathHash.addListener(tangoHashListener);
+    tangoTable.getAction().addListener(tangoTableListener);
+    
+    // CLEANUP TABLE LISTENER
+    ChangeListener cleanupTableListener = new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+        if (!"nada".equals(newValue))
+        {
+          int row = cleanupTable.getTableIndex();
+          String action=cleanupTable.getAction().get();
+          CleanupTrack cleanupTrack = cleanupTable.getItems().get(row);
+        
+        System.out.println("tangoTable Action: "
+            + action+" row: "
+                  +row+" "+cleanupTrack.getTitle());
+        
+        
+        if ("addToPlaylist".equals(action))
+        {
+          if (playlist.getTandaCount()>0)
+          {  
+            TandaTreeItem tandaTreeItem = playlist.getSelectedTanda();
+            tandaTreeItem.addTrack(cleanupTrack.getPathHash());
+          }
+        }
+        
+        cleanupTable.getAction().set("nada");
+        }
+      }
+    };   
+    cleanupTable.getAction().addListener(cleanupTableListener);
   }
   
 }

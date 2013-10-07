@@ -1,16 +1,22 @@
 package tangodj2.tango;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.util.Callback;
 import tangodj2.Db;
 import tangodj2.Playlist;
 import tangodj2.SharedValues;
@@ -20,12 +26,16 @@ public class TangoTable extends TableView<TangoTrack>
 {
   //private TableView<TangoTrack> table = new TableView<TangoTrack>();
   private Playlist playlist;
+  private SimpleStringProperty action = new SimpleStringProperty("nada");
+  TableView<TangoTrack> tangoTable;
+  private int tableIndex=-1;
   
   public final static ObservableList<TangoTrack> tangoTracksData = FXCollections.observableArrayList();
 	 
-  public TangoTable(Playlist playlist)
+  public TangoTable()
   {
-	  this.playlist=playlist;
+	  
+	  tangoTable=this;
 	 
 	 
 	  Db.loadTangoTracks(tangoTracksData);
@@ -60,17 +70,80 @@ public class TangoTable extends TableView<TangoTrack>
   private void setupTable() 
   {
     setupColumns();
+    
     this.setItems(tangoTracksData);
   //  this.setPrefWidth(thisWidth);
   //  this.setMinWidth(thisWidth);
   //  this.setMaxWidth(thisWidth);
     this.setEditable(false);
 	    
-    this.setOnKeyReleased(keyEvent);
+  //  this.setOnKeyReleased(keyEvent);
 	    
    
   }
 		
+  private final class  MyCellFactory implements Callback<TableColumn,TableCell> 
+  {
+    private ContextMenu contextMenu;
+    public MyCellFactory() 
+    {
+      contextMenu = setupContextMenu();
+    }
+
+    public TableCell call(TableColumn p) 
+    {
+      TableCell cell = new TableCell() {
+              
+      protected void updateItem(Object item, boolean empty) 
+      {
+        super.updateItem(item, empty);
+        if(item != null) { setText(item.toString()); }
+      }};
+          
+      cell.setContextMenu(contextMenu);
+      /*
+      // Right click
+      if(menu != null) {
+        cell.setContextMenu(menu);
+      }
+      // Double click
+      if(click != null) {
+         cell.setOnMouseClicked(click);
+      }
+      */
+      return cell;
+    }
+  }
+    
+    private ContextMenu setupContextMenu()
+    {
+      MenuItem addToPlaylist = new MenuItem("Add To Playlist"); 
+      MenuItem edit = new MenuItem("Edit");
+      MenuItem play = new MenuItem("Play" );
+      MenuItem delete = new MenuItem("Delete" );
+      final ContextMenu tandaContextMenu = new ContextMenu();
+      
+      tandaContextMenu.setOnShowing(new EventHandler() 
+      {
+        public void handle(Event e) 
+        {
+          tableIndex=tangoTable.getSelectionModel().getSelectedIndex();
+        }
+      });
+      
+      tandaContextMenu.getItems().addAll(addToPlaylist, edit, play);
+      addToPlaylist.setOnAction(new EventHandler() 
+        { public void handle(Event t) { action.set("addToPlaylist"); }});
+      edit.setOnAction(new EventHandler() 
+        { public void handle(Event t) { action.set("edit"); } });
+      play.setOnAction(new EventHandler() 
+        { public void handle(Event t) { action.set("play"); }});
+      delete.setOnAction(new EventHandler() 
+        { public void handle(Event t) { action.set("delete"); }});
+      
+      return tandaContextMenu;
+    } 
+  
 		  
 	   private void setupColumns()
 	   {
@@ -78,52 +151,53 @@ public class TangoTable extends TableView<TangoTrack>
 		   titleCol.setMinWidth(100);
 		   titleCol.setPrefWidth(150);
 		   titleCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("title"));
-		   titleCol.setCellFactory(TextFieldTableCell.forTableColumn());
+		   titleCol.setCellFactory(new MyCellFactory());
 		   
 		       
 		  TableColumn artistCol = new TableColumn("Artist");
 		  artistCol.setMinWidth(50);
 		  artistCol.setPrefWidth(100);
 		  artistCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("artist"));
-		  artistCol.setCellFactory(TextFieldTableCell.forTableColumn());
+		  artistCol.setCellFactory(new MyCellFactory());
 		 
 		      
 		  TableColumn albumCol = new TableColumn("Album");
 		  albumCol.setMinWidth(50);
 		  albumCol.setPrefWidth(150);
 		  albumCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("album"));
-		  albumCol.setCellFactory(TextFieldTableCell.forTableColumn());
+		  albumCol.setCellFactory(new MyCellFactory());
 		   
 		      
 		  TableColumn genreCol = new TableColumn("Genre");
 		  genreCol.setMinWidth(30);
 		  genreCol.setPrefWidth(50);
 		  genreCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("genre"));
-		  genreCol.setCellFactory(TextFieldTableCell.forTableColumn());
+		  genreCol.setCellFactory(new MyCellFactory());
 		  
 		      
 		  TableColumn commentCol = new TableColumn("Comment");
 		  commentCol.setMinWidth(50);
 		  commentCol.setPrefWidth(100);
 		  commentCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("comment"));
-		  commentCol.setCellFactory(TextFieldTableCell.forTableColumn());
+		  commentCol.setCellFactory(new MyCellFactory());
 		 		      
 		  TableColumn durationCol = new TableColumn("Length");
 		  durationCol.setMinWidth(50);
 		  durationCol.setPrefWidth(50);
 		  durationCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("duration"));
-		  durationCol.setCellFactory(TextFieldTableCell.forTableColumn());
+		  durationCol.setCellFactory(new MyCellFactory());
 		      
 		  TableColumn yearCol = new TableColumn("Year");
 		  yearCol.setMinWidth(50);
 		  yearCol.setPrefWidth(50);
 		  yearCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("track_year"));
-		  yearCol.setCellFactory(TextFieldTableCell.forTableColumn());
+		  yearCol.setCellFactory(new MyCellFactory());
 		     
 		  this.getColumns().addAll(titleCol, durationCol, yearCol, artistCol, albumCol, genreCol, commentCol);
 		      
 	  }
 		
+	   /*
 	  EventHandler<KeyEvent>keyEvent = new EventHandler<KeyEvent>() 
 	  {
 	    public void handle(KeyEvent ke) 
@@ -142,8 +216,19 @@ public class TangoTable extends TableView<TangoTrack>
 			 	}
 			}
 	  };
+*/
+    public SimpleStringProperty getAction()
+    {
+      return action;
+    }
 
-    
 
+
+    public int getTableIndex()
+    {
+      return tableIndex;
+    }
+
+      
 
 }
