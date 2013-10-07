@@ -4,6 +4,7 @@ import java.io.File;
 
 import tangodj2.cortina.Cortina;
 import tangodj2.cortina.CortinaTable;
+import tangodj2.cortina.CortinaTrack;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -93,6 +94,7 @@ public class Player
     final static int PLAYLIST_BUILD_CLEANUP_TABLE=11;
     final static int PLAYLIST_BUILD_CORTINA_TABLE=12;
     final static int CORTINA_CREATE_CLEANUP_TABLE=13;
+    final static int CORTINA_CREATE_CORTINA_TABLE=14;
   
     private static final Duration FADE_DURATION = Duration.seconds(3.0);
     private boolean advancedControls=false;
@@ -313,24 +315,10 @@ public class Player
       saveCortinaButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
         public void handle(MouseEvent event)  
         {
-          Cortina cortina = new Cortina();
-          cortina.start=(int)(startPositionSlider.getValue()*currentTrackDuration.toMillis());
-          cortina.stop=(int)(endPositionSlider.getValue()*currentTrackDuration.toMillis());
-          if (fadeInCheckBox.isSelected()) cortina.fadein=1; else cortina.fadein=0;
-          if (fadeOutCheckBox.isSelected()) cortina.fadeout=1; else cortina.fadeout=0;
-          if (delayCheckBox.isSelected()) cortina.delay=1; else cortina.delay=0;
-          cortina.hash=currentTrackHash;
-         // String cortinaTimes = " ("+cortinaLength.getText()+") "
-         //                          +startPositionValue.getText()+" - "
-         //                          +endPositionValue.getText();
-          if (currentTrackTitle.length()>60)
-          cortina.title=currentTrackTitle.substring(0, 60);
-          else cortina.title=currentTrackTitle;
-         try {
-               int cortinaId=Db.insertCortina(cortina);
-               CortinaTable.addTrack(cortinaId);
-         } catch (Exception e) { e.printStackTrace(); }
+          insetrCortina();
         }
+
+        
      });
       
       setStartButton.setPrefWidth(30);
@@ -426,6 +414,28 @@ public class Player
       return gridPane;
     }
     
+    private void insetrCortina()
+    {
+      Cortina cortina = new Cortina();
+      cortina.start=(int)(startPositionSlider.getValue()*currentTrackDuration.toMillis());
+      cortina.stop=(int)(endPositionSlider.getValue()*currentTrackDuration.toMillis());
+      if (fadeInCheckBox.isSelected()) cortina.fadein=1; else cortina.fadein=0;
+      if (fadeOutCheckBox.isSelected()) cortina.fadeout=1; else cortina.fadeout=0;
+      if (delayCheckBox.isSelected()) cortina.delay=1; else cortina.delay=0;
+      cortina.hash=currentTrackHash;
+      cortina.original_duration=(int)currentTrackDuration.toMillis();
+     // String cortinaTimes = " ("+cortinaLength.getText()+") "
+     //                          +startPositionValue.getText()+" - "
+     //                          +endPositionValue.getText();
+      if (currentTrackTitle.length()>60)
+      cortina.title=currentTrackTitle.substring(0, 60);
+      else cortina.title=currentTrackTitle;
+     try {
+           int cortinaId=Db.insertCortina(cortina);
+           CortinaTable.addTrack(cortinaId);
+     } catch (Exception e) { e.printStackTrace(); }
+    }
+    
     public void updateUIValues() 
     {
       Platform.runLater(new Runnable() 
@@ -441,7 +451,7 @@ public class Player
     {
       if (mode==CORTINA_CREATE)
       {
-        Duration startDuration =currentTrackDuration.multiply(startPositionSlider.getValue());
+        Duration startDuration = currentTrackDuration.multiply(startPositionSlider.getValue());
         Duration endDuration = currentTrackDuration.multiply(endPositionSlider.getValue());
         startPositionValue.setText(formatTime(startDuration)); 
         endPositionValue.setText(formatTime(endDuration));
@@ -510,9 +520,26 @@ public class Player
         timeline.playFromStart();
     }
     
+    public void setTrack(String pathHash, int type, CortinaTrack cortinaTrack)
+    {
+      double start=cortinaTrack.getStartValue();
+      double stop = cortinaTrack.getStopValue();
+      double tot = cortinaTrack.getOriginal_duration();
+      double startFraction = start/tot;
+      double stopFraction = stop/tot;
+      
+ 
+      
+      startPositionSlider.setValue(startFraction);
+      endPositionSlider.setValue(stopFraction);
+      updateCortinaUIValues();
+      setTrack(pathHash, type);
+    }
+    
     public void setTrack(String pathHash, int type)
     {
       currentTrackHash=pathHash;
+     // System.out.println("Player - currentTrackHash: "+currentTrackHash);
       if (type==CORTINA_CREATE_CLEANUP_TABLE) setMode(CORTINA_CREATE);
       currentTrackMeta=Db.getTrackInfo(currentTrackHash);
       int totalTrackTime=currentTrackMeta.duration;

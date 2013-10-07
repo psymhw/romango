@@ -1,6 +1,5 @@
 package tangodj2.cortina;
 
-import javafx.beans.property.SimpleStringProperty;
 
 public class Cortina
 {
@@ -14,22 +13,7 @@ public class Cortina
   public String comment;
   public String title;
   public String hash;
-  
-  private final SimpleStringProperty tableTitle = new SimpleStringProperty();;
-  
-  public Cortina()
-  {
-    
-  }
+  public int original_duration;
 
-  public String getTableTitle()
-  {
-    return tableTitle.get();
-  }
-  
-  public void setTableTitle(String title)
-  {
-    tableTitle.set(title);
-  }
   
 }

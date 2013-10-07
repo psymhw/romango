@@ -175,6 +175,7 @@ public class Db
                                        resultSet.getInt("fadein"), 
                                        resultSet.getInt("fadeout"), 
                                        resultSet.getInt("delay"), 
+                                       resultSet.getInt("original_duration"), 
                                        resultSet.getString("title"),
                                        resultSet.getString("hash"));
            
@@ -206,6 +207,7 @@ public class Db
                                        resultSet.getInt("fadein"), 
                                        resultSet.getInt("fadeout"), 
                                        resultSet.getInt("delay"), 
+                                       resultSet.getInt("original_duration"), 
                                        resultSet.getString("title"),
                                        resultSet.getString("hash"));
            
@@ -456,12 +458,13 @@ public class Db
   public static int insertCortina(Cortina cortina) throws SQLException, ClassNotFoundException
   {
     connect();
-    String sql="insert into cortinas (start, stop, fadein, fadeout, delay, title, hash) values("
+    String sql="insert into cortinas (start, stop, fadein, fadeout, delay, original_duration, title, hash) values("
     +cortina.start+", "
     +cortina.stop+", "
     +cortina.fadein+", "
     +cortina.fadeout+", "
-    +cortina.delay+", '"
+     +cortina.delay+", "
+    +cortina.original_duration+", '"
     +sqlReadyString(cortina.title)+"', '"
     +cortina.hash+"')";
    // System.out.println("sql: "+sql);

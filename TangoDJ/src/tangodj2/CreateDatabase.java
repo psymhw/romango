@@ -135,6 +135,7 @@ public class CreateDatabase
         "fadeout INTEGER, " +
         "track_count INTEGER, " +
         "delay INTEGER, " +
+        "original_duration INTEGER, " +
         "comment varchar(60), " +
         "title varchar(60), " +
         "hash varchar(32) " +

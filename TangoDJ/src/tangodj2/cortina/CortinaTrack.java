@@ -13,8 +13,12 @@ public class CortinaTrack
   private int fadein;
   private int fadeout;
   private int delay;
+  private int original_duration;
+  private int startValue;
+  private int stopValue;
+  private String pathHash;
   
-  public CortinaTrack(int id, int start, int stop, int fadein, int fadeout, int delay, String title, String pathHash)
+  public CortinaTrack(int id, int start, int stop, int fadein, int fadeout, int delay, int original_duration, String title, String pathHash)
   {
     this.title = new SimpleStringProperty(title);
     this.start = new SimpleStringProperty(formatTime(new Duration(start)));
@@ -24,6 +28,10 @@ public class CortinaTrack
     this.fadein=fadein;
     this.fadeout=fadeout;
     this.delay=delay;
+    this.pathHash=pathHash;
+    this.startValue=start;
+    this.stopValue=stop;
+    this.original_duration=original_duration;
   }
   
   private static String formatTime(Duration duration) 
@@ -120,5 +128,30 @@ public class CortinaTrack
   public String getLength()
   {
     return length.get();
+  }
+
+  public String getPathHash()
+  {
+    return pathHash;
+  }
+
+  public void setPathHash(String pathHash)
+  {
+    this.pathHash = pathHash;
+  }
+
+  public int getStartValue()
+  {
+    return startValue;
+  }
+
+  public int getStopValue()
+  {
+    return stopValue;
+  }
+
+  public int getOriginal_duration()
+  {
+    return original_duration;
   }
 }

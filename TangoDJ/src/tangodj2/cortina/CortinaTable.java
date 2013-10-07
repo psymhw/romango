@@ -41,19 +41,6 @@ public class CortinaTable extends TableView<CortinaTrack>
     this.setEditable(false);
 	    
    // table.setOnKeyReleased(keyEvent);
-	    
-    // MOUSE TABLE ROW SELECTION
-    this.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
-	  {
-	    public void changed(ObservableValue observable, Object oldValue, Object newValue) 
-	    {
-	      Cortina selectedTrack = (Cortina)newValue;
-	      if (selectedTrack!=null)
-	      {
-	      System.out.println("selected: "+selectedTrack.getTableTitle());
-	      }
-	    }
-	  });
     
     TableColumn titleCol = new TableColumn("Title");
     titleCol.setMinWidth(100);
@@ -73,6 +60,6 @@ public class CortinaTable extends TableView<CortinaTrack>
     startCol.setCellValueFactory(new PropertyValueFactory<Cortina, String>("start"));
     startCol.setCellFactory(TextFieldTableCell.forTableColumn());
     
-    this.getColumns().addAll(titleCol, lengthCol, startCol);
+    this.getColumns().addAll(titleCol, startCol, lengthCol);
   }
 }
