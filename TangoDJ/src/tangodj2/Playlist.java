@@ -45,6 +45,7 @@ public class Playlist
   private int nextTrackIndex=0; 
   private int nowPlayingIndex=-1;
 	private ArrayList<PlaylistTrack> flatPlaylistTracks =  new ArrayList<PlaylistTrack>();
+	private int selectedTanda=-1;
 	
 	
 	public Playlist() throws SQLException, ClassNotFoundException
@@ -203,6 +204,12 @@ public class Playlist
 	public int getTandaCount()
 	{
 		return playlistTreeItem.getTandaCount();
+	}
+	
+	public TandaTreeItem getSelectedTanda()
+	{
+	  if (selectedTanda==-1) selectedTanda=0;
+	  return getTanda(selectedTanda);
 	}
 	
 	public TandaTreeItem  getTanda(int index)
@@ -405,7 +412,7 @@ public class Playlist
 	     {
 	       public void handle(Event e) 
 	       {
-	         SharedValues.selectedTanda= Integer.parseInt(tandaContextMenu.getId());
+	         selectedTanda= Integer.parseInt(tandaContextMenu.getId());
 	       }
 	     });
 	     tandaContextMenu.getItems().addAll(moveUp, moveDown, delete);
@@ -414,7 +421,7 @@ public class Playlist
 	       public void handle(Event t) 
 	       {
 	    	  
-	         playlistTreeItem.moveTandaUp(SharedValues.selectedTanda);   
+	         playlistTreeItem.moveTandaUp(selectedTanda);   
 	         generateFlatList();
 	       }
 	     });
@@ -422,7 +429,7 @@ public class Playlist
 	     {
 	       public void handle(Event t) 
 	       {
-	         playlistTreeItem.moveTandaDown(SharedValues.selectedTanda);   
+	         playlistTreeItem.moveTandaDown(selectedTanda);   
 	         generateFlatList();
 	       }
 	     });
@@ -430,7 +437,7 @@ public class Playlist
 	     {
 	       public void handle(Event t) 
 	       {
-	         playlistTreeItem.deleteTanda(SharedValues.selectedTanda); 
+	         playlistTreeItem.deleteTanda(selectedTanda); 
 	         generateFlatList();
 	       }
 	     });
@@ -477,7 +484,7 @@ public class Playlist
 	    	 {
 	    	   if (i==0)
 	    	   {
-	    	     SharedValues.selectedTanda=Integer.parseInt(tokens[i]);
+	    	     selectedTanda=Integer.parseInt(tokens[i]);
 	    	   }
 	    	   if (i==1) 
 	    	   {
@@ -617,6 +624,8 @@ public class Playlist
 	         myDialog.setScene(myDialogScene);
 	         myDialog.show();
 	   }
+
+   
 	 
 	  
 }

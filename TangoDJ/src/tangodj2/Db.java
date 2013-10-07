@@ -372,8 +372,6 @@ public class Db
     	//  tandaTreeItem.setCortinaStart(resultSet.getInt("cortinaStart"));
     	//  tandaTreeItem.setCortinaStop(resultSet.getInt("cortinaStop"));
     	 // tandaTreeItem.setNumberOfTracks(resultSet.getInt("track_count"));
-    	  
-    	
     		  
     	  
     	  tandaTreeItems.add(tandaTreeItem);

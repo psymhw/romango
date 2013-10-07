@@ -76,7 +76,7 @@ public class TangoDJ2 extends Application
     catch (ClassNotFoundException e) { e.printStackTrace(); }
       
     //allTracksTable = new AllTracksTable(playlist);
-    tangoTable = new TangoTable(playlist);
+    tangoTable = new TangoTable();
     cleanupTable = new CleanupTable(playlist);
     cortinaTable = new CortinaTable();
     
