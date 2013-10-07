@@ -57,7 +57,8 @@ public class Equalizer
 
 	    // Create the equalizer bands with the gains preset to
 	    // a nice cosine wave pattern.
-	    for (int j = 0; j < BAND_COUNT; j++) {
+	    for (int j = 0; j < BAND_COUNT; j++) 
+	    {
 	      // Use j and BAND_COUNT to calculate a value between 0 and 2*pi
 	      double theta = (double)j / (double)(BAND_COUNT-1) * (2*Math.PI);
 	      
@@ -71,7 +72,10 @@ public class Equalizer
 	      freq *= 2;
 	    }
 	    
-	    for (int i = 0; i < bands.size(); ++i) {
+	    bands.get(0).setGain(.6);
+	    
+	    for (int i = 0; i < bands.size(); ++i) 
+	    {
 	      EqualizerBand eb = bands.get(i);
 	      Slider s = createEQSlider(eb, min, max);
 

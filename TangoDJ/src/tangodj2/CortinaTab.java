@@ -3,6 +3,7 @@ package tangodj2;
 import tangodj2.cleanup.CleanupTable;
 import tangodj2.cleanup.CleanupTrack;
 import tangodj2.cortina.CortinaTable;
+import tangodj2.cortina.CortinaTrack;
 
 import tangodj2.tango.TangoTable;
 import javafx.beans.value.ChangeListener;
@@ -52,7 +53,7 @@ public class CortinaTab extends Tab
   private void setupListener()
   {
  // MOUSE TABLE ROW SELECTION
-    this.cleanupTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
+    cleanupTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
     {
       public void changed(ObservableValue observable, Object oldValue, Object newValue) 
       {
@@ -60,6 +61,19 @@ public class CortinaTab extends Tab
         if (selectedTrack!=null)
         {
           player.setTrack(selectedTrack.getPathHash(), Player.CORTINA_CREATE_CLEANUP_TABLE);
+        }
+      }
+    });
+    
+ // MOUSE TABLE ROW SELECTION
+    cortinaTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+        CortinaTrack cortinaTrack = (CortinaTrack)newValue;
+        if (cortinaTrack!=null)
+        {
+          player.setTrack(cortinaTrack.getPathHash(), Player.CORTINA_CREATE_CORTINA_TABLE, cortinaTrack);
         }
       }
     });
