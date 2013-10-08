@@ -153,7 +153,7 @@ public class PlaylistBuilderTab extends Tab
 	  label.setFont(new Font("Arial", 20));
 	  final RadioButton rb1 = new RadioButton("Tango");
 	  final RadioButton rb2 = new RadioButton("Cortina");
-	  final RadioButton rb3 = new RadioButton("Setup\\Cleanup");
+	  final RadioButton rb3 = new RadioButton("Cleanup");
 	  
 	  rb1.setId("tango");
 	  rb2.setId("cortina");
@@ -267,6 +267,7 @@ public class PlaylistBuilderTab extends Tab
           if (playlist.getTandaCount()>0)
           {  
             TandaTreeItem tandaTreeItem = playlist.getSelectedTanda();
+            
             tandaTreeItem.addTrack(cleanupTrack.getPathHash());
           }
         }

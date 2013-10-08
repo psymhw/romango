@@ -275,7 +275,7 @@ public class Playlist
          
 			   if ("tanda".equals(bti.getTreeType())) 
 			   {
-			     SharedValues.selectedTanda=playlistTreeItem.getTandaPosition((TandaTreeItem)bti);
+			     selectedTanda=playlistTreeItem.getTandaPosition((TandaTreeItem)bti);
 			   }
 			   else if ("track".equals(bti.getTreeType())) 
 			   {
@@ -291,17 +291,17 @@ public class Playlist
 
 				   int parentPos=-1;
 				   if (parent!=null) parentPos=playlistTreeItem.getTandaPosition((TandaTreeItem)parent);
-				   SharedValues.selectedTanda=parentPos;
+				   selectedTanda=parentPos;
 			   }
 			   else
 			   {
-				   SharedValues.selectedTanda=0; 
+				   selectedTanda=0; 
 			   }
 			  // treeView.getFocusModel().focus(SharedValues.selectedTanda+SharedValues.selectedPlaylistTrack+1);
 			   SharedValues.playlistFocus.set(SharedValues.playlistFocus.get()+1);
 			   //SharedValues.playlist=thisPlaylist;
 			   System.out.println("Tanda/Track: "
-			            +SharedValues.selectedTanda+"/"+SharedValues.selectedPlaylistTrack+" - "
+			            +selectedTanda+"/"+SharedValues.selectedPlaylistTrack+" - "
 					   + newItem.getValue()); 
 			 }
 		   }
@@ -499,7 +499,7 @@ public class Playlist
      {
        public void handle(Event t) 
        {
-         setNextTrackToPlay(SharedValues.selectedTanda, SharedValues.selectedPlaylistTrack);
+         setNextTrackToPlay(selectedTanda, SharedValues.selectedPlaylistTrack);
         }
      });
 	   
@@ -508,7 +508,7 @@ public class Playlist
 	   {
 	     public void handle(Event t) 
 	     {
-	       playlistTreeItem.getTanda(SharedValues.selectedTanda).moveTrackUp(SharedValues.selectedPlaylistTrack);
+	       playlistTreeItem.getTanda(selectedTanda).moveTrackUp(SharedValues.selectedPlaylistTrack);
 	       generateFlatList();
 	     }
 	   });
@@ -517,7 +517,7 @@ public class Playlist
 	   {
 	     public void handle(Event t) 
 	     {
-	       playlistTreeItem.getTanda(SharedValues.selectedTanda).moveTrackDown(SharedValues.selectedPlaylistTrack);
+	       playlistTreeItem.getTanda(selectedTanda).moveTrackDown(SharedValues.selectedPlaylistTrack);
 	       generateFlatList();
 	     }
 	   });
@@ -526,7 +526,7 @@ public class Playlist
 	   {
 	     public void handle(Event t) 
 	     {
-	       playlistTreeItem.getTanda(SharedValues.selectedTanda).deleteTrack(SharedValues.selectedPlaylistTrack);
+	       playlistTreeItem.getTanda(selectedTanda).deleteTrack(SharedValues.selectedPlaylistTrack);
 	       generateFlatList();
 	     }
 	   });
