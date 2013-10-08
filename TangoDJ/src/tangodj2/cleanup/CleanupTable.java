@@ -25,15 +25,13 @@ import tangodj2.PlaylistTree.TandaTreeItem;
 public class CleanupTable extends TableView<CleanupTrack>
 {
   private SimpleStringProperty action = new SimpleStringProperty("nada");
-  private Playlist playlist;
   private CleanupTable cleanupTable;
   private int tableIndex=-1;
   
   public final static ObservableList<CleanupTrack> cleanupTracksData = FXCollections.observableArrayList();
 	 
-  public CleanupTable(Playlist playlist)
+  public CleanupTable()
   {
-	  this.playlist=playlist;
 	  cleanupTable=this;
 	 
 	 

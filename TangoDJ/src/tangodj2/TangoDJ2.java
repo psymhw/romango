@@ -77,7 +77,7 @@ public class TangoDJ2 extends Application
       
     //allTracksTable = new AllTracksTable(playlist);
     tangoTable = new TangoTable();
-    cleanupTable = new CleanupTable(playlist);
+    cleanupTable = new CleanupTable();
     cortinaTable = new CortinaTable();
     
     trackLoader.setTangoTable(tangoTable);
@@ -96,7 +96,7 @@ public class TangoDJ2 extends Application
     playlistChoiceTab = new PlaylistChoiceTab();
     tabPane.getTabs().add(playlistChoiceTab);
     
-    cortinaTab = new CortinaTab(new CleanupTable(playlist), cortinaTable, player);
+    cortinaTab = new CortinaTab(new CleanupTable(), cortinaTable, player);
       
     // TAB SELECTION LISTENER
     tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>()
@@ -105,7 +105,6 @@ public class TangoDJ2 extends Application
       {
         if (mostRecentlySelectedTab.equals(cortinaTab))
         {
-         
           player.setMode(Player.CORTINA_CREATE);
         }
         if (mostRecentlySelectedTab.equals(playlistBuilderTab))
