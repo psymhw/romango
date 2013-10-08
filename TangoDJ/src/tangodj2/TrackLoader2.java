@@ -43,7 +43,7 @@ public class TrackLoader2
   private static Hasher hasher = new Hasher();
   private static List<TrackMeta> trackInfo = new ArrayList<TrackMeta>();
   public boolean isTango=true;
-  TangoTable tangoTable;
+  //TangoTable tangoTable;
   CleanupTable cleanupTable;
 	
   public TrackLoader2()
@@ -66,7 +66,7 @@ public class TrackLoader2
 		 // listTrackInfo();
 		  sqlReadyTrackInfo();
 		  insertRecords();
-		  if (isTango) tangoTable.reloadData();
+		  if (isTango) {}
 		  else cleanupTable.reloadData();
 		}
 		if (seconds>=30) 
@@ -301,10 +301,7 @@ public class TrackLoader2
       return FileVisitResult.CONTINUE;
     }
 
-    public void setTangoTable(TangoTable tangoTable)
-    {
-      this.tangoTable = tangoTable;
-    }
+    
     
     public void setCleanupTable(CleanupTable cleanupTable)
     {

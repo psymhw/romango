@@ -56,7 +56,7 @@ public class TangoTable extends TableView<TangoTrack>
 	 
   
   
-  public void reloadData()
+  public static void reloadData()
   {
     Db.loadTangoTracks(tangoTracksData);
   }
@@ -228,6 +228,12 @@ public class TangoTable extends TableView<TangoTrack>
     {
       return tableIndex;
     }
+
+
+
+	public TableView<TangoTrack> getTangoTable() {
+		return tangoTable;
+	}
 
       
 

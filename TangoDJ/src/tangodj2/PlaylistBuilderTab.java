@@ -46,13 +46,13 @@ public class PlaylistBuilderTab extends Tab
   int savedType=0;
   Player player;
   
-  public PlaylistBuilderTab(Playlist playlist, TangoTable tangoTable, CleanupTable cleanupTable, Player player)
+  public PlaylistBuilderTab(Playlist playlist, CleanupTable cleanupTable, Player player)
   {
     this.playlist=playlist;
     this.player=player;
-    this.tangoTable=tangoTable;
     this.cleanupTable=cleanupTable;
     
+    tangoTable = new TangoTable();
     addTableListeners();
 	  
 	  this.setText("All Tracks");
@@ -278,5 +278,10 @@ public class PlaylistBuilderTab extends Tab
     };   
     cleanupTable.getAction().addListener(cleanupTableListener);
   }
+
+
+public TangoTable getTangoTable() {
+	return tangoTable;
+}
   
 }

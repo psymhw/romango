@@ -39,7 +39,7 @@ public class TangoDJ2 extends Application
   //public static Tab equalizerTab;
   Playlist playlist;
  // AllTracksTable allTracksTable;
-  TangoTable tangoTable;
+ // TangoTable tangoTable;
   CleanupTable cleanupTable;
   CortinaTable cortinaTable;
   static CortinaTab cortinaTab;
@@ -76,12 +76,12 @@ public class TangoDJ2 extends Application
     catch (ClassNotFoundException e) { e.printStackTrace(); }
       
     //allTracksTable = new AllTracksTable(playlist);
-    tangoTable = new TangoTable();
+    // tangoTable = new TangoTable();
     cleanupTable = new CleanupTable();
     cortinaTable = new CortinaTable();
     
-    trackLoader.setTangoTable(tangoTable);
-    trackLoader.setCleanupTable(cleanupTable);
+    //trackLoader.setTangoTable(tangoTable);
+   // trackLoader.setCleanupTable(cleanupTable);
      
     Tab equalizerTab = new Tab();
     equalizerTab.setStyle("-fx-background-color: #bfc2c7;");
@@ -89,7 +89,7 @@ public class TangoDJ2 extends Application
     
     player = new Player(playlist, equalizerTab);
    
-    playlistBuilderTab = new PlaylistBuilderTab(playlist, tangoTable, cleanupTable, player);
+    playlistBuilderTab = new PlaylistBuilderTab(playlist, cleanupTable, player);
     tabPane.getTabs().add(playlistBuilderTab);
   //  playlistBuilderTab.addAllTracksTable();  
     
@@ -159,6 +159,7 @@ public class TangoDJ2 extends Application
           try
           {
             trackLoader.process(selectedDirectory.toPath().toString(), false, true);
+            playlistBuilderTab.getTangoTable().reloadData();
           } catch (Exception ex) {ex.printStackTrace();}
         }
       }
