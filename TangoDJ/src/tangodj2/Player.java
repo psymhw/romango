@@ -66,11 +66,11 @@ public class Player
     Tab equalizerTab;
     VBox vbox = new VBox();
     int mode = PLAYLIST_CREATE;
-    GridPane gridPane;
+    GridPane cortinaCreatControls;
     Label startPositionValue=null;
     Label endPositionValue=null;
     Label playPositionValue=null;
-    Label cortinaLength=null;
+    Label cortinaLengthLabel=null;
     Label trackTitle = new Label("");
     
    
@@ -98,6 +98,9 @@ public class Player
   
     private static final Duration FADE_DURATION = Duration.seconds(3.0);
     private boolean advancedControls=false;
+    private Duration cortinaStart;
+    private Duration cortinaEnd;
+    private Duration cortinaLength;
     
     
    // SimpleStringProperty source = new SimpleStringProperty();
@@ -233,7 +236,7 @@ public class Player
        
        vbox.getChildren().add(trackTitle);
        vbox.getChildren().add(mediaBar);
-       
+       setupCortinaControls();
       // setDefaultTrack();
        
        
@@ -286,13 +289,12 @@ public class Player
       if (show)
       {
         advancedControls=true;
-        setupCortinaControls();
-        vbox.getChildren().add(gridPane);
+        vbox.getChildren().add(cortinaCreatControls);
       }
       else 
       {
         advancedControls=false;
-        vbox.getChildren().remove(gridPane);
+        vbox.getChildren().remove(cortinaCreatControls);
       }
     }
     
@@ -302,10 +304,10 @@ public class Player
     {
       final int col[] = {0,1,2,3,4,5,6,7,8,9,10};
       final int row[] = {0,1,2,3,4,5,6,7,8,9,10};
-      gridPane = new GridPane();
-      gridPane.setPadding(new Insets(10, 10, 10, 10));
-      gridPane.setStyle("-fx-background-color: DAE6F3; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
-      gridPane.setHgap(15);
+      cortinaCreatControls = new GridPane();
+      cortinaCreatControls.setPadding(new Insets(10, 10, 10, 10));
+      cortinaCreatControls.setStyle("-fx-background-color: DAE6F3; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
+      cortinaCreatControls.setHgap(15);
       
       Button setStartButton = new Button("*");
       Button setStopButton = new Button("*");
@@ -337,33 +339,33 @@ public class Player
       // System.out.println("Default Track Duration2: "+formatTime(currentTrackDuration));
       endPositionValue = new Label(formatTime(currentTrackDuration));
       playPositionValue = new Label(Double.toString(playPositionSlider.getValue()));
-      cortinaLength=new Label("0:00");
+      cortinaLengthLabel=new Label("0:00");
     
       
-      gridPane.add(new Text("Start Position"), col[0], row[0]);
-      gridPane.add(new Text("End Position"),   col[0], row[1]);
-      gridPane.add(new Text("Play Position"),  col[0], row[2]);
+      cortinaCreatControls.add(new Text("Start Position"), col[0], row[0]);
+      cortinaCreatControls.add(new Text("End Position"),   col[0], row[1]);
+      cortinaCreatControls.add(new Text("Play Position"),  col[0], row[2]);
       
       
-      gridPane.add(startPositionValue,         col[1], row[0]);
-      gridPane.add(endPositionValue,           col[1], row[1]);
-      gridPane.add(playPositionValue,          col[1], row[2]);
+      cortinaCreatControls.add(startPositionValue,         col[1], row[0]);
+      cortinaCreatControls.add(endPositionValue,           col[1], row[1]);
+      cortinaCreatControls.add(playPositionValue,          col[1], row[2]);
       
-      gridPane.add(startPositionSlider,        col[2], row[0]);
-      gridPane.add(endPositionSlider,          col[2], row[1]);
-      gridPane.add(playPositionSlider,         col[2], row[2]);
+      cortinaCreatControls.add(startPositionSlider,        col[2], row[0]);
+      cortinaCreatControls.add(endPositionSlider,          col[2], row[1]);
+      cortinaCreatControls.add(playPositionSlider,         col[2], row[2]);
       
-      gridPane.add(setStartButton,             col[3], row[0]);
-      gridPane.add(setStopButton,              col[3], row[1]);
-      gridPane.add(dummyButton,                col[3], row[2]);
+      cortinaCreatControls.add(setStartButton,             col[3], row[0]);
+      cortinaCreatControls.add(setStopButton,              col[3], row[1]);
+      cortinaCreatControls.add(dummyButton,                col[3], row[2]);
       
-      gridPane.add(fadeInCheckBox,             col[4], row[0]);
-      gridPane.add(fadeOutCheckBox,            col[4], row[1]);
-      gridPane.add(delayCheckBox,              col[4], row[2]);
+      cortinaCreatControls.add(fadeInCheckBox,             col[4], row[0]);
+      cortinaCreatControls.add(fadeOutCheckBox,            col[4], row[1]);
+      cortinaCreatControls.add(delayCheckBox,              col[4], row[2]);
       
-      gridPane.add(new Text("Cortna Length: "),col[5], row[0]);
-      gridPane.add(cortinaLength              ,col[6], row[0]);
-      gridPane.add(saveCortinaButton          ,col[7], row[1]);
+      cortinaCreatControls.add(new Text("Cortna Length: "),col[5], row[0]);
+      cortinaCreatControls.add(cortinaLengthLabel         ,col[6], row[0]);
+      cortinaCreatControls.add(saveCortinaButton          ,col[7], row[1]);
       
       
       
@@ -411,7 +413,7 @@ public class Player
       });
       
       
-      return gridPane;
+      return cortinaCreatControls;
     }
     
     private void insetrCortina()
@@ -451,11 +453,13 @@ public class Player
     {
       if (mode==CORTINA_CREATE)
       {
-        Duration startDuration = currentTrackDuration.multiply(startPositionSlider.getValue());
-        Duration endDuration = currentTrackDuration.multiply(endPositionSlider.getValue());
-        startPositionValue.setText(formatTime(startDuration)); 
-        endPositionValue.setText(formatTime(endDuration));
-        cortinaLength.setText(formatTime(endDuration.subtract(startDuration)));
+        cortinaStart = currentTrackDuration.multiply(startPositionSlider.getValue());
+        cortinaEnd = currentTrackDuration.multiply(endPositionSlider.getValue());
+        startPositionValue.setText(formatTime(cortinaStart)); 
+        endPositionValue.setText(formatTime(cortinaEnd));
+        cortinaLength = cortinaEnd.subtract(cortinaStart);
+      //  Duration remainingCortinaTime=endDuration.subtract(startDuration).subtract(currentTrackTime.subtract(startDuration));
+        cortinaLengthLabel.setText(formatTime(cortinaLength));
       }
     }
     
@@ -726,7 +730,7 @@ public class Player
     
     protected void updateValues() 
     {
-      //System.out.println("Player: update values");
+      //System.out.println("Player: update values - currentTime: "+currentTrackTime);
       if (playTime != null && timeSlider != null && volumeSlider != null) 
       {
          Platform.runLater(new Runnable() 
@@ -734,6 +738,8 @@ public class Player
            public void run() 
            {
              currentTrackTime = mediaPlayer.getCurrentTime();
+             Duration remainingCortinaTime=cortinaLength.subtract(currentTrackTime.subtract(cortinaStart));
+             cortinaLengthLabel.setText(formatTime(remainingCortinaTime));
              playTime.setText(formatTime(currentTrackTime, currentTrackDuration));
              timeSlider.setDisable(currentTrackDuration.isUnknown());
              if (!timeSlider.isDisabled()

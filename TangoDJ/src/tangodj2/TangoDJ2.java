@@ -31,18 +31,13 @@ import javafx.stage.Stage;
 public class TangoDJ2 extends Application 
 {
   static Stage primaryStage;
-  SharedValues sharedValues = new SharedValues();
   static PlaylistBuilderTab playlistBuilderTab;
   static PlaylistChoiceTab playlistChoiceTab;
-  MenuBar menuBar;
-  TrackLoader2 trackLoader = new TrackLoader2();
-  //public static Tab equalizerTab;
-  Playlist playlist;
- // AllTracksTable allTracksTable;
- // TangoTable tangoTable;
-  CleanupTable cleanupTable;
-  CortinaTable cortinaTable;
   static CortinaTab cortinaTab;
+  
+  MenuBar menuBar;
+  Playlist playlist;
+   
   Rectangle r = new Rectangle(10,10,10,10);
   Player player;
  
@@ -72,31 +67,22 @@ public class TangoDJ2 extends Application
     setupMenuBar();
       
     try { playlist = new Playlist();} 
-    catch (SQLException se) { System.out.println("PROGRAMALREADY RUNNING"); } 
+    catch (SQLException se) { System.out.println("PROGRAM ALREADY RUNNING"); System.exit(0); } 
     catch (ClassNotFoundException e) { e.printStackTrace(); }
-      
-    //allTracksTable = new AllTracksTable(playlist);
-    // tangoTable = new TangoTable();
-    cleanupTable = new CleanupTable();
-    cortinaTable = new CortinaTable();
-    
-    //trackLoader.setTangoTable(tangoTable);
-   // trackLoader.setCleanupTable(cleanupTable);
-     
+        
     Tab equalizerTab = new Tab();
     equalizerTab.setStyle("-fx-background-color: #bfc2c7;");
     equalizerTab.setText("Equalizer");
     
     player = new Player(playlist, equalizerTab);
    
-    playlistBuilderTab = new PlaylistBuilderTab(playlist, cleanupTable, player);
+    playlistBuilderTab = new PlaylistBuilderTab(playlist,  player);
     tabPane.getTabs().add(playlistBuilderTab);
-  //  playlistBuilderTab.addAllTracksTable();  
     
     playlistChoiceTab = new PlaylistChoiceTab();
     tabPane.getTabs().add(playlistChoiceTab);
     
-    cortinaTab = new CortinaTab(new CleanupTable(), cortinaTable, player);
+    cortinaTab = new CortinaTab(player);
       
     // TAB SELECTION LISTENER
     tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>()
@@ -156,11 +142,7 @@ public class TangoDJ2 extends Application
         if(selectedDirectory == null) { System.out.println("No Directory selected"); } 
         else
         {
-          try
-          {
-            trackLoader.process(selectedDirectory.toPath().toString(), false, true);
-            playlistBuilderTab.getTangoTable().reloadData();
-          } catch (Exception ex) {ex.printStackTrace();}
+          playlistBuilderTab.loadTangoDirectory(selectedDirectory.toPath().toString());
         }
       }
     });   
@@ -177,10 +159,7 @@ public class TangoDJ2 extends Application
         if(selectedFile == null) { System.out.println("No File selected"); } 
         else
         {
-          try
-          {
-            trackLoader.process(selectedFile.toPath().toString(), true, true);
-          } catch (Exception ex) {ex.printStackTrace();}
+          playlistBuilderTab.loadTangoFile(selectedFile.toPath().toString());
         }
       }
     });   
@@ -197,18 +176,12 @@ public class TangoDJ2 extends Application
         if(selectedFile == null) { System.out.println("No File selected"); } 
         else
         {
-          try
-          {
-            trackLoader.process(selectedFile.toPath().toString(), true, false);
-          } catch (Exception ex) {ex.printStackTrace();}
+          playlistBuilderTab.loadCleanupFile(selectedFile.toPath().toString());
         }
       }
     });   
     	    
     menuFile.getItems().addAll(menuAddTangoDir, menuAddTangoFile,menuAddCortinaFile);
   }
-
- 
-  
  
 }

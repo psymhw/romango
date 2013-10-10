@@ -11,6 +11,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 public class CortinaTab extends Tab
@@ -21,21 +22,32 @@ public class CortinaTab extends Tab
   GridPane gridPane = new GridPane();
   final Player player;
   
-  public CortinaTab(CleanupTable cleanupTable, CortinaTable cortinaTable, Player player)
+  public CortinaTab(Player player)
   {
-    this.setText("Cortinas");
+    this.setText("Create Cortinas");
     this.cleanupTable=cleanupTable;
-    this.cortinaTable=cortinaTable;
+   // this.cortinaTable=cortinaTable;
     this.player=player;
     
-    gridPane.setGridLinesVisible(true);
+    cortinaTable = new CortinaTable();
+    cleanupTable = new CleanupTable();
+    
+   // gridPane.setGridLinesVisible(true);
     
       
     gridPane.setPadding(new Insets(10, 10, 10, 10));
+    gridPane.setHgap(30);
    
     gridPane.setStyle("-fx-background-color: DAE6F3; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
     gridPane.add(cleanupTable, 0, 1);
-    gridPane.add(new Text("Source Tracks"), 0, 0);
+    
+    Text label_1 = new Text("Source Tracks");
+    Text label_2 = new Text("Cortinas");
+    label_1.setFont(new Font("Arial", 20));
+    label_2.setFont(new Font("Arial", 20));
+    
+    gridPane.add(label_1, 0, 0);
+    gridPane.add(label_2, 1, 0);
     
     gridPane.add(cortinaTable, 1, 1);
     //gridPane.add(allTracksTable.getTable(), 1, 0);
