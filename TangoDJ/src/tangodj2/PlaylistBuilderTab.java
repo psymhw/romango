@@ -3,6 +3,8 @@ package tangodj2;
 import tangodj2.PlaylistTree.TandaTreeItem;
 import tangodj2.cleanup.CleanupTable;
 import tangodj2.cleanup.CleanupTrack;
+import tangodj2.cortina.CortinaTable;
+import tangodj2.cortina.CortinaTrack;
 import tangodj2.tango.TangoTable;
 import tangodj2.tango.TangoTrack;
 import javafx.beans.value.ChangeListener;
@@ -41,20 +43,26 @@ public class PlaylistBuilderTab extends Tab
   //AllTracksTable allTracksTable;
   TangoTable tangoTable;
   CleanupTable cleanupTable;
+  CortinaTable cortinaTable;
   Playlist playlist;
   final VBox vbox = new VBox();
   int savedType=0;
   Player player;
+  TrackLoader2 trackLoader = new TrackLoader2();
   
-  public PlaylistBuilderTab(Playlist playlist, CleanupTable cleanupTable, Player player)
+  public PlaylistBuilderTab(Playlist playlist, Player player)
   {
     this.playlist=playlist;
     this.player=player;
-    this.cleanupTable=cleanupTable;
+    //this.cleanupTable=cleanupTable;
     
     tangoTable = new TangoTable();
-    addTableListeners();
-	  
+    cleanupTable = new CleanupTable();
+    cortinaTable = new CortinaTable();
+    
+    trackLoader.setTangoTable(tangoTable);
+    trackLoader.setCleanupTable(cleanupTable);
+    	  
 	  this.setText("All Tracks");
 	  
 	  vbox.setPadding(new Insets(10, 10, 10, 10));
@@ -62,7 +70,7 @@ public class PlaylistBuilderTab extends Tab
 	  vbox.setStyle("-fx-background-color: DAE6F3; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
 	 
 	  vbox.getChildren().add(getSearchAndFilterBar());
-	  addAllTracksTable();
+	  vbox.getChildren().add(tangoTable);
 	 
 	  HBox hbox =  new HBox();
 	  hbox.setPadding(new Insets(10, 10, 10, 10));
@@ -75,49 +83,50 @@ public class PlaylistBuilderTab extends Tab
     hbox.setHgrow(playlist.getTreeView(), Priority.ALWAYS);
     setupListeners() ;
     this.setContent(hbox);
-    
-    
   }
   
+  public void loadTangoDirectory(String path)
+  {
+    try
+    {
+      trackLoader.process(path, false, true);
+      tangoTable.reloadData();
+    } catch (Exception ex) {ex.printStackTrace();}
+  }
+  
+  public void loadTangoFile(String path)
+  {
+    try
+    {
+      trackLoader.process(path, true, true);
+      tangoTable.reloadData();
+    } catch (Exception ex) {ex.printStackTrace();}
+  }
+  
+  public void loadCleanupFile(String path)
+  {
+    try
+    {
+      trackLoader.process(path, true, false);
+      cleanupTable.reloadData();
+    } catch (Exception ex) {ex.printStackTrace();}
+  }
   
   private void addTableListeners()
   {
-    // MOUSE TABLE ROW SELECTION
-    tangoTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
-    {
-      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
-      {
-        TangoTrack tangoTrack = (TangoTrack)newValue;
-        if (tangoTrack!=null)
-        {
-          player.setTrack(tangoTrack.getPathHash(), Player.PLAYLIST_BUILD_TANGO_TABLE);
-        }
-      }
-    });
     
-    // MOUSE TABLE ROW SELECTION
-    cleanupTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
-    {
-      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
-      {
-        CleanupTrack cleanupTrack = (CleanupTrack)newValue;
-        if (cleanupTrack!=null)
-        {
-          player.setTrack(cleanupTrack.getPathHash(), Player.PLAYLIST_BUILD_CLEANUP_TABLE);
-        }
-      }
-    });
   }
   
   
   
   
-  public void removeAllTracksTable()
+  /*
+  public void removeTangoTable()
   {
     vbox.getChildren().remove(tangoTable);
   }
   
-  public void addAllTracksTable()
+  public void addTangoTable()
   {
      vbox.getChildren().add(tangoTable);
   }
@@ -131,7 +140,7 @@ public class PlaylistBuilderTab extends Tab
   {
     return tangoTable;
   }
-  
+  */
   private Button getTestButton()
   {
     Button testButton = new Button("Test"); 
@@ -197,14 +206,23 @@ public class PlaylistBuilderTab extends Tab
           if (selectedStr.contains("tango")) 
           {
             vbox.getChildren().remove(cleanupTable);
+            vbox.getChildren().remove(cortinaTable);
             vbox.getChildren().add(tangoTable);
             savedType=0;
           }
           else if (selectedStr.contains("cleanup")) 
           {
             vbox.getChildren().remove(tangoTable);
+            vbox.getChildren().remove(cortinaTable);
             vbox.getChildren().add(cleanupTable);
             savedType=1;
+          }
+          else if (selectedStr.contains("cortina")) 
+          {
+            vbox.getChildren().remove(tangoTable);
+            vbox.getChildren().remove(cleanupTable);
+            vbox.getChildren().add(cortinaTable);
+            savedType=2;
           }
         }                
       }
@@ -214,6 +232,44 @@ public class PlaylistBuilderTab extends Tab
    
   private void setupListeners() 
   {
+    // MOUSE TANGO TABLE ROW SELECTION
+    tangoTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+        TangoTrack tangoTrack = (TangoTrack)newValue;
+        if (tangoTrack!=null)
+        {
+          player.setTrack(tangoTrack.getPathHash(), Player.PLAYLIST_BUILD_TANGO_TABLE);
+        }
+      }
+    });
+    
+    // MOUSE CLEANUP TABLE ROW SELECTION
+    cleanupTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+        CleanupTrack cleanupTrack = (CleanupTrack)newValue;
+        if (cleanupTrack!=null)
+        {
+          player.setTrack(cleanupTrack.getPathHash(), Player.PLAYLIST_BUILD_CLEANUP_TABLE);
+        }
+      }
+    });
+    
+    // MOUSE CORTINA TABLE ROW SELECTION
+    cortinaTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+        CortinaTrack cortinaTrack = (CortinaTrack)newValue;
+        if (cortinaTrack!=null)
+        {
+          player.setTrack(cortinaTrack.getPathHash(), Player.PLAYLIST_BUILD_CORTINA_TABLE);
+        }
+      }
+    });
     
     // TANGO TABLE LISTENER
     ChangeListener tangoTableListener = new ChangeListener() 
@@ -277,6 +333,37 @@ public class PlaylistBuilderTab extends Tab
       }
     };   
     cleanupTable.getAction().addListener(cleanupTableListener);
+    
+    // CORTINA TABLE LISTENER
+    ChangeListener cortinaTableListener = new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+        if (!"nada".equals(newValue))
+        {
+          int row = cortinaTable.getTableIndex();
+          String action=cortinaTable.getAction().get();
+          CortinaTrack cortinaTrack = cortinaTable.getItems().get(row);
+        
+        System.out.println("cortinaTable Action: "
+            + action+" row: "
+                  +row+" "+cortinaTrack.getTitle());
+        
+        
+        if ("addToPlaylist".equals(action))
+        {
+          if (playlist.getTandaCount()>0)
+          {  
+           // TandaTreeItem tandaTreeItem = playlist.getSelectedTanda();
+           // tandaTreeItem.addTrack(cortinaTrack.getPathHash());
+          }
+        }
+        
+        cortinaTable.getAction().set("nada");
+        }
+      }
+    };   
+    cortinaTable.getAction().addListener(cortinaTableListener);
   }
 
 

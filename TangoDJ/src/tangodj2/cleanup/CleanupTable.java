@@ -25,20 +25,15 @@ import tangodj2.PlaylistTree.TandaTreeItem;
 public class CleanupTable extends TableView<CleanupTrack>
 {
   private SimpleStringProperty action = new SimpleStringProperty("nada");
-  private CleanupTable cleanupTable;
+  private CleanupTable cleanupTable=this;
   private int tableIndex=-1;
   
   public final static ObservableList<CleanupTrack> cleanupTracksData = FXCollections.observableArrayList();
 	 
   public CleanupTable()
   {
-	  cleanupTable=this;
-	 
-	 
 	  Db.loadCleanupTracks(cleanupTracksData);
 	  setupTable();
-	  System.out.println("CleanupTable - tracks loaded: "+cleanupTracksData.size());
-	 
   }
   
   public void reloadData()

@@ -43,7 +43,7 @@ public class TrackLoader2
   private static Hasher hasher = new Hasher();
   private static List<TrackMeta> trackInfo = new ArrayList<TrackMeta>();
   public boolean isTango=true;
-  //TangoTable tangoTable;
+  TangoTable tangoTable;
   CleanupTable cleanupTable;
 	
   public TrackLoader2()
@@ -62,19 +62,19 @@ public class TrackLoader2
 	    if (metaLoaded()) 
 	    {
 	      timeline.stop();
-		  System.out.println("timeline stopped. Cycles: "+timelineCycles);
-		 // listTrackInfo();
-		  sqlReadyTrackInfo();
-		  insertRecords();
-		  if (isTango) {}
-		  else cleanupTable.reloadData();
-		}
-		if (seconds>=30) 
-		{
-		  timeline.stop();
-		  System.out.println("ERROR: timeline stopped. Cycles: "+timelineCycles);
-		  listTrackInfo();
-		}
+		    System.out.println("timeline stopped. Cycles: "+timelineCycles);
+		    // listTrackInfo();
+		    sqlReadyTrackInfo();
+		    insertRecords();
+		    if (isTango) { tangoTable.reloadData(); }
+		    else cleanupTable.reloadData();
+		  }
+		  if (seconds>=30) 
+		  {
+		    timeline.stop();
+		    System.out.println("ERROR: timeline stopped. Cycles: "+timelineCycles);
+		    listTrackInfo();
+		  }
 	  }});
 			      
 	  timeline.getKeyFrames().add(keyFrame);
@@ -107,28 +107,28 @@ public class TrackLoader2
     }
     else
     {
-	  FileVisitor<Path> fileProcessor = new ProcessFile();
-	  Files.walkFileTree(Paths.get(inPath), fileProcessor);
+	    FileVisitor<Path> fileProcessor = new ProcessFile();
+	    Files.walkFileTree(Paths.get(inPath), fileProcessor);
     }	      
-	if (errors==0) System.out.println(" No Errors\n");
-		      else System.out.println(errors+" Errors\n");
+	  if (errors==0) System.out.println(" No Errors\n");
+		else System.out.println(errors+" Errors\n");
 	   
-	getMetaData();
-	timelineCycles=0;
-	timeline.playFromStart();
+	  getMetaData();
+	  timelineCycles=0;
+	  timeline.playFromStart();
   }
 	 
   
   void getMetaData()
   {
     TrackMeta trackMeta;
-	int counter=0;
-	Iterator<TrackMeta> it = trackInfo.iterator();
-	String tStr;
-	while(it.hasNext())
-	{
-	  trackMeta=it.next();
-	  new MediaMetaGetter(trackMeta);
+	  int counter=0;
+	  Iterator<TrackMeta> it = trackInfo.iterator();
+	  String tStr;
+	  while(it.hasNext())
+	  {
+	    trackMeta=it.next();
+	    new MediaMetaGetter(trackMeta);
     }
   }
   
@@ -166,6 +166,7 @@ public class TrackLoader2
 		 trackMeta.album    = sqlReadyString(trackMeta.album);
 		 trackMeta.comment  = sqlReadyString(trackMeta.comment);
 		 trackMeta.path     = sqlReadyString(trackMeta.path);
+		 trackMeta.genre     = sqlReadyString(trackMeta.genre);
 		 //trackMeta.path = new File(trackMeta.path).toURI().toString();
 		 trackMeta.track_year     = sqlReadyString(trackMeta.track_year);
 	  }
@@ -301,7 +302,10 @@ public class TrackLoader2
       return FileVisitResult.CONTINUE;
     }
 
-    
+    public void setTangoTable(TangoTable tangoTable)
+    {
+      this.tangoTable = tangoTable;
+    }
     
     public void setCleanupTable(CleanupTable cleanupTable)
     {
