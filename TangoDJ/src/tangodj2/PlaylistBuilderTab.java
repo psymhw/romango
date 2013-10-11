@@ -354,8 +354,8 @@ public class PlaylistBuilderTab extends Tab
         {
           if (playlist.getTandaCount()>0)
           {  
-           // TandaTreeItem tandaTreeItem = playlist.getSelectedTanda();
-           // tandaTreeItem.addTrack(cortinaTrack.getPathHash());
+            TandaTreeItem tandaTreeItem = playlist.getSelectedTanda();
+            tandaTreeItem.addCortina(cortinaTrack);
           }
         }
         
