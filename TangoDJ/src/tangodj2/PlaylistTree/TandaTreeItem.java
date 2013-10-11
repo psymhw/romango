@@ -9,6 +9,7 @@ import javafx.scene.image.ImageView;
 
 import tangodj2.Db;
 import tangodj2.SharedValues;
+import tangodj2.cortina.CortinaTrack;
 
 public class TandaTreeItem extends BaseTreeItem
 {
@@ -119,6 +120,21 @@ public class TandaTreeItem extends BaseTreeItem
   	//numberOfTracks++;
     }
     
+  public void addCortina(CortinaTrack cortinaTrack)
+  {
+    if (cortinaTrack==null) return;  
+  	cortinaId=cortinaTrack.getId();
+  	CortinaTreeItem cti = new CortinaTreeItem(cortinaTrack);
+  	getChildren().add(cti);
+  	setExpanded(true);
+  	try 
+  	{
+  	  Db.updateTandaTracks(this);
+  	} catch (ClassNotFoundException | SQLException e) {	e.printStackTrace();}
+  	//numberOfTracks++;
+    }
+    
+  
   public void loadTrack(String trackHash)
   {
   	if (trackHash==null) return;  

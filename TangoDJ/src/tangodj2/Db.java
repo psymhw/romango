@@ -408,6 +408,7 @@ public class Db
 		   sql.append(trackName+" = null, ");
 	   }
 	   sql.append(" position = "+position);
+	   sql.append(", cortinaId = "+tandaTreeItem.getCortinaId());
 	   
 	   sql.append(" where id = "+tandaTreeItem.getDbId());
 	//   System.out.println(sql);
