@@ -304,6 +304,9 @@ public class Playlist
 			            +selectedTanda+"/"+SharedValues.selectedPlaylistTrack+" - "
 					   + newItem.getValue()); 
 			 }
+			  
+			 
+			 
 		   }
 						
 		   public void handle(ActionEvent event) 
