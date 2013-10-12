@@ -185,7 +185,7 @@ public class Db
       if (resultSet!=null) resultSet.close();
       if (statement!=null) statement.close();
       disconnect();
-      System.out.println("Cortina Data: "+cortinaTracksData.size());
+      //System.out.println("Cortina Data: "+cortinaTracksData.size());
       } catch (Exception e) { e.printStackTrace();}
     }
 	
@@ -358,16 +358,21 @@ public class Db
       while (resultSet.next())
       {
     	  tandaTreeItem = new TandaTreeItem(resultSet.getString("artist"), resultSet.getInt("styleId"));
-    	  int id = resultSet.getInt("id"); 
-    	  tandaTreeItem.setDbId(id);
+    	 // int id = resultSet.getInt("id"); 
+    	  tandaTreeItem.setDbId(resultSet.getInt("id"));
+    	  tandaTreeItem.setCortinaId(resultSet.getInt("cortinaId"));
+    	  // GET THE TRACKS 
+    	  // TODO distinguish cleanup tracks
     	  for(int i=0; i<10; i++)
     	  {
-    		String trackName="trackHash_"+i;
-    		
-    		String trackHash=resultSet.getString(trackName);
+    	 	  String trackName="trackHash_"+i;
+    		  String trackHash=resultSet.getString(trackName);
     		//System.out.println("Db - trackHash Found: "+i+" - "+trackHash);
-    		if (trackHash!=null) tandaTreeItem.loadTrack(trackHash);
+    		  if (trackHash!=null) tandaTreeItem.loadTrack(trackHash);
     	  }
+    	  
+    	  // GET THE CORTINA
+    	  tandaTreeItem.loadCortina(tandaTreeItem.getCortinaId());
     	//  tandaTreeItem.setCortinaHashCode(resultSet.getString("cortinaHash"));
     	//  tandaTreeItem.setCortinaStart(resultSet.getInt("cortinaStart"));
     	//  tandaTreeItem.setCortinaStop(resultSet.getInt("cortinaStop"));
@@ -411,7 +416,7 @@ public class Db
 	   sql.append(", cortinaId = "+tandaTreeItem.getCortinaId());
 	   
 	   sql.append(" where id = "+tandaTreeItem.getDbId());
-	//   System.out.println(sql);
+	  System.out.println(sql);
 	   
 	   connect();
 	   connection.createStatement().execute(sql.toString());

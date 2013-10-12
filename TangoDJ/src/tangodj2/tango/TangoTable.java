@@ -40,7 +40,7 @@ public class TangoTable extends TableView<TangoTrack>
 	 
 	  Db.loadTangoTracks(tangoTracksData);
 	  setupTable();
-	  System.out.println("TangoTable - tracks loaded: "+tangoTracksData.size());
+	  //System.out.println("TangoTable - tracks loaded: "+tangoTracksData.size());
 	  /*
 	  if (SharedValues.allTracksData.size()>0)
 	  {

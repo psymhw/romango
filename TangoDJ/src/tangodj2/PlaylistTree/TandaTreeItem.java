@@ -145,6 +145,22 @@ public class TandaTreeItem extends BaseTreeItem
 	//numberOfTracks++;
   }
   
+  public void loadCortina(int cortinaId)
+  {
+    System.out.println("TandaTreeItem - loadCortinaTrack: "+cortinaId);
+    if (cortinaId==-1) return;  
+    CortinaTrack cortinaTrack = Db.getCortinaTrack(cortinaId);
+    if (cortinaTrack==null)
+    {
+      System.out.println("TandaTreeItem - cortinaTrack is null");
+      return;
+    }
+    CortinaTreeItem cti = new CortinaTreeItem(cortinaTrack);
+    getChildren().add(cti);
+    setExpanded(true);
+  //numberOfTracks++;
+  }
+  
   public int getTrackPosition(BaseTreeItem bti)
   {
 	 TrackTreeItem tti= (TrackTreeItem) bti; 
