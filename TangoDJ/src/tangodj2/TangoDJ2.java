@@ -27,6 +27,11 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 /*
  * TODO export playlist?
+ * MP3 Tagtools
+ * CDEX
+ * Get rating from iTunes XML file?
+ * Create a tangoGenre MP3tag and populate when making tandas?
+ * Remember file locations for adding files
  */
 public class TangoDJ2 extends Application 
 {
@@ -91,12 +96,12 @@ public class TangoDJ2 extends Application
       {
         if (mostRecentlySelectedTab.equals(cortinaTab))
         {
-          player.setMode(Player.CORTINA_CREATE);
+          player.setFeaturesMode(Player.CORTINA_CREATE);
         }
         if (mostRecentlySelectedTab.equals(playlistBuilderTab))
         {
         
-          player.setMode(Player.PLAYLIST_CREATE);
+          player.setFeaturesMode(Player.PLAYLIST_CREATE);
         }
       }
     });

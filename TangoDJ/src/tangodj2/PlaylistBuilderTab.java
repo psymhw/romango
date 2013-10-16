@@ -240,7 +240,10 @@ public class PlaylistBuilderTab extends Tab
         TangoTrack tangoTrack = (TangoTrack)newValue;
         if (tangoTrack!=null)
         {
-          player.setTrack(tangoTrack.getPathHash(), Player.PLAYLIST_BUILD_TANGO_TABLE);
+          player.setPlayMode(Player.PLAYMODE_SINGLE_TRACK);
+          player.setCurrentTrackHash(tangoTrack.getPathHash());
+          player.setCurrentTrackTitle(tangoTrack.getTitle());
+         // player.setTrack(tangoTrack.getPathHash(), Player.PLAYLIST_BUILD_TANGO_TABLE);
         }
       }
     });
@@ -253,7 +256,10 @@ public class PlaylistBuilderTab extends Tab
         CleanupTrack cleanupTrack = (CleanupTrack)newValue;
         if (cleanupTrack!=null)
         {
-          player.setTrack(cleanupTrack.getPathHash(), Player.PLAYLIST_BUILD_CLEANUP_TABLE);
+          player.setPlayMode(Player.PLAYMODE_SINGLE_TRACK);
+          player.setCurrentTrackHash(cleanupTrack.getPathHash());
+          player.setCurrentTrackTitle(cleanupTrack.getTitle());
+          //player.setTrack(cleanupTrack.getPathHash(), Player.PLAYLIST_BUILD_CLEANUP_TABLE);
         }
       }
     });
@@ -266,7 +272,9 @@ public class PlaylistBuilderTab extends Tab
         CortinaTrack cortinaTrack = (CortinaTrack)newValue;
         if (cortinaTrack!=null)
         {
-          player.setTrack(cortinaTrack.getPathHash(), Player.PLAYLIST_BUILD_CORTINA_TABLE);
+          player.setPlayMode(Player.CORTINA_SINGLE_TRACK);
+          player.setCurrentCortinaId(cortinaTrack.getId());
+          player.setCurrentTrackTitle(cortinaTrack.getTitle());   
         }
       }
     });
@@ -282,12 +290,12 @@ public class PlaylistBuilderTab extends Tab
           String action=tangoTable.getAction().get();
           TangoTrack tangoTrack = tangoTable.getItems().get(row);
         
-        System.out.println("tangoTable Action: "
+        System.out.println("PlaylistBuilderTab - tangoTable Action: "
             + action+" row: "
                   +row+" "+tangoTrack.getTitle());
         
         
-        if ("addToPlaylist".equals(action))
+        if ("addToTanda".equals(action))
         {
           if (playlist.getTandaCount()>0)
           {  
@@ -318,7 +326,7 @@ public class PlaylistBuilderTab extends Tab
                   +row+" "+cleanupTrack.getTitle());
         
         
-        if ("addToPlaylist".equals(action))
+        if ("addToTanda".equals(action))
         {
           if (playlist.getTandaCount()>0)
           {  
@@ -350,7 +358,7 @@ public class PlaylistBuilderTab extends Tab
                   +row+" "+cortinaTrack.getTitle());
         
         
-        if ("addToPlaylist".equals(action))
+        if ("addToTanda".equals(action))
         {
           if (playlist.getTandaCount()>0)
           {  
@@ -364,10 +372,24 @@ public class PlaylistBuilderTab extends Tab
       }
     };   
     cortinaTable.getAction().addListener(cortinaTableListener);
+    
+    
+    // PLAYLIST FOCUS LISTENER
+    ChangeListener playlistFocusListener = new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+        player.setPlayMode(Player.PLAYMODE_PLAYLIST);
+        player.setFeaturesMode(Player.PLAYLIST);
+      }
+    };   
+    playlist.playlistFocus.addListener(playlistFocusListener);
+    
   }
 
 
-public TangoTable getTangoTable() {
+public TangoTable getTangoTable() 
+{
 	return tangoTable;
 }
   

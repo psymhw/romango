@@ -111,7 +111,13 @@ public class TandaTreeItem extends BaseTreeItem
     if (trackHash==null) return;  
   	trackHashCodes.add(trackHash);
   	TrackTreeItem tti = new TrackTreeItem(trackHash, trackHashCodes.size());
-  	getChildren().add(tti);
+  	int numberOfTracks=getChildren().size();
+  	System.out.println("TandaTreeItem - size: "+numberOfTracks);
+  	if (cortinaId!=-1)
+  	{
+  	  getChildren().add(numberOfTracks-1, tti);
+  	}
+  	else getChildren().add(tti);
   	setExpanded(true);
   	try 
   	{
@@ -123,7 +129,13 @@ public class TandaTreeItem extends BaseTreeItem
   public void addCortina(CortinaTrack cortinaTrack)
   {
     if (cortinaTrack==null) return;  
-  	cortinaId=cortinaTrack.getId();
+    if (cortinaTrack.getId()!=-1) 
+    {
+      System.out.println("TandaTreeItem - CortinaId not -1");
+      return;  // can't overwrite. must delete and re-add
+    }
+      cortinaId=cortinaTrack.getId();
+  	
   	CortinaTreeItem cti = new CortinaTreeItem(cortinaTrack);
   	getChildren().add(cti);
   	setExpanded(true);
@@ -147,12 +159,12 @@ public class TandaTreeItem extends BaseTreeItem
   
   public void loadCortina(int cortinaId)
   {
-    System.out.println("TandaTreeItem - loadCortinaTrack: "+cortinaId);
+    //System.out.println("TandaTreeItem - loadCortinaTrack: "+cortinaId);
     if (cortinaId==-1) return;  
     CortinaTrack cortinaTrack = Db.getCortinaTrack(cortinaId);
     if (cortinaTrack==null)
     {
-      System.out.println("TandaTreeItem - cortinaTrack is null");
+      //System.out.println("TandaTreeItem - cortinaTrack is null");
       return;
     }
     CortinaTreeItem cti = new CortinaTreeItem(cortinaTrack);

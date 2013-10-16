@@ -61,7 +61,8 @@ public class CortinaTable extends TableView<CortinaTrack>
         super.updateItem(item, empty);
         if(item != null) 
         { 
-          this.setStyle("-fx-background-color:rgba(219, 42, 199,.41);");
+         // this.setStyle("-fx-background-color:rgba(219, 42, 199,.41);");
+          this.getStyleClass().add("cortinaTableText");
           // see http://rgba.it/
          // this.setTextFill(Color.web("#0076a3"));
           
@@ -77,7 +78,7 @@ public class CortinaTable extends TableView<CortinaTrack>
     
     private ContextMenu setupContextMenu()
     {
-      MenuItem addToPlaylist = new MenuItem("Add To Playlist"); 
+      MenuItem addToTanda = new MenuItem("Add To Tanda"); 
       MenuItem edit = new MenuItem("Edit");
       MenuItem play = new MenuItem("Play" );
       MenuItem delete = new MenuItem("Delete" );
@@ -91,9 +92,9 @@ public class CortinaTable extends TableView<CortinaTrack>
         }
       });
       
-      tandaContextMenu.getItems().addAll(addToPlaylist, edit, play);
-      addToPlaylist.setOnAction(new EventHandler() 
-        { public void handle(Event t) { action.set("addToPlaylist"); }});
+      tandaContextMenu.getItems().addAll(addToTanda, edit, play);
+      addToTanda.setOnAction(new EventHandler() 
+        { public void handle(Event t) { action.set("addToTanda"); }});
       edit.setOnAction(new EventHandler() 
         { public void handle(Event t) { action.set("edit"); } });
       play.setOnAction(new EventHandler() 

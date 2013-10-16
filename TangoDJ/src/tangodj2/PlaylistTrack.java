@@ -1,5 +1,7 @@
 package tangodj2;
 
+import tangodj2.PlaylistTree.BaseTreeItem;
+import tangodj2.PlaylistTree.CortinaTreeItem;
 import tangodj2.PlaylistTree.TrackTreeItem;
 
 public class PlaylistTrack
@@ -13,8 +15,17 @@ public class PlaylistTrack
    public int tandaNumber;
    public int trackInTanda=0;
    public int numberOfTracksInTanda;
-   public TrackTreeItem trackTreeItem;
+   public BaseTreeItem baseTreeItem;
+   //CortinaTreeItem cortinaTreeItem;
    public String trackHash;
    
    public boolean cortina=false;
+   
+   public int fadein;
+   public int fadeout;
+   public int delay;
+   public int original_duration;
+   public int startValue;
+   public int stopValue;
+   public boolean playing=false;
 }

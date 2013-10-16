@@ -67,7 +67,11 @@ public class CleanupTable extends TableView<CleanupTrack>
       protected void updateItem(Object item, boolean empty) 
       {
         super.updateItem(item, empty);
-        if(item != null) { setText(item.toString()); }
+        if(item != null) 
+        { 
+          this.getStyleClass().add("cleanupTableText");
+          setText(item.toString()); 
+        }
       }};
           
       cell.setContextMenu(contextMenu);
@@ -78,7 +82,7 @@ public class CleanupTable extends TableView<CleanupTrack>
     
     private ContextMenu setupContextMenu()
     {
-      MenuItem addToPlaylist = new MenuItem("Add To Playlist"); 
+      MenuItem addToTanda = new MenuItem("Add To Tanda"); 
       MenuItem edit = new MenuItem("Edit");
       MenuItem play = new MenuItem("Play" );
       MenuItem delete = new MenuItem("Delete" );
@@ -92,9 +96,9 @@ public class CleanupTable extends TableView<CleanupTrack>
         }
       });
       
-      tandaContextMenu.getItems().addAll(addToPlaylist, edit, play);
-      addToPlaylist.setOnAction(new EventHandler() 
-        { public void handle(Event t) { action.set("addToPlaylist"); }});
+      tandaContextMenu.getItems().addAll(addToTanda, edit, play);
+      addToTanda.setOnAction(new EventHandler() 
+        { public void handle(Event t) { action.set("addToTanda"); }});
       edit.setOnAction(new EventHandler() 
         { public void handle(Event t) { action.set("edit"); } });
       play.setOnAction(new EventHandler() 
