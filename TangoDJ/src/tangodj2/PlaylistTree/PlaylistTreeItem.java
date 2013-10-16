@@ -71,7 +71,7 @@ public class PlaylistTreeItem  extends BaseTreeItem
 
   public void moveTandaUp(int index)
   {
-	System.out.println(" SharedValues.selectedTanda: "+SharedValues.selectedTanda);
+	//System.out.println(" SharedValues.selectedTanda: "+SharedValues.selectedTanda);
 	TandaTreeItem tti =  (TandaTreeItem)getChildren().get(index);
 	getChildren().remove(index);
 	getChildren().add(index-1, tti);

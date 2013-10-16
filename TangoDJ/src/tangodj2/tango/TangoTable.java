@@ -117,7 +117,7 @@ public class TangoTable extends TableView<TangoTrack>
     
     private ContextMenu setupContextMenu()
     {
-      MenuItem addToPlaylist = new MenuItem("Add To Playlist"); 
+      MenuItem addToTanda = new MenuItem("Add To Tanda"); 
       MenuItem edit = new MenuItem("Edit");
       MenuItem play = new MenuItem("Play" );
       MenuItem delete = new MenuItem("Delete" );
@@ -131,9 +131,9 @@ public class TangoTable extends TableView<TangoTrack>
         }
       });
       
-      tandaContextMenu.getItems().addAll(addToPlaylist, edit, play);
-      addToPlaylist.setOnAction(new EventHandler() 
-        { public void handle(Event t) { action.set("addToPlaylist"); }});
+      tandaContextMenu.getItems().addAll(addToTanda, edit, play);
+      addToTanda.setOnAction(new EventHandler() 
+        { public void handle(Event t) { action.set("addToTanda"); }});
       edit.setOnAction(new EventHandler() 
         { public void handle(Event t) { action.set("edit"); } });
       play.setOnAction(new EventHandler() 

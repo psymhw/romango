@@ -64,7 +64,7 @@ public class CortinaTab extends Tab
   
   private void setupListener()
   {
- // MOUSE TABLE ROW SELECTION
+ // MOUSE CLEANUP TABLE ROW SELECTION
     cleanupTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
     {
       public void changed(ObservableValue observable, Object oldValue, Object newValue) 
@@ -72,12 +72,15 @@ public class CortinaTab extends Tab
         CleanupTrack selectedTrack = (CleanupTrack)newValue;
         if (selectedTrack!=null)
         {
-          player.setTrack(selectedTrack.getPathHash(), Player.CORTINA_CREATE_CLEANUP_TABLE);
+          player.setPlayMode(Player.PLAYMODE_SINGLE_TRACK);
+          player.setCurrentTrackHash(selectedTrack.getPathHash());
+          player.setCurrentTrackTitle(selectedTrack.getTitle());
+
         }
       }
     });
     
- // MOUSE TABLE ROW SELECTION
+ // MOUSE CORTINA TABLE ROW SELECTION
     cortinaTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
     {
       public void changed(ObservableValue observable, Object oldValue, Object newValue) 
@@ -85,8 +88,10 @@ public class CortinaTab extends Tab
         CortinaTrack cortinaTrack = (CortinaTrack)newValue;
         if (cortinaTrack!=null)
         {
-          player.setTrack(cortinaTrack.getPathHash(), Player.CORTINA_CREATE_CORTINA_TABLE, cortinaTrack);
-        }
+          player.setPlayMode(Player.CORTINA_SINGLE_TRACK);
+          player.setCurrentCortinaId(cortinaTrack.getId());
+          player.setCurrentTrackTitle(cortinaTrack.getTitle());        
+          }
       }
     });
   }

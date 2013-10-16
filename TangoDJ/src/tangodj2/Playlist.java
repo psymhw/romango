@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -32,6 +33,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import tangodj2.PlaylistTree.BaseTreeItem;
+import tangodj2.PlaylistTree.CortinaTreeItem;
 import tangodj2.PlaylistTree.PlaylistTreeItem;
 import tangodj2.PlaylistTree.TandaTreeItem;
 import tangodj2.PlaylistTree.TrackTreeItem;
@@ -40,18 +42,23 @@ public class Playlist
 {
 	private PlaylistTreeItem playlistTreeItem;
 	private TreeView<String> treeView;
-	private TrackTreeItem previouslyPlayingTrack=null;
-	private TrackTreeItem previouslySelectedTrack=null;
-  private int nextTrackIndex=0; 
-  private int nowPlayingIndex=-1;
+	private PlaylistTrack previouslyPlayingTrack=null;
+	private PlaylistTrack previouslySelectedTrack=null;
+  private int nextTrack=0; 
+  private int playingTrack=0;
+  private int selectedPlaylistTrack=0;
 	private ArrayList<PlaylistTrack> flatPlaylistTracks =  new ArrayList<PlaylistTrack>();
 	private int selectedTanda=-1;
+	private int numberOfTandas=-1;
+	public static SimpleIntegerProperty playlistFocus = new SimpleIntegerProperty(0);
 	
 	
 	public Playlist() throws SQLException, ClassNotFoundException
 	{
     //thisPlaylist=this;
 	  setupTreeView();	
+	  setNextTrackToPlay();
+	  //setNextTrackToPlay(0,0);
 	}
 	
 	public void printTracks()
@@ -67,6 +74,19 @@ public class Playlist
 	  }
 	}
 	
+	public void stopPlaying()
+	{
+	  if (flatPlaylistTracks.size()==0) return;
+	  flatPlaylistTracks.get(playingTrack).baseTreeItem.setNextPlayImage(false);
+	  flatPlaylistTracks.get(playingTrack).baseTreeItem.setNextPlayImage(true);
+	}
+	
+	public PlaylistTrack getTrack(int trackNo)
+  {
+	  return flatPlaylistTracks.get(trackNo);
+  }
+	
+	/*
 	public PlaylistTrack getNextTrack()
 	{
 	  if (nextTrackIndex==flatPlaylistTracks.size()) 
@@ -76,21 +96,42 @@ public class Playlist
 	  }
 	  nowPlayingIndex=nextTrackIndex;
 	  PlaylistTrack playlistTrack=flatPlaylistTracks.get(nextTrackIndex);
-	  playlistTrack.trackTreeItem.setPlayingImage(true);
+	    playlistTrack.baseTreeItem.setPlayingImage(true);
+	    previouslyPlayingTrack=playlistTrack.baseTreeItem;
 	  if (previouslyPlayingTrack!=null) previouslyPlayingTrack.setPlayingImage(false);
-	  previouslyPlayingTrack=playlistTrack.trackTreeItem;
 	  nextTrackIndex++;
 	  return playlistTrack;
 	}
+	*/
 	
 	public void setPrevious()
   {
-	  nextTrackIndex-=2;
-	  if (nextTrackIndex<0) nextTrackIndex=0;
+	  nextTrack-=2;
+	  if (nextTrack<0) nextTrack=0;
   }
 	
-	public void setNextTrackToPlay(int tanda, int trackInTanda)
+	
+	public void setNextTrackToPlay()
 	{
+	  //System.out.println("Playlist - nextTrackToPlay: "+tanda+"/"+trackInTanda);
+	  
+	  if (selectedPlaylistTrack==-1) return;
+	  if (flatPlaylistTracks==null) return;
+	  if (flatPlaylistTracks.size()==0) return;
+	  PlaylistTrack playlistTrack = flatPlaylistTracks.get(selectedPlaylistTrack);
+	  if (playlistTrack.baseTreeItem.getStatus()!=TrackTreeItem.PLAYING)
+    {  
+      playlistTrack.baseTreeItem.setNextPlayImage(true);
+      nextTrack=selectedPlaylistTrack;
+      if (previouslySelectedTrack!=null) 
+      {
+        if (!previouslySelectedTrack.playing)
+        previouslySelectedTrack.baseTreeItem.setNextPlayImage(false);
+      }
+        previouslySelectedTrack=playlistTrack;
+    }
+	  
+	  /*
 	  PlaylistTrack playlistTrack;
     Iterator<PlaylistTrack> it = flatPlaylistTracks.iterator();
     
@@ -100,19 +141,20 @@ public class Playlist
       playlistTrack = it.next();
       if ((playlistTrack.tandaNumber==tanda)&&(playlistTrack.trackInTanda==trackInTanda))
       {
-        if (playlistTrack.trackTreeItem.getStatus()!=TrackTreeItem.PLAYING)
+        if (playlistTrack.baseTreeItem.getStatus()!=TrackTreeItem.PLAYING)
         {  
-          playlistTrack.trackTreeItem.setNextPlayImage(true);
+          playlistTrack.baseTreeItem.setNextPlayImage(true);
           nextTrackIndex=index;
           if (previouslySelectedTrack!=null)  previouslySelectedTrack.setNextPlayImage(false);
-          previouslySelectedTrack=playlistTrack.trackTreeItem;
+          previouslySelectedTrack=playlistTrack.baseTreeItem;
         }
         break;
       }
       index++;
     }
-	  
+	  */
 	}
+	
 	
 	public void generateFlatList()
   {
@@ -123,11 +165,13 @@ public class Playlist
     int numberOfTracksInTanda=0;
     String tandaName=null;
     PlaylistTrack playlistTrack;
-    int numberOfTandas=0;
+    numberOfTandas=0;
+    int playableIndex=0;
     
-    PlaylistTreeItem playlistTreeItem=null;
-    TandaTreeItem tandaTreeItem=null;
-    TrackTreeItem trackTreeItem=null;
+   // PlaylistTreeItem playlistTreeItem=null;
+   // TandaTreeItem tandaTreeItem=null;
+   // TrackTreeItem trackTreeItem=null;
+   // CortinaTreeItem cortinaTreeItem=null;
     
     while( true)
     {
@@ -135,20 +179,24 @@ public class Playlist
       if (ti==null) break;
       if ("playlist".equals(ti.getTreeType()))
       {
-        playlistTreeItem = (PlaylistTreeItem)ti;
+        PlaylistTreeItem playlistTreeItem = (PlaylistTreeItem)ti;
+        playlistTreeItem.setPlayableIndex(0);
         numberOfTandas=playlistTreeItem.getChildren().size();
       }
       else if ("tanda".equals(ti.getTreeType()))
       {
         tandaTrackCounter=0;
         tandaCounter++;
-        tandaTreeItem = (TandaTreeItem)ti;
+        TandaTreeItem tandaTreeItem = (TandaTreeItem)ti;
         tandaName = tandaTreeItem.getArtistAndStyle();
         numberOfTracksInTanda=tandaTreeItem.getChildren().size();
+        tandaTreeItem.setPlayableIndex(playableIndex);
       }
-      else if ("track".equals(ti.getTreeType()))
+      else if ("tango".equals(ti.getTreeType())||"cleanup".equals(ti.getTreeType()))
       {
-        trackTreeItem = (TrackTreeItem)ti;
+        TrackTreeItem trackTreeItem = (TrackTreeItem)ti;
+        trackTreeItem.setPlayableIndex(playableIndex);
+        playableIndex++;
         playlistTrack = new PlaylistTrack();
         playlistTrack.title=trackTreeItem.getValue();
         playlistTrack.tandaName=tandaName;
@@ -163,16 +211,53 @@ public class Playlist
         playlistTrack.trackInTanda=tandaTrackCounter;
         playlistTrack.numberOfTracksInTanda=numberOfTracksInTanda;
         playlistTrack.cortina=false;
-        playlistTrack.trackTreeItem=trackTreeItem;
+        playlistTrack.baseTreeItem=trackTreeItem;
         playlistTrack.trackHash=trackTreeItem.getTrackHash();
         flatPlaylistTracks.add(playlistTrack);
         tandaTrackCounter++;
       }
+      else if ("cortina".equals(ti.getTreeType()))
+      {
+        CortinaTreeItem cortinaTreeItem = (CortinaTreeItem)ti;
+        cortinaTreeItem.setPlayableIndex(playableIndex);
+        playableIndex++;
+        playlistTrack = new PlaylistTrack();
+        playlistTrack.title=cortinaTreeItem.getValue();
+        playlistTrack.album = cortinaTreeItem.getCortinaTrack().getTrackMeta().album;
+        playlistTrack.tandaName=tandaName;
+        playlistTrack.path=cortinaTreeItem.getPath();
+        playlistTrack.tandaNumber=tandaCounter;
+        playlistTrack.cortina=true;
+        playlistTrack.baseTreeItem=cortinaTreeItem;
+        playlistTrack.trackHash=cortinaTreeItem.getCortinaTrack().getPathHash();
+        
+        playlistTrack.startValue =cortinaTreeItem.getCortinaTrack().getStartValue();
+        playlistTrack.stopValue  =cortinaTreeItem.getCortinaTrack().getStopValue();
+        playlistTrack.fadein     =cortinaTreeItem.getCortinaTrack().getFadein();
+        playlistTrack.fadeout    =cortinaTreeItem.getCortinaTrack().getFadeout();
+        playlistTrack.delay      =cortinaTreeItem.getCortinaTrack().getDelay();
+        playlistTrack.original_duration  =cortinaTreeItem.getCortinaTrack().getOriginal_duration();
+        
+        flatPlaylistTracks.add(playlistTrack);
+        // didn't set or increment tandaTrackCounter or set tandaCounter
+      }
       i++;
     }
     
-    /*
-    i=0;
+    BaseTreeItem  ti = (BaseTreeItem)treeView.getTreeItem(i-1);
+    if ("tanda".equals(ti.getTreeType()))
+    {
+      // if the last item in the tree is a tanda, there is no next track
+      ti.setPlayableIndex(999);
+    }
+    
+   printFlatList();
+  }
+	
+	public void printFlatList()
+	{
+	  int i=0;
+	  PlaylistTrack playlistTrack;
     Iterator<PlaylistTrack> it = flatPlaylistTracks.iterator();
     while(it.hasNext())
     {
@@ -187,8 +272,7 @@ public class Playlist
           );
       i++;
     }
-    */
-  }
+	}
 	
 	public TreeView<String> getTreeView()
 	{
@@ -254,80 +338,37 @@ public class Playlist
 		 /* 
 		  * Detect tree item selected
 		  */
-		 ChangeListener<TreeItem<String>> cl = new ChangeListener<TreeItem<String>>() 
+		 ChangeListener<TreeItem<String>> treeViewChangeListener = new ChangeListener<TreeItem<String>>() 
 		 {
 		   public void changed(ObservableValue<? extends TreeItem<String>> observableValue, TreeItem<String> oldItem, TreeItem<String> newItem) 
 		   {
-			 if (newItem!=null)
-			 {
-			  	 
-			   BaseTreeItem bti = (BaseTreeItem)newItem;
-			   //bti.setValue("TOAST");
+			   if (newItem!=null)
+			   {
+			     BaseTreeItem bti = (BaseTreeItem)newItem;
 			   
-			   //bti.setSelected(true);
-			   //bti.setValue("TOAST");
-        // BaseTreeItem bti2 = (BaseTreeItem)treeView.getSelectionModel().getSelectedItem();
-        // System.out.println("SELECTION INDEX: "+treeView.getSelectionModel().getSelectedIndex());
-        // System.out.println("SELECTION ITEM: "+bti2.getTreeType());
-			   
+			     selectedPlaylistTrack=-1;
+			     selectedPlaylistTrack=bti.getPlayableIndex();
+			     System.out.println("Playlist - selectedIndex: "+selectedPlaylistTrack);
+			     selectedTanda=getTandaNumber(selectedPlaylistTrack);
          
-         SharedValues.selectedPlaylistTrack=-1;
-         
-			   if ("tanda".equals(bti.getTreeType())) 
-			   {
-			     selectedTanda=playlistTreeItem.getTandaPosition((TandaTreeItem)bti);
-			   }
-			   else if ("track".equals(bti.getTreeType())) 
-			   {
-			     //if (previouslySelectedTrack!=null) previouslySelectedTrack.setPlayingImage(false);
-			     TrackTreeItem trackTreeItem = (TrackTreeItem)bti;
-				   TandaTreeItem parent = (TandaTreeItem)trackTreeItem.getParent();
-				   //trackTreeItem.setPlayingImage(true);
-				   //previouslySelectedTrack = trackTreeItem;
-				   //String tValue = bti.getValue();
-				   //bti.setValue("*"+tValue);
-				  // bti.setValue(tValue);
-				   SharedValues.selectedPlaylistTrack=parent.getTrackPosition(bti);
-
-				   int parentPos=-1;
-				   if (parent!=null) parentPos=playlistTreeItem.getTandaPosition((TandaTreeItem)parent);
-				   selectedTanda=parentPos;
-			   }
-			   else
-			   {
-				   selectedTanda=0; 
-			   }
-			  // treeView.getFocusModel().focus(SharedValues.selectedTanda+SharedValues.selectedPlaylistTrack+1);
-			   SharedValues.playlistFocus.set(SharedValues.playlistFocus.get()+1);
-			   //SharedValues.playlist=thisPlaylist;
-			   System.out.println("Tanda/Track: "
-			            +selectedTanda+"/"+SharedValues.selectedPlaylistTrack+" - "
-					   + newItem.getValue()); 
+			     playlistFocus.set(playlistFocus.get()+1);
+			     System.out.println("Tanda/Track: "+selectedTanda+"/"+selectedPlaylistTrack+" - "+ newItem.getValue()); 
 			 }
-			  
-			 
-			 
-		   }
-						
-		   public void handle(ActionEvent event) 
-		   {
-			 TreeItem selectedItem = getSelectedItem();
-	  	     if (selectedItem == null) 
-			 {
-			   System.out.println("Error: You have to select a item in the tree.");
-			   return;
-			 }
-		   }
-						
-		   private TreeItem<String> getSelectedItem() 
-		   {
-			 return (TreeItem<String>) treeView.getSelectionModel().getSelectedItem();
-		   }
-		 };
+		 }};
 							 
-		 treeView.getSelectionModel().selectedItemProperty().addListener(cl);
+		 treeView.getSelectionModel().selectedItemProperty().addListener(treeViewChangeListener);
 		 generateFlatList();
-	   }
+	 }
+  
+   private int getTandaNumber(int selectedPlaylistTrack)
+   {
+     if (selectedPlaylistTrack==999) return numberOfTandas-1;
+     if (selectedPlaylistTrack==-1) return 0;
+     PlaylistTrack playlistTrack = flatPlaylistTracks.get(selectedPlaylistTrack);
+     return playlistTrack.tandaNumber;
+   }
+     
+     
 			
 	   private final class MyCellFactory extends TreeCell<String> 
 	   {
@@ -377,7 +418,7 @@ public class Playlist
 	           setContextMenu(tandaContextMenu);
 	          // setGraphic(getTreeItem().getGraphic());
 	         }
-	         else if ("track".equals(bti.getTreeType()))
+	         else if ("tango".equals(bti.getTreeType()))
 	         {
 	           setFont(Font.font("Serif", 16));
 	           
@@ -396,6 +437,32 @@ public class Playlist
 	          // if (trackTreeItem.isSelected()) setGraphic(new ImageView(TrackTreeItem.greenCheckBallImage));
 	          // else setGraphic(new ImageView(TrackTreeItem.dimBallImage));
 	         }
+	         else if ("cortina".equals(bti.getTreeType()))
+           {
+	           this.getStyleClass().add("cortinaPlaylistText");
+            // setStyle("-fx-border-color:rgba(219, 42, 199,.41);");
+             CortinaTreeItem cortinaTreeItem = (CortinaTreeItem)bti;
+            
+            // int trackCount=((TandaTreeItem)cortinaTreeItem.getParent()).getTrackCount();
+            // System.out.println("Playlist - cortina track found: "+trackCount+" - "+cortinaTreeItem.getValue());
+             //int trackPosition=trackTreeItem.getTrackPosition(trackTreeItem);
+             
+            // if (trackPosition==0) trackContextMenu.getItems().get(0).setDisable(true);  // disable move up
+            // if (trackPosition==trackCount-1) trackContextMenu.getItems().get(1).setDisable(true); // disable move down
+             //Kludge alert
+           //  trackContextMenu.setId(trackTreeItem.getTandaAndTrackPosition(trackTreeItem));
+           //  setContextMenu(trackContextMenu);
+             //System.out.println("track update: "+trackTreeItem.getValue());
+             //trackTreeItem.setSelected(true);
+            // if (trackTreeItem.isSelected()) setGraphic(new ImageView(TrackTreeItem.greenCheckBallImage));
+            // else setGraphic(new ImageView(TrackTreeItem.dimBallImage));
+           }
+	         else if ("cleanup".equals(bti.getTreeType()))
+           {
+             this.getStyleClass().add("cleanupPlaylistText");
+             TrackTreeItem cleanupTreeItem = (TrackTreeItem)bti;
+             setContextMenu(trackContextMenu);
+           }
 	         setGraphic(getTreeItem().getGraphic());
 	       }
 	     }
@@ -415,7 +482,7 @@ public class Playlist
 	     {
 	       public void handle(Event e) 
 	       {
-	         selectedTanda= Integer.parseInt(tandaContextMenu.getId());
+	         //selectedTanda= Integer.parseInt(tandaContextMenu.getId());
 	       }
 	     });
 	     tandaContextMenu.getItems().addAll(moveUp, moveDown, delete);
@@ -480,6 +547,7 @@ public class Playlist
 	     {
 	       public void handle(Event e) 
 	       {
+	         /*
 	    	 String trackId = trackContextMenu.getId();  
 	    	 String[] tokens = trackId.split(",");
 	    	 
@@ -491,9 +559,10 @@ public class Playlist
 	    	   }
 	    	   if (i==1) 
 	    	   {
-	    	     SharedValues.selectedPlaylistTrack=Integer.parseInt(tokens[i]);
+	    	     selectedPlaylistTrack=Integer.parseInt(tokens[i]);
 	    	   }
 	       }
+	       */
        }
 	   });
 	   trackContextMenu.getItems().addAll(moveUp, moveDown, delete, playNext);
@@ -502,7 +571,8 @@ public class Playlist
      {
        public void handle(Event t) 
        {
-         setNextTrackToPlay(selectedTanda, SharedValues.selectedPlaylistTrack);
+        
+         setNextTrackToPlay();
         }
      });
 	   
@@ -511,7 +581,7 @@ public class Playlist
 	   {
 	     public void handle(Event t) 
 	     {
-	       playlistTreeItem.getTanda(selectedTanda).moveTrackUp(SharedValues.selectedPlaylistTrack);
+	       playlistTreeItem.getTanda(selectedTanda).moveTrackUp(selectedPlaylistTrack);
 	       generateFlatList();
 	     }
 	   });
@@ -520,7 +590,7 @@ public class Playlist
 	   {
 	     public void handle(Event t) 
 	     {
-	       playlistTreeItem.getTanda(selectedTanda).moveTrackDown(SharedValues.selectedPlaylistTrack);
+	       playlistTreeItem.getTanda(selectedTanda).moveTrackDown(selectedPlaylistTrack);
 	       generateFlatList();
 	     }
 	   });
@@ -529,7 +599,7 @@ public class Playlist
 	   {
 	     public void handle(Event t) 
 	     {
-	       playlistTreeItem.getTanda(selectedTanda).deleteTrack(SharedValues.selectedPlaylistTrack);
+	       playlistTreeItem.getTanda(selectedTanda).deleteTrack(selectedPlaylistTrack);
 	       generateFlatList();
 	     }
 	   });
@@ -627,6 +697,26 @@ public class Playlist
 	         myDialog.setScene(myDialogScene);
 	         myDialog.show();
 	   }
+
+    public int getNextTrack()
+    {
+      return nextTrack;
+    }
+
+    public void setNextTrack(int nextTrack)
+    {
+      this.nextTrack = nextTrack;
+    }
+
+    public int getPlayingTrack()
+    {
+      return playingTrack;
+    }
+
+    public void setPlayingTrack(int playingTrack)
+    {
+      this.playingTrack = playingTrack;
+    }
 
    
 	 

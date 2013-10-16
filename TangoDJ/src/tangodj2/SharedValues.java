@@ -12,18 +12,18 @@ import javafx.collections.ObservableList;
 
 public class SharedValues 
 {
-  public final static ObservableList<Track> allTracksData = FXCollections.observableArrayList();
-  public final static ObservableList<Cortina> cortinaTracksData = FXCollections.observableArrayList();
+  //public final static ObservableList<Track> allTracksData = FXCollections.observableArrayList();
+ // public final static ObservableList<Cortina> cortinaTracksData = FXCollections.observableArrayList();
   public static SimpleStringProperty title = new SimpleStringProperty();
   public static SimpleStringProperty selectedTangoPathHash = new SimpleStringProperty();
   public static SimpleStringProperty selectedCleanupPathHash = new SimpleStringProperty();
-  public static SimpleIntegerProperty playlistFocus = new SimpleIntegerProperty(0);
+  //public static SimpleIntegerProperty playlistFocus = new SimpleIntegerProperty(0);
  // public static Playlist playlist;
   public static String DRIVER ="org.apache.derby.jdbc.EmbeddedDriver";
   public static String JDBC_URL ="jdbc:derby:tango_db;create=false";
   public static int currentPlaylist = 1;
  // public static int selectedTanda = -1;
-  public static int selectedPlaylistTrack = -1;
+  //public static int selectedPlaylistTrack = -1;
   public static int allTracksType = 0;
   
   

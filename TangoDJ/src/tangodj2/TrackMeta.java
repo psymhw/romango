@@ -11,6 +11,7 @@ public class TrackMeta
   public String pathHash="";
   public String path;
   public String track_year="";
+  public int cleanup=0;
   
   public boolean metaComplete=false;
   

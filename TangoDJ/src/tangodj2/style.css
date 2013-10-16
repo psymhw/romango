@@ -69,6 +69,30 @@
   -fx-font-size: 14pt;
 }
 
+.cortinaPlaylistText {
+  -fx-text-fill: rgba(219, 42, 199,1);
+  -fx-font-size: 16pt;
+  
+}
+
+.cortinaTableText {
+  -fx-text-fill: rgba(219, 42, 199,1);
+  -fx-font-size: 12pt;
+  
+}
+
+.cleanupPlaylistText {
+  -fx-text-fill: rgba(42, 54, 246,1);
+  -fx-font-size: 16pt;
+  
+}
+
+.cleanupTableText {
+  -fx-text-fill: rgba(42, 54, 246,1);
+  -fx-font-size: 12pt;
+  
+}
+
 .eqLabel {
   -fx-padding: 2;
 }

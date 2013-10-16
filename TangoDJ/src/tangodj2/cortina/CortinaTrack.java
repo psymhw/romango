@@ -1,5 +1,6 @@
 package tangodj2.cortina;
 
+import tangodj2.TrackMeta;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.util.Duration;
 
@@ -17,6 +18,7 @@ public class CortinaTrack
   private int startValue;
   private int stopValue;
   private String pathHash;
+  private TrackMeta trackMeta = null;
   
   public CortinaTrack(int id, int start, int stop, int fadein, int fadeout, int delay, int original_duration, String title, String pathHash)
   {
@@ -153,5 +155,15 @@ public class CortinaTrack
   public int getOriginal_duration()
   {
     return original_duration;
+  }
+  
+  public TrackMeta getTrackMeta()
+  {
+    return trackMeta;
+  }
+
+  public void setTrackMeta(TrackMeta trackMeta)
+  {
+    this.trackMeta = trackMeta;
   }
 }
