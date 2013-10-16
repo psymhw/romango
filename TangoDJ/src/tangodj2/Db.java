@@ -308,7 +308,7 @@ public class Db
 	{
 		 connect();
 		 String sql="insert into tandas (artist, styleId, playlistId, position, cortinaId) values('"+sqlReadyString(artist)+"', "+styleId+","+SharedValues.currentPlaylist+", "+position+", -1)";
-		// System.out.println("sql: "+sql);
+		// System.out.println("Db insertTanda sql: "+sql);
 		 connection.createStatement().execute(sql);
 		 
 		 int maxid=0;
@@ -367,7 +367,7 @@ public class Db
     	  tandaTreeItem = new TandaTreeItem(resultSet.getString("artist"), resultSet.getInt("styleId"));
     	  tandaTreeItem.setDbId(resultSet.getInt("id"));
     	  tandaTreeItem.setCortinaId(resultSet.getInt("cortinaId"));
-    	 
+    	  //System.out.println("Db - getTandaTreeItems - cortinaId: "+tandaTreeItem.getCortinaId());
     	  // GET THE TRACKS 
     	  for(int i=0; i<10; i++)
     	  {
