@@ -251,7 +251,7 @@ public class Playlist
       ti.setPlayableIndex(999);
     }
     
-   printFlatList();
+    //printFlatList();
   }
 	
 	public void printFlatList()

@@ -129,7 +129,7 @@ public class TandaTreeItem extends BaseTreeItem
   public void addCortina(CortinaTrack cortinaTrack)
   {
     if (cortinaTrack==null) return;  
-    if (cortinaTrack.getId()!=-1) 
+    if (this.cortinaId!=-1) 
     {
       System.out.println("TandaTreeItem - CortinaId not -1");
       return;  // can't overwrite. must delete and re-add
