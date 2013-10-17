@@ -50,10 +50,13 @@ public class Player
     private Slider volumeSlider;
     private HBox mediaBar;
     private MediaPlayer mediaPlayer;
+    
     Button playButton=null;
-   Button stopButton=null;
-     Button skipButton=null;
-     Button previousButton=null;
+    Button stopButton=null;
+    Button skipButton=null;
+    Button previousButton=null;
+    Button saveCortinaButton=null;
+
     private boolean playing=false;
     private Equalizer eq;
     public final static int PLAYLIST_CREATE=1;
@@ -66,9 +69,9 @@ public class Player
     VBox vbox = new VBox();
     int mode = PLAYLIST_CREATE;
     GridPane cortinaCreatControls;
-    Label startPositionValue=null;
-    Label endPositionValue=null;
-    Label playPositionValue=null;
+    Label startPositionLabel=null;
+    Label endPositionLabel=null;
+    Label playPositionLabel=null;
     Label cortinaLengthLabel=null;
     
     Label currentTrackTitleLabel = new Label("");
@@ -262,7 +265,7 @@ public class Player
           
           if (playMode==CORTINA_SINGLE_TRACK)
           {
-            System.out.println("Player, PLAY_CORTINA");
+           // System.out.println("Player, PLAY_CORTINA");
             playCortina();
           }
           
@@ -340,7 +343,7 @@ public class Player
       Button setStartButton = new Button("*");
       Button setStopButton = new Button("*");
       Button dummyButton = new Button(" ");
-      Button saveCortinaButton = new Button("Save Cortina");
+      saveCortinaButton = new Button("Save Cortina");
       
       saveCortinaButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
         public void handle(MouseEvent event)  
@@ -363,10 +366,10 @@ public class Player
       fadeOutCheckBox.setSelected(true);
       delayCheckBox.setSelected(false);
       
-      startPositionValue = new Label("00:00");
+      startPositionLabel = new Label("00:00");
       // System.out.println("Default Track Duration2: "+formatTime(currentTrackDuration));
-      endPositionValue = new Label(formatTime(currentTrackDuration));
-      playPositionValue = new Label(Double.toString(playPositionSlider.getValue()));
+      endPositionLabel = new Label(formatTime(currentTrackDuration));
+      playPositionLabel = new Label(Double.toString(playPositionSlider.getValue()));
       cortinaLengthLabel=new Label("0:00");
     
       
@@ -375,9 +378,9 @@ public class Player
       cortinaCreatControls.add(new Text("Play Position"),  col[0], row[2]);
       
       
-      cortinaCreatControls.add(startPositionValue,         col[1], row[0]);
-      cortinaCreatControls.add(endPositionValue,           col[1], row[1]);
-      cortinaCreatControls.add(playPositionValue,          col[1], row[2]);
+      cortinaCreatControls.add(startPositionLabel,         col[1], row[0]);
+      cortinaCreatControls.add(endPositionLabel,           col[1], row[1]);
+      cortinaCreatControls.add(playPositionLabel,          col[1], row[2]);
       
       cortinaCreatControls.add(startPositionSlider,        col[2], row[0]);
       cortinaCreatControls.add(endPositionSlider,          col[2], row[1]);
@@ -436,7 +439,7 @@ public class Player
           public void changed(ObservableValue<? extends Number> arg0,
                   Number arg1, Number arg2) 
           {
-            playPositionValue.setText(String.format("%.1f", arg2)); //new value
+            playPositionLabel.setText(String.format("%.1f", arg2)); //new value
           }
       });
       
@@ -455,8 +458,8 @@ public class Player
       cortina.hash=currentTrackHash;
       cortina.original_duration=(int)currentTrackDuration.toMillis();
      // String cortinaTimes = " ("+cortinaLength.getText()+") "
-     //                          +startPositionValue.getText()+" - "
-     //                          +endPositionValue.getText();
+     //                          +startPositionLabel.getText()+" - "
+     //                          +endPositionLabel.getText();
       if (currentTrackTitle.length()>60)
       cortina.title=currentTrackTitle.substring(0, 60);
       else cortina.title=currentTrackTitle;
@@ -485,8 +488,8 @@ public class Player
       {
         cortinaStart = currentTrackDuration.multiply(startPositionSlider.getValue());
         cortinaEnd = currentTrackDuration.multiply(endPositionSlider.getValue());
-        startPositionValue.setText(formatTime(cortinaStart)); 
-        endPositionValue.setText(formatTime(cortinaEnd));
+        startPositionLabel.setText(formatTime(cortinaStart)); 
+        endPositionLabel.setText(formatTime(cortinaEnd));
         cortinaLength = cortinaEnd.subtract(cortinaStart);
       //  Duration remainingCortinaTime=endDuration.subtract(startDuration).subtract(currentTrackTime.subtract(startDuration));
         cortinaLengthLabel.setText(formatTime(cortinaLength));
@@ -695,8 +698,8 @@ public class Player
           
           cortinaStart = currentTrackDuration.multiply(startPositionSlider.getValue());
           cortinaEnd = currentTrackDuration.multiply(endPositionSlider.getValue());
-          startPositionValue.setText(formatTime(cortinaStart)); 
-          endPositionValue.setText(formatTime(cortinaEnd));
+          startPositionLabel.setText(formatTime(cortinaStart)); 
+          endPositionLabel.setText(formatTime(cortinaEnd));
           cortinaLength = cortinaEnd.subtract(cortinaStart);
         //  Duration remainingCortinaTime=endDuration.subtract(startDuration).subtract(currentTrackTime.subtract(startDuration));
           cortinaLengthLabel.setText(formatTime(cortinaLength));
@@ -815,6 +818,85 @@ public class Player
     
   }
     
+   public void playCortina()
+   {
+      String sourcePath=null;
+      volumeSlider.setValue(holdVolume);
+      cortina=true;
+      
+      CortinaTrack cortinaTrack = Db.getCortinaTrack(currentCortinaId);
+      TrackMeta trackMeta = Db.getTrackInfo(cortinaTrack.getPathHash()); // TODO CortinaTrack should already have this
+      sourcePath=trackMeta.path;
+     
+      playing=true;
+      playButton.setText("||");
+      stopButton.setDisable(false);
+      File file = new File(sourcePath);
+      
+      mediaPlayer = createMediaPlayer(file.toURI().toString(), true);
+      mediaPlayer.setVolume(volumeSlider.getValue());
+      mediaPlayer.volumeProperty().bindBidirectional(volumeSlider.valueProperty());
+      mediaPlayer.setStartTime(new Duration(cortinaTrack.getStartValue()));
+      mediaPlayer.setStopTime(new Duration(cortinaTrack.getStopValue()));
+      
+      // FADE IN
+      if (cortinaTrack.getFadein()==1) fadeIn(mediaPlayer);
+      
+      mediaView = new MediaView(mediaPlayer);
+
+      eq = new Equalizer(mediaPlayer);
+      equalizerTab.setContent(eq.getGridPane());
+      
+      
+      
+      /*
+      // IMPORTANT
+      mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() 
+      {
+        public void invalidated(Observable ov) 
+        {
+          updateValues();
+        }
+      });
+   
+
+    mediaPlayer.setOnReady(new Runnable() 
+    {
+      public void run() 
+      {
+       // System.out.println("Playlist - mediaPlayer.setOnReady");
+        currentTrackDuration = mediaPlayer.getMedia().getDuration();
+        updateValues();
+      }
+    });
+    */
+
+    mediaPlayer.setOnEndOfMedia(new Runnable() 
+    {
+      public void run() 
+      {
+          stopButton.setDisable(true);
+          playButton.setText(">");
+          timeSlider.setValue(0);
+          atEndOfMedia = true;
+          mediaPlayer.stop();
+         // cortinaTrack.baseTreeItem.setPlayingImage(false);
+          return;
+      }
+    });
+    
+    
+  }
+    private void fadeIn(MediaPlayer mediaPlayer2)
+    {
+      holdVolume=mediaPlayer2.getVolume();
+      mediaPlayer2.setVolume(0);
+      final Timeline fadeInTimeline = new Timeline(
+          new KeyFrame(FADE_DURATION, new KeyValue(mediaPlayer2.volumeProperty(), holdVolume)));
+      fadeInTimeline.play();
+    }
+
+    /*
     public void playCortina()
     {
       String sourcePath=null;
@@ -834,17 +916,18 @@ public class Player
       originalDuration = cortinaTrack.getOriginal_duration();
       startFraction = start/originalDuration;
       stopFraction = stop/originalDuration;
-          
+      
+      
       startPositionSlider.setValue(startFraction);
       endPositionSlider.setValue(stopFraction);
          
-      currentTrackDuration = new Duration(originalDuration*1000);
+      currentTrackDuration = new Duration(originalDuration);
       setCurrentTrackTitle(cortinaTrack.getTitle());
           
-      cortinaStart = currentTrackDuration.multiply(startPositionSlider.getValue());
-      cortinaEnd = currentTrackDuration.multiply(endPositionSlider.getValue());
-      startPositionValue.setText(formatTime(cortinaStart)); 
-      endPositionValue.setText(formatTime(cortinaEnd));
+      cortinaStart = currentTrackDuration.multiply(startFraction);
+      cortinaEnd = currentTrackDuration.multiply(stopFraction);
+      startPositionLabel.setText(formatTime(cortinaStart)); 
+      endPositionLabel.setText(formatTime(cortinaEnd));
       cortinaLength = cortinaEnd.subtract(cortinaStart);
         //  Duration remainingCortinaTime=endDuration.subtract(startDuration).subtract(currentTrackTime.subtract(startDuration));
       cortinaLengthLabel.setText(formatTime(cortinaLength));
@@ -852,6 +935,17 @@ public class Player
        
       TrackMeta trackMeta = Db.getTrackInfo(cortinaTrack.getPathHash()); // TODO CortinaTrack should already have this
       sourcePath=trackMeta.path;
+     
+      
+      System.out.println("Player, playCortina -            start: "+start);
+      System.out.println("Player, playCortina -             stop: "+stop);
+      System.out.println("Player, playCortina - originalDuration: "+originalDuration);
+      System.out.println("Player, playCortina -    startFraction: "+startFraction);
+      System.out.println("Player, playCortina -     stopFraction: "+stopFraction);
+      System.out.println("Player, playCortina -     cortinaStart: "+cortinaStart.toMillis());
+      System.out.println("Player, playCortina -       cortinaEnd: "+cortinaEnd.toMillis());
+
+      
       System.out.println("Player - trackMeta - path: "+trackMeta.path);
       playing=true;
       playButton.setText("||");
@@ -885,8 +979,12 @@ public class Player
       
       
        // System.out.println("Start Time: "+ startTime);
-      mediaPlayer.setStartTime(startTime);
-      mediaPlayer.setStopTime(stopTime);
+     mediaPlayer.setStartTime(startTime);
+     mediaPlayer.setStopTime(stopTime);
+      
+      System.out.println("Player, playCortina -  Media startTime: "+startTime);
+      System.out.println("Player, playCortina -   Media stopTime: "+stopTime);
+      
     
       mediaView = new MediaView(mediaPlayer);
 
@@ -939,7 +1037,7 @@ public class Player
     
     
   }
-    
+    */
     private MediaPlayer createMediaPlayer(String path, boolean autoPlay)
     {
       final String thisPath=path;
@@ -969,7 +1067,7 @@ public class Player
          {
            public void run() 
            {
-             currentTrackDuration = mediaPlayer.getCurrentTime();
+             currentTrackTime = mediaPlayer.getCurrentTime();
              
              if (cortina)
              {
@@ -1108,15 +1206,50 @@ public class Player
   {
     this.playMode = playMode;
     
-    System.out.println("Player - playMode: "+playMode);
+    //System.out.println("Player - playMode: "+playMode);
     
     if (playMode==PLAYMODE_SINGLE_TRACK)
     {
       skipButton.setDisable(true);
       previousButton.setDisable(true);
     }
+    
+    if (playMode==CORTINA_SINGLE_TRACK)
+    {
+      skipButton.setDisable(true);
+      previousButton.setDisable(true);
+    }
+    
+    
   }
 
+  public void setCortinaEditControls(CortinaTrack cortinaTrack)
+  {
+    setCurrentCortinaId(cortinaTrack.getId());
+    setCurrentTrackTitle(cortinaTrack.getTitle());  
+    int originalLength=0;
+    double startFraction=0;
+    double stopFraction=0;
+    
+    originalLength = cortinaTrack.getOriginal_duration();
+    startFraction = (double)cortinaTrack.getStartValue()/originalLength;
+    stopFraction = (double)cortinaTrack.getStopValue()/originalLength;
+    
+    Duration originalDuration = new Duration(originalLength);
+    Duration cortinaStart = originalDuration.multiply(startFraction);
+    Duration cortinaEnd = originalDuration.multiply(stopFraction);
+    Duration cortinaLength = cortinaEnd.subtract(cortinaStart);
+    
+    startPositionSlider.setValue(startFraction);
+    //startPositionSlider.setDisable(true);
+    endPositionSlider.setValue(stopFraction);
+   // endPositionSlider.setDisable(true);
+    startPositionLabel.setText(formatTime(cortinaStart)); 
+    endPositionLabel.setText(formatTime(cortinaEnd));
+    cortinaLengthLabel.setText(formatTime(cortinaLength));
+    saveCortinaButton.setText("Update Cortina");
+  }
+  
   public int getCurrentCortinaId()
   {
     return currentCortinaId;

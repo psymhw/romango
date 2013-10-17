@@ -89,9 +89,8 @@ public class CortinaTab extends Tab
         if (cortinaTrack!=null)
         {
           player.setPlayMode(Player.CORTINA_SINGLE_TRACK);
-          player.setCurrentCortinaId(cortinaTrack.getId());
-          player.setCurrentTrackTitle(cortinaTrack.getTitle());        
-          }
+          player.setCortinaEditControls(cortinaTrack);
+        }
       }
     });
   }
