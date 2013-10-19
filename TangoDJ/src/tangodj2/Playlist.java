@@ -40,39 +40,36 @@ import tangodj2.PlaylistTree.TrackTreeItem;
 
 public class Playlist 
 {
-	private PlaylistTreeItem playlistTreeItem;
-	private TreeView<String> treeView;
-	private PlaylistTrack previouslyPlayingTrack=null;
-	private PlaylistTrack previouslySelectedTrack=null;
+  private PlaylistTreeItem playlistTreeItem;
+  private TreeView<String> treeView;
+  private PlaylistTrack previouslyPlayingTrack=null;
+  private PlaylistTrack previouslySelectedTrack=null;
   private int nextTrack=0; 
   private int playingTrack=0;
   private int selectedPlaylistTrack=0;
-	private ArrayList<PlaylistTrack> flatPlaylistTracks =  new ArrayList<PlaylistTrack>();
-	private int selectedTanda=-1;
-	private int numberOfTandas=-1;
-	public static SimpleIntegerProperty playlistFocus = new SimpleIntegerProperty(0);
+  private ArrayList<PlaylistTrack> flatPlaylistTracks =  new ArrayList<PlaylistTrack>();
+  private int selectedTanda=-1;
+  private int numberOfTandas=-1;
+  public static SimpleIntegerProperty playlistFocus = new SimpleIntegerProperty(0);
 	
+  public Playlist() throws SQLException, ClassNotFoundException
+  {
+    setupTreeView();	
+	setNextTrackToPlay();
+	//setNextTrackToPlay(0,0);
+  }
 	
-	public Playlist() throws SQLException, ClassNotFoundException
+  public void printTracks()
+  {
+	int i=0;
+	while( true)
 	{
-    //thisPlaylist=this;
-	  setupTreeView();	
-	  setNextTrackToPlay();
-	  //setNextTrackToPlay(0,0);
+	  BaseTreeItem ti = (BaseTreeItem)treeView.getTreeItem(i);
+	  if (ti==null) break;
+	  System.out.println(i+") "+ti.getTreeType());
+	  i++;
 	}
-	
-	public void printTracks()
-	{
-	  int i=0;
-	  while( true)
-	  {
-	    
-	    BaseTreeItem ti = (BaseTreeItem)treeView.getTreeItem(i);
-	    if (ti==null) break;
-	    System.out.println(i+") "+ti.getTreeType());
-	    i++;
-	  }
-	}
+  }
 	
 	public void stopPlaying()
 	{

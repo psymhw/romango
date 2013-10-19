@@ -32,6 +32,10 @@ import javafx.stage.Stage;
  * Get rating from iTunes XML file?
  * Create a tangoGenre MP3tag and populate when making tandas?
  * Remember file locations for adding files
+ * Java 8 and those cool controls.
+ * Event Tab: fade/next track
+ * Change tableview background with CSS?
+ * The Abascal Way
  */
 public class TangoDJ2 extends Application 
 {
@@ -39,6 +43,7 @@ public class TangoDJ2 extends Application
   static PlaylistBuilderTab playlistBuilderTab;
   static PlaylistChoiceTab playlistChoiceTab;
   static CortinaTab cortinaTab;
+  static EventTab eventTab;
   
   MenuBar menuBar;
   Playlist playlist;
@@ -76,10 +81,11 @@ public class TangoDJ2 extends Application
     catch (ClassNotFoundException e) { e.printStackTrace(); }
         
     Tab equalizerTab = new Tab();
-    equalizerTab.setStyle("-fx-background-color: #bfc2c7;");
+  //  equalizerTab.setStyle("-fx-background-color: #bfc2c7;");
     equalizerTab.setText("Equalizer");
     
-    player = new Player(playlist, equalizerTab);
+    player = new Player(equalizerTab);
+    player.setPlaylist(playlist);
    
     playlistBuilderTab = new PlaylistBuilderTab(playlist,  player);
     tabPane.getTabs().add(playlistBuilderTab);
@@ -100,14 +106,22 @@ public class TangoDJ2 extends Application
         }
         if (mostRecentlySelectedTab.equals(playlistBuilderTab))
         {
-        
           player.setFeaturesMode(Player.PLAYLIST_CREATE);
+          player.setPlaylist(playlist);
+        }
+        if (mostRecentlySelectedTab.equals(eventTab))
+        {
+          player.setFeaturesMode(Player.PLAYLIST_CREATE);
+          player.setPlaylist(eventTab.playlist);
         }
       }
     });
       
     tabPane.getTabs().add(equalizerTab);
     tabPane.getTabs().add(cortinaTab);
+    
+    eventTab = new EventTab(player);
+    tabPane.getTabs().add(eventTab);
     
     mainPane.setCenter(tabPane);
       
