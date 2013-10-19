@@ -75,7 +75,7 @@ public class CortinaTab extends Tab
           player.setPlayMode(Player.PLAYMODE_SINGLE_TRACK);
           player.setCurrentTrackHash(selectedTrack.getPathHash());
           player.setCurrentTrackTitle(selectedTrack.getTitle());
-
+          player.setNewCortinaControls(selectedTrack);
         }
       }
     });

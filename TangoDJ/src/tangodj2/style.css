@@ -78,7 +78,18 @@
 .cortinaTableText {
   -fx-text-fill: rgba(219, 42, 199,1);
   -fx-font-size: 12pt;
+ 
+  -fx-highlight-fill: black;
   
+}
+/*
+* see: http://stackoverflow.com/questions/12746459/how-to-change-the-colors-of-the-tableviews-rows
+*/
+.table-view:focused .table-row-cell:filled:selected {
+    -fx-background-color: rgba(34, 35, 256,.26);
+    -fx-background-insets: 0, 1, 2;
+    -fx-background: -fx-accent;
+    -fx-text-fill: -fx-selection-bar-text;
 }
 
 .cleanupPlaylistText {
