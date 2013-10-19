@@ -2,6 +2,7 @@ package tangodj2;
 
 import java.io.File;
 
+import tangodj2.cleanup.CleanupTrack;
 import tangodj2.cortina.Cortina;
 import tangodj2.cortina.CortinaTable;
 import tangodj2.cortina.CortinaTrack;
@@ -13,6 +14,7 @@ import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -50,6 +52,8 @@ public class Player
     private Slider volumeSlider;
     private HBox mediaBar;
     private MediaPlayer mediaPlayer;
+    
+    //SimpleIntegerProperty currentTimeValue = new SimpleIntegerProperty();
     
     Button playButton=null;
     Button stopButton=null;
@@ -145,10 +149,13 @@ public class Player
       Label timeLabel = new Label("Time: ");
       mediaBar.getChildren().add(timeLabel);
  
-      timeSlider = new Slider();
+      timeSlider = new Slider(0, 100, 0);
+      timeSlider.setMajorTickUnit(10);
+      timeSlider.setShowTickMarks(true);
       HBox.setHgrow(timeSlider, Priority.ALWAYS);
       timeSlider.setMinWidth(50);
       timeSlider.setMaxWidth(Double.MAX_VALUE);
+     // timeSlider.valueProperty().bindBidirectional(currentTimeValue);
       
        mediaBar.getChildren().add(timeSlider);
 
@@ -1079,6 +1086,7 @@ public class Player
                    && currentTrackDuration.greaterThan(Duration.ZERO)
                    && !timeSlider.isValueChanging()) 
              {
+            	//currentTimeValue.set((int)(currentTrackTime.divide(currentTrackDuration.toMillis()).toMillis()* 100.0)); 
                 timeSlider.setValue(currentTrackTime.divide(currentTrackDuration.toMillis()).toMillis()* 100.0);
              }
              
@@ -1248,6 +1256,35 @@ public class Player
     cortinaLengthLabel.setText(formatTime(cortinaLength));
     saveCortinaButton.setText("Update Cortina");
   }
+  
+  public void setNewCortinaControls(CleanupTrack cleanupTrack)
+  {
+    setCurrentCortinaId(0);
+    setCurrentTrackTitle(cleanupTrack.getTitle());  
+    int originalLength=0;
+    double startFraction=0;
+    double stopFraction=0;
+    
+    originalLength = cleanupTrack.getIntDuration()*1000;
+    System.out.println("Player - originalLength: "+originalLength);
+    startFraction = 0;
+    stopFraction = 1;
+    
+    Duration originalDuration = new Duration(originalLength);
+    Duration cortinaStart = new Duration(0);
+    Duration cortinaEnd = originalDuration;
+    Duration cortinaLength = originalDuration;
+    
+    startPositionSlider.setValue(startFraction);
+    //startPositionSlider.setDisable(true);
+    endPositionSlider.setValue(stopFraction);
+   // endPositionSlider.setDisable(true);
+    startPositionLabel.setText(formatTime(cortinaStart)); 
+    endPositionLabel.setText(formatTime(cortinaEnd));
+    cortinaLengthLabel.setText(formatTime(cortinaLength));
+    saveCortinaButton.setText("Update Cortina");
+  }
+  
   
   public int getCurrentCortinaId()
   {

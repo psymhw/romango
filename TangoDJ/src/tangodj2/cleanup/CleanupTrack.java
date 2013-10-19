@@ -77,7 +77,12 @@ public class CleanupTrack
     
     public String getDuration()
     {
-    	return formatIntoMMSS(duration.get());
+       return formatIntoMMSS(duration.get());
+    }
+    
+    public int getIntDuration()
+    {
+       return duration.get();
     }
     
     public int getCortina() {
