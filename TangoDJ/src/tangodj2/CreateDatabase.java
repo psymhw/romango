@@ -29,13 +29,13 @@ public class CreateDatabase
 	
 	public void create() throws ClassNotFoundException, SQLException
 	{
-		connect();
+	  connect();
 	  createTracksTable();
-		createPlaylistsTable();
-		createStateTable();
-		createTandasTable();
-		createCortinasTable();
-		disconnect();
+	  createPlaylistsTable();
+	  createStateTable();
+	  createTandasTable();
+	  createCortinasTable();
+	  disconnect();
 	   //Db.disconnect();
 	  System.out.println("database initiallized");	
 	}

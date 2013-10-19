@@ -63,7 +63,7 @@ public class Player
     public final static int PLAYLIST=2;
     public final static int EVENT_PLAYLIST=3;
     public final static int CORTINA_CREATE=4;
-    private final Playlist playlist;
+    private Playlist playlist=null;
     //int nextPlaylistTrack=0;
     Tab equalizerTab;
     VBox vbox = new VBox();
@@ -117,9 +117,8 @@ public class Player
    // SimpleStringProperty source = new SimpleStringProperty();
    
 
-    public Player(Playlist playlist, Tab equalizerTab) 
+    public Player(Tab equalizerTab) 
     {
-      this.playlist=playlist;
       this.equalizerTab=equalizerTab;
      
       
@@ -1259,6 +1258,14 @@ public class Player
   {
     this.currentCortinaId = currentCortinaId;
   }
+
+public Playlist getPlaylist() {
+	return playlist;
+}
+
+public void setPlaylist(Playlist playlist) {
+	this.playlist = playlist;
+}
   
   /*
   private void setupListeners() 

@@ -63,7 +63,7 @@ public class PlaylistBuilderTab extends Tab
     trackLoader.setTangoTable(tangoTable);
     trackLoader.setCleanupTable(cleanupTable);
     	  
-	  this.setText("All Tracks");
+	  this.setText("Edit Playlist");
 	  
 	  vbox.setPadding(new Insets(10, 10, 10, 10));
 	  vbox.setSpacing(20);

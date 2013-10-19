@@ -417,7 +417,7 @@ public class Db
 	   sql.append(", cortinaId = "+tandaTreeItem.getCortinaId());
 	   
 	   sql.append(" where id = "+tandaTreeItem.getDbId());
-	  System.out.println(sql);
+	 // System.out.println(sql);
 	   
 	   connect();
 	   connection.createStatement().execute(sql.toString());
