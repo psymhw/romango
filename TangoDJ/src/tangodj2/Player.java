@@ -613,7 +613,7 @@ public class Player
       File file = new File(sourcePath);
       
       mediaPlayer = createMediaPlayer(file.toURI().toString(), true);
-      mediaPlayer.setVolume(volumeSlider.getValue());
+      mediaPlayer.setVolume(holdVolume);
       mediaPlayer.volumeProperty().bindBidirectional(volumeSlider.valueProperty());
       
       mediaView = new MediaView(mediaPlayer);
@@ -844,7 +844,7 @@ public class Player
       mediaPlayer.volumeProperty().bindBidirectional(volumeSlider.valueProperty());
       mediaPlayer.setStartTime(new Duration(cortinaTrack.getStartValue()));
       mediaPlayer.setStopTime(new Duration(cortinaTrack.getStopValue()));
-      
+      System.out.println("Player - total duration: "+mediaPlayer.getTotalDuration());
       // FADE IN
       if (cortinaTrack.getFadein()==1) fadeIn(mediaPlayer);
       
@@ -855,7 +855,7 @@ public class Player
       
       
       
-      /*
+     
       // IMPORTANT
       mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() 
       {
@@ -875,7 +875,7 @@ public class Player
         updateValues();
       }
     });
-    */
+    
 
     mediaPlayer.setOnEndOfMedia(new Runnable() 
     {
@@ -1073,26 +1073,20 @@ public class Player
          {
            public void run() 
            {
-             currentTrackTime = mediaPlayer.getCurrentTime();
-             
-             if (cortina)
+        	 Duration originalTrackTime=  mediaPlayer.getCurrentTime();
+             Duration currentTrackTime = originalTrackTime.subtract(mediaPlayer.getStartTime());
+             Double totalTrackTime = mediaPlayer.getTotalDuration().toMillis();
+               
+             if (!timeSlider.isValueChanging()) 
              {
-               Duration remainingCortinaTime=cortinaLength.subtract(currentTrackTime.subtract(cortinaStart));
-               cortinaLengthLabel.setText(formatTime(remainingCortinaTime));
-             }
-             playTime.setText(formatTime(currentTrackTime, currentTrackDuration));
-             timeSlider.setDisable(currentTrackDuration.isUnknown());
-             if (!timeSlider.isDisabled()
-                   && currentTrackDuration.greaterThan(Duration.ZERO)
-                   && !timeSlider.isValueChanging()) 
-             {
-            	//currentTimeValue.set((int)(currentTrackTime.divide(currentTrackDuration.toMillis()).toMillis()* 100.0)); 
-                timeSlider.setValue(currentTrackTime.divide(currentTrackDuration.toMillis()).toMillis()* 100.0);
+               timeSlider.setValue(currentTrackTime.divide(totalTrackTime).toMillis()* 100.0);
+               playTime.setText(formatTime(currentTrackTime));
              }
              
              if (fadeOut==true)
              {
-               if (currentTrackTime.toSeconds()>=stopTime.subtract(new Duration(5000)).toSeconds())
+              // if (currentTrackTime.toSeconds()>=stopTime.subtract(new Duration(5000)).toSeconds())
+            	if (originalTrackTime.toSeconds()>=mediaPlayer.getStopTime().subtract(new Duration(5000)).toSeconds())
                {
                  fadeOut=false;
                  System.out.println("Player - Fade Out");
@@ -1254,6 +1248,9 @@ public class Player
     startPositionLabel.setText(formatTime(cortinaStart)); 
     endPositionLabel.setText(formatTime(cortinaEnd));
     cortinaLengthLabel.setText(formatTime(cortinaLength));
+    
+    if (cortinaTrack.getFadeout()==1) fadeOut=true;
+    else fadeOut=false;
     saveCortinaButton.setText("Update Cortina");
   }
   

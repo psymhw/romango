@@ -36,6 +36,8 @@ import javafx.stage.Stage;
  * Event Tab: fade/next track
  * Change tableview background with CSS?
  * The Abascal Way
+ * Add treeitems below song title to show artist, time, album etc
+ * Show total time for each tanda. Maybe even real end time from system clock
  */
 public class TangoDJ2 extends Application 
 {
