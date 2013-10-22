@@ -1,4 +1,4 @@
-package tangodj2;
+package tangodj2.deprecated;
 
 import tangodj2.PlaylistTree.TandaTreeItem;
 import javafx.beans.value.ChangeListener;
