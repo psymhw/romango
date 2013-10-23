@@ -51,7 +51,7 @@ public class MediaMetaGetter
 	    public void changed(ObservableValue observable, Object oldValue, Object newValue) 
 		{
 		  Duration duration = media.durationProperty().get(); 
-		  setDuration((int)duration.toSeconds());
+		  setDuration((int)duration.toMillis());
 		  durationNeeded=false;
 		  complete();
 		 // checkForCompletion();
@@ -93,9 +93,9 @@ public class MediaMetaGetter
 	  timeline.playFromStart();
   }
   
-  private void setDuration(int seconds)
+  private void setDuration(int millis)
   {
-	  trackMeta.duration=seconds;
+	  trackMeta.duration=millis;
   }
   
   private void timeout()

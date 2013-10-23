@@ -89,14 +89,14 @@ public class TangoTrack
 	}
 
     
-    static String formatIntoMMSS(double secsIn)
+  static String formatIntoMMSS(double secsIn)
 	{
-
-	int hours = (int)secsIn / 3600,
-	remainder = (int)secsIn % 3600,
-	minutes = remainder / 60,
-	seconds = remainder % 60;
-	DecimalFormat sec = new DecimalFormat( "00" );
+    secsIn=secsIn/1000;
+	  int hours = (int)secsIn / 3600,
+	  remainder = (int)secsIn % 3600,
+	  minutes = remainder / 60,
+	  seconds = remainder % 60;
+	  DecimalFormat sec = new DecimalFormat( "00" );
 	DecimalFormat min = new DecimalFormat( "##" );
 	//return ( (minutes < 10 ? "0" : "") + minutes
 	//+ ":" + (seconds< 10 ? "0" : "") + seconds );

@@ -138,6 +138,7 @@ public class CreateDatabase
         "original_duration INTEGER, " +
         "comment varchar(60), " +
         "title varchar(60), " +
+        "path varchar(300), " +
         "hash varchar(32) " +
         ")";
   //System.out.println(sql);

@@ -13,6 +13,7 @@ public class Cortina
   public String comment;
   public String title;
   public String hash;
+  public String path;
   public int original_duration;
 
   

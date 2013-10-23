@@ -38,6 +38,9 @@ import javafx.stage.Stage;
  * The Abascal Way
  * Add treeitems below song title to show artist, time, album etc
  * Show total time for each tanda. Maybe even real end time from system clock
+ * Add pre-made cortinas directly to cortinas table
+ * Change title for cortinas
+ * Disable sliders when no track selected in table
  */
 public class TangoDJ2 extends Application 
 {
