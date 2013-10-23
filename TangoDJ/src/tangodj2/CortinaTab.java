@@ -72,7 +72,7 @@ public class CortinaTab extends Tab
         CleanupTrack selectedTrack = (CleanupTrack)newValue;
         if (selectedTrack!=null)
         {
-          player.setPlayMode(Player.PLAYMODE_SINGLE_TRACK);
+          player.setPlayMode(Player.PLAYMODE_CLEANUP_TO_CORTINA_TRACK);
           player.setCurrentTrackHash(selectedTrack.getPathHash());
           player.setCurrentTrackTitle(selectedTrack.getTitle());
           player.setNewCortinaControls(selectedTrack);
@@ -88,7 +88,7 @@ public class CortinaTab extends Tab
         CortinaTrack cortinaTrack = (CortinaTrack)newValue;
         if (cortinaTrack!=null)
         {
-          player.setPlayMode(Player.CORTINA_SINGLE_TRACK);
+          player.setPlayMode(Player.PLAYMODE_CORTINA_SINGLE_TRACK);
           player.setCortinaEditControls(cortinaTrack);
         }
       }

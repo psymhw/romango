@@ -53,7 +53,7 @@ public class Player
     private HBox mediaBar;
     private MediaPlayer mediaPlayer;
     
-    //SimpleIntegerProperty currentTimeValue = new SimpleIntegerProperty();
+    SimpleIntegerProperty cortinaLengthProperty = new SimpleIntegerProperty();
     
     Button playButton=null;
     Button stopButton=null;
@@ -75,7 +75,7 @@ public class Player
     GridPane cortinaCreatControls;
     Label startPositionLabel=null;
     Label endPositionLabel=null;
-    Label playPositionLabel=null;
+  //  Label playPositionLabel=null;
     Label cortinaLengthLabel=null;
     
     Label currentTrackTitleLabel = new Label("");
@@ -88,7 +88,7 @@ public class Player
     
     private Slider startPositionSlider=null;
     private Slider endPositionSlider=null;
-    private Slider playPositionSlider=null;
+   // private Slider playPositionSlider=null;
     
     
     CheckBox fadeInCheckBox = new CheckBox("Fade In");
@@ -113,9 +113,11 @@ public class Player
     
     final static int PLAYMODE_SINGLE_TRACK = 20;
     final static int PLAYMODE_PLAYLIST = 21;
-    final static int CORTINA_SINGLE_TRACK = 22;
+    final static int PLAYMODE_CORTINA_SINGLE_TRACK = 22;
+    final static int PLAYMODE_CLEANUP_TO_CORTINA_TRACK = 23;
     
     private int playMode=0;
+    CleanupTrack currentCleanupTrack=null;
     
     
    // SimpleStringProperty source = new SimpleStringProperty();
@@ -269,57 +271,23 @@ public class Player
             playPlaylist();
           }
           
-          if (playMode==CORTINA_SINGLE_TRACK)
+          if (playMode==PLAYMODE_CORTINA_SINGLE_TRACK)
           {
            // System.out.println("Player, PLAY_CORTINA");
             playCortina();
+          }
+          
+          if (playMode==PLAYMODE_CLEANUP_TO_CORTINA_TRACK)
+          {
+           // System.out.println("Player, PLAY_CORTINA");
+            playCleanupToCortinaTrack();
           }
           
         }
       });
     }
     
-    /*
-    public void setDefaultTrack()
-    {
-      TrackMeta trackMeta=null;
-      Track firstTrack=null;
-      String trackHash=null;
-      //System.out.println("Player - Set Default track");
-      if (SharedValues.allTracksData.size()==0) 
-      {
-        System.out.println("Player - No Tracks");
-        return;
-      }
-      firstTrack = SharedValues.allTracksData.get(0);
-      trackHash=firstTrack.getPathHash();
-      
-      
-      if (mode==CORTINA_CREATE)
-      {
-        //System.out.println("Player - CORTINA_CREATE");
-        if (SharedValues.selectedCleanupPathHash.get()==null)
-          SharedValues.selectedCleanupPathHash.set(trackHash);
-        else trackHash=SharedValues.selectedCleanupPathHash.get();
-        
-      }
-      if (mode==PLAYLIST_CREATE)
-      {
-        //System.out.println("Player - PLAYLIST_CREATE");
-        if (SharedValues.selectedTangoPathHash.get()==null) 
-          SharedValues.selectedTangoPathHash.set(trackHash);
-        else trackHash=SharedValues.selectedTangoPathHash.get();
-      }
-          
-      trackMeta = Db.getTrackInfo(trackHash);
-      File file = new File(trackMeta.path);
-      int totalTrackTime=trackMeta.duration;
-      currentTrackDuration = new Duration(totalTrackTime*1000);
-     // System.out.println("Default Track Duration: "+formatTime(currentTrackDuration));
-      currentTrackTitleLabel.setText(trackMeta.title);
-      updateUIValues(trackMeta.pathHash);
-    }
-*/
+    
     public void showAdvancedControls(boolean show)
     {
       
@@ -351,11 +319,13 @@ public class Player
       Button dummyButton = new Button(" ");
       saveCortinaButton = new Button("Save Cortina");
       
+      
+      
       saveCortinaButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
-        public void handle(MouseEvent event)  
-        {
-          insertCortina();
-        }
+      public void handle(MouseEvent event)  
+      {
+        insertCortina();
+      }
 
         
      });
@@ -366,42 +336,43 @@ public class Player
       
       startPositionSlider = new Slider(0, 1, 0);
       endPositionSlider = new Slider(0, 1, 1);
-      playPositionSlider = new Slider(0, 1, 0);
+    //  playPositionSlider = new Slider(0, 1, 0);
       
-      fadeInCheckBox.setSelected(true);
-      fadeOutCheckBox.setSelected(true);
+     // fadeInCheckBox.setSelected(true);
+     // fadeOutCheckBox.setSelected(true);
       delayCheckBox.setSelected(false);
       
       startPositionLabel = new Label("00:00");
       // System.out.println("Default Track Duration2: "+formatTime(currentTrackDuration));
       endPositionLabel = new Label("");
-      playPositionLabel = new Label(Double.toString(playPositionSlider.getValue()));
+  //    playPositionLabel = new Label(Double.toString(playPositionSlider.getValue()));
       cortinaLengthLabel=new Label("0:00");
+      cortinaLengthLabel.setFont(new Font("Arial", 16));
     
       
       cortinaCreatControls.add(new Text("Start Position"), col[0], row[0]);
       cortinaCreatControls.add(new Text("End Position"),   col[0], row[1]);
-      cortinaCreatControls.add(new Text("Play Position"),  col[0], row[2]);
+      cortinaCreatControls.add(new Text("Cortina Length"), col[0], row[2]);
       
       
       cortinaCreatControls.add(startPositionLabel,         col[1], row[0]);
       cortinaCreatControls.add(endPositionLabel,           col[1], row[1]);
-      cortinaCreatControls.add(playPositionLabel,          col[1], row[2]);
+     // cortinaCreatControls.add(cortinaLengthLabel,          col[1], row[2]);
       
       cortinaCreatControls.add(startPositionSlider,        col[2], row[0]);
       cortinaCreatControls.add(endPositionSlider,          col[2], row[1]);
-      cortinaCreatControls.add(playPositionSlider,         col[2], row[2]);
+      cortinaCreatControls.add(cortinaLengthLabel,         col[2], row[2]);
       
       cortinaCreatControls.add(setStartButton,             col[3], row[0]);
       cortinaCreatControls.add(setStopButton,              col[3], row[1]);
-      cortinaCreatControls.add(dummyButton,                col[3], row[2]);
+     // cortinaCreatControls.add(dummyButton,                col[3], row[2]);
       
       cortinaCreatControls.add(fadeInCheckBox,             col[4], row[0]);
       cortinaCreatControls.add(fadeOutCheckBox,            col[4], row[1]);
       cortinaCreatControls.add(delayCheckBox,              col[4], row[2]);
       
-      cortinaCreatControls.add(new Text("Cortna Length: "),col[5], row[0]);
-      cortinaCreatControls.add(cortinaLengthLabel         ,col[6], row[0]);
+    //  cortinaCreatControls.add(new Text("Cortna Length: "),col[5], row[0]);
+    //  cortinaCreatControls.add(cortinaLengthLabel         ,col[6], row[0]);
       cortinaCreatControls.add(saveCortinaButton          ,col[7], row[1]);
       
       
@@ -409,10 +380,14 @@ public class Player
       
       startPositionSlider.valueProperty().addListener(new ChangeListener<Number>() 
       {
-          public void changed(ObservableValue<? extends Number> arg0,
-                  Number arg1, Number arg2) 
+          public void changed(ObservableValue<? extends Number> arg0,  Number arg1, Number arg2) 
           {
-            //updateCortinaUIValues();
+            //System.out.println("startSlidertPos: "+arg1+", "+arg2);
+            double positionMillis = getPositionMillis(arg2.doubleValue(), currentCleanupTrack.getIntDuration()*1000);
+            //  System.out.println("Player - positionMillis: "+positionMillis);
+            startPositionLabel.setText(formatTime(new Duration(positionMillis/1000)));
+            updateCortinaLengthLabel();
+            
           }
       });
       
@@ -429,7 +404,10 @@ public class Player
           public void changed(ObservableValue<? extends Number> arg0,
                   Number arg1, Number arg2) 
           {
-        //	updateCortinaUIValues();
+            double positionMillis = getPositionMillis(arg2.doubleValue(), currentCleanupTrack.getIntDuration()*1000);
+            //System.out.println("Player - positionMillis: "+positionMillis);
+            endPositionLabel.setText(formatTime(new Duration(positionMillis/1000)));
+            updateCortinaLengthLabel();
           }
       });
       
@@ -440,6 +418,7 @@ public class Player
         }
      });
       
+      /*
       playPositionSlider.valueProperty().addListener(new ChangeListener<Number>() 
       {
           public void changed(ObservableValue<? extends Number> arg0,
@@ -448,11 +427,17 @@ public class Player
             playPositionLabel.setText(String.format("%.1f", arg2)); //new value
           }
       });
-      
+      */
       
       return cortinaCreatControls;
     }
     
+    protected double getPositionMillis(double sliderPos, int totalLength)
+    {
+      // TODO Auto-generated method stub
+      return sliderPos*totalLength;
+    }
+
     private void insertCortina()
     {
       Cortina cortina = new Cortina();
@@ -461,7 +446,8 @@ public class Player
       if (fadeInCheckBox.isSelected()) cortina.fadein=1; else cortina.fadein=0;
       if (fadeOutCheckBox.isSelected()) cortina.fadeout=1; else cortina.fadeout=0;
       if (delayCheckBox.isSelected()) cortina.delay=1; else cortina.delay=0;
-      cortina.hash=currentTrackHash;
+      cortina.hash=currentCleanupTrack.getPathHash();
+      cortina.path=currentCleanupTrack.getPath().get();
       cortina.original_duration=(int)mediaPlayer.getTotalDuration().toMillis();
      // String cortinaTimes = " ("+cortinaLength.getText()+") "
      //                          +startPositionLabel.getText()+" - "
@@ -596,6 +582,82 @@ public class Player
       if (mode==CORTINA_CREATE) updateCortinaUIValues();
     }
     */
+    
+    public void playCleanupToCortinaTrack()
+    {
+      String sourcePath=null;
+      cortina=false;
+      
+      if (currentTrackHash==null) return;
+      TrackMeta trackMeta=Db.getTrackInfo(currentTrackHash);
+      sourcePath=trackMeta.path;
+      currentTrackTitle=trackMeta.title;
+      
+      playing=true;
+      playButton.setText("||");
+      stopButton.setDisable(false);
+
+
+      File file = new File(sourcePath);
+      
+      mediaPlayer = createMediaPlayer(file.toURI().toString(), true);
+      mediaPlayer.setVolume(holdVolume);
+      mediaPlayer.volumeProperty().bindBidirectional(volumeSlider.valueProperty());
+      
+      mediaPlayer.setStartTime(new Duration(currentCleanupTrack.getIntDuration()*startPositionSlider.getValue()));
+      mediaPlayer.setStopTime(new Duration(currentCleanupTrack.getIntDuration()*endPositionSlider.getValue()));
+   
+      // FADE IN
+      if (fadeInCheckBox.isSelected()) fadeIn(mediaPlayer);
+      // FADE OUT
+      if (fadeOutCheckBox.isSelected()) fadeOut=true; else fadeOut=false;
+     
+      mediaView = new MediaView(mediaPlayer);
+
+      eq = new Equalizer(mediaPlayer);
+      equalizerTab.setContent(eq.getGridPane());
+      
+      // IMPORTANT
+      mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() 
+      {
+        public void invalidated(Observable ov) 
+        {
+          updateValues();
+        }
+      });
+   
+     
+      mediaPlayer.setOnPaused(new Runnable() 
+      {
+        public void run() 
+        {
+         // System.out.println("Playlist - mediaPlayer.setOnPaused");
+          //System.out.println("onPaused");
+          //playButton.setText(">");
+        }
+    });
+
+    mediaPlayer.setOnReady(new Runnable() 
+    {
+      public void run() 
+      {
+       // System.out.println("Playlist - mediaPlayer.setOnReady");
+       // currentTrackDuration = mediaPlayer.getMedia().getDuration();
+        updateValues();
+      }
+    });
+
+    mediaPlayer.setOnEndOfMedia(new Runnable() 
+    {
+      public void run() 
+      {
+         stopPlaying();
+         return;
+      }
+    });
+  }
+    
+    
     
     public void playTrack()
     {
@@ -1064,14 +1126,14 @@ public class Player
          {
            public void run() 
            {
-        	 Duration originalTrackTime=  mediaPlayer.getCurrentTime();
+        	   Duration originalTrackTime=  mediaPlayer.getCurrentTime();
              Duration currentTrackTime = originalTrackTime.subtract(mediaPlayer.getStartTime());
              Double totalTrackTime = mediaPlayer.getTotalDuration().toMillis();
                
              if (!timeSlider.isValueChanging()) 
              {
                timeSlider.setValue(currentTrackTime.divide(totalTrackTime).toMillis()* 100.0);
-               playTime.setText(formatTime(currentTrackTime));
+               playTime.setText(formatTime(currentTrackTime, new Duration(totalTrackTime)));
              }
              
              if (fadeOut==true)
@@ -1206,7 +1268,7 @@ public class Player
       previousButton.setDisable(true);
     }
     
-    if (playMode==CORTINA_SINGLE_TRACK)
+    if (playMode==PLAYMODE_CORTINA_SINGLE_TRACK)
     {
       skipButton.setDisable(true);
       previousButton.setDisable(true);
@@ -1246,30 +1308,35 @@ public class Player
   
   public void setNewCortinaControls(CleanupTrack cleanupTrack)
   {
-    setCurrentCortinaId(0);
+    setCurrentCortinaId(-1);
+    currentCleanupTrack=cleanupTrack;
     setCurrentTrackTitle(cleanupTrack.getTitle());  
     int originalLength=0;
     double startFraction=0;
     double stopFraction=0;
     
-    originalLength = cleanupTrack.getIntDuration()*1000;
-    System.out.println("Player - originalLength: "+originalLength);
+    originalLength = cleanupTrack.getIntDuration();
+    //System.out.println("Player - originalLength: "+originalLength);
     startFraction = 0;
     stopFraction = 1;
     
     Duration originalDuration = new Duration(originalLength);
-    Duration cortinaStart = new Duration(0);
+    //Duration cortinaStart = new Duration(0);
     Duration cortinaEnd = originalDuration;
-    Duration cortinaLength = originalDuration;
+   // Duration cortinaLength = originalDuration;
+    
+    //System.out.println("Player - end: "+cortinaEnd.toSeconds());
+    
     
     startPositionSlider.setValue(startFraction);
     //startPositionSlider.setDisable(true);
     endPositionSlider.setValue(stopFraction);
    // endPositionSlider.setDisable(true);
-    startPositionLabel.setText(formatTime(cortinaStart)); 
+    startPositionLabel.setText(formatTime(new Duration(0))); 
     endPositionLabel.setText(formatTime(cortinaEnd));
-    cortinaLengthLabel.setText(formatTime(cortinaLength));
-    saveCortinaButton.setText("Update Cortina");
+  //  cortinaLengthLabel.setText(formatTime(cortinaLength.divide(1000)));
+    updateCortinaLengthLabel();
+    saveCortinaButton.setText("Save Cortina");
   }
   
   
@@ -1291,18 +1358,13 @@ public void setPlaylist(Playlist playlist) {
 	this.playlist = playlist;
 }
   
-  /*
-  private void setupListeners() 
+  private void updateCortinaLengthLabel()
   {
-    ChangeListener playlistFocusListener = new ChangeListener() 
-    {
-      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
-      {
-        System.out.println("player mode set to PLAYLIST");
-        setMode(PLAYLIST);
-      }
-    };   
-    SharedValues.playlistFocus.addListener(playlistFocusListener);
+    int startTimeMillis = (int)(startPositionSlider.getValue()*currentCleanupTrack.getIntDuration());
+    int stopTimeMillis = (int)(endPositionSlider.getValue()*currentCleanupTrack.getIntDuration());
+    //System.out.println("start: "+startTimeMillis);
+   // System.out.println("stop: "+stopTimeMillis);
+    int cortinaLengthMillis = stopTimeMillis-startTimeMillis;
+    cortinaLengthLabel.setText(formatTime(new Duration(cortinaLengthMillis)));
   }
-  */
  }
