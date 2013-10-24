@@ -35,7 +35,7 @@ import javafx.stage.Stage;
  * MP3 tag editor
  * Event Tab: fade/next track
  * table search or restriction or fulltext
-
+ * try mediaPlayer.setOnReady instead of Timeline for loading MP3 tag info
  * Add treeitems below song title to show artist, time, album etc
  * Show total time for each tanda. Maybe even real end time from system clock
  * Add pre-made cortinas directly to cortinas table
