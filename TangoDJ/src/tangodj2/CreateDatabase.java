@@ -135,9 +135,12 @@ public class CreateDatabase
         "fadeout INTEGER, " +
         "track_count INTEGER, " +
         "delay INTEGER, " +
+        "premade INTEGER, " +
         "original_duration INTEGER, " +
         "comment varchar(60), " +
         "title varchar(60), " +
+        "artist varchar(40), " +
+        "album varchar(100), " +
         "path varchar(300), " +
         "hash varchar(32) " +
         ")";

@@ -32,15 +32,15 @@ import javafx.stage.Stage;
  * Get rating from iTunes XML file?
  * Create a tangoGenre MP3tag and populate when making tandas?
  * Remember file locations for adding files
- * Java 8 and those cool controls.
+ * MP3 tag editor
  * Event Tab: fade/next track
- * Change tableview background with CSS?
- * The Abascal Way
+ 
+
  * Add treeitems below song title to show artist, time, album etc
  * Show total time for each tanda. Maybe even real end time from system clock
  * Add pre-made cortinas directly to cortinas table
- * Change title for cortinas
- * Disable sliders when no track selected in table
+ 
+
  */
 public class TangoDJ2 extends Application 
 {

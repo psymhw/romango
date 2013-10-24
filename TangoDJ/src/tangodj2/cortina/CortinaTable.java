@@ -2,7 +2,7 @@ package tangodj2.cortina;
 
 import tangodj2.Db;
 import tangodj2.SharedValues;
-import tangodj2.tango.TangoTrack;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -34,8 +34,9 @@ public class CortinaTable extends TableView<CortinaTrack>
 	  setupTable();
   }
 	 
-  public static void loadData()
+  public static void reloadloadData()
   {
+    cortinaTracksData.clear();
     Db.loadCortinaTracks(cortinaTracksData);
   }
   
@@ -129,6 +130,20 @@ public class CortinaTable extends TableView<CortinaTrack>
     lengthCol.setCellFactory(myCellFactory);
     lengthCol.setStyle("-fx-background-color:rgba(219, 42, 199,.41);");
     
+    TableColumn artistCol = new TableColumn("Artist");
+    artistCol.setMinWidth(50);
+    artistCol.setPrefWidth(100);
+    artistCol.setCellValueFactory(new PropertyValueFactory<Cortina, String>("artist"));
+    artistCol.setCellFactory(new MyCellFactory());
+    artistCol.setStyle("-fx-background-color:rgba(219, 42, 199,.41);");
+    
+    TableColumn albumCol = new TableColumn("Album");
+    albumCol.setMinWidth(50);
+    albumCol.setPrefWidth(100);
+    albumCol.setCellValueFactory(new PropertyValueFactory<Cortina, String>("album"));
+    albumCol.setCellFactory(new MyCellFactory());
+    albumCol.setStyle("-fx-background-color:rgba(219, 42, 199,.41);");
+    
     
     TableColumn startCol = new TableColumn("Start");
     startCol.setMinWidth(40);
@@ -136,7 +151,7 @@ public class CortinaTable extends TableView<CortinaTrack>
     startCol.setCellValueFactory(new PropertyValueFactory<Cortina, String>("start"));
     startCol.setCellFactory(myCellFactory);
     startCol.setStyle("-fx-background-color:rgba(219, 42, 199,.41);");
-    this.getColumns().addAll(titleCol, startCol, lengthCol);
+    this.getColumns().addAll(titleCol, lengthCol, artistCol, albumCol, startCol);
   }
 
   public int getTableIndex()

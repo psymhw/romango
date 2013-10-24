@@ -75,7 +75,8 @@ public class CortinaTab extends Tab
           player.setPlayMode(Player.PLAYMODE_CLEANUP_TO_CORTINA_TRACK);
           player.setCurrentTrackHash(selectedTrack.getPathHash());
           player.setCurrentTrackTitle(selectedTrack.getTitle());
-          player.setNewCortinaControls(selectedTrack);
+          player.setCortinaNewControls(selectedTrack);
+          player.setCortinaControlsActive(true);
         }
       }
     });
@@ -86,10 +87,12 @@ public class CortinaTab extends Tab
       public void changed(ObservableValue observable, Object oldValue, Object newValue) 
       {
         CortinaTrack cortinaTrack = (CortinaTrack)newValue;
+        // TODO track Index?
         if (cortinaTrack!=null)
         {
           player.setPlayMode(Player.PLAYMODE_CORTINA_SINGLE_TRACK);
           player.setCortinaEditControls(cortinaTrack);
+          player.setCortinaControlsActive(true);
         }
       }
     });
