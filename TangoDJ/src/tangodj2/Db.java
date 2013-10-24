@@ -165,7 +165,7 @@ public class Db
       connect();
       Statement statement = connection.createStatement();
       ResultSet resultSet = statement.executeQuery("select * from cortinas " +
-      		"order by title, start");
+      		"order by artist, album");
       CortinaTrack cortinaTrack;
       while(resultSet.next())
       {
@@ -177,7 +177,11 @@ public class Db
                                        resultSet.getInt("delay"), 
                                        resultSet.getInt("original_duration"), 
                                        resultSet.getString("title"),
-                                       resultSet.getString("hash"));
+                                       resultSet.getString("hash"),
+                                       resultSet.getString("path"),
+                                       resultSet.getString("album"),
+                                       resultSet.getString("artist"),
+                                       resultSet.getInt("premade"));
            
         cortinaTracksData.add(cortinaTrack);
         
@@ -209,7 +213,13 @@ public class Db
                                        resultSet.getInt("delay"), 
                                        resultSet.getInt("original_duration"), 
                                        resultSet.getString("title"),
-                                       resultSet.getString("hash"));
+                                       resultSet.getString("hash"),
+                                       resultSet.getString("path"),
+                                       resultSet.getString("album"),
+                                       resultSet.getString("artist"),
+                                       resultSet.getInt("premade")
+            
+            );
            
         
       }
@@ -266,6 +276,15 @@ public class Db
 	 //System.out.println("DB - "+playlistTreeItem.toString());
 	  
 	  return playlistTreeItem;
+	}
+	
+	
+	public static CleanupTrack getCleanupTrack(String pathHash)
+	{
+	  TrackMeta tm = getTrackInfo(pathHash);
+	  CleanupTrack cleanupTrack = new CleanupTrack(tm.title, tm.artist, tm.album, tm.genre, tm.comment, 
+	      tm.pathHash, tm.path, tm.duration, 0, "");
+	  return cleanupTrack;
 	}
 	
 	public static TrackMeta getTrackInfo(String pathHash )
@@ -460,10 +479,27 @@ public class Db
 	   disconnect();
 	}
 
+  public static void updateCortina(Cortina cortina) throws SQLException, ClassNotFoundException
+  {
+    connect();
+    String sql="update cortinas set"
+              +" start = " +cortina.start
+              +", stop = "  +cortina.stop
+              +", fadein = "+cortina.fadein
+              +", fadeout = "+cortina.fadeout
+              +", delay = "+cortina.delay
+              +", title = '"+cortina.title
+              +"' where id = "+cortina.id;
+    System.out.println("sql: "+sql);
+    connection.createStatement().execute(sql);
+    
+    disconnect();
+  }
+  
   public static int insertCortina(Cortina cortina) throws SQLException, ClassNotFoundException
   {
     connect();
-    String sql="insert into cortinas (start, stop, fadein, fadeout, delay, original_duration, title, hash) values("
+    String sql="insert into cortinas (start, stop, fadein, fadeout, delay, original_duration, title, hash, path, album, artist, premade) values("
     +cortina.start+", "
     +cortina.stop+", "
     +cortina.fadein+", "
@@ -471,8 +507,12 @@ public class Db
      +cortina.delay+", "
     +cortina.original_duration+", '"
     +sqlReadyString(cortina.title)+"', '"
-    +cortina.hash+"')";
-   // System.out.println("sql: "+sql);
+    +cortina.hash+"', '"
+    +cortina.path+"', '"
+    +cortina.album+"', '"
+    +cortina.artist+"', "
+    +cortina.premade+")";
+    System.out.println("sql: "+sql);
     connection.createStatement().execute(sql);
     
     int maxid=0;

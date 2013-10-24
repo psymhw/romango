@@ -15,6 +15,8 @@ public class Cortina
   public String hash;
   public String path;
   public int original_duration;
-
+  public String album;
+  public String artist;
+  public int premade;
   
 }

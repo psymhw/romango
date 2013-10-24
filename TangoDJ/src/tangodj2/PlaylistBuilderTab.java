@@ -272,7 +272,7 @@ public class PlaylistBuilderTab extends Tab
         CortinaTrack cortinaTrack = (CortinaTrack)newValue;
         if (cortinaTrack!=null)
         {
-          player.setPlayMode(Player.CORTINA_SINGLE_TRACK);
+          player.setPlayMode(Player.PLAYMODE_CORTINA_SINGLE_TRACK);
           player.setCurrentCortinaId(cortinaTrack.getId());
           player.setCurrentTrackTitle(cortinaTrack.getTitle());   
         }

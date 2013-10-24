@@ -10,6 +10,9 @@ public class CortinaTrack
   private final SimpleStringProperty start;
   private final SimpleStringProperty stop;
   private final SimpleStringProperty length;
+  private final SimpleStringProperty album;
+  private final SimpleStringProperty artist;
+  
   private int id;
   private int fadein;
   private int fadeout;
@@ -18,14 +21,20 @@ public class CortinaTrack
   private int startValue;
   private int stopValue;
   private String pathHash;
+  private int premade;
   private TrackMeta trackMeta = null;
+  private String path;
   
-  public CortinaTrack(int id, int start, int stop, int fadein, int fadeout, int delay, int original_duration, String title, String pathHash)
+  public CortinaTrack(int id, int start, int stop, int fadein, int fadeout, int delay, 
+      int original_duration, String title, String pathHash, String path, String album,
+      String artist, int premade)
   {
     this.title = new SimpleStringProperty(title);
     this.start = new SimpleStringProperty(formatTime(new Duration(start)));
     this.stop = new SimpleStringProperty(formatTime(new Duration(stop)));
     this.length = new SimpleStringProperty(formatTime(new Duration(stop-start)));
+    this.album = new SimpleStringProperty(album);
+    this.artist = new SimpleStringProperty(artist);
     this.id=id;
     this.fadein=fadein;
     this.fadeout=fadeout;
@@ -34,6 +43,8 @@ public class CortinaTrack
     this.startValue=start;
     this.stopValue=stop;
     this.original_duration=original_duration;
+    this.premade=premade;
+    this.path=path;
   }
   
   private static String formatTime(Duration duration) 
@@ -112,6 +123,27 @@ public class CortinaTrack
     this.title.set(title);
   }
 
+  public String getArtist()
+  {
+    return artist.get();
+  }
+
+  public void setArtist(String artist)
+  {
+    this.artist.set(artist);
+  }
+  
+  
+  public String getAlbum()
+  {
+    return album.get();
+  }
+
+  public void setAlbum(String album)
+  {
+    this.album.set(album);
+  }
+  
   public String getStart()
   {
     return start.get();
@@ -165,5 +197,25 @@ public class CortinaTrack
   public void setTrackMeta(TrackMeta trackMeta)
   {
     this.trackMeta = trackMeta;
+  }
+
+  public int getPremade()
+  {
+    return premade;
+  }
+
+  public void setPremade(int premade)
+  {
+    this.premade = premade;
+  }
+
+  public String getPath()
+  {
+    return path;
+  }
+
+  public void setPath(String path)
+  {
+    this.path = path;
   }
 }

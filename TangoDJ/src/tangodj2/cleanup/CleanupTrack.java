@@ -19,7 +19,8 @@ public class CleanupTrack
     private int cortina=0;
     
     
-	public CleanupTrack(String titleStr, String artistStr, String albumStr, String genreStr, String commentStr, String pathHashStr, String path, int duration, int cortina, String track_yearStr)
+	public CleanupTrack(String titleStr, String artistStr, String albumStr, String genreStr, 
+	    String commentStr, String pathHashStr, String path, int duration, int cortina, String track_yearStr)
     {
       this.title = new SimpleStringProperty(titleStr);
       this.artist = new SimpleStringProperty(artistStr);
