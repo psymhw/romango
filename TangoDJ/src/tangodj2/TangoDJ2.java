@@ -34,7 +34,7 @@ import javafx.stage.Stage;
  * Remember file locations for adding files
  * MP3 tag editor
  * Event Tab: fade/next track
- 
+ * table search or restriction or fulltext
 
  * Add treeitems below song title to show artist, time, album etc
  * Show total time for each tanda. Maybe even real end time from system clock
