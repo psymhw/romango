@@ -2,10 +2,15 @@ package tangodj2;
 
 import java.sql.SQLException;
 
+import tangodj2.infoWindow.InfoWindow2;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -15,6 +20,8 @@ public class EventTab extends Tab
 {
   public	Playlist playlist=null;
   private Player player;
+  private Button infoWindowButton = new Button("Info Window");
+  InfoWindow2 infoWindow;
 	
  public EventTab(Player player)
  {
@@ -37,8 +44,8 @@ public class EventTab extends Tab
     VBox eventControls = new VBox();
     eventControls.setPadding(new Insets(10, 10, 10, 10));
     eventControls.setSpacing(10);
-    eventControls.getChildren().add(new Button("Info Window"));
-    eventControls.getChildren().add(new Button("Fade to next track"));
+   // eventControls.getChildren().add(new Button("Info Window"));
+    eventControls.getChildren().add(infoWindowButton);
     hbox.getChildren().add(eventControls);
     setContent(hbox);
     setupListeners();
@@ -46,6 +53,13 @@ public class EventTab extends Tab
  
  private void setupListeners()
  {
+	 infoWindowButton.setOnAction(new EventHandler<ActionEvent>() 
+	 {
+	   public void handle(ActionEvent actionEvent) 
+	   {
+	      if (infoWindow==null)  infoWindow=new InfoWindow2(playlist, new ProgressBar());	
+	   }
+  });
 	// PLAYLIST FOCUS LISTENER
 	    ChangeListener playlistFocusListener = new ChangeListener() 
 	    {

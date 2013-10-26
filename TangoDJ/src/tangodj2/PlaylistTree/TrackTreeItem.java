@@ -20,6 +20,7 @@ public class TrackTreeItem extends BaseTreeItem
 
   private String album;
   private String path;
+  private String artist;
  
   
   public TrackTreeItem(String trackHash, int position)
@@ -35,7 +36,13 @@ public class TrackTreeItem extends BaseTreeItem
   	if (trackMeta.cleanup==1) setTreeType("cleanup");
   	album = trackMeta.album;
   	path = trackMeta.path;
-  	this.setValue(trackMeta.title+" "+formatDuration(trackMeta.duration));
+  	this.artist = trackMeta.artist;
+  	this.setValue(trackMeta.title);
+  	
+  	//this.getChildren().add(new DetailTreeItem("Length", formatTime(new Duration(trackMeta.duration))));
+    //this.getChildren().add(new DetailTreeItem("Artist", artist));
+    //this.getChildren().add(new DetailTreeItem("Album", album));
+       
   }
     
   
@@ -115,6 +122,40 @@ public void setPath(String path)
   this.path = path;
 }
 
+private static String formatTime(Duration duration) 
+{
+  if (duration.greaterThan(Duration.ZERO)) 
+  {
+    int intDuration = (int) Math.floor(duration.toSeconds());
+    int durationHours = intDuration / (60 * 60);
+    if (durationHours > 0) { intDuration -= durationHours * 60 * 60; }
+    int durationMinutes = intDuration / 60;
+    int durationSeconds = intDuration - durationHours * 60 * 60 - durationMinutes * 60;
+    if (durationHours > 0) 
+    {
+      return String.format("%d:%02d:%02d", 
+                    durationHours, durationMinutes, durationSeconds);
+     } 
+     else 
+     {
+       return String.format("%02d:%02d",
+                   durationMinutes,
+                    durationSeconds);
+     }
+   }
+  else return "00:00";
+  
+   
+ }
+
+
+
+
+
+
+public String getArtist() {
+	return artist;
+}
 
 
 }

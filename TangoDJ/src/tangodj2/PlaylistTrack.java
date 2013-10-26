@@ -9,6 +9,7 @@ public class PlaylistTrack
    public String title;
    public String tandaName;
    public String nextTandaName;
+   public String artist;
    public String album;
    public String path;
    
@@ -28,4 +29,6 @@ public class PlaylistTrack
    public int startValue;
    public int stopValue;
    public boolean playing=false;
+   
+ 
 }

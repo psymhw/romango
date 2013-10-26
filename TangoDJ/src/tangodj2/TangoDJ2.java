@@ -4,11 +4,8 @@ import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
 
-import tangodj2.cleanup.CleanupTable;
-import tangodj2.cortina.CortinaTable;
-import tangodj2.tango.TangoTable;
-import javafx.beans.value.ChangeListener;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -22,6 +19,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -65,6 +63,7 @@ public class TangoDJ2 extends Application
   public void start(Stage stage) 
   {
 	  primaryStage=stage;
+	  loadFonts();
 	  VBox root = new VBox();
     Scene scene = new Scene(root, 950, 550, Color.WHITE);
     r.setFill(Color.RED);
@@ -146,10 +145,11 @@ public class TangoDJ2 extends Application
     menuBar = new MenuBar();
     Menu menuFile = new Menu("File");
    
-    MenuItem menuAddTangoDir = new MenuItem("Add Tango Directory");
+    MenuItem menuAddTangoDir = new MenuItem("Add Tango Folder");
     MenuItem menuAddTangoFile = new MenuItem("Add Tango Track");
-    MenuItem menuAddCortinaFile = new MenuItem("Add Cortina\\Cleanup Track");
-   
+    MenuItem menuAddCleanupDir = new MenuItem("Add Cortina\\Cleanup Folder");
+    MenuItem menuAddCleanupFile = new MenuItem("Add Cortina\\Cleanup Track");
+    
     Menu menuEdit = new Menu("Edit");
     Menu menuView = new Menu("View");
     menuBar.getMenus().addAll(menuFile, menuEdit, menuView);
@@ -170,7 +170,23 @@ public class TangoDJ2 extends Application
         }
       }
     });   
-    
+    menuAddCleanupDir.setOnAction(new EventHandler<ActionEvent>() 
+    	    {
+    	      public void handle(ActionEvent t) 
+    	      {
+    	        DirectoryChooser directoryChooser = new DirectoryChooser();
+    	        directoryChooser.setInitialDirectory(new File("C:\\music\\tango"));  // temporary 
+    	        File selectedDirectory = 
+    	        directoryChooser.showDialog(primaryStage);
+    	                  
+    	        if(selectedDirectory == null) { System.out.println("No Directory selected"); } 
+    	        else
+    	        {
+    	          playlistBuilderTab.loadCleanupDirectory(selectedDirectory.toPath().toString());
+    	        }
+    	      }
+    	    });   
+    	    
     menuAddTangoFile.setOnAction(new EventHandler<ActionEvent>() 
     {
       public void handle(ActionEvent t) 
@@ -188,7 +204,7 @@ public class TangoDJ2 extends Application
       }
     });   
     
-    menuAddCortinaFile.setOnAction(new EventHandler<ActionEvent>() 
+    menuAddCleanupFile.setOnAction(new EventHandler<ActionEvent>() 
     {
       public void handle(ActionEvent t) 
       {
@@ -205,7 +221,20 @@ public class TangoDJ2 extends Application
       }
     });   
     	    
-    menuFile.getItems().addAll(menuAddTangoDir, menuAddTangoFile,menuAddCortinaFile);
+    menuFile.getItems().addAll(menuAddTangoDir, menuAddTangoFile,menuAddCleanupDir, menuAddCleanupFile);
   }
+  
+  private void loadFonts()
+  {
+	
+	Font.loadFont(TangoDJ2.class.getResource("/resources/fonts/Carousel.ttf").toExternalForm(), 10  );
+	Font.loadFont(TangoDJ2.class.getResource("/resources/fonts/Anagram.ttf").toExternalForm(), 10  );
+	Font.loadFont(TangoDJ2.class.getResource("/resources/fonts/Carrington.ttf").toExternalForm(), 10  );
+	Font.loadFont(TangoDJ2.class.getResource("/resources/fonts/DEFTONE.ttf").toExternalForm(), 10  );
+	Font.loadFont(TangoDJ2.class.getResource("/resources/fonts/EastMarket.ttf").toExternalForm(), 10  );
+	Font.loadFont(TangoDJ2.class.getResource("/resources/fonts/england.ttf").toExternalForm(), 10  );
+	Font.loadFont(TangoDJ2.class.getResource("/resources/fonts/FFF_Tusj.ttf").toExternalForm(), 10  );
+  }
+
  
 }

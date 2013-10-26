@@ -94,6 +94,14 @@ public class PlaylistBuilderTab extends Tab
     } catch (Exception ex) {ex.printStackTrace();}
   }
   
+  public void loadCleanupDirectory(String path)
+  {
+    try
+    {
+      trackLoader.process(path, false, false);
+      cleanupTable.reloadData();
+    } catch (Exception ex) {ex.printStackTrace();}
+  }
   public void loadTangoFile(String path)
   {
     try
@@ -301,6 +309,7 @@ public class PlaylistBuilderTab extends Tab
           {  
             TandaTreeItem tandaTreeItem = playlist.getSelectedTanda();
             tandaTreeItem.addTrack(tangoTrack.getPathHash());
+            playlist.generateFlatList();
           }
         }
         
@@ -333,6 +342,7 @@ public class PlaylistBuilderTab extends Tab
             TandaTreeItem tandaTreeItem = playlist.getSelectedTanda();
             
             tandaTreeItem.addTrack(cleanupTrack.getPathHash());
+            playlist.generateFlatList();
           }
         }
         
@@ -353,7 +363,7 @@ public class PlaylistBuilderTab extends Tab
           String action=cortinaTable.getAction().get();
           CortinaTrack cortinaTrack = cortinaTable.getItems().get(row);
         
-        System.out.println("cortinaTable Action: "
+        System.out.println("PlaylistBuilderTab, cortinaTable Action: "
             + action+" row: "
                   +row+" "+cortinaTrack.getTitle());
         
@@ -364,6 +374,7 @@ public class PlaylistBuilderTab extends Tab
           {  
             TandaTreeItem tandaTreeItem = playlist.getSelectedTanda();
             tandaTreeItem.addCortina(cortinaTrack);
+            playlist.generateFlatList();
           }
         }
         
