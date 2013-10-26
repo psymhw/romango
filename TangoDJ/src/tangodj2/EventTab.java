@@ -21,7 +21,7 @@ public class EventTab extends Tab
   public	Playlist playlist=null;
   private Player player;
   private Button infoWindowButton = new Button("Info Window");
-  InfoWindow2 infoWindow;
+ 
 	
  public EventTab(Player player)
  {
@@ -57,7 +57,7 @@ public class EventTab extends Tab
 	 {
 	   public void handle(ActionEvent actionEvent) 
 	   {
-	      if (infoWindow==null)  infoWindow=new InfoWindow2(playlist, new ProgressBar());	
+	      if (player.infoWindow==null)  player.infoWindow=new InfoWindow2(playlist, new ProgressBar());	
 	   }
   });
 	// PLAYLIST FOCUS LISTENER

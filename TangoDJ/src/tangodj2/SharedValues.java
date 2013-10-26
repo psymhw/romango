@@ -44,36 +44,36 @@ public class SharedValues
 		  "Cleanup"
 		  ));
   
-  public final static ArrayList<Artist> artistsA = new ArrayList<Artist>(Arrays.asList(
-		  new Artist("Rudolfo",   "Biagi", 1),
-		  new Artist("Francisco", "Canaro", 2),
-		  new Artist("Angel",     "D'Agostino",3),
-		  new Artist("Juan",      "D'Arienzo",4),
-		  new Artist("Carlos",    "Di Sarli",5),
-		  new Artist("Edgardo",   "Donato",6),
-		  new Artist("Osvaldo",   "Pugliese",7),
-		  new Artist("Ricardo",   "Tanturi",8),
-		  new Artist("Anibal",     "Troilo",9)
+  public final static ArrayList<ArtistX> artistsA = new ArrayList<ArtistX>(Arrays.asList(
+		  new ArtistX("Rudolfo",   "Biagi", 1),
+		  new ArtistX("Francisco", "Canaro", 2),
+		  new ArtistX("Angel",     "D'Agostino",3),
+		  new ArtistX("Juan",      "D'Arienzo",4),
+		  new ArtistX("Carlos",    "Di Sarli",5),
+		  new ArtistX("Edgardo",   "Donato",6),
+		  new ArtistX("Osvaldo",   "Pugliese",7),
+		  new ArtistX("Ricardo",   "Tanturi",8),
+		  new ArtistX("Anibal",     "Troilo",9)
 		  ));
 		
-  public final static ArrayList<Artist> artistsB = new ArrayList<Artist>(Arrays.asList(
-		  new Artist("Miguel",    "Calo",10),
-		  new Artist("Lucio",     "Demare",11),
-		  new Artist("Osvalos",   "Fresedo",12),
-		  new Artist("Pedro",     "Laurenz",13),
-		  new Artist("Francisco", "Lomuto",14),
-		  new Artist("",          "Orquesta Tipica Victor",15),
-		//  new Artist("",          "Quinteto Pirincho",16),
-		  new Artist("Enrique",   "Rodriguez",17)
+  public final static ArrayList<ArtistX> artistsB = new ArrayList<ArtistX>(Arrays.asList(
+		  new ArtistX("Miguel",    "Calo",10),
+		  new ArtistX("Lucio",     "Demare",11),
+		  new ArtistX("Osvalos",   "Fresedo",12),
+		  new ArtistX("Pedro",     "Laurenz",13),
+		  new ArtistX("Francisco", "Lomuto",14),
+		  new ArtistX("",          "Orquesta Tipica Victor",15),
+		//  new ArtistX("",          "Quinteto Pirincho",16),
+		  new ArtistX("Enrique",   "Rodriguez",17)
 		  ));
 		 
-  public final static ArrayList<Artist> artistsC = new ArrayList<Artist>(Arrays.asList(
-		  new Artist("Alfredo",   "De Angelise",18),
-		  new Artist("Julio",     "De Caro",19),
-		  new Artist("Roberto",   "Firpo",20),
-		  new Artist("Ciriaco",   "Ortiz",21),
-		  new Artist("Astor",     "Piazzolla",22),
-		  new Artist("",           "Other",23)
+  public final static ArrayList<ArtistX> artistsC = new ArrayList<ArtistX>(Arrays.asList(
+		  new ArtistX("Alfredo",   "De Angelise",18),
+		  new ArtistX("Julio",     "De Caro",19),
+		  new ArtistX("Roberto",   "Firpo",20),
+		  new ArtistX("Ciriaco",   "Ortiz",21),
+		  new ArtistX("Astor",     "Piazzolla",22),
+		  new ArtistX("",           "Other",23)
 		  ));
 		 
 		  
