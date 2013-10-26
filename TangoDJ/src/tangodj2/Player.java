@@ -6,6 +6,7 @@ import tangodj2.cleanup.CleanupTrack;
 import tangodj2.cortina.Cortina;
 import tangodj2.cortina.CortinaTable;
 import tangodj2.cortina.CortinaTrack;
+import tangodj2.infoWindow.InfoWindow2;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -132,7 +133,7 @@ public class Player
     int cortinaMode=INSERT;
     
    // SimpleStringProperty source = new SimpleStringProperty();
-   
+    public InfoWindow2 infoWindow;
 
     public Player(Tab equalizerTab) 
     {
