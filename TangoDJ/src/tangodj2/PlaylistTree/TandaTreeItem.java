@@ -92,6 +92,17 @@ public class TandaTreeItem extends BaseTreeItem
 	} catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
    }
    
+   public void removeCortina()
+   {
+   	 int size = getChildren().size();
+     getChildren().remove(size-1);
+  	 cortinaId=-1;
+   	 try 
+     {
+	   Db.updateTandaTracks(this);
+	} catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
+   }
+   
    
    public int getTrackCount()
    {

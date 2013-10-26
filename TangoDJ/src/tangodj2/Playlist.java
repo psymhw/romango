@@ -37,6 +37,7 @@ import tangodj2.PlaylistTree.CortinaTreeItem;
 import tangodj2.PlaylistTree.PlaylistTreeItem;
 import tangodj2.PlaylistTree.TandaTreeItem;
 import tangodj2.PlaylistTree.TrackTreeItem;
+import tangodj2.cortina.CortinaTrack;
 
 public class Playlist 
 {
@@ -51,7 +52,7 @@ public class Playlist
   private int selectedTanda=-1;
   private int numberOfTandas=-1;
   public static SimpleIntegerProperty playlistFocus = new SimpleIntegerProperty(0);
-	
+  
   public Playlist() throws SQLException, ClassNotFoundException
   {
     setupTreeView();	
@@ -78,28 +79,13 @@ public class Playlist
 	  flatPlaylistTracks.get(playingTrack).baseTreeItem.setNextPlayImage(true);
 	}
 	
-	public PlaylistTrack getTrack(int trackNo)
+  public PlaylistTrack getTrack(int trackNo)
   {
+	if (trackNo>=flatPlaylistTracks.size()) return null;
 	  return flatPlaylistTracks.get(trackNo);
   }
 	
-	/*
-	public PlaylistTrack getNextTrack()
-	{
-	  if (nextTrackIndex==flatPlaylistTracks.size()) 
-	  {  
-	    System.out.println("End Of Playlist");
-	    return null;
-	  }
-	  nowPlayingIndex=nextTrackIndex;
-	  PlaylistTrack playlistTrack=flatPlaylistTracks.get(nextTrackIndex);
-	    playlistTrack.baseTreeItem.setPlayingImage(true);
-	    previouslyPlayingTrack=playlistTrack.baseTreeItem;
-	  if (previouslyPlayingTrack!=null) previouslyPlayingTrack.setPlayingImage(false);
-	  nextTrackIndex++;
-	  return playlistTrack;
-	}
-	*/
+	
 	
 	public void setPrevious()
   {
@@ -128,28 +114,7 @@ public class Playlist
         previouslySelectedTrack=playlistTrack;
     }
 	  
-	  /*
-	  PlaylistTrack playlistTrack;
-    Iterator<PlaylistTrack> it = flatPlaylistTracks.iterator();
-    
-    int index=0;
-    while(it.hasNext())
-    {
-      playlistTrack = it.next();
-      if ((playlistTrack.tandaNumber==tanda)&&(playlistTrack.trackInTanda==trackInTanda))
-      {
-        if (playlistTrack.baseTreeItem.getStatus()!=TrackTreeItem.PLAYING)
-        {  
-          playlistTrack.baseTreeItem.setNextPlayImage(true);
-          nextTrackIndex=index;
-          if (previouslySelectedTrack!=null)  previouslySelectedTrack.setNextPlayImage(false);
-          previouslySelectedTrack=playlistTrack.baseTreeItem;
-        }
-        break;
-      }
-      index++;
-    }
-	  */
+	  
 	}
 	
 	
@@ -203,6 +168,7 @@ public class Playlist
         }
         else playlistTrack.nextTandaName="Good Night";
         playlistTrack.album=trackTreeItem.getAlbum();
+        playlistTrack.artist=trackTreeItem.getArtist();
         playlistTrack.path=trackTreeItem.getPath();
         playlistTrack.tandaNumber=tandaCounter;
         playlistTrack.trackInTanda=tandaTrackCounter;
@@ -220,21 +186,22 @@ public class Playlist
         playableIndex++;
         playlistTrack = new PlaylistTrack();
         playlistTrack.title=cortinaTreeItem.getValue();
-        playlistTrack.album = cortinaTreeItem.getCortinaTrack().getTrackMeta().album;
+        playlistTrack.album = cortinaTreeItem.getAlbum();
+        playlistTrack.artist = cortinaTreeItem.getArtist();
         playlistTrack.tandaName=tandaName;
         playlistTrack.path=cortinaTreeItem.getPath();
         playlistTrack.tandaNumber=tandaCounter;
         playlistTrack.cortina=true;
         playlistTrack.baseTreeItem=cortinaTreeItem;
-        playlistTrack.trackHash=cortinaTreeItem.getCortinaTrack().getPathHash();
+        playlistTrack.trackHash=cortinaTreeItem.getPathHash();
         
-        playlistTrack.startValue =cortinaTreeItem.getCortinaTrack().getStartValue();
-        playlistTrack.stopValue  =cortinaTreeItem.getCortinaTrack().getStopValue();
-        playlistTrack.fadein     =cortinaTreeItem.getCortinaTrack().getFadein();
-        playlistTrack.fadeout    =cortinaTreeItem.getCortinaTrack().getFadeout();
-        playlistTrack.delay      =cortinaTreeItem.getCortinaTrack().getDelay();
-        playlistTrack.original_duration  =cortinaTreeItem.getCortinaTrack().getOriginal_duration();
-        
+        playlistTrack.startValue =cortinaTreeItem.getStart();
+        playlistTrack.stopValue  =cortinaTreeItem.getStop();
+        playlistTrack.fadein     =cortinaTreeItem.getFadein();
+        playlistTrack.fadeout    =cortinaTreeItem.getFadeout();
+        playlistTrack.delay      =cortinaTreeItem.getDelay();
+        playlistTrack.original_duration  =cortinaTreeItem.getOriginal_duration();
+   
         flatPlaylistTracks.add(playlistTrack);
         // didn't set or increment tandaTrackCounter or set tandaCounter
       }
@@ -247,16 +214,19 @@ public class Playlist
       // if the last item in the tree is a tanda, there is no next track
       ti.setPlayableIndex(999);
     }
-    
-    //printFlatList();
+   // System.out.println("Playlist - generateFlatList()");
+ //   printFlatList();
   }
 	
 	public void printFlatList()
 	{
 	  int i=0;
+	  System.out.println("print flat playlist");
+	  System.out.println("playingTrack: "+playingTrack);
+	  System.out.println("nextTrack: "+nextTrack);
 	  PlaylistTrack playlistTrack;
-    Iterator<PlaylistTrack> it = flatPlaylistTracks.iterator();
-    while(it.hasNext())
+     Iterator<PlaylistTrack> it = flatPlaylistTracks.iterator();
+     while(it.hasNext())
     {
       playlistTrack = it.next();
       System.out.println(i+") "
@@ -372,13 +342,14 @@ public class Playlist
 	     private ContextMenu tandaContextMenu =  new ContextMenu();
 	     private ContextMenu trackContextMenu =  new ContextMenu();
 	     private ContextMenu playlistContextMenu =  new ContextMenu();
+	     private ContextMenu cortinaContextMenu =  new ContextMenu();
 
 	     public MyCellFactory() 
 	     {
 	       setupTandaContextMenu(tandaContextMenu);
 	       setupTrackContextMenu(trackContextMenu);
-         setupPlaylistContextMenu(playlistContextMenu);
-	      
+           setupPlaylistContextMenu(playlistContextMenu);
+	       setupCortinaContextMenu(cortinaContextMenu);
 	     }
 	       
 	     @Override
@@ -453,6 +424,7 @@ public class Playlist
              //trackTreeItem.setSelected(true);
             // if (trackTreeItem.isSelected()) setGraphic(new ImageView(TrackTreeItem.greenCheckBallImage));
             // else setGraphic(new ImageView(TrackTreeItem.dimBallImage));
+             setContextMenu(cortinaContextMenu);
            }
 	         else if ("cleanup".equals(bti.getTreeType()))
            {
@@ -531,7 +503,30 @@ public class Playlist
       
      } 
      
-	   
+	   private void setupCortinaContextMenu(final ContextMenu cortinaContextMenu)
+	     {
+	       MenuItem removeCortina = new MenuItem("Remove Cortina");
+	       MenuItem playNext = new MenuItem("Play Next");
+	     
+	       cortinaContextMenu.getItems().addAll(playNext, removeCortina);
+	       removeCortina.setOnAction(new EventHandler() 
+	       {
+	         public void handle(Event t) 
+	         {
+	        	 playlistTreeItem.getTanda(selectedTanda).removeCortina();
+	  	       generateFlatList();
+	         }
+	       });
+	       playNext.setOnAction(new EventHandler() 
+	       {
+	         public void handle(Event t) 
+	         {
+	           setNextTrackToPlay();
+	         }
+	     });
+	      
+	     } 
+	       
 	   private void setupTrackContextMenu(final ContextMenu trackContextMenu)
 	   {
 		   MenuItem moveUp = new MenuItem("Move Track Up"); 
@@ -565,12 +560,11 @@ public class Playlist
 	   trackContextMenu.getItems().addAll(moveUp, moveDown, delete, playNext);
 	   
 	   playNext.setOnAction(new EventHandler() 
-     {
-       public void handle(Event t) 
        {
-        
-         setNextTrackToPlay();
-        }
+         public void handle(Event t) 
+         {
+           setNextTrackToPlay();
+         }
      });
 	   
 	   
@@ -715,7 +709,22 @@ public class Playlist
       this.playingTrack = playingTrack;
     }
 
+   public String getPlayingArtist()
+   {
+	 return flatPlaylistTracks.get(playingTrack).artist; 
+   }
+   public String getPlayingTitle()
+   {
+	 return flatPlaylistTracks.get(playingTrack).title; 
+   }
    
+   public String getNextTandaInfo()
+   {
+	 return flatPlaylistTracks.get(playingTrack).nextTandaName; 
+   }
 	 
-	  
+   public boolean isCortina()
+   {
+	 return  flatPlaylistTracks.get(playingTrack).cortina; 
+   }
 }

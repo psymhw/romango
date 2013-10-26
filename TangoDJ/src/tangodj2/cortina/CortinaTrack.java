@@ -45,8 +45,9 @@ public class CortinaTrack
     this.original_duration=original_duration;
     this.premade=premade;
     this.path=path;
+   // System.out.println("CortinaTrack - path: "+path);
   }
-  
+   
   private static String formatTime(Duration duration) 
   {
     if (duration.greaterThan(Duration.ZERO)) 
