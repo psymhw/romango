@@ -120,35 +120,8 @@ public class PlaylistBuilderTab extends Tab
     } catch (Exception ex) {ex.printStackTrace();}
   }
   
-  private void addTableListeners()
-  {
-    
-  }
   
   
-  
-  
-  /*
-  public void removeTangoTable()
-  {
-    vbox.getChildren().remove(tangoTable);
-  }
-  
-  public void addTangoTable()
-  {
-     vbox.getChildren().add(tangoTable);
-  }
-  
-  public void addRectangle(Rectangle r)
-  {
-    vbox.getChildren().add(r);
-  }
-  
-  public TableView<TangoTrack> getTable()
-  {
-    return tangoTable;
-  }
-  */
   private Button getTestButton()
   {
     Button testButton = new Button("Test"); 

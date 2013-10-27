@@ -599,8 +599,6 @@ public class Playlist
 	   private void newTandaDialog() 
 	   {
 	     final ComboBox comboBox = new ComboBox();
-	     //Separator separator = new Separator();
-	     
 	     final TextBuilder seperatorBuilder = TextBuilder.create()
 	            .fill(Color.BLACK)
 	            .font(Font.font("Serif", 18));
@@ -639,24 +637,19 @@ public class Playlist
 	     rb5.setToggleGroup(styleGroup);
 	     rb6.setToggleGroup(styleGroup);
 	        
-	   rb1.setSelected(true);
-	   
-	   
-	   
-	   final VBox styleBox = new VBox();
-	   styleBox.getChildren().addAll(rb1,rb2,rb3,rb4,rb5,rb6);
-	    
-	     
+	     rb1.setSelected(true);
+
+	     final VBox styleBox = new VBox();
+	     styleBox.getChildren().addAll(rb1,rb2,rb3,rb4,rb5,rb6);
 	     final TextField tandaName = new TextField();
 	     
-	     
-	         final Stage myDialog = new Stage();
-	         myDialog.initModality(Modality.APPLICATION_MODAL);
-	         Button okButton = new Button("SAVE");
-	         okButton.setOnAction(new EventHandler<ActionEvent>()
-	         {
-	           public void handle(ActionEvent arg0) 
-	           {
+         final Stage myDialog = new Stage();
+         myDialog.initModality(Modality.APPLICATION_MODAL);
+         Button okButton = new Button("SAVE");
+         okButton.setOnAction(new EventHandler<ActionEvent>()
+         {
+           public void handle(ActionEvent arg0) 
+           {
 	           String artist = comboBox.getSelectionModel().getSelectedItem().toString();
 	           int styleId = 0;
 	           String selectedStr=styleGroup.getSelectedToggle().toString();
@@ -668,25 +661,25 @@ public class Playlist
 	           } catch (Exception e) {}
 	           addTanda(artist, styleId);
 	             myDialog.close();
-	           }});
-	       
-	         Text tandaLabel = new Text("Orchestra: ");
-	         tandaLabel.setFont(Font.font("Serif", 20));
-	         
-	         
-	         GridPane gridPane = new GridPane();
-	         gridPane.setPadding(new Insets(10, 10, 10, 10));
-	         gridPane.setVgap(2);
-	         gridPane.setHgap(5);
-	         gridPane.add(tandaLabel, 0, 0);
-	         gridPane.add(comboBox, 1, 0);
-	         //gridPane.add(new Text("Style"), 0, 1);
-	         gridPane.add(styleBox, 0, 1);
-	         gridPane.add(okButton, 1, 2);
-	         
-	         Scene myDialogScene = new Scene(gridPane, 300, 200);
-	         myDialog.setScene(myDialogScene);
-	         myDialog.show();
+           }});
+       
+         Text tandaLabel = new Text("Orchestra: ");
+         tandaLabel.setFont(Font.font("Serif", 20));
+         
+         
+         GridPane gridPane = new GridPane();
+         gridPane.setPadding(new Insets(10, 10, 10, 10));
+         gridPane.setVgap(2);
+         gridPane.setHgap(5);
+         gridPane.add(tandaLabel, 0, 0);
+         gridPane.add(comboBox, 1, 0);
+         //gridPane.add(new Text("Style"), 0, 1);
+         gridPane.add(styleBox, 0, 1);
+         gridPane.add(okButton, 1, 2);
+         
+         Scene myDialogScene = new Scene(gridPane, 300, 200);
+         myDialog.setScene(myDialogScene);
+         myDialog.show();
 	   }
 
     public int getNextTrack()

@@ -74,6 +74,10 @@ public class CreateDatabase
 	    		"name varchar(50), " +
 	    		"value varchar(50) " +
 	    		")");	
+		connection.createStatement().execute("insert into state (name) values('TangoFolder')");
+		connection.createStatement().execute("insert into state (name) values('CleanupFolder')");
+		connection.createStatement().execute("insert into state (name, value) values('CurrentPlaylist', '0')");
+
 		System.out.println("State table created");
 	}
 	
@@ -92,6 +96,7 @@ public class CreateDatabase
 	    		"rating float, " +
 	    		"delay integer, " +
 	    		"genre varchar(40), " +
+	    		"tango_genre varchar(20), " +
 	    		"cleanup integer, " +
 	    		"comment varchar(100) " +
 	    		")");
