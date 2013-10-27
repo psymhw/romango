@@ -37,8 +37,8 @@ import javafx.stage.Stage;
  * Add treeitems below song title to show artist, time, album etc
  * Show total time for each tanda. Maybe even real end time from system clock
  * Add pre-made cortinas directly to cortinas table
- 
-
+ * When making cotinas, there should be a length counter
+ *   from the time the set start position button is pressed
  */
 public class TangoDJ2 extends Application 
 {
@@ -47,6 +47,7 @@ public class TangoDJ2 extends Application
   static PlaylistChoiceTab playlistChoiceTab;
   static CortinaTab cortinaTab;
   static EventTab eventTab;
+  private Preferences prefs = new Preferences();
   
   MenuBar menuBar;
   Playlist playlist;
@@ -62,9 +63,10 @@ public class TangoDJ2 extends Application
 	
   public void start(Stage stage) 
   {
-	  primaryStage=stage;
-	  loadFonts();
-	  VBox root = new VBox();
+	primaryStage=stage;
+	loadFonts();
+	loadPreferences();
+	VBox root = new VBox();
     Scene scene = new Scene(root, 950, 550, Color.WHITE);
     r.setFill(Color.RED);
    
@@ -149,10 +151,14 @@ public class TangoDJ2 extends Application
     MenuItem menuAddTangoFile = new MenuItem("Add Tango Track");
     MenuItem menuAddCleanupDir = new MenuItem("Add Cortina\\Cleanup Folder");
     MenuItem menuAddCleanupFile = new MenuItem("Add Cortina\\Cleanup Track");
+    MenuItem preferences = new MenuItem("Preferences");
+    MenuItem about = new MenuItem("About");
+    MenuItem manual = new MenuItem("Manual");
     
     Menu menuEdit = new Menu("Edit");
     Menu menuView = new Menu("View");
-    menuBar.getMenus().addAll(menuFile, menuEdit, menuView);
+    Menu menuHelp = new Menu("Help");
+    menuBar.getMenus().addAll(menuFile, menuEdit, menuView, menuHelp);
     
     menuAddTangoDir.setOnAction(new EventHandler<ActionEvent>() 
     {
@@ -221,7 +227,16 @@ public class TangoDJ2 extends Application
       }
     });   
     	    
+    preferences.setOnAction(new EventHandler<ActionEvent>() 
+    {
+      public void handle(ActionEvent t) 
+      {
+        new PreferencesDialog();	
+      }});
+    
     menuFile.getItems().addAll(menuAddTangoDir, menuAddTangoFile,menuAddCleanupDir, menuAddCleanupFile);
+    menuEdit.getItems().add(preferences);
+    menuHelp.getItems().addAll(about, manual);
   }
   
   private void loadFonts()
@@ -236,5 +251,9 @@ public class TangoDJ2 extends Application
 	Font.loadFont(TangoDJ2.class.getResource("/resources/fonts/FFF_Tusj.ttf").toExternalForm(), 10  );
   }
 
+  private void loadPreferences()
+  {
+	  prefs=Db.getPreferences();
+  }
  
 }

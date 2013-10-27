@@ -157,7 +157,7 @@ public class Db
   }
   
 	
-	public static void loadCortinaTracks(ObservableList<CortinaTrack> cortinaTracksData)
+  public static void loadCortinaTracks(ObservableList<CortinaTrack> cortinaTracksData)
   {
       cortinaTracksData.clear();
       try
@@ -193,6 +193,31 @@ public class Db
       } catch (Exception e) { e.printStackTrace();}
     }
 	
+  public static Preferences getPreferences()
+  {
+	  Preferences prefs = new Preferences();
+      try
+      {
+      connect();
+      Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery("select * from state ");
+      while(resultSet.next())
+      {
+         if ("TangoFolder".equals(resultSet.getString("name"))) 
+        	 prefs.tangoFolder=resultSet.getString("value");
+         if ("CleanupFolder".equals(resultSet.getString("name"))) 
+        	 prefs.cleanupFolder=resultSet.getString("value");
+         if ("CurrentPlaylist".equals(resultSet.getString("name"))) 
+        	 prefs.currentPlaylist=resultSet.getInt("value");
+      }
+      if (resultSet!=null) resultSet.close();
+      if (statement!=null) statement.close();
+      disconnect();
+      //System.out.println("Cortina Data: "+cortinaTracksData.size());
+      } catch (Exception e) { e.printStackTrace();}
+	  
+	  return prefs;
+    }
 	public static CortinaTrack getCortinaTrack(int id)
   {
 	  CortinaTrack cortinaTrack=null;
