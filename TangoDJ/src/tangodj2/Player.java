@@ -1423,4 +1423,11 @@ public void setPlaylist(Playlist playlist) {
     int cortinaLengthMillis = stopTimeMillis-startTimeMillis;
     cortinaLengthLabel.setText(formatTime(new Duration(cortinaLengthMillis)));
   }
+  
+  public void changePlaylist(int playlistId)
+  {
+	  try {
+	  playlist = new Playlist(playlistId);
+	  } catch (Exception e) {e.printStackTrace();};
+  }
  }

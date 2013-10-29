@@ -13,6 +13,9 @@ import javafx.collections.ObservableList;
 
 import tangodj2.PlaylistTree.PlaylistTreeItem;
 import tangodj2.PlaylistTree.TandaTreeItem;
+import tangodj2.allPlaylistsTree.AllPlaylistsBaseItem;
+import tangodj2.allPlaylistsTree.AllPlaylistsFolderItem;
+import tangodj2.allPlaylistsTree.AllPlaylistsPlaylistItem;
 import tangodj2.cleanup.CleanupTrack;
 import tangodj2.cortina.Cortina;
 import tangodj2.cortina.CortinaTrack;
@@ -208,7 +211,7 @@ public class Db
          if ("CleanupFolder".equals(resultSet.getString("name"))) 
         	 prefs.cleanupFolder=resultSet.getString("value");
          if ("CurrentPlaylist".equals(resultSet.getString("name"))) 
-        	 prefs.currentPlaylist=resultSet.getInt("value");
+        	 prefs.currentPlaylist=Integer.parseInt(resultSet.getString("value"));
       }
       if (resultSet!=null) resultSet.close();
       if (statement!=null) statement.close();
@@ -216,9 +219,51 @@ public class Db
       //System.out.println("Cortina Data: "+cortinaTracksData.size());
       } catch (Exception e) { e.printStackTrace();}
 	  
+      if (prefs.cleanupFolder==null)
+    	  prefs.cleanupFolder="C:\\";
+      if (prefs.cleanupFolder.length()==0)
+    	  prefs.cleanupFolder="C:\\";
+      if (prefs.tangoFolder==null)
+    	  prefs.tangoFolder="C:\\";
+      if (prefs.tangoFolder.length()==0)
+    	  prefs.tangoFolder="C:\\";
 	  return prefs;
     }
-	public static CortinaTrack getCortinaTrack(int id)
+  
+  public static void updatePreferences(Preferences prefs)
+  {
+	  StringBuffer sql = new StringBuffer("update state set value = '"
+			  +prefs.tangoFolder+"' where name='TangoFolder'");
+	   try {
+	   connect();
+	   //System.out.println("Db update prefs sql: "+sql);
+	   connection.createStatement().execute(sql.toString());
+	   
+	   sql = new StringBuffer("update state set value = '"
+				  +prefs.cleanupFolder+"' where name='CleanupFolder'");
+	   connection.createStatement().execute(sql.toString());
+	   
+	   sql = new StringBuffer("update state set value = '"
+				  +prefs.currentPlaylist+"' where name='CurrentPlaylist'");
+	   connection.createStatement().execute(sql.toString());
+	   disconnect(); 
+	   } catch (Exception e) { e.printStackTrace(); }
+  }
+  public static void saveCurrentPlaylist(int id)
+  {
+	try 
+	{
+	  connect();
+	   
+	  String  sql = "update state set value = '"
+				  +id+"' where name='CurrentPlaylist'";
+	   connection.createStatement().execute(sql);
+	   disconnect(); 
+	 } catch (Exception e) { e.printStackTrace(); }
+  }
+  
+  
+  public static CortinaTrack getCortinaTrack(int id)
   {
 	  CortinaTrack cortinaTrack=null;
       try
@@ -351,7 +396,7 @@ public class Db
 	public static int insertTanda(String artist, int styleId, int position) throws SQLException, ClassNotFoundException
 	{
 		 connect();
-		 String sql="insert into tandas (artist, styleId, playlistId, position, cortinaId) values('"+sqlReadyString(artist)+"', "+styleId+","+SharedValues.currentPlaylist+", "+position+", -1)";
+		 String sql="insert into tandas (artist, styleId, playlistId, position, cortinaId) values('"+sqlReadyString(artist)+"', "+styleId+","+TangoDJ2.prefs.currentPlaylist+", "+position+", -1)";
 		// System.out.println("Db insertTanda sql: "+sql);
 		 connection.createStatement().execute(sql);
 		 
@@ -369,6 +414,22 @@ public class Db
 		 disconnect();
 		 // System.out.println("maxid: "+maxid);
 	     return maxid;
+	}
+	
+	private static int getMaxId(String file) throws Exception
+	{
+		int maxid=0;
+        String sql="select max(id) maxid from "+file;
+        System.out.println("sql: "+sql);
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+        if(resultSet.next())
+	 	 {
+          maxid= resultSet.getInt("maxid");
+	 	 }
+     	 if (resultSet!=null) resultSet.close();
+	 	 if (statement!=null) statement.close();
+	 	 return maxid;
 	}
 	public static String sqlReadyString(String inStr)
 	{
@@ -556,5 +617,98 @@ public class Db
    
     return maxid;
   }
+  
+  public static AllPlaylistsBaseItem getAllPlaylists()
+  {
+	  AllPlaylistsBaseItem root=null;
+	  try
+	  {
+	    connect();
+	    root = getPlaylistItem(1);
+	    getPlaylistsRecursive(root);
+	    disconnect();
+	  } catch (Exception e) {e.printStackTrace();}
+	  return root;
+  }
+
+private static AllPlaylistsBaseItem getPlaylistItem(int i) throws Exception
+{
+	String sql = "select * from playlists where id = "+i;
+	Statement statement = connection.createStatement();
+ 	ResultSet resultSet = statement.executeQuery(sql);
+ 	
+ 	String name="";
+ 	int folder=0;
+ 	AllPlaylistsBaseItem apfi=null;
+  	if(resultSet.next())
+ 	{
+ 	  name=resultSet.getString("name");
+ 	  folder=resultSet.getInt("folder");
+ 	  if (folder==1)
+ 	     apfi = new AllPlaylistsFolderItem(name);
+ 	  else apfi = new AllPlaylistsPlaylistItem(name);
+ 	  apfi.setId(resultSet.getInt("id"));
+ 	  apfi.setLevel(resultSet.getInt("level"));
+ 	  apfi.setParentId(resultSet.getInt("parent"));
+ 	  apfi.setPosition(resultSet.getInt("position"));
+ 	}
+ 	if (resultSet!=null) resultSet.close();
+ 	if (statement!=null) statement.close();
+	return apfi;
+}
+
+private static AllPlaylistsBaseItem getPlaylistsRecursive(AllPlaylistsBaseItem parent) throws Exception
+{
+	String sql = "select * from playlists where parent = "+parent.getId()
+			+" order by position";
+	Statement statement = connection.createStatement();
+ 	ResultSet resultSet = statement.executeQuery(sql);
+ 	
+ 	String name="";
+ 	int folder=0;
+ 	int id=0;
+ 	AllPlaylistsBaseItem apfi=null;
+  	while (resultSet.next())
+ 	{
+ 	  name=resultSet.getString("name");
+ 	  folder = resultSet.getInt("folder");
+ 	  id = resultSet.getInt("id");
+ 	  if (folder==0)
+ 		  apfi = new AllPlaylistsPlaylistItem(name);
+ 	  else
+ 	    apfi = new AllPlaylistsFolderItem(name);
+ 	  apfi.setId(id);
+ 	  apfi.setLevel(resultSet.getInt("level"));
+ 	  apfi.setParentId(resultSet.getInt("parent"));
+ 	  apfi.setPosition(resultSet.getInt("position"));
+ 	  parent.getChildren().add(apfi);
+ 	  getPlaylistsRecursive(apfi);
+ 	}
+ 	if (resultSet!=null) resultSet.close();
+ 	if (statement!=null) statement.close();
+	return apfi;
+}
+
+public static AllPlaylistsBaseItem insertPlaylistsItem(String name, String location,  int parent, int level, int position, int folder) 
+{
+	AllPlaylistsBaseItem apbi=null;
+  try
+  {
+    connect();
+    String sql = "insert into playlists (name, location, parent, level, position, folder) "
+    +"values('"+name+"', '"
+    +location+"', "
+    +parent+", "
+    +level+", "
+    +position+"," +
+    +folder+")";
+    //System.out.println("sql: "+sql);
+     connection.createStatement().execute(sql);
+     int id = getMaxId("playlists");
+     apbi = getPlaylistItem(id);
+     disconnect();
+	} catch (Exception e) { e.printStackTrace(); }
+  return apbi;
+}
 	
 }

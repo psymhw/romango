@@ -6,42 +6,54 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumnBuilder;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TableColumn.CellEditEvent;
-import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.util.Callback;
+import tangodj2.allPlaylistsTree.AllPlaylistsBaseItem;
+import tangodj2.allPlaylistsTree.AllPlaylistsFolderItem;
+import tangodj2.allPlaylistsTree.EditPlaylistDialog;
 
 public class PlaylistChoiceTab extends Tab
 {
   private TableView<PlaylistData> allPlaylistsTable = new TableView<PlaylistData>();
   private final static ObservableList<PlaylistData> allPlaylistsData = FXCollections.observableArrayList();
-
-	
-  public PlaylistChoiceTab()
+  private TreeView allPlaylistsTree = new TreeView();
+  private AllPlaylistsFolderItem root;
+  int selectedId=-1;
+  AllPlaylistsBaseItem selectedItem;
+  public final static int PLAYLIST=0;
+  public final static int FOLDER=1;
+  TangoDJ2 tangoDJ;
+  EventTab eventTab;
+  Player player;
+  PlaylistBuilderTab playlistBuilderTab;
+  
+  
+  public PlaylistChoiceTab(TangoDJ2 tangoDJ, Player player, PlaylistBuilderTab playlistBuilderTab, EventTab eventTab)
   {
-	   this.setText("Playlists");
-	
+	this.setText("Playlists");
+	this.tangoDJ=tangoDJ;
+	this.eventTab=eventTab;
+	this.player=player;
+	this.playlistBuilderTab=playlistBuilderTab;
+	/*
 	TableColumn nameCol = TableColumnBuilder.create()
             .text("Name")
             .minWidth(100)
@@ -77,7 +89,7 @@ public class PlaylistChoiceTab extends Tab
      allPlaylistsTable.setItems(allPlaylistsData);  
 	
 	setData();
-	
+	*/
 	final ContextMenu contextMenu = new ContextMenu();
 	
 
@@ -94,19 +106,56 @@ public class PlaylistChoiceTab extends Tab
 	    }
 	});
 	contextMenu.getItems().addAll(item1, item2);
-	allPlaylistsTable.setContextMenu(contextMenu);
-	 
-	 
-    
+	//allPlaylistsTable.setContextMenu(contextMenu);
+	//root.setContextMenu(contextMenu);
 	
+	 ChangeListener<TreeItem<String>> treeViewChangeListener = new ChangeListener<TreeItem<String>>() 
+	 {
+	   public void changed(ObservableValue<? extends TreeItem<String>> observableValue, TreeItem<String> oldItem, TreeItem<String> newItem) 
+	   {
+	     if (newItem!=null)
+		 {
+	    	 selectedItem = (AllPlaylistsBaseItem)newItem; 
+	    	
+		    selectedId=selectedItem.getId();
+		   // bti.isLeaf();
+		 }
+	}};
 	
+	allPlaylistsTree.getSelectionModel().selectedItemProperty().addListener(treeViewChangeListener);
+
+	allPlaylistsTree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+	root = (AllPlaylistsFolderItem)Db.getAllPlaylists();
+	
+	//System.out.println("root: "+root.getValue());
+	
+	allPlaylistsTree.getStyleClass().add("playlistTree");
+	root.setExpanded(true);
+	allPlaylistsTree.setRoot(root);
+	//root.setId(0);
+	allPlaylistsTree.setCellFactory(new Callback<TreeView<String>,TreeCell<String>>()
+			 {
+			   @Override
+			   public TreeCell<String> call(TreeView<String> p) 
+			   {
+				 return new MyCellFactory();
+			   }
+			  });
+	/*
+	AllPlaylistsFolderItem someFolder = new AllPlaylistsFolderItem("Some Folder");
+	someFolder.setId(17);
+	AllPlaylistsPlaylistItem aPlaylist= new AllPlaylistsPlaylistItem("a playlist");
+	aPlaylist.setId(22);
+	root.getChildren().add(someFolder);
+	root.getChildren().add(aPlaylist);
+	*/
 	final Label label = new Label("Playlists");
     label.setFont(new Font("Arial", 20));
     
     final VBox vbox = new VBox(5);
     
     vbox.setPadding(new Insets(10, 10, 10, 10));
-    vbox.getChildren().addAll(label, allPlaylistsTable, getEntryBox());
+    vbox.getChildren().add(allPlaylistsTree);
     vbox.setMaxWidth(350);
     this.setContent(vbox);
   }
@@ -139,58 +188,7 @@ public class PlaylistChoiceTab extends Tab
 
 
 
-  private VBox getEntryBox()
-  {
-	VBox vbox = new VBox(5);
-	vbox.setPadding(new Insets(10, 10, 10, 10));
-	vbox.setSpacing(5);
-	//vbox.setMaxWidth(350);
-	
-	vbox.setStyle("-fx-border-style: solid;"
-            + "-fx-border-width: 1;"
-            + "-fx-border-color: black");
-	
-	final Label panelLabel    = new Label("New Playlist");
-	final Label nameLabel     = new Label(" Name: ");
-	final Label locationLabel = new Label(" Location: ");
-	
-    panelLabel.setFont(   new Font("Arial", 20));
-    nameLabel.setFont(    new Font("Arial", 18));
-    locationLabel.setFont(new Font("Arial", 18));
-    
-    final TextField nameField = new TextField();
-    final TextField locationField = new TextField();
-    
-    GridPane gridPane = new GridPane();
-    gridPane.setPadding(new Insets(10, 10, 10, 10));
-    gridPane.setVgap(2);
-    gridPane.setHgap(15);
-    
-    int row=0;
-    gridPane.add(nameLabel, 0, row);
-    gridPane.add(nameField, 1, row++);
-    
-    gridPane.add(locationLabel, 0, row);
-    gridPane.add(locationField, 1, row++);
-    
-    GridPane.setHalignment(nameLabel, HPos.RIGHT);
-    GridPane.setHalignment(locationLabel, HPos.RIGHT);
-
-    final Button addButton = new Button("New Playlist");
-    addButton.setOnAction(new EventHandler<ActionEvent>() 
-    {
-      public void handle(ActionEvent e) 
-      {
-    	addPlaylist(nameField.getText(), locationField.getText());
-    	nameField.clear();
-    	locationField.clear();
-      }
-    });
-    
-    vbox.getChildren().addAll(panelLabel, gridPane, addButton);
-   
-	return vbox;
-  }
+  
   
   private void addPlaylist(String name, String location)
   {
@@ -218,5 +216,113 @@ public class PlaylistChoiceTab extends Tab
 	 }
    }
 	 
+  private final class MyCellFactory extends TreeCell<String> 
+  {
+    private ContextMenu folderContextMenu =  new ContextMenu();
+    private ContextMenu playlistContextMenu =  new ContextMenu();
+
+    public MyCellFactory() 
+    {
+      setupFolderContextMenu(folderContextMenu);
+      setupPlaylistContextMenu(playlistContextMenu);
+    }
+      
+    @Override
+    public void updateItem(String item, boolean empty) 
+    {
+      super.updateItem(item, empty);
+
+      if (empty) 
+      {
+        setText(null);
+        setGraphic(null);
+      } 
+      else 
+      {
+        setText(getString());
+        AllPlaylistsBaseItem bti = (AllPlaylistsBaseItem)getTreeItem();
+        if (isSelected()) 
+        {
+          TreeItem treeItem = (TreeItem)bti;
+          System.out.println("PlaylistChoiceTab - selected tree cell: "+treeItem.getValue());
+        }
+        if ("folder".equals(bti.getTreeType())) 
+        {  
+          setFont(Font.font("Serif", 20));
+          setContextMenu(folderContextMenu);
+        }
+        else if ("playlist".equals(bti.getTreeType())) 
+        {	   
+         // if (playlistTreeItem.getTandaPosition((TandaTreeItem)bti)==0) tandaContextMenu.getItems().get(0).setDisable(true);  // disable move up
+          //if (playlistTreeItem.getTandaPosition((TandaTreeItem)bti)==playlistTreeItem.getTandaCount()-1) tandaContextMenu.getItems().get(1).setDisable(true); // disable move down
+          setFont(Font.font("Serif", 16));
+          setContextMenu(playlistContextMenu);
+         // setGraphic(getTreeItem().getGraphic());
+        }
+       
+        setGraphic(getTreeItem().getGraphic());
+      }
+    }
+     
+    private String getString() 
+    {
+      return getItem() == null ? "" : getItem().toString();
+    }
+  }
+  
+  private void setupPlaylistContextMenu(final ContextMenu playlistContextMenu)
+  {
+    MenuItem edit = new MenuItem("Edit");
+    MenuItem select = new MenuItem("SELECT");
+    MenuItem delete = new MenuItem("Delete");
+    MenuItem moveUp = new MenuItem("Move Up");
+    MenuItem moveDown = new MenuItem("Move Down");
+    MenuItem move = new MenuItem("Move to Diff Folder");
+    playlistContextMenu.getItems().addAll(select, edit, moveUp, moveDown, move, delete);
+    select.setOnAction(new EventHandler() 
+    {
+      public void handle(Event t) 
+      {
+        System.out.println("Selected: "+selectedId);  
+        Db.saveCurrentPlaylist(selectedId);
+        TangoDJ2.prefs.currentPlaylist=selectedId;
+        tangoDJ.changePlaylist(selectedId);
+        eventTab.changePlaylist(selectedId);
+        playlistBuilderTab.changePlaylist(selectedId);
+        player.changePlaylist(selectedId);
+      }
+    });
+  }
+    
+    private void setupFolderContextMenu(final ContextMenu playlistContextMenu)
+    {
+      MenuItem newPlaylist = new MenuItem("New Playlist"); 
+      MenuItem newFolder = new MenuItem("New Folder"); 
+      MenuItem edit = new MenuItem("Edit");
+      MenuItem moveUp = new MenuItem("Move Up");
+      MenuItem moveDown = new MenuItem("Move Down");
+      MenuItem move = new MenuItem("Move to Diff Folder");
+      MenuItem delete = new MenuItem("Delete"); 
+      playlistContextMenu.getItems().addAll(newPlaylist, newFolder, edit, moveUp, moveDown, move,delete);
+      newPlaylist.setOnAction(new EventHandler() 
+      {
+        public void handle(Event t) 
+        {
+        	System.out.println("PlaylistChoiceTab, selectedId: "+selectedId);
+          new EditPlaylistDialog("new", PLAYLIST, selectedItem);  
+         
+        }
+      });
+      newFolder.setOnAction(new EventHandler() 
+      {
+        public void handle(Event t) 
+        {
+        	System.out.println("PlaylistChoiceTab, selectedId: "+selectedId);
+          new EditPlaylistDialog("new", FOLDER, selectedItem);  
+        }
+      });
+   
+  } 
+
 }
 

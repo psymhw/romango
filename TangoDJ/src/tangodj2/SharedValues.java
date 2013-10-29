@@ -21,7 +21,7 @@ public class SharedValues
  // public static Playlist playlist;
   public static String DRIVER ="org.apache.derby.jdbc.EmbeddedDriver";
   public static String JDBC_URL ="jdbc:derby:tango_db;create=false";
-  public static int currentPlaylist = 1;
+//  public static int currentPlaylist = 1;
  // public static int selectedTanda = -1;
   //public static int selectedPlaylistTrack = -1;
   public static int allTracksType = 0;

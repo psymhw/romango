@@ -49,6 +49,7 @@ public class PlaylistBuilderTab extends Tab
   int savedType=0;
   Player player;
   TrackLoader2 trackLoader = new TrackLoader2();
+  HBox hbox =  new HBox();
   
   public PlaylistBuilderTab(Playlist playlist, Player player)
   {
@@ -72,15 +73,15 @@ public class PlaylistBuilderTab extends Tab
 	  vbox.getChildren().add(getSearchAndFilterBar());
 	  vbox.getChildren().add(tangoTable);
 	 
-	  HBox hbox =  new HBox();
+	  
 	  hbox.setPadding(new Insets(10, 10, 10, 10));
 	  hbox.setSpacing(20);
 	  hbox.getChildren().add(vbox);
 	  hbox.setStyle("-fx-background-color: CC99CC; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
 
   
-    hbox.getChildren().add(playlist.getTreeView());
-    hbox.setHgrow(playlist.getTreeView(), Priority.ALWAYS);
+    hbox.getChildren().add(this.playlist.getTreeView());
+    hbox.setHgrow(this.playlist.getTreeView(), Priority.ALWAYS);
     setupListeners() ;
     this.setContent(hbox);
   }
@@ -375,6 +376,15 @@ public class PlaylistBuilderTab extends Tab
 public TangoTable getTangoTable() 
 {
 	return tangoTable;
+}
+
+public void changePlaylist(int playlistId)
+{
+	  try {
+	  playlist = new Playlist(playlistId);
+	  hbox.getChildren().remove(1);
+	  hbox.getChildren().add(playlist.getTreeView());
+	  } catch (Exception e) {e.printStackTrace();};
 }
   
 }
