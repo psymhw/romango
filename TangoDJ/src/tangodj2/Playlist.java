@@ -53,11 +53,10 @@ public class Playlist
   private int numberOfTandas=-1;
   public static SimpleIntegerProperty playlistFocus = new SimpleIntegerProperty(0);
   
-  public Playlist() throws SQLException, ClassNotFoundException
+  public Playlist(int playlistId) throws SQLException, ClassNotFoundException
   {
-    setupTreeView();	
-	setNextTrackToPlay();
-	//setNextTrackToPlay(0,0);
+	setupTreeView(playlistId);	
+	setNextTrackToPlay();  
   }
 	
   public void printTracks()
@@ -72,12 +71,12 @@ public class Playlist
 	}
   }
 	
-	public void stopPlaying()
-	{
-	  if (flatPlaylistTracks.size()==0) return;
-	  flatPlaylistTracks.get(playingTrack).baseTreeItem.setNextPlayImage(false);
-	  flatPlaylistTracks.get(playingTrack).baseTreeItem.setNextPlayImage(true);
-	}
+  public void stopPlaying()
+  {
+	if (flatPlaylistTracks.size()==0) return;
+	flatPlaylistTracks.get(playingTrack).baseTreeItem.setNextPlayImage(false);
+	flatPlaylistTracks.get(playingTrack).baseTreeItem.setNextPlayImage(true);
+  }
 	
   public PlaylistTrack getTrack(int trackNo)
   {
@@ -85,24 +84,21 @@ public class Playlist
 	  return flatPlaylistTracks.get(trackNo);
   }
 	
-	
-	
-	public void setPrevious()
+  public void setPrevious()
   {
-	  nextTrack-=2;
-	  if (nextTrack<0) nextTrack=0;
+	nextTrack-=2;
+	if (nextTrack<0) nextTrack=0;
   }
 	
 	
-	public void setNextTrackToPlay()
-	{
-	  //System.out.println("Playlist - nextTrackToPlay: "+tanda+"/"+trackInTanda);
-	  
-	  if (selectedPlaylistTrack==-1) return;
-	  if (flatPlaylistTracks==null) return;
-	  if (flatPlaylistTracks.size()==0) return;
-	  PlaylistTrack playlistTrack = flatPlaylistTracks.get(selectedPlaylistTrack);
-	  if (playlistTrack.baseTreeItem.getStatus()!=TrackTreeItem.PLAYING)
+  public void setNextTrackToPlay()
+  {
+	if (selectedPlaylistTrack==-1) return;
+	if (flatPlaylistTracks==null) return;
+	if (flatPlaylistTracks.size()==0) return;
+	PlaylistTrack playlistTrack = flatPlaylistTracks.get(selectedPlaylistTrack);
+	
+	if (playlistTrack.baseTreeItem.getStatus()!=TrackTreeItem.PLAYING)
     {  
       playlistTrack.baseTreeItem.setNextPlayImage(true);
       nextTrack=selectedPlaylistTrack;
@@ -111,14 +107,11 @@ public class Playlist
         if (!previouslySelectedTrack.playing)
         previouslySelectedTrack.baseTreeItem.setNextPlayImage(false);
       }
-        previouslySelectedTrack=playlistTrack;
+      previouslySelectedTrack=playlistTrack;
     }
-	  
-	  
-	}
+  }
 	
-	
-	public void generateFlatList()
+  public void generateFlatList()
   {
     int i=0;
     flatPlaylistTracks.clear();
@@ -129,11 +122,6 @@ public class Playlist
     PlaylistTrack playlistTrack;
     numberOfTandas=0;
     int playableIndex=0;
-    
-   // PlaylistTreeItem playlistTreeItem=null;
-   // TandaTreeItem tandaTreeItem=null;
-   // TrackTreeItem trackTreeItem=null;
-   // CortinaTreeItem cortinaTreeItem=null;
     
     while( true)
     {
@@ -214,76 +202,67 @@ public class Playlist
       // if the last item in the tree is a tanda, there is no next track
       ti.setPlayableIndex(999);
     }
-   // System.out.println("Playlist - generateFlatList()");
- //   printFlatList();
+    // printFlatList();
   }
 	
-	public void printFlatList()
-	{
-	  int i=0;
-	  System.out.println("print flat playlist");
-	  System.out.println("playingTrack: "+playingTrack);
-	  System.out.println("nextTrack: "+nextTrack);
-	  PlaylistTrack playlistTrack;
-     Iterator<PlaylistTrack> it = flatPlaylistTracks.iterator();
-     while(it.hasNext())
+  public void printFlatList()
+  {
+	int i=0;
+	System.out.println("print flat playlist");
+	System.out.println("playingTrack: "+playingTrack);
+	System.out.println("nextTrack: "+nextTrack);
+	PlaylistTrack playlistTrack;
+    Iterator<PlaylistTrack> it = flatPlaylistTracks.iterator();
+    while(it.hasNext())
     {
       playlistTrack = it.next();
       System.out.println(i+") "
       +playlistTrack.tandaName+" "
-          +playlistTrack.trackInTanda
-          +" of "+playlistTrack.numberOfTracksInTanda+", "
-          +playlistTrack.title+", "
-          +playlistTrack.album+", "
-          +playlistTrack.path
-          );
+      +playlistTrack.trackInTanda
+      +" of "+playlistTrack.numberOfTracksInTanda+", "
+      +playlistTrack.title+", "
+      +playlistTrack.album+", "
+      +playlistTrack.path);
       i++;
     }
-	}
+  }
 	
-	public TreeView<String> getTreeView()
-	{
-	   return treeView;	
-	}
+  public TreeView<String> getTreeView() { return treeView; }
 	
-	public void addTanda(String artist, int styleId)
-	{
-		playlistTreeItem.addTanda(artist, styleId);
-		generateFlatList();
-	}
+  public void addTanda(String artist, int styleId)
+  {
+	playlistTreeItem.addTanda(artist, styleId);
+	generateFlatList();
+  }
 	
-	public int getTandaCount()
-	{
-		return playlistTreeItem.getTandaCount();
-	}
+  public int getTandaCount() { return playlistTreeItem.getTandaCount();	}
 	
-	public TandaTreeItem getSelectedTanda()
-	{
-	  if (selectedTanda==-1) selectedTanda=0;
-	  return getTanda(selectedTanda);
-	}
+  public TandaTreeItem getSelectedTanda()
+  {
+	if (selectedTanda==-1) selectedTanda=0;
+	return getTanda(selectedTanda);
+  }
 	
-	public TandaTreeItem  getTanda(int index)
-	{
-	  
-	  TandaTreeItem tandaTreeItem = (TandaTreeItem)playlistTreeItem.getChildren().get(index);
+  public TandaTreeItem  getTanda(int index)
+  {
+  TandaTreeItem tandaTreeItem = (TandaTreeItem)playlistTreeItem.getChildren().get(index);
 	  System.out.println("Playlist tanda: "+tandaTreeItem.getArtist());
 	  return tandaTreeItem;
 	}
 	
-  private void setupTreeView() throws SQLException, ClassNotFoundException
+  private void setupTreeView(int playlistId) throws SQLException, ClassNotFoundException
 	{
-	  playlistTreeItem =  Db.getPlaylist(SharedValues.currentPlaylist);
+	  playlistTreeItem =  Db.getPlaylist(playlistId);
 	  treeView = new TreeView<String>(playlistTreeItem);
 	  treeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 	 
 	  treeView.getStyleClass().add("playlistTree");
-	 	treeView.getSelectionModel().select(playlistTreeItem);
+	  treeView.getSelectionModel().select(playlistTreeItem);
 		treeView.setShowRoot(true);
 		ArrayList<TandaTreeItem> tandaTreeItems=null;
 		try 
 		{
-		  tandaTreeItems = Db.getTandaTreeItems(SharedValues.currentPlaylist);
+		  tandaTreeItems = Db.getTandaTreeItems(playlistId);
 		} catch (ClassNotFoundException | SQLException e) { e.printStackTrace();}
 			
 		 Iterator<TandaTreeItem> it = tandaTreeItems.iterator();

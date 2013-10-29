@@ -21,7 +21,7 @@ public class EventTab extends Tab
   public	Playlist playlist=null;
   private Player player;
   private Button infoWindowButton = new Button("Info Window");
- 
+  HBox hbox =  new HBox();
 	
  public EventTab(Player player)
  {
@@ -29,11 +29,11 @@ public class EventTab extends Tab
    this.setText("Event");
 	try 
 	{
-	  playlist = new Playlist();
+	  playlist = new Playlist(TangoDJ2.prefs.currentPlaylist);
 	} catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
 	
 	playlist.getTreeView().setPrefWidth(500);
-	HBox hbox =  new HBox();
+	
     hbox.setPadding(new Insets(10, 10, 10, 10));
 	hbox.setSpacing(20);
 	 // vbox.getChildren().add(vbox);
@@ -71,4 +71,12 @@ public class EventTab extends Tab
 	    };   
 	    playlist.playlistFocus.addListener(playlistFocusListener);
  }
+ public void changePlaylist(int playlistId)
+ {
+	  try {
+	  playlist = new Playlist(playlistId);
+	  hbox.getChildren().remove(0);
+	  hbox.getChildren().add(0, playlist.getTreeView());
+	  } catch (Exception e) {e.printStackTrace();};
+ } 
 }

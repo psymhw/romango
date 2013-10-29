@@ -12,6 +12,8 @@ import javafx.stage.Stage;
 
 public class PreferencesDialog extends Stage
 {
+  TextField tangoDir = new TextField(TangoDJ2.prefs.tangoFolder);
+  TextField cleanupDir = new TextField(TangoDJ2.prefs.cleanupFolder);
   public PreferencesDialog()
   {
 	final int col[] = {0,1,2,3,4,5,6,7,8,9,10};
@@ -24,8 +26,7 @@ public class PreferencesDialog extends Stage
     gridPane.setHgap(5);
     gridPane.add(new Label("Tango Tracks Folder: "), col[0], row[0]);
     gridPane.add(new Label("Cleanup Tracks Folder: "), col[0], row[1]);
-    TextField tangoDir = new TextField("C:\\music\\tango");
-    TextField cleanupDir = new TextField("C:\\music");
+   
     gridPane.add(tangoDir, col[1], row[0]);
     gridPane.add(cleanupDir, col[1], row[1]);
     gridPane.add(okButton, col[0], row[2]);
@@ -34,6 +35,9 @@ public class PreferencesDialog extends Stage
     {
       public void handle(ActionEvent arg0) 
       {
+    	 TangoDJ2.prefs.tangoFolder=tangoDir.getText(); 
+    	 TangoDJ2.prefs.cleanupFolder=cleanupDir.getText(); 
+    	 Db.updatePreferences(TangoDJ2.prefs);
         close();	
       }});
     

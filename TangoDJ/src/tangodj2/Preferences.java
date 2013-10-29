@@ -2,7 +2,7 @@ package tangodj2;
 
 public class Preferences 
 {
-  public String tangoFolder="";
-  public String cleanupFolder="";
-  public int currentPlaylist;
+  public String tangoFolder="c:";
+  public String cleanupFolder="c:";
+  public int currentPlaylist=1;
 }

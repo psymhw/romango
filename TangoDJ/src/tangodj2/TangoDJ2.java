@@ -29,7 +29,6 @@ import javafx.stage.Stage;
  * CDEX
  * Get rating from iTunes XML file?
  * Create a tangoGenre MP3tag and populate when making tandas?
- * Remember file locations for adding files
  * MP3 tag editor
  * Event Tab: fade/next track
  * table search or restriction or fulltext
@@ -47,7 +46,7 @@ public class TangoDJ2 extends Application
   static PlaylistChoiceTab playlistChoiceTab;
   static CortinaTab cortinaTab;
   static EventTab eventTab;
-  private Preferences prefs = new Preferences();
+  public static Preferences prefs = new Preferences();
   
   MenuBar menuBar;
   Playlist playlist;
@@ -65,24 +64,23 @@ public class TangoDJ2 extends Application
   {
 	primaryStage=stage;
 	loadFonts();
-	loadPreferences();
+	
 	VBox root = new VBox();
     Scene scene = new Scene(root, 950, 550, Color.WHITE);
     r.setFill(Color.RED);
    
     final URL stylesheet = getClass().getResource("style.css");
     scene.getStylesheets().add(stylesheet.toString());
+
+    CreateDatabase cb = new CreateDatabase();
+    try {if (!cb.exists()) cb.create(); } catch (Exception e) { e.printStackTrace(); }
+    loadPreferences();
     
     TabPane tabPane = new TabPane();
     BorderPane mainPane = new BorderPane();
-          
-    CreateDatabase cb = new CreateDatabase();
-    
-    try {if (!cb.exists()) cb.create(); } catch (Exception e) { e.printStackTrace(); }
-    
     setupMenuBar();
       
-    try { playlist = new Playlist();} 
+    try { playlist = new Playlist(prefs.currentPlaylist);} 
     catch (SQLException se) { System.out.println("PROGRAM ALREADY RUNNING"); System.exit(0); } 
     catch (ClassNotFoundException e) { e.printStackTrace(); }
         
@@ -92,11 +90,12 @@ public class TangoDJ2 extends Application
     
     player = new Player(equalizerTab);
     player.setPlaylist(playlist);
+    eventTab = new EventTab(player);
    
     playlistBuilderTab = new PlaylistBuilderTab(playlist,  player);
     tabPane.getTabs().add(playlistBuilderTab);
     
-    playlistChoiceTab = new PlaylistChoiceTab();
+    playlistChoiceTab = new PlaylistChoiceTab(this, player, playlistBuilderTab, eventTab);
     tabPane.getTabs().add(playlistChoiceTab);
     
     cortinaTab = new CortinaTab(player);
@@ -125,15 +124,10 @@ public class TangoDJ2 extends Application
       
     tabPane.getTabs().add(equalizerTab);
     tabPane.getTabs().add(cortinaTab);
-    
-    eventTab = new EventTab(player);
     tabPane.getTabs().add(eventTab);
     
     mainPane.setCenter(tabPane);
-      
-   
     mainPane.setBottom(player.get());
-     
     mainPane.prefHeightProperty().bind(scene.heightProperty());
     mainPane.prefWidthProperty().bind(scene.widthProperty());
     
@@ -153,7 +147,7 @@ public class TangoDJ2 extends Application
     MenuItem menuAddCleanupFile = new MenuItem("Add Cortina\\Cleanup Track");
     MenuItem preferences = new MenuItem("Preferences");
     MenuItem about = new MenuItem("About");
-    MenuItem manual = new MenuItem("Manual");
+    MenuItem manual = new MenuItem("TangoDJ Manual");
     
     Menu menuEdit = new Menu("Edit");
     Menu menuView = new Menu("View");
@@ -165,7 +159,7 @@ public class TangoDJ2 extends Application
       public void handle(ActionEvent t) 
       {
         DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setInitialDirectory(new File("C:\\music\\tango"));  // temporary 
+        directoryChooser.setInitialDirectory(new File(prefs.tangoFolder));  // temporary 
         File selectedDirectory = 
         directoryChooser.showDialog(primaryStage);
                   
@@ -177,28 +171,26 @@ public class TangoDJ2 extends Application
       }
     });   
     menuAddCleanupDir.setOnAction(new EventHandler<ActionEvent>() 
-    	    {
-    	      public void handle(ActionEvent t) 
-    	      {
-    	        DirectoryChooser directoryChooser = new DirectoryChooser();
-    	        directoryChooser.setInitialDirectory(new File("C:\\music\\tango"));  // temporary 
-    	        File selectedDirectory = 
-    	        directoryChooser.showDialog(primaryStage);
-    	                  
-    	        if(selectedDirectory == null) { System.out.println("No Directory selected"); } 
-    	        else
-    	        {
-    	          playlistBuilderTab.loadCleanupDirectory(selectedDirectory.toPath().toString());
-    	        }
-    	      }
-    	    });   
+    {
+      public void handle(ActionEvent t) 
+      {
+    	DirectoryChooser directoryChooser = new DirectoryChooser();
+    	directoryChooser.setInitialDirectory(new File(prefs.cleanupFolder));  // temporary 
+    	File selectedDirectory = directoryChooser.showDialog(primaryStage);
+    	if (selectedDirectory == null) { System.out.println("No Directory selected"); } 
+    	else
+    	{
+    	  playlistBuilderTab.loadCleanupDirectory(selectedDirectory.toPath().toString());
+    	}
+      }
+    });   
     	    
     menuAddTangoFile.setOnAction(new EventHandler<ActionEvent>() 
     {
       public void handle(ActionEvent t) 
       {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File("C:\\music\\tango"));  // temporary 
+        fileChooser.setInitialDirectory(new File(prefs.tangoFolder));  // temporary 
         File selectedFile = 
         fileChooser.showOpenDialog(primaryStage);
                   
@@ -215,7 +207,7 @@ public class TangoDJ2 extends Application
       public void handle(ActionEvent t) 
       {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File("C:\\music\\tango"));  // temporary 
+        fileChooser.setInitialDirectory(new File(prefs.cleanupFolder));  // temporary 
         File selectedFile = 
         fileChooser.showOpenDialog(primaryStage);
                   
@@ -228,11 +220,13 @@ public class TangoDJ2 extends Application
     });   
     	    
     preferences.setOnAction(new EventHandler<ActionEvent>() 
-    {
-      public void handle(ActionEvent t) 
-      {
-        new PreferencesDialog();	
-      }});
+    { public void handle(ActionEvent t) { new PreferencesDialog(); }});
+    
+    about.setOnAction(new EventHandler<ActionEvent>() 
+    { public void handle(ActionEvent t) { new AboutDialog(); }});
+    
+     manual.setOnAction(new EventHandler<ActionEvent>() 
+     { public void handle(ActionEvent t) { new ManualDialog(); }});
     
     menuFile.getItems().addAll(menuAddTangoDir, menuAddTangoFile,menuAddCleanupDir, menuAddCleanupFile);
     menuEdit.getItems().add(preferences);
@@ -241,7 +235,6 @@ public class TangoDJ2 extends Application
   
   private void loadFonts()
   {
-	
 	Font.loadFont(TangoDJ2.class.getResource("/resources/fonts/Carousel.ttf").toExternalForm(), 10  );
 	Font.loadFont(TangoDJ2.class.getResource("/resources/fonts/Anagram.ttf").toExternalForm(), 10  );
 	Font.loadFont(TangoDJ2.class.getResource("/resources/fonts/Carrington.ttf").toExternalForm(), 10  );
@@ -253,7 +246,15 @@ public class TangoDJ2 extends Application
 
   private void loadPreferences()
   {
-	  prefs=Db.getPreferences();
+	 prefs=Db.getPreferences();
+	 //System.out.println("TangoDJ2 current playlist: "+prefs.currentPlaylist);
   }
- 
+  
+  public void changePlaylist(int playlistId)
+  {
+	try 
+	{
+	  playlist = new Playlist(playlistId);
+	} catch (Exception e) {e.printStackTrace();};
+  }
 }

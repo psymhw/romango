@@ -60,11 +60,14 @@ public class CreateDatabase
 	    		"id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
 	    		"name varchar(100), " +
 	    		"location varchar(100), " +
+	    		"level integer, " +
+	    		"parent integer, " +
+	    		"folder integer, " +
+	    		"position integer, " +
 	    		"incept TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP" +
 	    		")");	
-		connection.createStatement().execute("insert into playlists (name, location) values('Test Playlist', 'Eugene')");
+		connection.createStatement().execute("insert into playlists (name, location, level, parent, folder, position) values('PLAYLISTS', '', 0, 0, 1, 0)");
 		System.out.println("Playlists table created");
-
 	}
 	
 	private void createStateTable() throws SQLException
@@ -76,7 +79,7 @@ public class CreateDatabase
 	    		")");	
 		connection.createStatement().execute("insert into state (name) values('TangoFolder')");
 		connection.createStatement().execute("insert into state (name) values('CleanupFolder')");
-		connection.createStatement().execute("insert into state (name, value) values('CurrentPlaylist', '0')");
+		connection.createStatement().execute("insert into state (name, value) values('CurrentPlaylist', '1')");
 
 		System.out.println("State table created");
 	}
@@ -154,12 +157,12 @@ public class CreateDatabase
   System.out.println("Cortinas table created");
 	}
 	
-	public static void main(String[] args) 
-	{
-	  try
-	  {
-	    new CreateDatabase();
-	  } catch (Exception e) { e.printStackTrace(); }
-	}
+//	public static void main(String[] args) 
+	//{
+	  //try
+	 // {
+	  //  new CreateDatabase();
+	 // } catch (Exception e) { e.printStackTrace(); }
+//	}
 
 }
