@@ -287,6 +287,11 @@ public class PlaylistBuilderTab extends Tab
           }
         }
         
+        if ("edit".equals(action))
+        {
+          new MP3EditorDialog(tangoTrack.getPathHash());
+        }
+        
         tangoTable.getAction().set("nada");
         }
       }

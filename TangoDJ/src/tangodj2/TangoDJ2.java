@@ -40,9 +40,13 @@ import javafx.stage.Stage;
  * When making cotinas, there should be a length counter
  *   from the time the set start position button is pressed
  * Tooltips on TreeItems (treeCell?) to show time, album, etc
- * Need a file for Orchestra, Singer, Band Leader then a pointer from the tracks file
+ * Need a file for Orchestra, Singer, Band Leader (principles) 
+ *    then a pointer from the tracks file
  * Spell check band leaders
  * Create playlists from tandas.
+ * Change cleanup to non-tango
+ * Handle bad directory address in preferences
+ * Need an info line to show loading progress and error messages
  * Song adjectives: instramental, duet, female singer,peppy,perky
  * modern, dreamy, dramatic, slow, mediun, alternative, better, best
  * lots of feelings, heavy vocals, fast, old scratchy, sweet
@@ -51,7 +55,13 @@ import javafx.stage.Stage;
  * traspie, fun, high energy, paso double, horns, Big orchestra,
  * weak, piano, mellow, long intro, oboe, whistles, driving beat,
  * violins, crooner, happy, better, glosa (talking at beginning), best
- * bandonian, favored by other DJs, too old, wordy
+ * bandonian, favored by other DJs, too old, wordy, sax, guitar
+ * worst, challenging, complex rhythm, great vocals, interesting
+ * breaks, fast, changes, lyrical, strings, wanders, drama, noises,
+ * whimsical, minor, low energy, delightful, poor quality, lovley
+ * flat, shrill, lush, confusing beat, busy, novelty, sad, angry
+ * medium, inconsistent rhythm, anguish, laughing, sounds
+ * melancholy, funky, organ, funny voices, live
  */
 public class TangoDJ2 extends Application 
 {
