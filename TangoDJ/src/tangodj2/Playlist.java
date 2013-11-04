@@ -20,6 +20,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -370,6 +371,8 @@ public class Playlist
 	           setFont(Font.font("Serif", 16));
 	           
 	           TrackTreeItem trackTreeItem = (TrackTreeItem)bti;
+	           this.setTooltip(new Tooltip("Album: "+trackTreeItem.getAlbum()+"\n"
+	               +"Orchestra: "+trackTreeItem.getArtist()));
 	         
 	           int trackCount=((TandaTreeItem)trackTreeItem.getParent()).getTrackCount();
 	           int trackPosition=trackTreeItem.getTrackPosition(trackTreeItem);

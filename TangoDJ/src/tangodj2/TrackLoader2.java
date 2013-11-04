@@ -198,6 +198,7 @@ public class TrackLoader2
 	              +"')";
 		//System.out.println("Db: "+sql);
 		 try {
+		   // TODO java.sql.SQLIntegrityConstraintViolationException needs to be handled here
 		 if (isSet(trackMeta.title)) connection.createStatement().execute(sql);
 		 } catch (Exception ex) { System.out.println("SQL ERROR: "+sql); 
 		 ex.printStackTrace(); } 

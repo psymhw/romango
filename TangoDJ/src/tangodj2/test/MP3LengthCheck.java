@@ -54,7 +54,7 @@ import org.tritonus.share.sampled.file.TAudioFileFormat;
 
 import tangodj2.Hasher;
 import tangodj2.TangoDJ2;
-import tangodj2.TrackLoader;
+//import tangodj2.TrackLoader;
 
 
 public class MP3LengthCheck extends Application
@@ -77,8 +77,8 @@ public class MP3LengthCheck extends Application
 	 public void start(Stage stage) 
 	 {
 		// getInfo(); 
-		//getLength2();
-		processDirectory();
+		getLength2();
+		//processDirectory();
 		Group root = new Group();
 		
 		final Button addButton = new Button("Check");
@@ -127,8 +127,14 @@ public class MP3LengthCheck extends Application
 	   };
 	
 	  media = new Media(file.toURI().toString());
-	  media.durationProperty().addListener(cl2);
-      mp = new MediaPlayer(media);
+	//  media.durationProperty().addListener(cl2);
+    mp = new MediaPlayer(media);
+    mp.setOnReady(new Runnable() 
+    {
+      public void run() 
+      {
+         System.out.println("Media Ready: "+mp.getTotalDuration()); 
+        }});
  	}
 	
 	
