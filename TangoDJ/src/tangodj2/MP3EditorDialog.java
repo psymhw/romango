@@ -104,7 +104,7 @@ public class MP3EditorDialog extends Stage
         close();	
       }});
     
-    Scene myDialogScene = new Scene(gridPane, 300, 200);
+    Scene myDialogScene = new Scene(gridPane, 300, 300);
     setScene(myDialogScene);
     show();
   } 
