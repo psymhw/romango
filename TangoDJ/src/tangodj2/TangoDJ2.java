@@ -38,6 +38,11 @@ import javafx.stage.Stage;
  * Add pre-made cortinas directly to cortinas table
  * When making cotinas, there should be a length counter
  *   from the time the set start position button is pressed
+ * Tooltips on TreeItems (treeCell?) to show time, album, etc
+ * Need a file for Orchestra, Singer, Band Leader then a pointer from the tracks file
+ * Spell check band leaders
+ * Create playlists from tandas.
+ * Song adjectives 
  */
 public class TangoDJ2 extends Application 
 {
