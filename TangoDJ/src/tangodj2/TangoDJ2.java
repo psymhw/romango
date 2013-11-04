@@ -32,6 +32,7 @@ import javafx.stage.Stage;
  * MP3 tag editor
  * Event Tab: fade/next track
  * table search or restriction or fulltext
+ * Spare DB fields for updates
  * try mediaPlayer.setOnReady instead of Timeline for loading MP3 tag info
  * Add treeitems below song title to show artist, time, album etc
  * Show total time for each tanda. Maybe even real end time from system clock
@@ -42,7 +43,15 @@ import javafx.stage.Stage;
  * Need a file for Orchestra, Singer, Band Leader then a pointer from the tracks file
  * Spell check band leaders
  * Create playlists from tandas.
- * Song adjectives 
+ * Song adjectives: instramental, duet, female singer,peppy,perky
+ * modern, dreamy, dramatic, slow, mediun, alternative, better, best
+ * lots of feelings, heavy vocals, fast, old scratchy, sweet
+ * rythmic, romantic, uplifting, others better, late night, 
+ * mysterious, candombe, mild, special, trumpet, muted trumpet, clarinet
+ * traspie, fun, high energy, paso double, horns, Big orchestra,
+ * weak, piano, mellow, long intro, oboe, whistles, driving beat,
+ * violins, crooner, happy, better, glosa (talking at beginning), best
+ * bandonian, favored by other DJs, too old, wordy
  */
 public class TangoDJ2 extends Application 
 {
