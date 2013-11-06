@@ -289,7 +289,7 @@ public class PlaylistBuilderTab extends Tab
         
         if ("edit".equals(action))
         {
-          new MP3EditorDialog(tangoTrack.getPathHash());
+          new MP3EditorDialog(tangoTrack, row, tangoTable);
         }
         
         tangoTable.getAction().set("nada");

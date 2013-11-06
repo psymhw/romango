@@ -62,6 +62,7 @@ import javafx.stage.Stage;
  * flat, shrill, lush, confusing beat, busy, novelty, sad, angry
  * medium, inconsistent rhythm, anguish, laughing, sounds
  * melancholy, funky, organ, funny voices, live
+ * Select tango table columns to show
  */
 public class TangoDJ2 extends Application 
 {

@@ -10,6 +10,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -40,6 +41,7 @@ public class InfoWindow2
   Playlist playlist;
 
   
+  
   public InfoWindow2(Playlist playlist, ProgressBar progress2)
   { 
 	Stage infoWindow = new Stage();
@@ -48,6 +50,9 @@ public class InfoWindow2
 	infoWindow.initModality(Modality.NONE);
 	
 	setupBackgrounds();
+	Label test = new Label("TEST");
+	test.setFont(titleFont);
+	
 	
 	//maybe can have an image as part of the bar or
 	//use a stackPane with an image behind and some less opacity

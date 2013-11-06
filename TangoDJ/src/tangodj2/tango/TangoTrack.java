@@ -10,28 +10,29 @@ public class TangoTrack
 	private final SimpleStringProperty title;
   private final SimpleStringProperty artist;
   private final SimpleStringProperty album;
-    private final SimpleStringProperty genre;
-    private final SimpleStringProperty comment;
-    private final SimpleStringProperty track_year;
-    private final SimpleStringProperty pathHash;
-    private final SimpleStringProperty path;
-    private final SimpleIntegerProperty duration;
-    private int cortina=0;
+  private final SimpleStringProperty genre;
+  private final SimpleStringProperty comment;
+  private final SimpleStringProperty track_year;
+  private final SimpleStringProperty pathHash;
+  private final SimpleStringProperty path;
+  private final SimpleIntegerProperty duration;
+  
+  private int cortina=0;
     
     
 	public TangoTrack(String titleStr, String artistStr, String albumStr, String genreStr, String commentStr, String pathHashStr, String path, int duration, int cortina, String track_yearStr)
-    {
-      this.title = new SimpleStringProperty(titleStr);
-      this.artist = new SimpleStringProperty(artistStr);
-      this.album = new SimpleStringProperty(albumStr);
-      this.genre = new SimpleStringProperty(genreStr);
-      this.comment = new SimpleStringProperty(commentStr);
-      this.track_year = new SimpleStringProperty(track_yearStr);
-      this.pathHash = new SimpleStringProperty(pathHashStr);
-      this.path = new SimpleStringProperty(path);
-      this.duration = new SimpleIntegerProperty(duration);
-      this.cortina=cortina;
-    }
+  {
+    this.title = new SimpleStringProperty(titleStr);
+    this.artist = new SimpleStringProperty(artistStr);
+    this.album = new SimpleStringProperty(albumStr);
+    this.genre = new SimpleStringProperty(genreStr);
+    this.comment = new SimpleStringProperty(commentStr);
+    this.track_year = new SimpleStringProperty(track_yearStr);
+    this.pathHash = new SimpleStringProperty(pathHashStr);
+    this.path = new SimpleStringProperty(path);
+    this.duration = new SimpleIntegerProperty(duration);
+    this.cortina=cortina;
+  }
     
     public String getPathHash() {
     	return pathHash.get(); }
