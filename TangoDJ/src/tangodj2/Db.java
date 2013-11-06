@@ -357,7 +357,30 @@ public class Db
 	  return cleanupTrack;
 	}
 	
-	public static TrackMeta getTrackInfo(String pathHash )
+	public static void updateTrack(TrackMeta trackMeta)
+	{
+	  String sql = "update tracks set " 
+	               +" title = '"+trackMeta.title+"', "
+	               +" album = '"+trackMeta.album+"', "
+	               +" artist = '"+trackMeta.artist+"', "
+	               +" track_year = '"+trackMeta.track_year+"', "
+	               +" comment = '"+trackMeta.comment+"', "
+	               +" singer = '"+trackMeta.singer+"', "
+	               +" rating = '"+trackMeta.rating+"', "
+	               +" adjectives = '"+trackMeta.adjectives+"', "
+	               +" style = '"+trackMeta.style+"', "
+	               +" delay = "+trackMeta.delay
+	               +" where pathHash =  '"+trackMeta.pathHash+"'";
+     try 
+     {
+       connect();
+       System.out.println("Db update track sql: "+sql);
+       connection.createStatement().execute(sql);
+       disconnect();
+     } catch (Exception e) { e.printStackTrace();}
+   }
+	
+	public static TrackMeta getTrackInfo(String pathHash)
 	{
 	  TrackMeta trackMeta=null;
 	  try
@@ -379,6 +402,10 @@ public class Db
 	 			  );
 	 	  trackMeta.duration= resultSet.getInt("duration");
 	 	  trackMeta.cleanup=resultSet.getInt("cleanup");
+	 	  trackMeta.singer=resultSet.getString("singer");
+	 	 trackMeta.style=resultSet.getString("style");
+	   	trackMeta.adjectives=resultSet.getString("adjectives");
+	   	trackMeta.rating=resultSet.getString("rating");
 	 	}
 	 	if (resultSet!=null) resultSet.close();
 	 	if (statement!=null) statement.close();

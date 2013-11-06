@@ -523,6 +523,10 @@ public class TrackLoadingTest extends Application
     else if (artist.trim().length()==0)  artist="NO ARTIST";
     if (title==null) title="NO TITLE";
     else if (title.trim().length()==0)  title="NO TITLE";
+    
+    //tag.setSongTitle("Test");
+    //mp3.setID3v2Tag(tag);
+    // mp3.save();
      
     /*
     if ("NO TITLE".equals(title)) 

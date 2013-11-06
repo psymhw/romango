@@ -96,11 +96,13 @@ public class CreateDatabase
 	    		"duration integer, " +
 	    		"track_year varchar(4), " +
 	    		"playlist_count integer, " +
-	    		"rating float, " +
+	    		"rating varchar(5), " +
 	    		"delay integer, " +
 	    		"genre varchar(40), " +
-	    		"tango_genre varchar(20), " +
+	    		"style varchar(20), " +
+	    		"singer varchar(40), " +
 	    		"cleanup integer, " +
+	    		"adjectives varchar(100), " +
 	    		"comment varchar(100) " +
 	    		")");
 	    

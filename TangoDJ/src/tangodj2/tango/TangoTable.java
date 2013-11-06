@@ -11,6 +11,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -152,7 +153,16 @@ public class TangoTable extends TableView<TangoTrack>
 		   titleCol.setPrefWidth(150);
 		   titleCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("title"));
 		   titleCol.setCellFactory(new MyCellFactory());
-		   
+		   /*
+		   titleCol.setOnEditCommit(new EventHandler<CellEditEvent<TangoTrack, String>>() {
+         @Override
+         public void handle(CellEditEvent<TangoTrack, String> t) 
+         {
+           System.out.println("TangoTable edit commit");
+             ((TangoTrack) t.getTableView().getItems().get(t.getTablePosition().getRow())).setTitle(t.getNewValue());
+         }
+     });
+		   */
 		       
 		  TableColumn artistCol = new TableColumn("Artist");
 		  artistCol.setMinWidth(50);
@@ -192,9 +202,15 @@ public class TangoTable extends TableView<TangoTrack>
 		  yearCol.setPrefWidth(50);
 		  yearCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("track_year"));
 		  yearCol.setCellFactory(new MyCellFactory());
+		  yearCol.visibleProperty().addListener(new ChangeListener<Boolean>() {
+        public void changed(ObservableValue ov,Boolean old_val, Boolean new_val) {
+          System.out.println("Year Column - "+new_val);
+  }
+});
 		     
 		  this.getColumns().addAll(titleCol, durationCol, yearCol, artistCol, albumCol, genreCol, commentCol);
-		      
+		  this.setTableMenuButtonVisible(true);  
+		  
 	  }
 		
 	   /*
