@@ -70,7 +70,7 @@ import javafx.stage.WindowEvent;
  * Add BPM to tracks?
  * Add lyrics?
  * Guess STYLE from title, genre and comment
- * Principle as band leader last name only
+ * Principle as band leader last name only. Artist has full artist name
  */
 public class TangoDJ2 extends Application 
 {

@@ -161,129 +161,85 @@ public class TangoTable extends TableView<TangoTrack>
     {
       return	Db.getTangoTableColumnWidth(col.getText()+"Width", defaultVal);
     }
-	   private void setupColumns()
-	   {
-		   TableColumn titleCol = new TableColumn("Title");
-		   titleCol.setMinWidth(100);
-		   titleCol.setPrefWidth(150);
-		   titleCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("title"));
-		   titleCol.setCellFactory(new MyCellFactory());
-		  
-		  // ARTIST COLUMN 
-		  TableColumn artistCol = new TableColumn("Artist");
-		  artistCol.setMinWidth(50);
-		  artistCol.setPrefWidth(100);
-		  artistCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("artist"));
-		  artistCol.setCellFactory(new MyCellFactory());
-		  
-		  // SINGER COLUMN 
-	      TableColumn singerCol = new TableColumn("Singer");
-	      singerCol.setMinWidth(50);
-	      singerCol.setPrefWidth(getWidth(singerCol, 80));
-	      singerCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("singer"));
-	      singerCol.setCellFactory(new MyCellFactory());
-	      singerCol.setVisible(getVisibility(singerCol));
-			 
-		  // ALBUM COLUMN 
-		  TableColumn albumCol = new TableColumn("Album");
-		  albumCol.setMinWidth(50);
-		  albumCol.setPrefWidth(getWidth(albumCol, 110));
-		  albumCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("album"));
-		  albumCol.setCellFactory(new MyCellFactory());
-		  albumCol.setVisible(getVisibility(albumCol));
-			
-		  
-		 /*
-		  albumCol.widthProperty().addListener(new ChangeListener<Number>() 
-		  {
-        public void changed(ObservableValue<? extends Number> arg0,
-                Number arg1, Number arg2) 
-        {
-          System.out.println("Col width changed: "+arg2);
-          TangoDJ2.prefs.albumColWidth=arg2.doubleValue();
-          Db.updateTangoTableColumnWidth("albumColWidth", arg2.doubleValue());
-        }
-      });
-		 
-		  */
-		 
-		  
-		  
-		  TableColumn genreCol = new TableColumn("Genre");
-		  genreCol.setMinWidth(30);
-		  genreCol.setPrefWidth(getWidth(genreCol, 50));
-		  genreCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("genre"));
-		  genreCol.setCellFactory(new MyCellFactory());
-		  
-		  genreCol.setVisible(TangoDJ2.prefs.genreCol);
-      genreCol.visibleProperty().addListener(new ChangeListener<Boolean>() {
-        public void changed(ObservableValue ov,Boolean old_val, Boolean new_val) 
-        {
-          TangoDJ2.prefs.genreCol=new_val;
-          Db.updateTangoTableColumnVisible("genreCol", new_val);
-       }});
-      
-      TableColumn styleCol = new TableColumn("Style");
-      styleCol.setMinWidth(30);
-      styleCol.setPrefWidth(50);
-      styleCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("style"));
-      styleCol.setCellFactory(new MyCellFactory());
-      
-      styleCol.setVisible(TangoDJ2.prefs.styleCol);
-      styleCol.visibleProperty().addListener(new ChangeListener<Boolean>() {
-        public void changed(ObservableValue ov,Boolean old_val, Boolean new_val) 
-        {
-          TangoDJ2.prefs.styleCol=new_val;
-          Db.updateTangoTableColumnVisible("styleCol", new_val);
-       }});
-		  
-		      
-		  TableColumn commentCol = new TableColumn("Comment");
-		  commentCol.setMinWidth(50);
-		  commentCol.setPrefWidth(100);
-		  commentCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("comment"));
-		  commentCol.setCellFactory(new MyCellFactory());
-		  
-		  commentCol.setVisible(TangoDJ2.prefs.commentCol);
-      commentCol.visibleProperty().addListener(new ChangeListener<Boolean>() {
-        public void changed(ObservableValue ov,Boolean old_val, Boolean new_val) 
-        {
-          TangoDJ2.prefs.commentCol=new_val;
-          Db.updateTangoTableColumnVisible("commentCol", new_val);
-       }});
-		 		      
-		  TableColumn durationCol = new TableColumn("Length");
-		  durationCol.setMinWidth(50);
-		  durationCol.setPrefWidth(50);
-		  durationCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("duration"));
-		  durationCol.setCellFactory(new MyCellFactory());
-		  
-		  durationCol.setVisible(TangoDJ2.prefs.lengthCol);
-		  durationCol.visibleProperty().addListener(new ChangeListener<Boolean>() {
-        public void changed(ObservableValue ov,Boolean old_val, Boolean new_val) 
-        {
-          TangoDJ2.prefs.lengthCol=new_val;
-          Db.updateTangoTableColumnVisible("lengthCol", new_val);
-       }});
-		      
-		  TableColumn yearCol = new TableColumn("Year");
-		  yearCol.setMinWidth(50);
-		  yearCol.setPrefWidth(50);
-		  yearCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("track_year"));
-		  yearCol.setCellFactory(new MyCellFactory());
-		  
-		  yearCol.setVisible(TangoDJ2.prefs.yearCol);
-		  yearCol.visibleProperty().addListener(new ChangeListener<Boolean>() {
-        public void changed(ObservableValue ov,Boolean old_val, Boolean new_val) 
-        {
-          TangoDJ2.prefs.yearCol=new_val;
-          Db.updateTangoTableColumnVisible("yearCol", new_val);
-       }});
-		     
-		  this.getColumns().addAll(titleCol, durationCol, yearCol, artistCol, singerCol, albumCol, genreCol, styleCol, commentCol);
-		  this.setTableMenuButtonVisible(true);  
-		  
-	  }
+   private void setupColumns()
+   {
+	   TableColumn titleCol = new TableColumn("Title");
+	   titleCol.setMinWidth(100);
+	   titleCol.setPrefWidth(150);
+	   titleCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("title"));
+	   titleCol.setCellFactory(new MyCellFactory());
+
+	   // ARTIST COLUMN 
+	   TableColumn artistCol = new TableColumn("Artist");
+	   artistCol.setMinWidth(50);
+	   artistCol.setPrefWidth(100);
+	   artistCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("artist"));
+	   artistCol.setCellFactory(new MyCellFactory());
+
+	   // SINGER COLUMN 
+	   TableColumn singerCol = new TableColumn("Singer");
+	   singerCol.setMinWidth(50);
+	   singerCol.setPrefWidth(getWidth(singerCol, 80));
+	   singerCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("singer"));
+	   singerCol.setCellFactory(new MyCellFactory());
+	   singerCol.setVisible(getVisibility(singerCol));
+
+	   // ALBUM COLUMN 
+	   TableColumn albumCol = new TableColumn("Album");
+	   albumCol.setMinWidth(50);
+	   albumCol.setPrefWidth(getWidth(albumCol, 110));
+	   albumCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("album"));
+	   albumCol.setCellFactory(new MyCellFactory());
+	   albumCol.setVisible(getVisibility(albumCol));
+
+       // GENRE COLUMN
+	   TableColumn genreCol = new TableColumn("Genre");
+	   genreCol.setMinWidth(30);
+	   genreCol.setPrefWidth(getWidth(genreCol, 50));
+	   genreCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("genre"));
+	   genreCol.setCellFactory(new MyCellFactory());
+	   genreCol.setVisible(getVisibility(genreCol));
+  
+  // STYLE COLUMN
+  TableColumn styleCol = new TableColumn("Style");
+  styleCol.setMinWidth(30);
+  styleCol.setPrefWidth(getWidth(styleCol,50));
+  styleCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("style"));
+  styleCol.setCellFactory(new MyCellFactory());
+  styleCol.setVisible(getVisibility(styleCol));
+  
+	      // COMMENT COLUMN
+	  TableColumn commentCol = new TableColumn("Comment");
+	  commentCol.setMinWidth(getWidth(commentCol,50));
+	  commentCol.setPrefWidth(100);
+	  commentCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("comment"));
+	  commentCol.setCellFactory(new MyCellFactory());
+	  
+	  commentCol.setVisible(getVisibility(commentCol));
+  
+	 		      
+	  TableColumn durationCol = new TableColumn("Length");
+	  durationCol.setMinWidth(50);
+	  durationCol.setPrefWidth(getWidth(durationCol,50));
+	  durationCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("duration"));
+	  durationCol.setCellFactory(new MyCellFactory());
+	  
+	  durationCol.setVisible(getVisibility(durationCol));
+	 
+	      
+	  TableColumn yearCol = new TableColumn("Year");
+	  yearCol.setMinWidth(50);
+	  yearCol.setPrefWidth(getWidth(yearCol, 50));
+	  yearCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("track_year"));
+	  yearCol.setCellFactory(new MyCellFactory());
+	  
+	  yearCol.setVisible(getVisibility(yearCol));
+	
+	     
+	  this.getColumns().addAll(titleCol, durationCol, yearCol, artistCol, singerCol, albumCol, genreCol, styleCol, commentCol);
+	  this.setTableMenuButtonVisible(true);  
+	  
+  }
 		
 	   /*
 	  EventHandler<KeyEvent>keyEvent = new EventHandler<KeyEvent>() 
