@@ -124,7 +124,7 @@ public class MP3EditorDialog extends Stage
         updateTrackMeta();
         updateTangoTableView();
         Db.updateTrack(trackMeta);
-       //   updateMP3tag();
+        updateMP3tag();
         close();	
       }});
     

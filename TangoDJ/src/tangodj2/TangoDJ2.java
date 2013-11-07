@@ -15,6 +15,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TableColumn;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -23,6 +24,7 @@ import javafx.scene.text.Font;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 /*
  * TODO export playlist?
  * MP3 Tagtools
@@ -66,6 +68,9 @@ import javafx.stage.Stage;
  * Save column widths too?
  * Oh Jeeze, what about column position?
  * Add BPM to tracks?
+ * Add lyrics?
+ * Guess STYLE from title, genre and comment
+ * Principle as band leader last name only
  */
 public class TangoDJ2 extends Application 
 {
@@ -82,6 +87,7 @@ public class TangoDJ2 extends Application
   Rectangle r = new Rectangle(10,10,10,10);
   Player player;
  
+  
 	
   public static void main(String[] args) 
   {
@@ -92,6 +98,29 @@ public class TangoDJ2 extends Application
   {
 	primaryStage=stage;
 	loadFonts();
+	
+	stage.setOnCloseRequest(new EventHandler<WindowEvent>() 
+  {
+    public void handle(WindowEvent e)
+    {
+      int numberOfCols= playlistBuilderTab.getTangoTable().getColumns().size();
+      TableColumn t;
+      String columnName;
+      double width;
+      boolean visible;
+      for(int i=0; i<numberOfCols; i++)
+      {
+        t = playlistBuilderTab.getTangoTable().getColumns().get(i);
+        columnName=t.getText();
+        width=t.getWidth();
+        visible=t.isVisible();
+        
+        System.out.println(i+") "+columnName+", "+width+", "+visible);
+      }
+      System.out.println("Exit");
+    }
+   });
+	
 	
 	  VBox root = new VBox();
     Scene scene = new Scene(root, 1200, 700, Color.WHITE);
