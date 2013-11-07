@@ -165,14 +165,14 @@ public class TangoTable extends TableView<TangoTrack>
    {
 	   TableColumn titleCol = new TableColumn("Title");
 	   titleCol.setMinWidth(100);
-	   titleCol.setPrefWidth(150);
+	   titleCol.setPrefWidth(getWidth(titleCol, 150));
 	   titleCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("title"));
 	   titleCol.setCellFactory(new MyCellFactory());
 
 	   // ARTIST COLUMN 
 	   TableColumn artistCol = new TableColumn("Artist");
 	   artistCol.setMinWidth(50);
-	   artistCol.setPrefWidth(100);
+	   artistCol.setPrefWidth(getWidth(artistCol, 100));
 	   artistCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("artist"));
 	   artistCol.setCellFactory(new MyCellFactory());
 

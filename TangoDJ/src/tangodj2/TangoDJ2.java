@@ -10,6 +10,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -71,6 +72,7 @@ import javafx.stage.WindowEvent;
  * Add lyrics?
  * Guess STYLE from title, genre and comment
  * Principle as band leader last name only. Artist has full artist name
+ * Need track number in database in case I want to identify songs by album and track #
  */
 public class TangoDJ2 extends Application 
 {
@@ -86,6 +88,7 @@ public class TangoDJ2 extends Application
    
   Rectangle r = new Rectangle(10,10,10,10);
   Player player;
+  public static Label feedback = new Label("FEEDBACK ");
  
   
 	
@@ -98,6 +101,7 @@ public class TangoDJ2 extends Application
   {
 	primaryStage=stage;
 	loadFonts();
+	feedback.setPrefWidth(800);
 	
 	stage.setOnCloseRequest(new EventHandler<WindowEvent>() 
     {
@@ -170,8 +174,9 @@ public class TangoDJ2 extends Application
     tabPane.getTabs().add(cortinaTab);
     tabPane.getTabs().add(eventTab);
     
-    mainPane.setCenter(tabPane);
-    mainPane.setBottom(player.get());
+    mainPane.setTop(tabPane);
+    mainPane.setCenter(player.get());
+    mainPane.setBottom(feedback);
     mainPane.prefHeightProperty().bind(scene.heightProperty());
     mainPane.prefWidthProperty().bind(scene.widthProperty());
     
