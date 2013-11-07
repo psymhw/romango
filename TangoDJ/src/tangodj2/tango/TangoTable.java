@@ -1,5 +1,10 @@
 package tangodj2.tango;
 
+
+import javafx.scene.input.MouseEvent;
+
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -17,6 +22,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+
 import javafx.util.Callback;
 import tangodj2.Db;
 import tangodj2.Playlist;
@@ -186,6 +192,7 @@ public class TangoTable extends TableView<TangoTrack>
           Db.updateTangoTableColumnVisible("albumCol", new_val);
        }});
 		  
+		 /*
 		  albumCol.widthProperty().addListener(new ChangeListener<Number>() 
 		  {
         public void changed(ObservableValue<? extends Number> arg0,
@@ -195,10 +202,22 @@ public class TangoTable extends TableView<TangoTrack>
           TangoDJ2.prefs.albumColWidth=arg2.doubleValue();
           Db.updateTangoTableColumnWidth("albumColWidth", arg2.doubleValue());
         }
+      });
+		 
+		  */
+		 
+		  
+		  albumCol.addEventHandler(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
 
+        @Override
+        public void handle(MouseEvent me) 
+        {
+            System.out.println("Mouse released");
+        }
     });
-		   
-		      
+		  
+		  
+		  
 		  TableColumn genreCol = new TableColumn("Genre");
 		  genreCol.setMinWidth(30);
 		  genreCol.setPrefWidth(50);
@@ -313,6 +332,8 @@ public class TangoTable extends TableView<TangoTrack>
 		return tangoTable;
 	}
 
-      
+  
+  
+  
 
 }
