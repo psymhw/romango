@@ -48,7 +48,7 @@ public class PlaylistBuilderTab extends Tab
   final VBox vbox = new VBox();
   int savedType=0;
   Player player;
-  TrackLoader2 trackLoader = new TrackLoader2();
+  TrackLoader3 trackLoader = new TrackLoader3();
   HBox hbox =  new HBox();
   
   public PlaylistBuilderTab(Playlist playlist, Player player)

@@ -79,7 +79,7 @@ public class MP3EditorDialog extends Stage
              public void changed(ObservableValue<? extends String> ov, 
                  String old_val, String new_val) { style=new_val; } });
 
-    styleComboBox.setValue("Tango");
+    styleComboBox.setValue(trackMeta.style);
     
     System.out.println("MP3Editor: "+trackMeta.title);
     Button okButton = new Button("OK");
@@ -112,8 +112,10 @@ public class MP3EditorDialog extends Stage
     
    // GridPane.setHalignment(handicapLabel, HPos.RIGHT);
     ColumnConstraints col0 = new ColumnConstraints();
+    ColumnConstraints col1 = new ColumnConstraints();
     col0.setHalignment(HPos.RIGHT);
-    gridPane.getColumnConstraints().add(col0);
+    col1.setMinWidth(200);
+    gridPane.getColumnConstraints().addAll(col0, col1);
     //gridPane.add(okButton, col[0], row[2]);
     
     okButton.setOnAction(new EventHandler<ActionEvent>()
