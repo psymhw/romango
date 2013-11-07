@@ -220,18 +220,7 @@ public class Db
       if (resultSet!=null) resultSet.close();
       if (statement!=null) statement.close();
       
-      prefs.albumCol=getTangoTableColumnVisible("albumCol");
-      prefs.yearCol=getTangoTableColumnVisible("yearCol");
-      prefs.genreCol=getTangoTableColumnVisible("genreCol");
-      prefs.styleCol=getTangoTableColumnVisible("styleCol");
-      prefs.lengthCol=getTangoTableColumnVisible("lengthCol");
-      prefs.ratingCol=getTangoTableColumnVisible("ratingCol");
-      prefs.singerCol=getTangoTableColumnVisible("singerCol");
-      prefs.adjectivesCol=getTangoTableColumnVisible("adjectivesCol");
-      prefs.commentCol=getTangoTableColumnVisible("commentCol");
-      
-      prefs.albumColWidth=getTangoTableColumnWidth("albumColWidth", 110);
-      
+     
       disconnect();
       //System.out.println("Cortina Data: "+cortinaTracksData.size());
       } catch (Exception e) { e.printStackTrace();}
@@ -270,46 +259,57 @@ public class Db
     } catch (Exception e) { e.printStackTrace(); }
   }
   
-  private static boolean getTangoTableColumnVisible(String colName) throws Exception
+  public static boolean getTangoTableColumnVisible(String colName) 
   {
     String strBool="true";
-    Statement statement = connection.createStatement();
+    boolean returnValue=true;
     
-    ResultSet resultSet = statement.executeQuery("select * from state where name = '"+colName+"'");
-    if (resultSet.next())
-    {
-      strBool = resultSet.getString("value");
-      if (resultSet!=null) resultSet.close();
-      if (statement!=null) statement.close();
-      if ("true".equals(strBool))  return true;
-      else return false;
-    }
-    else
-    {
-      connection.createStatement().execute("insert into state (name, value) values('"+colName+"', 'true')");
-      return true;
-    }
+    try
+	{
+      connect();
+      Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery("select * from state where name = '"+colName+"'");
+      if (resultSet.next())
+      {
+        strBool = resultSet.getString("value");
+        if (resultSet!=null) resultSet.close();
+        if (statement!=null) statement.close();
+        if ("true".equals(strBool))  returnValue= true;
+        else returnValue= false;
+      }
+      else
+      {
+        connection.createStatement().execute("insert into state (name, value) values('"+colName+"', 'true')");
+        returnValue= true;
+      }
+      disconnect();
+	} catch (Exception e) { e.printStackTrace(); }
+    return returnValue;
   }
   
-  private static double getTangoTableColumnWidth(String colName, double defaultWidth) throws Exception
+  public static double getTangoTableColumnWidth(String colName, double defaultWidth) 
   {
     String strDouble=""+(int)defaultWidth;
     double retVal=defaultWidth;
-    Statement statement = connection.createStatement();
     
-    ResultSet resultSet = statement.executeQuery("select * from state where name = '"+colName+"'");
-    if (resultSet.next())
+    try
     {
-      strDouble = resultSet.getString("value");
-      if (resultSet!=null) resultSet.close();
-      if (statement!=null) statement.close();
-      try { retVal=Double.parseDouble(strDouble); } catch(Exception e) {}
-    }
-    else
-    {
-      connection.createStatement()
+      connect();
+      Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery("select * from state where name = '"+colName+"'");
+      if (resultSet.next())
+      {
+        strDouble = resultSet.getString("value");
+        if (resultSet!=null) resultSet.close();
+        if (statement!=null) statement.close();
+        try { retVal=Double.parseDouble(strDouble); } catch(Exception e) {}
+      }
+      else
+      {
+        connection.createStatement()
          .execute("insert into state (name, value) values('"+colName+"', '"+strDouble+"')");
-    }
+      }
+    } catch (Exception e) { e.printStackTrace(); }
     return retVal;
   }
   
