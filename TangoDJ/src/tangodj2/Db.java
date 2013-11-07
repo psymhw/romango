@@ -82,6 +82,8 @@ public class Db
     String album;
     String genre;
     String comment;
+    String singer;
+    String style;
     String pathHash;
     String path;
     String track_year;
@@ -108,7 +110,9 @@ public class Db
         path = resultSet.getString("path");
         duration=resultSet.getInt("duration");
         cleanup=resultSet.getInt("cleanup");
-        tangoTracksData.add(new TangoTrack(title, artist, album, genre, comment, pathHash, path, duration, cleanup, track_year));
+        singer=resultSet.getString("singer");
+        style=resultSet.getString("style");
+        tangoTracksData.add(new TangoTrack(title, artist, album, genre, comment, pathHash, path, duration, cleanup, track_year, singer, style));
         //System.out.println("added: "+title);
       }
       if (resultSet!=null) resultSet.close();
@@ -215,6 +219,19 @@ public class Db
       }
       if (resultSet!=null) resultSet.close();
       if (statement!=null) statement.close();
+      
+      prefs.albumCol=getTangoTableColumnVisible("albumCol");
+      prefs.yearCol=getTangoTableColumnVisible("yearCol");
+      prefs.genreCol=getTangoTableColumnVisible("genreCol");
+      prefs.styleCol=getTangoTableColumnVisible("styleCol");
+      prefs.lengthCol=getTangoTableColumnVisible("lengthCol");
+      prefs.ratingCol=getTangoTableColumnVisible("ratingCol");
+      prefs.singerCol=getTangoTableColumnVisible("singerCol");
+      prefs.adjectivesCol=getTangoTableColumnVisible("adjectivesCol");
+      prefs.commentCol=getTangoTableColumnVisible("commentCol");
+      
+      prefs.albumColWidth=getTangoTableColumnWidth("albumColWidth", 110);
+      
       disconnect();
       //System.out.println("Cortina Data: "+cortinaTracksData.size());
       } catch (Exception e) { e.printStackTrace();}
@@ -228,7 +245,73 @@ public class Db
       if (prefs.tangoFolder.length()==0)
     	  prefs.tangoFolder="C:\\";
 	  return prefs;
+  }
+  
+  public static void updateTangoTableColumnVisible(String colName, boolean visible)
+  {
+    String strBool="false";
+    if (visible) strBool="true";
+    try 
+    {
+      connect();
+      connection.createStatement().execute("update state set value = '"+strBool+"' where name = '"+colName+"'");
+      disconnect(); 
+    } catch (Exception e) { e.printStackTrace(); }
+  }
+  
+  public static void updateTangoTableColumnWidth(String colName, double width)
+  {
+    String strDouble=""+(int)width;
+    try 
+    {
+      connect();
+      connection.createStatement().execute("update state set value = '"+strDouble+"' where name = '"+colName+"'");
+      disconnect(); 
+    } catch (Exception e) { e.printStackTrace(); }
+  }
+  
+  private static boolean getTangoTableColumnVisible(String colName) throws Exception
+  {
+    String strBool="true";
+    Statement statement = connection.createStatement();
+    
+    ResultSet resultSet = statement.executeQuery("select * from state where name = '"+colName+"'");
+    if (resultSet.next())
+    {
+      strBool = resultSet.getString("value");
+      if (resultSet!=null) resultSet.close();
+      if (statement!=null) statement.close();
+      if ("true".equals(strBool))  return true;
+      else return false;
     }
+    else
+    {
+      connection.createStatement().execute("insert into state (name, value) values('"+colName+"', 'true')");
+      return true;
+    }
+  }
+  
+  private static double getTangoTableColumnWidth(String colName, double defaultWidth) throws Exception
+  {
+    String strDouble=""+(int)defaultWidth;
+    double retVal=defaultWidth;
+    Statement statement = connection.createStatement();
+    
+    ResultSet resultSet = statement.executeQuery("select * from state where name = '"+colName+"'");
+    if (resultSet.next())
+    {
+      strDouble = resultSet.getString("value");
+      if (resultSet!=null) resultSet.close();
+      if (statement!=null) statement.close();
+      try { retVal=Double.parseDouble(strDouble); } catch(Exception e) {}
+    }
+    else
+    {
+      connection.createStatement()
+         .execute("insert into state (name, value) values('"+colName+"', '"+strDouble+"')");
+    }
+    return retVal;
+  }
   
   public static void updatePreferences(Preferences prefs)
   {

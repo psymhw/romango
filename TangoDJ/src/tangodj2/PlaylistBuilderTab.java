@@ -81,7 +81,8 @@ public class PlaylistBuilderTab extends Tab
 
   
     hbox.getChildren().add(this.playlist.getTreeView());
-    hbox.setHgrow(this.playlist.getTreeView(), Priority.ALWAYS);
+   // hbox.setHgrow(this.playlist.getTreeView(), Priority.ALWAYS);
+    hbox.setHgrow(this.tangoTable, Priority.ALWAYS);
     setupListeners() ;
     this.setContent(hbox);
   }
@@ -289,7 +290,7 @@ public class PlaylistBuilderTab extends Tab
         
         if ("edit".equals(action))
         {
-          new MP3EditorDialog(tangoTrack, row, tangoTable);
+          new MP3EditorDialog(tangoTrack,  tangoTable);
         }
         
         tangoTable.getAction().set("nada");

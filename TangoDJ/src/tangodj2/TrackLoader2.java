@@ -185,7 +185,7 @@ public class TrackLoader2
 	   while(it.hasNext())
 	   {
 		 trackMeta=it.next();
-		 String sql="insert into tracks(cleanup, path, pathHash, title, artist, album, duration, genre, comment, track_year) "
+		 String sql="insert into tracks(cleanup, path, pathHash, title, artist, album, duration, genre, comment, style, track_year) "
 		 		+"values ("+cleanup+", '"+trackMeta.path
 	              +"', '"+trackMeta.pathHash
 	              +"', '"+trackMeta.title
@@ -194,6 +194,7 @@ public class TrackLoader2
 	              +"', "+trackMeta.duration
 	              +", '"+trackMeta.genre
 	              +"', '"+trackMeta.comment
+	              +"', 'Tango"
 	              +"', '"+trackMeta.track_year
 	              +"')";
 		//System.out.println("Db: "+sql);
