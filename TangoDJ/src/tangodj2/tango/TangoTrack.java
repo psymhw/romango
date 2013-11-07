@@ -15,12 +15,14 @@ public class TangoTrack
   private final SimpleStringProperty track_year;
   private final SimpleStringProperty pathHash;
   private final SimpleStringProperty path;
+  private final SimpleStringProperty singer;
+  private final SimpleStringProperty style;
   private final SimpleIntegerProperty duration;
   
   private int cortina=0;
     
     
-	public TangoTrack(String titleStr, String artistStr, String albumStr, String genreStr, String commentStr, String pathHashStr, String path, int duration, int cortina, String track_yearStr)
+	public TangoTrack(String titleStr, String artistStr, String albumStr, String genreStr, String commentStr, String pathHashStr, String path, int duration, int cortina, String track_yearStr, String singer, String style)
   {
     this.title = new SimpleStringProperty(titleStr);
     this.artist = new SimpleStringProperty(artistStr);
@@ -30,6 +32,8 @@ public class TangoTrack
     this.track_year = new SimpleStringProperty(track_yearStr);
     this.pathHash = new SimpleStringProperty(pathHashStr);
     this.path = new SimpleStringProperty(path);
+    this.singer = new SimpleStringProperty(singer);
+    this.style = new SimpleStringProperty(style);
     this.duration = new SimpleIntegerProperty(duration);
     this.cortina=cortina;
   }
@@ -105,5 +109,25 @@ public class TangoTrack
 	return min.format(minutes)+":"+sec.format(seconds);
 
 	}
+
+  public String getSinger()
+  {
+    return singer.get();
+  }
+  
+  public void setSinger(String singer)
+  {
+    this.singer.set(singer);
+  }
+  
+  public String getStyle()
+  {
+    return style.get();
+  }
+  
+  public void setStyle(String style)
+  {
+    this.style.set(style);
+  }
 
 }

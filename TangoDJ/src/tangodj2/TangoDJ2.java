@@ -63,6 +63,9 @@ import javafx.stage.Stage;
  * medium, inconsistent rhythm, anguish, laughing, sounds
  * melancholy, funky, organ, funny voices, live
  * Select tango table columns to show
+ * Save column widths too?
+ * Oh Jeeze, what about column position?
+ * Add BPM to tracks?
  */
 public class TangoDJ2 extends Application 
 {
@@ -90,8 +93,8 @@ public class TangoDJ2 extends Application
 	primaryStage=stage;
 	loadFonts();
 	
-	VBox root = new VBox();
-    Scene scene = new Scene(root, 950, 550, Color.WHITE);
+	  VBox root = new VBox();
+    Scene scene = new Scene(root, 1200, 700, Color.WHITE);
     r.setFill(Color.RED);
    
     final URL stylesheet = getClass().getResource("style.css");

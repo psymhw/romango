@@ -41,15 +41,15 @@ public class MP3EditorDialog extends Stage
   TextField rating  = new TextField("");
   TangoTrack ttrack;
   TangoTable ttable;
-  int idx=0;
+ // int idx=0;
   final ComboBox styleComboBox = new ComboBox();
   String style = "Tango";
   
-  public MP3EditorDialog(TangoTrack tangoTrack, int index, TangoTable tangoTable)
+  public MP3EditorDialog(TangoTrack tangoTrack,  TangoTable tangoTable)
   {
     this.ttrack=tangoTrack;
     this.ttable=tangoTable;
-    this.idx=index;
+   // this.idx=index;
     
 	  final int col[] = {0,1,2,3,4,5,6,7,8,9,10};
     final int row[] = {0,1,2,3,4,5,6,7,8,9,10};
@@ -140,10 +140,20 @@ public class MP3EditorDialog extends Stage
     ttrack.setTrack_year(trackMeta.track_year);
     ttrack.setGenre(trackMeta.genre);
     ttrack.setComment(trackMeta.comment);
+    ttrack.setStyle(trackMeta.style);
+    ttrack.setSinger(trackMeta.singer);
     
     // this forces the table to update the row
-    ttable.getColumns().get(idx).setVisible(false);
-    ttable.getColumns().get(idx).setVisible(true);
+    
+    int numberOfColumns=ttable.getColumns().size();
+    for(int i=0; i<numberOfColumns; i++)
+    {
+      if (ttable.getColumns().get(i).isVisible())
+      {
+        ttable.getColumns().get(i).setVisible(false);
+        ttable.getColumns().get(i).setVisible(true);
+      }
+    }
   }
   
   private void updateTrackMeta()
