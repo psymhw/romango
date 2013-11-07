@@ -100,23 +100,10 @@ public class TangoDJ2 extends Application
 	loadFonts();
 	
 	stage.setOnCloseRequest(new EventHandler<WindowEvent>() 
-  {
+    {
     public void handle(WindowEvent e)
     {
-      int numberOfCols= playlistBuilderTab.getTangoTable().getColumns().size();
-      TableColumn t;
-      String columnName;
-      double width;
-      boolean visible;
-      for(int i=0; i<numberOfCols; i++)
-      {
-        t = playlistBuilderTab.getTangoTable().getColumns().get(i);
-        columnName=t.getText();
-        width=t.getWidth();
-        visible=t.isVisible();
-        
-        System.out.println(i+") "+columnName+", "+width+", "+visible);
-      }
+      savePreferences();
       System.out.println("Exit");
     }
    });
@@ -313,5 +300,24 @@ public class TangoDJ2 extends Application
 	{
 	  playlist = new Playlist(playlistId);
 	} catch (Exception e) {e.printStackTrace();};
+  }
+  
+  public void savePreferences()
+  {
+      int numberOfCols= playlistBuilderTab.getTangoTable().getColumns().size();
+      TableColumn t;
+      String columnName;
+      double width;
+      boolean visible;
+      for(int i=0; i<numberOfCols; i++)
+      {
+        t = playlistBuilderTab.getTangoTable().getColumns().get(i);
+        columnName=t.getText();
+        width=t.getWidth();
+        visible=t.isVisible();
+        Db.updateTangoTableColumnVisible(columnName+"Visibility", visible);
+        Db.updateTangoTableColumnWidth(columnName+"Width", width);
+       // System.out.println(i+") "+columnName+", "+width+", "+visible);
+      }
   }
 }

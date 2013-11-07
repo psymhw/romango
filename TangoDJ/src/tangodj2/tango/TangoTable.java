@@ -152,7 +152,15 @@ public class TangoTable extends TableView<TangoTrack>
       return tandaContextMenu;
     } 
   
+    private boolean getVisibility(TableColumn col)
+    {
+      return Db.getTangoTableColumnVisible(col.getText()+"Visibility");
+    }
 		  
+    private double getWidth(TableColumn col, double defaultVal)
+    {
+      return	Db.getTangoTableColumnWidth(col.getText()+"Width", defaultVal);
+    }
 	   private void setupColumns()
 	   {
 		   TableColumn titleCol = new TableColumn("Title");
@@ -168,29 +176,22 @@ public class TangoTable extends TableView<TangoTrack>
 		  artistCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("artist"));
 		  artistCol.setCellFactory(new MyCellFactory());
 		  
-		// SINGER COLUMN 
-      TableColumn singerCol = new TableColumn("Singer");
-      singerCol.setMinWidth(50);
-      singerCol.setPrefWidth(80);
-      singerCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("singer"));
-      singerCol.setCellFactory(new MyCellFactory());
-		 
+		  // SINGER COLUMN 
+	      TableColumn singerCol = new TableColumn("Singer");
+	      singerCol.setMinWidth(50);
+	      singerCol.setPrefWidth(getWidth(singerCol, 80));
+	      singerCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("singer"));
+	      singerCol.setCellFactory(new MyCellFactory());
+	      singerCol.setVisible(getVisibility(singerCol));
+			 
 		  // ALBUM COLUMN 
 		  TableColumn albumCol = new TableColumn("Album");
 		  albumCol.setMinWidth(50);
-		  if (TangoDJ2.prefs.albumColWidth>50) albumCol.setPrefWidth(TangoDJ2.prefs.albumColWidth);
-		  else albumCol.setPrefWidth(110);
+		  albumCol.setPrefWidth(getWidth(albumCol, 110));
 		  albumCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("album"));
 		  albumCol.setCellFactory(new MyCellFactory());
-		  
-		  albumCol.setVisible(TangoDJ2.prefs.albumCol);
-		  albumCol.visibleProperty().addListener(new ChangeListener<Boolean>() 
-		  {
-        public void changed(ObservableValue ov,Boolean old_val, Boolean new_val) 
-        {
-          TangoDJ2.prefs.albumCol=new_val;
-          Db.updateTangoTableColumnVisible("albumCol", new_val);
-       }});
+		  albumCol.setVisible(getVisibility(albumCol));
+			
 		  
 		 /*
 		  albumCol.widthProperty().addListener(new ChangeListener<Number>() 
@@ -207,20 +208,10 @@ public class TangoTable extends TableView<TangoTrack>
 		  */
 		 
 		  
-		  albumCol.addEventHandler(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
-
-        @Override
-        public void handle(MouseEvent me) 
-        {
-            System.out.println("Mouse released");
-        }
-    });
-		  
-		  
 		  
 		  TableColumn genreCol = new TableColumn("Genre");
 		  genreCol.setMinWidth(30);
-		  genreCol.setPrefWidth(50);
+		  genreCol.setPrefWidth(getWidth(genreCol, 50));
 		  genreCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("genre"));
 		  genreCol.setCellFactory(new MyCellFactory());
 		  
