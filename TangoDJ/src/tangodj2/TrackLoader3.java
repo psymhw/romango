@@ -42,22 +42,22 @@ public class TrackLoader3
   static int fileCounter=0;
   static int counter2=0;
   ArrayList<File> fileList;
-  ArrayList<ProblemFile> problemFileList;
-  private static List<TrackMeta> trackInfo = new ArrayList<TrackMeta>();
+ // ArrayList<ProblemFile> problemFileList;
+  private static List<TrackDb> trackInfo = new ArrayList<TrackDb>();
   
-  private static List<TrackMeta> finalTrackInfo = new ArrayList<TrackMeta>();
+ // private static List<TrackDb> finalTrackInfo = new ArrayList<TrackDb>();
   private static Hasher hasher = new Hasher();
   int errors=0;
   BufferedWriter out;
   private int trackCount=0;
   private int trackSize=0;
  
-  ArrayList<String> al;
-  static int players=0;
-  int trackInfoSizeInt=0;
-  Label trackInfoSize = new Label("0");
-  int finalTrackInfoSizeInt=0;
-  Label finalTrackInfoSize = new Label("0");
+  //ArrayList<String> al;
+  //static int players=0;
+  //int trackInfoSizeInt=0;
+ // Label trackInfoSize = new Label("0");
+  //int finalTrackInfoSizeInt=0;
+  //Label finalTrackInfoSize = new Label("0");
   public static final String DRIVER2 ="org.apache.derby.jdbc.EmbeddedDriver";
   public static final String JDBC_URL2 ="jdbc:derby:tango_db;create=false";
   static Connection connection;
@@ -77,7 +77,7 @@ public class TrackLoader3
      FileWriter fstream = new FileWriter("out.txt");
      out = new BufferedWriter(fstream);
      fileList = new ArrayList<File>();
-     problemFileList = new ArrayList<ProblemFile>();
+    // problemFileList = new ArrayList<ProblemFile>();
      
      if (singleFile)
      {
@@ -92,13 +92,10 @@ public class TrackLoader3
      
      getFarngMP3Tags();
      out.close();
-     System.out.println("Problems list: "+problemFileList.size());
-     System.out.println("OK list: "+fileList.size());
+   //  System.out.println("Problems list: "+problemFileList.size());
+   //  System.out.println("OK list: "+fileList.size());
      getDurations();
-     sqlReadyTrackInfo();
-     insertRecords();
-     if (isTango) { tangoTable.reloadData(); }
-     else cleanupTable.reloadData();
+     
   }
 
   void processDirectory()
@@ -147,7 +144,7 @@ public class TrackLoader3
   
   private void getDurations()
   {
-    Iterator<TrackMeta> it = trackInfo.iterator();
+    Iterator<TrackDb> it = trackInfo.iterator();
     Media media;
     final int count=0;
     trackCount=0;
@@ -161,63 +158,74 @@ public class TrackLoader3
     {
        public void handle(Event event) 
        {
-         final TrackMeta trackMeta = trackInfo.get(trackCount);
-         getTags(trackMeta, trackCount);
+         final TrackDb trackDb = trackInfo.get(trackCount);
+         getTags(trackDb, trackCount);
          trackCount++;
        }});
             
       timeline.getKeyFrames().add(keyFrame);
       timeline.playFromStart();
+      timeline.setOnFinished(new EventHandler() {
+
+        @Override
+        public void handle(Event arg0)
+        {
+          sqlReadyTrackInfo();
+          insertRecords();
+          if (isTango) { tangoTable.reloadData(); }
+          else cleanupTable.reloadData();
+          
+        }});
   }
   
   
-  private void getTags(final TrackMeta trackMeta, final int count)
+  private void getTags(final TrackDb trackDb, final int count)
   {
     File file;
     final Media media;
-    file = new File(trackMeta.path);
+    file = new File(trackDb.path);
     try 
     {
       media = new Media(file.toURI().toString());
       media.setOnError(new Runnable() 
       {
         public void run() {
-        System.out.println("MEDIA ERROR: "+media.getError());
-      }});
-    } catch (Exception e) {  System.out.println("Problem with media, "+trackMeta.path);  return; }
+        System.out.println("MEDIA ERROR: "+media.getError()); }});
+      } catch (Exception e) {  System.out.println("Problem with media, "+trackDb.path);  return; }
     
-    if (media==null) { System.out.println("Media is null, "+trackMeta.path);  return; }
+    if (media==null) { System.out.println("Media is null, "+trackDb.path);  return; }
     
     final MediaPlayer mp = new MediaPlayer(media);
-    players++;
+    //players++;
     mp.setOnError(new Runnable() 
     {
       public void run() {
       System.out.println("MEDIA PLAYER ERROR: "+mp.getError());
     }});
     
-    if (mp==null) { System.out.println("MediaPlayer is null, "+trackMeta.path); return; }
+    if (mp==null) { System.out.println("MediaPlayer is null, "+trackDb.path); return; }
     mp.setOnReady(new Runnable() 
     {
       public void run() 
       {
-        trackMeta.duration=(int)mp.getTotalDuration().toMillis();
-        if ("NO TITLE".equals(trackMeta.title))
+        trackDb.duration=(int)mp.getTotalDuration().toMillis();
+        System.out.println("duration: "+trackDb.duration);
+        if ("NO TITLE".equals(trackDb.title))
         {
-          trackMeta.artist=(String)media.getMetadata().get("artist");
-          trackMeta.album=(String)media.getMetadata().get("album");
-          trackMeta.title=(String)media.getMetadata().get("title");
-          trackMeta.comment=(String)media.getMetadata().get("comment-0");
-          trackMeta.genre=(String)media.getMetadata().get("genre");
-          trackMeta.track_year = (String)media.getMetadata().get("year");
+          trackDb.artist=(String)media.getMetadata().get("artist");
+          trackDb.album=(String)media.getMetadata().get("album");
+          trackDb.title=(String)media.getMetadata().get("title");
+          trackDb.comment=(String)media.getMetadata().get("comment-0");
+          trackDb.genre=(String)media.getMetadata().get("genre");
+          trackDb.track_year = (String)media.getMetadata().get("year");
         }
         
-        TangoDJ2.feedback.setText("Getting MP3 Tags: "+count+") "+trackMeta.duration+", "+trackMeta.title);
-        finalTrackInfo.add(trackMeta);
-        finalTrackInfoSizeInt++;
-        finalTrackInfoSize.setText(""+finalTrackInfoSizeInt);
+        TangoDJ2.feedback.setText("Getting MP3 Tags: "+count+") "+trackDb.duration+", "+trackDb.title);
+        //finalTrackInfo.add(trackDb);
+        //finalTrackInfoSizeInt++;
+        // finalTrackInfoSize.setText(""+finalTrackInfoSizeInt);
         mp.dispose();
-        players--;
+        //players--;
        
       }
     });
@@ -232,27 +240,25 @@ public class TrackLoader3
     out.newLine();
     Iterator<File> it = fileList.iterator();
     trackInfo.clear();
-    trackInfoSizeInt=0;
-    trackInfoSize.setText(""+trackInfoSizeInt);
+    //trackInfoSizeInt=0;
     File file;
-    TrackMeta trackMeta;
+    TrackDb trackDb;
     while(it.hasNext())
     {
       file = it.next();
-      trackMeta=getSingleMP3tag(file.toPath());
+      trackDb=getSingleMP3tag(file.toPath());
       
-      if (trackMeta!=null) 
+      if (trackDb!=null) 
       {  
-        trackInfo.add(trackMeta);
-        trackInfoSizeInt++;
-        trackInfoSize.setText(""+trackInfoSizeInt);
-        TangoDJ2.feedback.setText("Getting preliminary MP3 tags: "+counter2+") "+trackMeta.artist+", "+trackMeta.title);
+        trackInfo.add(trackDb);
+       // trackInfoSizeInt++;
+        TangoDJ2.feedback.setText("Getting preliminary MP3 tags: "+counter2+") "+trackDb.artist+", "+trackDb.title);
       }
     }
    
   }
   
-  private TrackMeta getSingleMP3tag(Path path) throws Exception
+  private TrackDb getSingleMP3tag(Path path) throws Exception
   {
     String pathStr = path.toString().trim().toLowerCase();
     String pathStr2="";
@@ -279,7 +285,7 @@ public class TrackLoader3
       out.write("Could not create MP3File class: "+pathStr);
       out.newLine();
       counter2++; 
-      problemFileList.add(new ProblemFile(file, message));
+   //   problemFileList.add(new ProblemFile(file, message));
       return null;  
     }
     
@@ -289,7 +295,7 @@ public class TrackLoader3
       out.newLine();
       counter2++; 
       message="Could not get ID3v2 tag: "+pathStr;
-      problemFileList.add(new ProblemFile(file, message));
+    //  problemFileList.add(new ProblemFile(file, message));
       return null;  
     }
      
@@ -300,7 +306,7 @@ public class TrackLoader3
       out.newLine();
       counter2++; 
       message="tag is null: "+pathStr;
-      problemFileList.add(new ProblemFile(file, message));
+    //  problemFileList.add(new ProblemFile(file, message));
       return null;  
     }
       
@@ -324,7 +330,7 @@ public class TrackLoader3
     pathHash = hasher.getMd5Hash(pathStr2.getBytes());
     counter2++;
     tag=null;
-    return new TrackMeta(cleanString(title), 
+    return new TrackDb(cleanString(title), 
         cleanString(artist),
         cleanString(album),
         cleanString(comment), 
@@ -363,38 +369,39 @@ public class TrackLoader3
  try{
    //Db.connect();
     connection = DriverManager.getConnection(JDBC_URL2);
-    TrackMeta trackMeta;
+    TrackDb trackDb;
     String styleGuess="Tango";
     String lowerTitle;
     String lowerGenre;
-    Iterator<TrackMeta> it = trackInfo.iterator();
+    Iterator<TrackDb> it = trackInfo.iterator();
     while(it.hasNext())
     {
       styleGuess="Tango";
-      trackMeta=it.next();
-      lowerTitle=trackMeta.title.toLowerCase();
-      lowerGenre=trackMeta.genre.toLowerCase();
+      trackDb=it.next();
+      lowerTitle=trackDb.title.toLowerCase();
+      lowerGenre=trackDb.genre.toLowerCase();
       if (lowerTitle.contains("milonga")) styleGuess="Milonga";
       if (lowerTitle.contains("vals")) styleGuess="Vals";
       if (lowerGenre.contains("milonga")) styleGuess="Milonga";
       if (lowerGenre.contains("vals")) styleGuess="Vals";
       
       String sql="insert into tracks(cleanup, path, pathHash, title, artist, album, duration, genre, comment, style, track_year) "
-       +"values ("+cleanup+", '"+trackMeta.path
-               +"', '"+trackMeta.pathHash
-               +"', '"+trackMeta.title
-               +"', '"+trackMeta.artist
-               +"', '"+trackMeta.album
-               +"', "+trackMeta.duration
-               +", '"+trackMeta.genre
-               +"', '"+trackMeta.comment
+       +"values ("+cleanup+", '"+trackDb.path
+               +"', '"+trackDb.pathHash
+               +"', '"+trackDb.title
+               +"', '"+trackDb.artist
+               +"', '"+trackDb.album
+               +"', "+trackDb.duration
+               +", '"+trackDb.genre
+               +"', '"+trackDb.comment
                +"', '"+styleGuess
-               +"', '"+trackMeta.track_year
+               +"', '"+trackDb.track_year
                +"')";
-   TangoDJ2.feedback.setText("Inserting Records: "+trackMeta.title);
+   // System.out.println("TrackLoader3, sql: "+sql);
+   TangoDJ2.feedback.setText("Inserting Records: "+trackDb.title);
     try {
       // TODO java.sql.SQLIntegrityConstraintViolationException needs to be handled here
-    if (isSet(trackMeta.title)) connection.createStatement().execute(sql);
+    if (isSet(trackDb.title)) connection.createStatement().execute(sql);
     } catch (Exception ex) { System.out.println("SQL ERROR: "+sql); 
     ex.printStackTrace(); } 
    }
@@ -411,19 +418,19 @@ public class TrackLoader3
   }
  void sqlReadyTrackInfo()
  {
-   TrackMeta trackMeta;
-   Iterator<TrackMeta> it = trackInfo.iterator();
+   TrackDb trackDb;
+   Iterator<TrackDb> it = trackInfo.iterator();
    while(it.hasNext())
    {
-   trackMeta=it.next();
-   trackMeta.title    = sqlReadyString(trackMeta.title);
-   trackMeta.artist   = sqlReadyString(trackMeta.artist);
-   trackMeta.album    = sqlReadyString(trackMeta.album);
-   trackMeta.comment  = sqlReadyString(trackMeta.comment);
-   trackMeta.path     = sqlReadyString(trackMeta.path);
-   trackMeta.genre     = sqlReadyString(trackMeta.genre);
-   //trackMeta.path = new File(trackMeta.path).toURI().toString();
-   trackMeta.track_year     = sqlReadyString(trackMeta.track_year);
+   trackDb=it.next();
+   trackDb.title    = sqlReadyString(trackDb.title);
+   trackDb.artist   = sqlReadyString(trackDb.artist);
+   trackDb.album    = sqlReadyString(trackDb.album);
+   trackDb.comment  = sqlReadyString(trackDb.comment);
+   trackDb.path     = sqlReadyString(trackDb.path);
+   trackDb.genre     = sqlReadyString(trackDb.genre);
+   //trackDb.path = new File(trackDb.path).toURI().toString();
+   trackDb.track_year     = sqlReadyString(trackDb.track_year);
   }
     
  }

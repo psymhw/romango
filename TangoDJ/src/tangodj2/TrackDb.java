@@ -1,6 +1,6 @@
 package tangodj2;
 
-public class TrackMeta 
+public class TrackDb 
 {
   public String title="";
   public String artist="";
@@ -24,7 +24,7 @@ public class TrackMeta
   public boolean metaComplete=false;
   
   
-  public TrackMeta(String title, 
+  public TrackDb(String title, 
 		               String artist, 
 		               String album, 
 		               String comment, 

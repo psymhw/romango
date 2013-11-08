@@ -610,9 +610,9 @@ public class Player
       cortina=false;
       
       if (currentTrackHash==null) return;
-      TrackMeta trackMeta=Db.getTrackInfo(currentTrackHash);
-      sourcePath=trackMeta.path;
-      currentTrackTitle=trackMeta.title;
+      TrackDb trackDb=Db.getTrackInfo(currentTrackHash);
+      sourcePath=trackDb.path;
+      currentTrackTitle=trackDb.title;
       
       playing=true;
       playButton.setText("||");
@@ -689,9 +689,9 @@ public class Player
       cortina=false;
       
       if (currentTrackHash==null) return;
-      TrackMeta trackMeta=Db.getTrackInfo(currentTrackHash);
-      sourcePath=trackMeta.path;
-      currentTrackTitle=trackMeta.title;
+      TrackDb trackDb=Db.getTrackInfo(currentTrackHash);
+      sourcePath=trackDb.path;
+      currentTrackTitle=trackDb.title;
       
       playing=true;
       playButton.setText("||");
@@ -856,7 +856,7 @@ public class Player
       cortina=true;
       
       CortinaTrack cortinaTrack = Db.getCortinaTrack(currentCortinaId);
-     // TrackMeta trackMeta = Db.getTrackInfo(cortinaTrack.getPathHash()); // TODO CortinaTrack should already have this
+     // TrackDb trackDb = Db.getTrackInfo(cortinaTrack.getPathHash()); // TODO CortinaTrack should already have this
       sourcePath=cortinaTrack.getPath();
      
       playing=true;
@@ -967,8 +967,8 @@ public class Player
       cortinaLengthLabel.setText(formatTime(cortinaLength));
         //  updateUIValues();
        
-      TrackMeta trackMeta = Db.getTrackInfo(cortinaTrack.getPathHash()); // TODO CortinaTrack should already have this
-      sourcePath=trackMeta.path;
+      TrackDb trackDb = Db.getTrackInfo(cortinaTrack.getPathHash()); // TODO CortinaTrack should already have this
+      sourcePath=trackDb.path;
      
       
       System.out.println("Player, playCortina -            start: "+start);
@@ -980,7 +980,7 @@ public class Player
       System.out.println("Player, playCortina -       cortinaEnd: "+cortinaEnd.toMillis());
 
       
-      System.out.println("Player - trackMeta - path: "+trackMeta.path);
+      System.out.println("Player - trackDb - path: "+trackDb.path);
       playing=true;
       playButton.setText("||");
       stopButton.setDisable(false);
