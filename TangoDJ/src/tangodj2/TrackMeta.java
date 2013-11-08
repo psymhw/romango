@@ -14,9 +14,12 @@ public class TrackMeta
   public int    cleanup=0;
   public String singer="";
   public String rating="";
+  public String bpm="";
+  public String leader="";
+  public int    track_no=0;
   public String style="";
   public String adjectives="";
-  public int delay=0;
+  public int    delay=0;
   
   public boolean metaComplete=false;
   

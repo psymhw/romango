@@ -92,11 +92,14 @@ public class CreateDatabase
 	    		"pathHash varchar(32), " +
 	    		"title varchar(100), " +
 	    		"artist varchar(40), " +
+	    		"leader varchar(40), " +
 	    		"album varchar(100), " +
 	    		"duration integer, " +
 	    		"track_year varchar(4), " +
 	    		"playlist_count integer, " +
+	    		"track_no integer, " +
 	    		"rating varchar(5), " +
+	    		"bpm varchar(3), " +
 	    		"delay integer, " +
 	    		"genre varchar(40), " +
 	    		"style varchar(20), " +
@@ -148,6 +151,7 @@ public class CreateDatabase
         "premade INTEGER, " +
         "original_duration INTEGER, " +
         "comment varchar(60), " +
+        "theme varchar(40), " +
         "title varchar(60), " +
         "artist varchar(40), " +
         "album varchar(100), " +

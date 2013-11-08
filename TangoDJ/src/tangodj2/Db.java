@@ -105,7 +105,6 @@ public class Db
         genre = resultSet.getString("genre");
         comment = resultSet.getString("comment");
         track_year = resultSet.getString("track_year");
-        //System.out.println("track_year: "+track_year);
         pathHash = resultSet.getString("pathHash");
         path = resultSet.getString("path");
         duration=resultSet.getInt("duration");
@@ -113,7 +112,6 @@ public class Db
         singer=resultSet.getString("singer");
         style=resultSet.getString("style");
         tangoTracksData.add(new TangoTrack(title, artist, album, genre, comment, pathHash, path, duration, cleanup, track_year, singer, style));
-        //System.out.println("added: "+title);
       }
       if (resultSet!=null) resultSet.close();
       if (statement!=null) statement.close();
@@ -469,33 +467,42 @@ public class Db
 	  try
 	  {
 	    connect();
-	 	Statement statement = connection.createStatement();
-	 	ResultSet resultSet = statement.executeQuery("select * from tracks where pathHash = '"+pathHash+"'");
-	 	if(resultSet.next())
-	 	{
-	 	
-	 	  trackMeta = new TrackMeta(resultSet.getString("title"),
-	 			                    resultSet.getString("artist"),
-	 			                    resultSet.getString("album"),
-	 			                   resultSet.getString("comment"),
-	 			                   resultSet.getString("genre"),
-	 			                  resultSet.getString("pathHash"),
-	 			                 resultSet.getString("path"),
-	 			                 resultSet.getString("track_year")
-	 			  );
-	 	  trackMeta.duration= resultSet.getInt("duration");
-	 	  trackMeta.cleanup=resultSet.getInt("cleanup");
-	 	  trackMeta.singer=resultSet.getString("singer");
-	 	 trackMeta.style=resultSet.getString("style");
-	   	trackMeta.adjectives=resultSet.getString("adjectives");
-	   	trackMeta.rating=resultSet.getString("rating");
-	 	}
-	 	if (resultSet!=null) resultSet.close();
-	 	if (statement!=null) statement.close();
-	 	
-	 	disconnect();
+	 	  Statement statement = connection.createStatement();
+	 	  ResultSet resultSet = statement.executeQuery("select * from tracks where pathHash = '"+pathHash+"'");
+	 	  if(resultSet.next())
+	 	  {
+	 	    trackMeta=getTrackMeta(resultSet);
+	 	  }
+	 	  if (resultSet!=null) resultSet.close();
+	 	  if (statement!=null) statement.close();
+	 	  disconnect();
 	  } catch (Exception e) { e.printStackTrace();}
 	  return trackMeta;
+	}
+	
+	private static TrackMeta getTrackMeta(ResultSet resultSet) throws Exception
+	{
+	  TrackMeta trackMeta = new TrackMeta(resultSet.getString("title"),
+    
+	  resultSet.getString("artist"),
+    resultSet.getString("album"),
+    resultSet.getString("comment"),
+    resultSet.getString("genre"),
+    resultSet.getString("pathHash"),
+    resultSet.getString("path"),
+    resultSet.getString("track_year"));
+    trackMeta.duration= resultSet.getInt("duration");
+    trackMeta.cleanup=resultSet.getInt("cleanup");
+    trackMeta.singer=resultSet.getString("singer");
+    trackMeta.style=resultSet.getString("style");
+    trackMeta.adjectives=resultSet.getString("adjectives");
+    trackMeta.rating=resultSet.getString("rating");
+    trackMeta.leader=resultSet.getString("leader");
+    trackMeta.bpm=resultSet.getString("bpm");
+    trackMeta.track_no= resultSet.getInt("track_no");
+    trackMeta.delay= resultSet.getInt("delay");
+
+    return trackMeta;
 	}
 	
 	public static void disconnect() throws SQLException
