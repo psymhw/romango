@@ -2,6 +2,8 @@ package tangodj2.tango;
 
 import java.text.DecimalFormat;
 
+import tangodj2.TrackDb;
+
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -21,22 +23,24 @@ public class TangoTrack
   
   private int cortina=0;
     
-    
-	public TangoTrack(String titleStr, String artistStr, String albumStr, String genreStr, String commentStr, String pathHashStr, String path, int duration, int cortina, String track_yearStr, String singer, String style)
+  public TangoTrack(TrackDb trackDb)
   {
-    this.title = new SimpleStringProperty(titleStr);
-    this.artist = new SimpleStringProperty(artistStr);
-    this.album = new SimpleStringProperty(albumStr);
-    this.genre = new SimpleStringProperty(genreStr);
-    this.comment = new SimpleStringProperty(commentStr);
-    this.track_year = new SimpleStringProperty(track_yearStr);
-    this.pathHash = new SimpleStringProperty(pathHashStr);
-    this.path = new SimpleStringProperty(path);
-    this.singer = new SimpleStringProperty(singer);
-    this.style = new SimpleStringProperty(style);
-    this.duration = new SimpleIntegerProperty(duration);
+    this.title = new SimpleStringProperty(trackDb.title);
+    this.artist = new SimpleStringProperty(trackDb.artist);
+    this.album = new SimpleStringProperty(trackDb.album);
+    this.genre = new SimpleStringProperty(trackDb.genre);
+    this.comment = new SimpleStringProperty(trackDb.comment);
+    this.track_year = new SimpleStringProperty(trackDb.track_year);
+    this.pathHash = new SimpleStringProperty(trackDb.pathHash);
+    this.path = new SimpleStringProperty(trackDb.path);
+    this.singer = new SimpleStringProperty(trackDb.singer);
+    this.style = new SimpleStringProperty(trackDb.style);
+    this.duration = new SimpleIntegerProperty(trackDb.duration);
     this.cortina=cortina;
+    
   }
+    
+	
     
     public String getPathHash() {
     	return pathHash.get(); }

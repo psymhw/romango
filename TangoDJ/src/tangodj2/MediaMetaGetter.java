@@ -20,7 +20,7 @@ public class MediaMetaGetter
   Media media=null;
   MapChangeListener metaChangeListener;
   MediaPlayer mp;
-  TrackMeta trackMeta;
+  TrackDb trackDb;
   private boolean titleNeeded=true;
   private boolean artistNeeded=true;
   private boolean genreNeeded=true;
@@ -31,15 +31,15 @@ public class MediaMetaGetter
   ChangeListener timeChangeListener;
   boolean useMetaChangeListener=false;
 	
-  public MediaMetaGetter(TrackMeta trackMeta)
+  public MediaMetaGetter(TrackDb trackDb)
   {
-	this.trackMeta=trackMeta;
+	this.trackDb=trackDb;
 	setWhatIsNeeded();
 	  
 	try 
 	{
-	  File file = new File(trackMeta.path);
-	  if (!file.exists()) { System.out.println("File NOT Found: "+trackMeta.path); return; }
+	  File file = new File(trackDb.path);
+	  if (!file.exists()) { System.out.println("File NOT Found: "+trackDb.path); return; }
 		
 	  media = new Media(file.toURI().toString());
 	  if (media==null) { System.out.println("Media is null"); return;	}
@@ -72,7 +72,7 @@ public class MediaMetaGetter
 	mp = new MediaPlayer(media);
 	
 	if (titleNeeded) { useMetaChangeListener=true; media.getMetadata().addListener(metaChangeListener); }
-	else trackMeta.metaComplete=true;
+	else trackDb.metaComplete=true;
 	
 	media.durationProperty().addListener(timeChangeListener);
 	 
@@ -95,12 +95,12 @@ public class MediaMetaGetter
   
   private void setDuration(int millis)
   {
-	  trackMeta.duration=millis;
+	  trackDb.duration=millis;
   }
   
   private void timeout()
   {
-	  System.out.println("MediaMetaGetter timeout: "+trackMeta.path); 
+	  System.out.println("MediaMetaGetter timeout: "+trackDb.path); 
       complete();	  
   }
   
@@ -111,16 +111,16 @@ public class MediaMetaGetter
 	 media.durationProperty().removeListener(timeChangeListener);
 	 mp=null;
 	 media=null;
-	 trackMeta.metaComplete=true;
+	 trackDb.metaComplete=true;
 	 timeline=null;
   }
   
 	private void handleMetadata(String key, Object value) 
 	{
-	  if (key.equals("album")) { if (albumNeeded) { albumNeeded=false; trackMeta.album=value.toString(); }}
-	  if (key.equals("title")) { if (titleNeeded) { titleNeeded=false; trackMeta.title=value.toString(); }}
-	  if (key.equals("genre")) { if (genreNeeded) { genreNeeded=false; trackMeta.genre=value.toString(); }}
-	  if (key.equals("artist")) { if (artistNeeded) { artistNeeded=false; trackMeta.artist=value.toString(); }}
+	  if (key.equals("album")) { if (albumNeeded) { albumNeeded=false; trackDb.album=value.toString(); }}
+	  if (key.equals("title")) { if (titleNeeded) { titleNeeded=false; trackDb.title=value.toString(); }}
+	  if (key.equals("genre")) { if (genreNeeded) { genreNeeded=false; trackDb.genre=value.toString(); }}
+	  if (key.equals("artist")) { if (artistNeeded) { artistNeeded=false; trackDb.artist=value.toString(); }}
 	
 	  if((titleNeeded==false)
 	   &&(albumNeeded==false)
@@ -131,10 +131,10 @@ public class MediaMetaGetter
 	
 	private void setWhatIsNeeded()
 	{
-	  if (isSet(trackMeta.title))  titleNeeded=false;
-	  if (isSet(trackMeta.artist)) artistNeeded=false;
-	  if (isSet(trackMeta.genre))  genreNeeded=false;
-	  if (isSet(trackMeta.album))  albumNeeded=false;
+	  if (isSet(trackDb.title))  titleNeeded=false;
+	  if (isSet(trackDb.artist)) artistNeeded=false;
+	  if (isSet(trackDb.genre))  genreNeeded=false;
+	  if (isSet(trackDb.album))  albumNeeded=false;
 	}
 	
 	private boolean isSet(String inStr)

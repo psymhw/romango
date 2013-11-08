@@ -30,7 +30,7 @@ import javafx.stage.Stage;
 
 public class MP3EditorDialog extends Stage
 {
-  TrackMeta trackMeta;
+  TrackDb trackDb;
   TextField title   = new TextField("");
   TextField artist  = new TextField("");
   TextField album   = new TextField("");
@@ -55,13 +55,13 @@ public class MP3EditorDialog extends Stage
     final int row[] = {0,1,2,3,4,5,6,7,8,9,10};
     this.initModality(Modality.APPLICATION_MODAL); 
     
-    trackMeta=Db.getTrackInfo(tangoTrack.getPathHash());
-    title.setText(trackMeta.title);
-    artist.setText(trackMeta.artist);
-    album.setText(trackMeta.album);
-    year.setText(trackMeta.track_year);
-    genre.setText(trackMeta.genre);
-    comment.setText(trackMeta.comment);
+    trackDb=Db.getTrackInfo(tangoTrack.getPathHash());
+    title.setText(trackDb.title);
+    artist.setText(trackDb.artist);
+    album.setText(trackDb.album);
+    year.setText(trackDb.track_year);
+    genre.setText(trackDb.genre);
+    comment.setText(trackDb.comment);
     // TODO implement style, singer, adjectives, rating (tango/vals etc)
     
     final ComboBox styleComboBox = new ComboBox();
@@ -79,9 +79,9 @@ public class MP3EditorDialog extends Stage
              public void changed(ObservableValue<? extends String> ov, 
                  String old_val, String new_val) { style=new_val; } });
 
-    styleComboBox.setValue(trackMeta.style);
+    styleComboBox.setValue(trackDb.style);
     
-    System.out.println("MP3Editor: "+trackMeta.title);
+    System.out.println("MP3Editor: "+trackDb.title);
     Button okButton = new Button("OK");
 	  GridPane gridPane = new GridPane();
     gridPane.setPadding(new Insets(10, 10, 10, 10));
@@ -123,9 +123,9 @@ public class MP3EditorDialog extends Stage
       public void handle(ActionEvent arg0) 
       {
        
-        updateTrackMeta();
+        updateTrackDb();
         updateTangoTableView();
-        Db.updateTrack(trackMeta);
+        Db.updateTrack(trackDb);
         updateMP3tag();
         close();	
       }});
@@ -137,13 +137,13 @@ public class MP3EditorDialog extends Stage
   
   private void updateTangoTableView()
   {
-    ttrack.setTitle(trackMeta.title);
-    ttrack.setArtist(trackMeta.artist);
-    ttrack.setTrack_year(trackMeta.track_year);
-    ttrack.setGenre(trackMeta.genre);
-    ttrack.setComment(trackMeta.comment);
-    ttrack.setStyle(trackMeta.style);
-    ttrack.setSinger(trackMeta.singer);
+    ttrack.setTitle(trackDb.title);
+    ttrack.setArtist(trackDb.artist);
+    ttrack.setTrack_year(trackDb.track_year);
+    ttrack.setGenre(trackDb.genre);
+    ttrack.setComment(trackDb.comment);
+    ttrack.setStyle(trackDb.style);
+    ttrack.setSinger(trackDb.singer);
     
     // this forces the table to update the row
     
@@ -158,17 +158,17 @@ public class MP3EditorDialog extends Stage
     }
   }
   
-  private void updateTrackMeta()
+  private void updateTrackDb()
   {
-    trackMeta.title=title.getText();
-    trackMeta.artist=artist.getText();
-    trackMeta.album=album.getText();
-    trackMeta.track_year=year.getText();
-    trackMeta.genre=genre.getText();
-    trackMeta.singer=singer.getText();
-    trackMeta.comment=comment.getText();
-    trackMeta.rating=rating.getText();
-    trackMeta.style=style;
+    trackDb.title=title.getText();
+    trackDb.artist=artist.getText();
+    trackDb.album=album.getText();
+    trackDb.track_year=year.getText();
+    trackDb.genre=genre.getText();
+    trackDb.singer=singer.getText();
+    trackDb.comment=comment.getText();
+    trackDb.rating=rating.getText();
+    trackDb.style=style;
   }
   
   private void updateMP3tag() 
@@ -176,34 +176,34 @@ public class MP3EditorDialog extends Stage
     MP3File mp3 = null;
     AbstractID3v2 tag;
    
-    File file = new File(trackMeta.path);
+    File file = new File(trackDb.path);
    
     String message;
       
     try { mp3= new MP3File(file); } catch (Exception e) 
     { 
-      System.out.println(" Could not create MP3File class: "+trackMeta.path); 
+      System.out.println(" Could not create MP3File class: "+trackDb.path); 
       return;  
     }
     
     try { tag = mp3.getID3v2Tag();  } catch (Exception e2) 
     {  
-      System.out.println(" Could not get ID3v2 tag: "+trackMeta.path); 
+      System.out.println(" Could not get ID3v2 tag: "+trackDb.path); 
       return;  
     }
      
     if (tag==null)
     {
-      System.out.println(" tag is null: "+trackMeta.path+"\n"); 
+      System.out.println(" tag is null: "+trackDb.path+"\n"); 
       return;  
     }
     
-    tag.setSongTitle(trackMeta.title);
-    tag.setLeadArtist(trackMeta.artist);
-    tag.setAlbumTitle(trackMeta.album);
-    tag.setYearReleased(trackMeta.track_year);
-    tag.setSongGenre(trackMeta.genre);
-    tag.setSongComment(trackMeta.comment);
+    tag.setSongTitle(trackDb.title);
+    tag.setLeadArtist(trackDb.artist);
+    tag.setAlbumTitle(trackDb.album);
+    tag.setYearReleased(trackDb.track_year);
+    tag.setSongGenre(trackDb.genre);
+    tag.setSongComment(trackDb.comment);
    
     mp3.setID3v2Tag(tag);
     try

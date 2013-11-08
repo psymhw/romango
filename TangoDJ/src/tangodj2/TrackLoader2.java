@@ -41,7 +41,7 @@ public class TrackLoader2
   static int errors=0;
   static int counter=0;
   private static Hasher hasher = new Hasher();
-  private static List<TrackMeta> trackInfo = new ArrayList<TrackMeta>();
+  private static List<TrackDb> trackInfo = new ArrayList<TrackDb>();
   public boolean isTango=true;
   TangoTable tangoTable;
   CleanupTable cleanupTable;
@@ -82,15 +82,15 @@ public class TrackLoader2
   
   private boolean metaLoaded()
   {
-	  TrackMeta trackMeta;
+	  TrackDb trackDb;
 	   int counter=0;
-	   Iterator<TrackMeta> it = trackInfo.iterator();
+	   Iterator<TrackDb> it = trackInfo.iterator();
 	   String tStr;
 	   while(it.hasNext())
 	   {
-		 trackMeta=it.next();
-		 if (trackMeta.duration==0) return false;
-		 if (trackMeta.metaComplete==false) return false;
+		 trackDb=it.next();
+		 if (trackDb.duration==0) return false;
+		 if (trackDb.metaComplete==false) return false;
 	  }  
 	   return true;
   }
@@ -113,37 +113,37 @@ public class TrackLoader2
 	  if (errors==0) System.out.println(" No Errors\n");
 		else System.out.println(errors+" Errors\n");
 	   
-	  getMetaData();
+	  getDbData();
 	  timelineCycles=0;
 	  timeline.playFromStart();
   }
 	 
   
-  void getMetaData()
+  void getDbData()
   {
-    TrackMeta trackMeta;
+    TrackDb trackDb;
 	  int counter=0;
-	  Iterator<TrackMeta> it = trackInfo.iterator();
+	  Iterator<TrackDb> it = trackInfo.iterator();
 	  String tStr;
 	  while(it.hasNext())
 	  {
-	    trackMeta=it.next();
-	    new MediaMetaGetter(trackMeta);
+	    trackDb=it.next();
+	    new MediaMetaGetter(trackDb);
     }
   }
   
   
 	 void listTrackInfo()
 	 {
-	   TrackMeta trackMeta;
+	   TrackDb trackDb;
 	   int counter=0;
-	   Iterator<TrackMeta> it = trackInfo.iterator();
+	   Iterator<TrackDb> it = trackInfo.iterator();
 	   while(it.hasNext())
 	   {
-		 trackMeta=it.next();
-		 System.out.println((counter++)+") title: "+trackMeta.title);
-		 System.out.println("  artist: "+trackMeta.artist);
-		 System.out.println("  length: "+trackMeta.duration);
+		 trackDb=it.next();
+		 System.out.println((counter++)+") title: "+trackDb.title);
+		 System.out.println("  artist: "+trackDb.artist);
+		 System.out.println("  length: "+trackDb.duration);
 	  }
 			
 	 }
@@ -156,19 +156,19 @@ public class TrackLoader2
 		}
 	 void sqlReadyTrackInfo()
 	 {
-	   TrackMeta trackMeta;
-	   Iterator<TrackMeta> it = trackInfo.iterator();
+	   TrackDb trackDb;
+	   Iterator<TrackDb> it = trackInfo.iterator();
 	   while(it.hasNext())
 	   {
-		 trackMeta=it.next();
-		 trackMeta.title    = sqlReadyString(trackMeta.title);
-		 trackMeta.artist   = sqlReadyString(trackMeta.artist);
-		 trackMeta.album    = sqlReadyString(trackMeta.album);
-		 trackMeta.comment  = sqlReadyString(trackMeta.comment);
-		 trackMeta.path     = sqlReadyString(trackMeta.path);
-		 trackMeta.genre     = sqlReadyString(trackMeta.genre);
-		 //trackMeta.path = new File(trackMeta.path).toURI().toString();
-		 trackMeta.track_year     = sqlReadyString(trackMeta.track_year);
+		 trackDb=it.next();
+		 trackDb.title    = sqlReadyString(trackDb.title);
+		 trackDb.artist   = sqlReadyString(trackDb.artist);
+		 trackDb.album    = sqlReadyString(trackDb.album);
+		 trackDb.comment  = sqlReadyString(trackDb.comment);
+		 trackDb.path     = sqlReadyString(trackDb.path);
+		 trackDb.genre     = sqlReadyString(trackDb.genre);
+		 //trackDb.path = new File(trackDb.path).toURI().toString();
+		 trackDb.track_year     = sqlReadyString(trackDb.track_year);
 	  }
 			
 	 }
@@ -180,27 +180,27 @@ public class TrackLoader2
 	try{
 		//Db.connect();
 	   connection = DriverManager.getConnection(JDBC_URL2);
-	   TrackMeta trackMeta;
-	   Iterator<TrackMeta> it = trackInfo.iterator();
+	   TrackDb trackDb;
+	   Iterator<TrackDb> it = trackInfo.iterator();
 	   while(it.hasNext())
 	   {
-		 trackMeta=it.next();
+		 trackDb=it.next();
 		 String sql="insert into tracks(cleanup, path, pathHash, title, artist, album, duration, genre, comment, style, track_year) "
-		 		+"values ("+cleanup+", '"+trackMeta.path
-	              +"', '"+trackMeta.pathHash
-	              +"', '"+trackMeta.title
-	              +"', '"+trackMeta.artist
-	              +"', '"+trackMeta.album
-	              +"', "+trackMeta.duration
-	              +", '"+trackMeta.genre
-	              +"', '"+trackMeta.comment
+		 		+"values ("+cleanup+", '"+trackDb.path
+	              +"', '"+trackDb.pathHash
+	              +"', '"+trackDb.title
+	              +"', '"+trackDb.artist
+	              +"', '"+trackDb.album
+	              +"', "+trackDb.duration
+	              +", '"+trackDb.genre
+	              +"', '"+trackDb.comment
 	              +"', 'Tango"
-	              +"', '"+trackMeta.track_year
+	              +"', '"+trackDb.track_year
 	              +"')";
 		//System.out.println("Db: "+sql);
 		 try {
 		   // TODO java.sql.SQLIntegrityConstraintViolationException needs to be handled here
-		 if (isSet(trackMeta.title)) connection.createStatement().execute(sql);
+		 if (isSet(trackDb.title)) connection.createStatement().execute(sql);
 		 } catch (Exception ex) { System.out.println("SQL ERROR: "+sql); 
 		 ex.printStackTrace(); } 
 	  }
@@ -293,7 +293,7 @@ public class TrackLoader2
 		int duration = 0;
 		boolean success=false;
 		  
-		trackInfo.add(new TrackMeta(title, artist, album, comment, genre, pathHash, pathStr2, track_year));
+		trackInfo.add(new TrackDb(title, artist, album, comment, genre, pathHash, pathStr2, track_year));
 		  
 		counter++;
       }

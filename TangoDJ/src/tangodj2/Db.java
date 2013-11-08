@@ -34,6 +34,7 @@ public class Db
 	
 	}
 	
+	/*
 	public static void loadAllTracks(int type)
 	{
 		
@@ -74,7 +75,7 @@ public class Db
 			disconnect();
 	    } catch (Exception e) { e.printStackTrace();}
 	  }
-	
+	*/
 	public static void loadTangoTracks(ObservableList<TangoTrack> tangoTracksData)
   {
     String title;
@@ -92,6 +93,7 @@ public class Db
       
     tangoTracksData.clear();
       
+    TrackDb trackDb;
     try
     {
       connect();
@@ -99,19 +101,8 @@ public class Db
       ResultSet resultSet = statement.executeQuery("select * from tracks where cleanup = 0 order by artist, album, title");
       while(resultSet.next())
       {
-        title=resultSet.getString("title");
-        artist = resultSet.getString("artist");
-        album = resultSet.getString("album");
-        genre = resultSet.getString("genre");
-        comment = resultSet.getString("comment");
-        track_year = resultSet.getString("track_year");
-        pathHash = resultSet.getString("pathHash");
-        path = resultSet.getString("path");
-        duration=resultSet.getInt("duration");
-        cleanup=resultSet.getInt("cleanup");
-        singer=resultSet.getString("singer");
-        style=resultSet.getString("style");
-        tangoTracksData.add(new TangoTrack(title, artist, album, genre, comment, pathHash, path, duration, cleanup, track_year, singer, style));
+        trackDb = getTrackDb(resultSet);
+        tangoTracksData.add(new TangoTrack(trackDb));
       }
       if (resultSet!=null) resultSet.close();
       if (statement!=null) statement.close();
@@ -380,7 +371,7 @@ public class Db
       } catch (Exception e) { e.printStackTrace();}
       if (cortinaTrack!=null)
       {
-        cortinaTrack.setTrackMeta(getTrackInfo(cortinaTrack.getPathHash()));
+        cortinaTrack.setTrackDb(getTrackInfo(cortinaTrack.getPathHash()));
         
       }
       //System.out.println("Db - Cortina Hash: "+cortinaTrack.getPathHash());
@@ -432,26 +423,26 @@ public class Db
 	
 	public static CleanupTrack getCleanupTrack(String pathHash)
 	{
-	  TrackMeta tm = getTrackInfo(pathHash);
+	  TrackDb tm = getTrackInfo(pathHash);
 	  CleanupTrack cleanupTrack = new CleanupTrack(tm.title, tm.artist, tm.album, tm.genre, tm.comment, 
 	      tm.pathHash, tm.path, tm.duration, 0, "");
 	  return cleanupTrack;
 	}
 	
-	public static void updateTrack(TrackMeta trackMeta)
+	public static void updateTrack(TrackDb trackDb)
 	{
 	  String sql = "update tracks set " 
-	               +" title = '"+trackMeta.title+"', "
-	               +" album = '"+trackMeta.album+"', "
-	               +" artist = '"+trackMeta.artist+"', "
-	               +" track_year = '"+trackMeta.track_year+"', "
-	               +" comment = '"+trackMeta.comment+"', "
-	               +" singer = '"+trackMeta.singer+"', "
-	               +" rating = '"+trackMeta.rating+"', "
-	               +" adjectives = '"+trackMeta.adjectives+"', "
-	               +" style = '"+trackMeta.style+"', "
-	               +" delay = "+trackMeta.delay
-	               +" where pathHash =  '"+trackMeta.pathHash+"'";
+	               +" title = '"+trackDb.title+"', "
+	               +" album = '"+trackDb.album+"', "
+	               +" artist = '"+trackDb.artist+"', "
+	               +" track_year = '"+trackDb.track_year+"', "
+	               +" comment = '"+trackDb.comment+"', "
+	               +" singer = '"+trackDb.singer+"', "
+	               +" rating = '"+trackDb.rating+"', "
+	               +" adjectives = '"+trackDb.adjectives+"', "
+	               +" style = '"+trackDb.style+"', "
+	               +" delay = "+trackDb.delay
+	               +" where pathHash =  '"+trackDb.pathHash+"'";
      try 
      {
        connect();
@@ -461,9 +452,9 @@ public class Db
      } catch (Exception e) { e.printStackTrace();}
    }
 	
-	public static TrackMeta getTrackInfo(String pathHash)
+	public static TrackDb getTrackInfo(String pathHash)
 	{
-	  TrackMeta trackMeta=null;
+	  TrackDb trackDb=null;
 	  try
 	  {
 	    connect();
@@ -471,18 +462,18 @@ public class Db
 	 	  ResultSet resultSet = statement.executeQuery("select * from tracks where pathHash = '"+pathHash+"'");
 	 	  if(resultSet.next())
 	 	  {
-	 	    trackMeta=getTrackMeta(resultSet);
+	 	    trackDb=getTrackDb(resultSet);
 	 	  }
 	 	  if (resultSet!=null) resultSet.close();
 	 	  if (statement!=null) statement.close();
 	 	  disconnect();
 	  } catch (Exception e) { e.printStackTrace();}
-	  return trackMeta;
+	  return trackDb;
 	}
 	
-	private static TrackMeta getTrackMeta(ResultSet resultSet) throws Exception
+	private static TrackDb getTrackDb(ResultSet resultSet) throws Exception
 	{
-	  TrackMeta trackMeta = new TrackMeta(resultSet.getString("title"),
+	  TrackDb trackDb = new TrackDb(resultSet.getString("title"),
     
 	  resultSet.getString("artist"),
     resultSet.getString("album"),
@@ -491,18 +482,18 @@ public class Db
     resultSet.getString("pathHash"),
     resultSet.getString("path"),
     resultSet.getString("track_year"));
-    trackMeta.duration= resultSet.getInt("duration");
-    trackMeta.cleanup=resultSet.getInt("cleanup");
-    trackMeta.singer=resultSet.getString("singer");
-    trackMeta.style=resultSet.getString("style");
-    trackMeta.adjectives=resultSet.getString("adjectives");
-    trackMeta.rating=resultSet.getString("rating");
-    trackMeta.leader=resultSet.getString("leader");
-    trackMeta.bpm=resultSet.getString("bpm");
-    trackMeta.track_no= resultSet.getInt("track_no");
-    trackMeta.delay= resultSet.getInt("delay");
+    trackDb.duration= resultSet.getInt("duration");
+    trackDb.cleanup=resultSet.getInt("cleanup");
+    trackDb.singer=resultSet.getString("singer");
+    trackDb.style=resultSet.getString("style");
+    trackDb.adjectives=resultSet.getString("adjectives");
+    trackDb.rating=resultSet.getString("rating");
+    trackDb.leader=resultSet.getString("leader");
+    trackDb.bpm=resultSet.getString("bpm");
+    trackDb.track_no= resultSet.getInt("track_no");
+    trackDb.delay= resultSet.getInt("delay");
 
-    return trackMeta;
+    return trackDb;
 	}
 	
 	public static void disconnect() throws SQLException
