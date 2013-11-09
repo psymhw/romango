@@ -9,14 +9,24 @@ public class ArtistX
    
    public ArtistX(String first, String last, int index)
    {
-	 this.first=first;
-	 this.last=last;
-	 this.index=index;
-	 length = first.length()+last.length();
+	   this.first=first;
+	   this.last=last;
+	   this.index=index;
+	   length = first.length()+last.length();
    }
    
    public String toString()
    {
-	 return last;
+	   return last;
+   }
+   
+   public String getLeader()
+   {
+     return last;
+   }
+   
+   public String getArtist()
+   {
+     return last+", "+first;
    }
 }

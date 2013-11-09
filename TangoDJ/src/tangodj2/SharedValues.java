@@ -45,7 +45,7 @@ public class SharedValues
 		  ));
   
   public final static ArrayList<ArtistX> artistsA = new ArrayList<ArtistX>(Arrays.asList(
-		  new ArtistX("Rudolfo",   "Biagi", 1),
+		  new ArtistX("Rodolfo",   "Biagi", 1),
 		  new ArtistX("Francisco", "Canaro", 2),
 		  new ArtistX("Angel",     "D'Agostino",3),
 		  new ArtistX("Juan",      "D'Arienzo",4),

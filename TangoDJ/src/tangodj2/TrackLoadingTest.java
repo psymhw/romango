@@ -59,10 +59,10 @@ public class TrackLoadingTest extends Application
   static int counter2=0;
   ArrayList<File> fileList;
   ArrayList<ProblemFile> problemFileList;
-  private static List<TrackMeta> trackInfo = new ArrayList<TrackMeta>();
- // public final static ObservableList<TrackMeta> trackInfo = FXCollections.observableArrayList();
+  private static List<TrackDb> trackInfo = new ArrayList<TrackDb>();
+ // public final static ObservableList<TrackDb> trackInfo = FXCollections.observableArrayList();
   
-  private static List<TrackMeta> finalTrackInfo = new ArrayList<TrackMeta>();
+  private static List<TrackDb> finalTrackInfo = new ArrayList<TrackDb>();
   private static Hasher hasher = new Hasher();
   int errors=0;
   BufferedWriter out;
@@ -264,14 +264,14 @@ public class TrackLoadingTest extends Application
   
   private void listTracksWithDurations()
   {
-    Iterator<TrackMeta> it = finalTrackInfo.iterator();
-    TrackMeta trackMeta;
+    Iterator<TrackDb> it = finalTrackInfo.iterator();
+    TrackDb trackDb;
     int count=0;
     File file;
     while(it.hasNext())
     {
-      trackMeta = it.next();
-      System.out.println(count+") Duration List: "+trackMeta.duration+", "+trackMeta.title);
+      trackDb = it.next();
+      System.out.println(count+") Duration List: "+trackDb.duration+", "+trackDb.title);
       count++;
     }
     
@@ -279,7 +279,7 @@ public class TrackLoadingTest extends Application
   
   private void getDurationsForNonProblems()
   {
-    Iterator<TrackMeta> it = trackInfo.iterator();
+    Iterator<TrackDb> it = trackInfo.iterator();
     Media media;
     final int count=0;
     trackCount=0;
@@ -293,8 +293,8 @@ public class TrackLoadingTest extends Application
     {
        public void handle(Event event) 
        {
-         final TrackMeta trackMeta = trackInfo.get(trackCount);
-         getTags(trackMeta, trackCount);
+         final TrackDb trackDb = trackInfo.get(trackCount);
+         getTags(trackDb, trackCount);
          trackCount++;
        }});
             
@@ -326,11 +326,11 @@ public class TrackLoadingTest extends Application
       timeline.playFromStart();
   }
   
-  private void getTags(final TrackMeta trackMeta, final int count)
+  private void getTags(final TrackDb trackDb, final int count)
   {
     File file;
     final Media media;
-    file = new File(trackMeta.path);
+    file = new File(trackDb.path);
     try 
     {
       media = new Media(file.toURI().toString());
@@ -339,9 +339,12 @@ public class TrackLoadingTest extends Application
         public void run() {
         System.out.println("MEDIA ERROR: "+media.getError());
       }});
-    } catch (Exception e) {  System.out.println("Problem with media, "+trackMeta.path);  return; }
+    } catch (Exception e) {  System.out.println("Problem with media, "+trackDb.path);  return; }
     
-    if (media==null) { System.out.println("Media is null, "+trackMeta.path);  return; }
+    if (media==null) { System.out.println("Media is null, "+trackDb.path);  return; }
+    
+   // javafx.scene.media.Track t = (media.getTracks().get(0));
+   
     
     final MediaPlayer mp = new MediaPlayer(media);
     players++;
@@ -351,24 +354,24 @@ public class TrackLoadingTest extends Application
       System.out.println("MEDIA PLAYER ERROR: "+mp.getError());
     }});
     
-    if (mp==null) { System.out.println("MediaPlayer is null, "+trackMeta.path); return; }
+    if (mp==null) { System.out.println("MediaPlayer is null, "+trackDb.path); return; }
     mp.setOnReady(new Runnable() 
     {
       public void run() 
       {
-        trackMeta.duration=(int)mp.getTotalDuration().toMillis();
-        if ("NO TITLE".equals(trackMeta.title))
+        trackDb.duration=(int)mp.getTotalDuration().toMillis();
+        if ("NO TITLE".equals(trackDb.title))
         {
-          trackMeta.artist=(String)media.getMetadata().get("artist");
-          trackMeta.album=(String)media.getMetadata().get("album");
-          trackMeta.title=(String)media.getMetadata().get("title");
-          trackMeta.comment=(String)media.getMetadata().get("comment-0");
-          trackMeta.genre=(String)media.getMetadata().get("genre");
-          trackMeta.track_year = (String)media.getMetadata().get("year");
+          trackDb.artist=(String)media.getMetadata().get("artist");
+          trackDb.album=(String)media.getMetadata().get("album");
+          trackDb.title=(String)media.getMetadata().get("title");
+          trackDb.comment=(String)media.getMetadata().get("comment-0");
+          trackDb.genre=(String)media.getMetadata().get("genre");
+          trackDb.track_year = (String)media.getMetadata().get("year");
         }
         
-        System.out.println(count+") "+trackMeta.duration+", "+trackMeta.title);
-        finalTrackInfo.add(trackMeta);
+        System.out.println(count+") "+trackDb.duration+", "+trackDb.title);
+        finalTrackInfo.add(trackDb);
         finalTrackInfoSizeInt++;
         finalTrackInfoSize.setText(""+finalTrackInfoSizeInt);
         mp.dispose();
@@ -409,7 +412,7 @@ public class TrackLoadingTest extends Application
          String track_year = (String)media.getMetadata().get("year");
         
       /*
-        return new TrackMeta(cleanString(media.getMetadata()), 
+        return new TrackDb(cleanString(media.getDbdata()), 
             cleanString(artist),
             cleanString(album),
             cleanString(comment), 
@@ -419,8 +422,8 @@ public class TrackLoadingTest extends Application
             cleanString(track_year));
         
         
-        trackMeta.duration=(int)mp.getTotalDuration().toMillis();
-        System.out.println(count+") "+trackMeta.duration+", "+trackMeta.title);
+        trackDb.duration=(int)mp.getTotalDuration().toMillis();
+        System.out.println(count+") "+trackDb.duration+", "+trackDb.title);
         */
         mp.dispose();
       }
@@ -439,24 +442,24 @@ public class TrackLoadingTest extends Application
     trackInfoSizeInt=0;
     trackInfoSize.setText(""+trackInfoSizeInt);
     File file;
-    TrackMeta trackMeta;
+    TrackDb trackDb;
     while(it.hasNext())
     {
       file = it.next();
-      trackMeta=getSingleMP3tag(file.toPath());
+      trackDb=getSingleMP3tag(file.toPath());
       
-      if (trackMeta!=null) 
+      if (trackDb!=null) 
       {  
-        trackInfo.add(trackMeta);
+        trackInfo.add(trackDb);
         trackInfoSizeInt++;
         trackInfoSize.setText(""+trackInfoSizeInt);
-        System.out.println(counter2+") "+trackMeta.artist+", "+trackMeta.title);
+        System.out.println(counter2+") "+trackDb.artist+", "+trackDb.title);
       }
     }
     System.out.println("Success: "+counter2+" Errors: "+errors);
   }
   
-  private TrackMeta getSingleMP3tag(Path path) throws Exception
+  private TrackDb getSingleMP3tag(Path path) throws Exception
   {
     String pathStr = path.toString().trim().toLowerCase();
     String pathStr2="";
@@ -510,6 +513,9 @@ public class TrackLoadingTest extends Application
       return null;  
     }
       
+    System.out.println("bitrate:" +mp3.getBitRate());
+    System.out.println("frequency:" +mp3.getFrequency());
+   
     title=tag.getSongTitle();
     comment= tag.getSongComment();
     genre=tag.getSongGenre();
@@ -552,7 +558,7 @@ public class TrackLoadingTest extends Application
     pathHash = hasher.getMd5Hash(pathStr2.getBytes());
     counter2++;
     tag=null;
-    return new TrackMeta(cleanString(title), 
+    return new TrackDb(cleanString(title), 
         cleanString(artist),
         cleanString(album),
         cleanString(comment), 

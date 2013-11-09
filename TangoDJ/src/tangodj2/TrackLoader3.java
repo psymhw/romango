@@ -40,7 +40,7 @@ public class TrackLoader3
 {
 //  String inPath="C:\\music\\tango\\Di Sarli, Carlos";
   static int fileCounter=0;
-  static int counter2=0;
+  static int farngCounter=0;
   ArrayList<File> fileList;
  // ArrayList<ProblemFile> problemFileList;
   private static List<TrackDb> trackInfo = new ArrayList<TrackDb>();
@@ -65,8 +65,14 @@ public class TrackLoader3
   
   TangoTable tangoTable;
   CleanupTable cleanupTable;
+  public  ArrayList<ArtistX> artistsAll = new ArrayList<ArtistX>();
   
-  public TrackLoader3() { }
+  public TrackLoader3() 
+  { 
+    artistsAll.addAll(SharedValues.artistsA);
+    artistsAll.addAll(SharedValues.artistsB);
+    artistsAll.addAll(SharedValues.artistsC);
+  }
   
   public void process(String inPath, boolean singleFile, boolean isTango) throws Exception
   {
@@ -91,7 +97,7 @@ public class TrackLoader3
      }   
      
      getFarngMP3Tags();
-     out.close();
+    
    //  System.out.println("Problems list: "+problemFileList.size());
    //  System.out.println("OK list: "+fileList.size());
      getDurations();
@@ -149,32 +155,33 @@ public class TrackLoader3
     final int count=0;
     trackCount=0;
     
-    int trackSize=trackInfo.size();
-    System.out.println("TrackInfo Size: "+trackSize);
+    final int trackSize=trackInfo.size();
     
     Timeline timeline = new Timeline();
-    timeline.setCycleCount(trackSize);
+    timeline.setCycleCount(trackSize+1); // need extra cycle 
     KeyFrame keyFrame= new KeyFrame(Duration.seconds(.3), new EventHandler() 
     {
        public void handle(Event event) 
        {
-         final TrackDb trackDb = trackInfo.get(trackCount);
-         getTags(trackDb, trackCount);
-         trackCount++;
+         if (trackCount<trackSize)
+         {  
+           final TrackDb trackDb = trackInfo.get(trackCount);
+           getTags(trackDb, trackCount);
+           trackCount++;
+         }
        }});
             
       timeline.getKeyFrames().add(keyFrame);
       timeline.playFromStart();
-      timeline.setOnFinished(new EventHandler() {
-
-        @Override
+      timeline.setOnFinished(new EventHandler() 
+      {
         public void handle(Event arg0)
         {
           sqlReadyTrackInfo();
           insertRecords();
           if (isTango) { tangoTable.reloadData(); }
           else cleanupTable.reloadData();
-          
+          try { out.close(); } catch (IOException e) { e.printStackTrace(); }
         }});
   }
   
@@ -208,8 +215,15 @@ public class TrackLoader3
     {
       public void run() 
       {
+       
+        //String comment1 = (String)media.getMetadata().get("comment-1");
+       // String comment2 = (String)media.getMetadata().get("comment-2");
+        
+        //if (comment1!=null) { if (!"".equals(comment1)) {  System.out.println("comment 1: "+comment1); }}
+        //if (comment2!=null) { if (!"".equals(comment2)) {  System.out.println("comment 2: "+comment2); }}
+        
         trackDb.duration=(int)mp.getTotalDuration().toMillis();
-        System.out.println("duration: "+trackDb.duration);
+        System.out.println("duration: "+trackDb.duration+", "+trackDb.title);
         if ("NO TITLE".equals(trackDb.title))
         {
           trackDb.artist=(String)media.getMetadata().get("artist");
@@ -218,7 +232,31 @@ public class TrackLoader3
           trackDb.comment=(String)media.getMetadata().get("comment-0");
           trackDb.genre=(String)media.getMetadata().get("genre");
           trackDb.track_year = (String)media.getMetadata().get("year");
+          trackDb.track_no = (int)media.getMetadata().get("track number");
         }
+        
+        ArtistX artistX = getArtistX(trackDb.artist);
+        if (artistX==null)
+        {
+          trackDb.leader=trackDb.artist;
+        }
+        else
+        {
+          trackDb.leader=artistX.getLeader();
+          trackDb.artist=artistX.getArtist();
+        }
+        String styleGuess="Tango";
+        String lowerTitle;
+        String lowerGenre;
+        
+        lowerTitle=trackDb.title.toLowerCase();
+        lowerGenre=trackDb.genre.toLowerCase();
+        if (lowerTitle.contains("milonga")) styleGuess="Milonga";
+        if (lowerTitle.contains("vals")) styleGuess="Vals";
+        if (lowerGenre.contains("milonga")) styleGuess="Milonga";
+        if (lowerGenre.contains("vals")) styleGuess="Vals";
+        
+        trackDb.style=styleGuess;
         
         TangoDJ2.feedback.setText("Getting MP3 Tags: "+count+") "+trackDb.duration+", "+trackDb.title);
         //finalTrackInfo.add(trackDb);
@@ -235,7 +273,7 @@ public class TrackLoader3
   private void getFarngMP3Tags() throws Exception
   {
     errors=0;
-    counter2=0;
+    farngCounter=0;
     out.write("GET FARNG MP3 TAGS =====================");
     out.newLine();
     Iterator<File> it = fileList.iterator();
@@ -246,56 +284,46 @@ public class TrackLoader3
     while(it.hasNext())
     {
       file = it.next();
-      trackDb=getSingleMP3tag(file.toPath());
+      trackDb=getSingleFarngMP3tag(file.toPath());
       
       if (trackDb!=null) 
       {  
         trackInfo.add(trackDb);
        // trackInfoSizeInt++;
-        TangoDJ2.feedback.setText("Getting preliminary MP3 tags: "+counter2+") "+trackDb.artist+", "+trackDb.title);
+        TangoDJ2.feedback.setText("Getting preliminary MP3 tags: "+farngCounter+") "+trackDb.artist+", "+trackDb.title);
       }
     }
    
   }
   
-  private TrackDb getSingleMP3tag(Path path) throws Exception
+  private TrackDb getSingleFarngMP3tag(Path path) throws Exception
   {
     String pathStr = path.toString().trim().toLowerCase();
     String pathStr2="";
-    String title="";
-    String artist="";
-    String album="";
-    String comment="";
-    String genre="";
-    String track_year="";
-  
-    String pathHash="";
+    
     MP3File mp3 = null;
     AbstractID3v2 tag;
-    AbstractID3v1 tag2;
 
     File file = path.toFile();
     pathStr2=path.toString();
-    String message;
       
+    TrackDb trackDb = new TrackDb();
+    
     try { mp3= new MP3File(file); } catch (Exception e) 
     { 
       errors++; 
-      message="Could not create MP3File class: "+pathStr;
       out.write("Could not create MP3File class: "+pathStr);
       out.newLine();
-      counter2++; 
-   //   problemFileList.add(new ProblemFile(file, message));
+      farngCounter++; 
       return null;  
     }
     
     try { tag = mp3.getID3v2Tag();  } catch (Exception e2) 
-    {  errors++; 
+    { 
+      errors++; 
       out.write("Could not get ID3v2 tag: "+pathStr);
       out.newLine();
-      counter2++; 
-      message="Could not get ID3v2 tag: "+pathStr;
-    //  problemFileList.add(new ProblemFile(file, message));
+      farngCounter++; 
       return null;  
     }
      
@@ -304,40 +332,41 @@ public class TrackLoader3
       errors++; 
       out.write("tag is null: "+pathStr);
       out.newLine();
-      counter2++; 
-      message="tag is null: "+pathStr;
-    //  problemFileList.add(new ProblemFile(file, message));
+      farngCounter++; 
       return null;  
     }
-      
-    title=tag.getSongTitle();
-    comment= tag.getSongComment();
-    genre=tag.getSongGenre();
-    artist=tag.getLeadArtist();
-   
-    album=tag.getAlbumTitle();
-    track_year=tag.getYearReleased();
-      //System.out.println(track_year);
     
-    if (artist==null) artist="NO ARTIST";
-    else if (artist.trim().length()==0)  artist="NO ARTIST";
-    if (title==null) title="NO TITLE";
-    else if (title.trim().length()==0)  title="NO TITLE";
-    
-   
     pathStr2=path.toString();
-              
-    pathHash = hasher.getMd5Hash(pathStr2.getBytes());
-    counter2++;
+      
+    trackDb.title=cleanString(tag.getSongTitle());
+    trackDb.artist=cleanString(tag.getLeadArtist());
+    trackDb.album=cleanString(tag.getAlbumTitle());
+    trackDb.comment=cleanString(tag.getSongComment());
+    trackDb.genre=cleanString(tag.getSongGenre());
+    trackDb.track_year=cleanString(tag.getYearReleased());
+    
+    // Track Number
+    String strTrackNo="0";
+    int track_no=0;
+    strTrackNo=tag.getTrackNumberOnAlbum();
+    try { track_no = Integer.parseInt(strTrackNo); } catch (Exception e3) {}
+    trackDb.track_no=track_no;
+    
+    trackDb.pathHash = hasher.getMd5Hash(pathStr2.getBytes());
+    trackDb.path = cleanString(pathStr2);
+    
+    if (trackDb.artist==null) trackDb.artist="NO ARTIST";
+    else if (trackDb.artist.trim().length()==0)  trackDb.artist="NO ARTIST";
+    if (trackDb.title==null) trackDb.title="NO TITLE";
+    else if (trackDb.title.trim().length()==0)  trackDb.title="NO TITLE";
+    
+    
+    
+    
+    farngCounter++;
     tag=null;
-    return new TrackDb(cleanString(title), 
-        cleanString(artist),
-        cleanString(album),
-        cleanString(comment), 
-        cleanString(genre), 
-        pathHash, 
-        cleanString(pathStr2), 
-        cleanString(track_year));
+    
+    return trackDb;
   }
   
   public static String cleanString(String inStr)
@@ -370,34 +399,27 @@ public class TrackLoader3
    //Db.connect();
     connection = DriverManager.getConnection(JDBC_URL2);
     TrackDb trackDb;
-    String styleGuess="Tango";
-    String lowerTitle;
-    String lowerGenre;
+   
     Iterator<TrackDb> it = trackInfo.iterator();
     while(it.hasNext())
     {
-      styleGuess="Tango";
       trackDb=it.next();
-      lowerTitle=trackDb.title.toLowerCase();
-      lowerGenre=trackDb.genre.toLowerCase();
-      if (lowerTitle.contains("milonga")) styleGuess="Milonga";
-      if (lowerTitle.contains("vals")) styleGuess="Vals";
-      if (lowerGenre.contains("milonga")) styleGuess="Milonga";
-      if (lowerGenre.contains("vals")) styleGuess="Vals";
       
-      String sql="insert into tracks(cleanup, path, pathHash, title, artist, album, duration, genre, comment, style, track_year) "
+      String sql="insert into tracks(cleanup, path, pathHash, title, leader, artist, album, duration, track_no, genre, comment, style, track_year) "
        +"values ("+cleanup+", '"+trackDb.path
                +"', '"+trackDb.pathHash
                +"', '"+trackDb.title
+               +"', '"+trackDb.leader
                +"', '"+trackDb.artist
                +"', '"+trackDb.album
                +"', "+trackDb.duration
+               +", "+trackDb.track_no
                +", '"+trackDb.genre
                +"', '"+trackDb.comment
-               +"', '"+styleGuess
+               +"', '"+trackDb.style
                +"', '"+trackDb.track_year
                +"')";
-   // System.out.println("TrackLoader3, sql: "+sql);
+   System.out.println("TrackLoader3, sql: "+sql);
    TangoDJ2.feedback.setText("Inserting Records: "+trackDb.title);
     try {
       // TODO java.sql.SQLIntegrityConstraintViolationException needs to be handled here
@@ -410,6 +432,18 @@ public class TrackLoader3
  } catch (Exception e) { e.printStackTrace(); }
 }
   
+  private ArtistX getArtistX(String artist)
+  {
+    Iterator<ArtistX> it = artistsAll.iterator();
+    ArtistX artistX;
+    while (it.hasNext())
+    {
+      artistX=it.next();
+      if (artist.toLowerCase().contains(artistX.last.toLowerCase())) return artistX;
+    }
+    return null;
+  }
+
   private boolean isSet(String inStr)
   {
      if (inStr==null) return false;
@@ -437,6 +471,7 @@ public class TrackLoader3
  
  public static String sqlReadyString(String inStr)
  {
+    if (inStr==null) return "";
     String returnStr = inStr.replace("'","''");
     returnStr = returnStr.replace("ÿþ","");
    // returnStr = returnStr.replace("\\","\\\\");
