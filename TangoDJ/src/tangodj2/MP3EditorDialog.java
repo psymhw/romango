@@ -33,17 +33,20 @@ public class MP3EditorDialog extends Stage
   TrackDb trackDb;
   TextField title   = new TextField("");
   TextField artist  = new TextField("");
+  TextField leader  = new TextField("");
   TextField album   = new TextField("");
+  TextField track_no= new TextField("");
   TextField year    = new TextField("");
   TextField genre   = new TextField("");
+  TextField bpm   = new TextField("");
   TextField singer  = new TextField("");
   TextField comment = new TextField("");
-  TextField rating  = new TextField("");
+ // TextField rating  = new TextField("");
   TangoTrack ttrack;
   TangoTable ttable;
  // int idx=0;
   final ComboBox styleComboBox = new ComboBox();
-  String style = "Tango";
+ // String style = "Tango";
   
   public MP3EditorDialog(TangoTrack tangoTrack,  TangoTable tangoTable)
   {
@@ -51,17 +54,24 @@ public class MP3EditorDialog extends Stage
     this.ttable=tangoTable;
    // this.idx=index;
     
-	  final int col[] = {0,1,2,3,4,5,6,7,8,9,10};
-    final int row[] = {0,1,2,3,4,5,6,7,8,9,10};
+	  final int col[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+    final int row[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
     this.initModality(Modality.APPLICATION_MODAL); 
+    
+    track_no.setPrefWidth(50);
+    track_no.setMaxWidth(50);
     
     trackDb=Db.getTrackInfo(tangoTrack.getPathHash());
     title.setText(trackDb.title);
+    leader.setText(trackDb.leader);
     artist.setText(trackDb.artist);
     album.setText(trackDb.album);
+    track_no.setText(""+trackDb.track_no);
     year.setText(trackDb.track_year);
     genre.setText(trackDb.genre);
     comment.setText(trackDb.comment);
+    bpm.setText(trackDb.bpm);
+    singer.setText(trackDb.singer);
     // TODO implement style, singer, adjectives, rating (tango/vals etc)
     
     final ComboBox styleComboBox = new ComboBox();
@@ -77,9 +87,25 @@ public class MP3EditorDialog extends Stage
     styleComboBox.getSelectionModel().selectedItemProperty().addListener(
         new ChangeListener<String>() {
              public void changed(ObservableValue<? extends String> ov, 
-                 String old_val, String new_val) { style=new_val; } });
+                 String old_val, String new_val) { trackDb.style=new_val; } });
 
     styleComboBox.setValue(trackDb.style);
+    
+    final ComboBox ratingComboBox = new ComboBox();
+    ratingComboBox.getItems().addAll(
+        "*",
+        "**",
+        "***",
+        "****",
+        "*****"
+    );   
+    
+    ratingComboBox.getSelectionModel().selectedItemProperty().addListener(
+        new ChangeListener<String>() {
+             public void changed(ObservableValue<? extends String> ov, 
+                 String old_val, String new_val) { trackDb.rating=new_val; } });
+
+    ratingComboBox.setValue(trackDb.rating);
     
     System.out.println("MP3Editor: "+trackDb.title);
     Button okButton = new Button("OK");
@@ -89,25 +115,31 @@ public class MP3EditorDialog extends Stage
     gridPane.setHgap(5);
     int labelRow=0;
     gridPane.add(new Label("Title: "),   col[0], row[labelRow++]);
+    gridPane.add(new Label("Leader: "),  col[0], row[labelRow++]);
     gridPane.add(new Label("Artist: "),  col[0], row[labelRow++]);
     gridPane.add(new Label("Album: "),   col[0], row[labelRow++]);
+    gridPane.add(new Label("Track: "),   col[0], row[labelRow++]);
     gridPane.add(new Label("Year: "),    col[0], row[labelRow++]);
     gridPane.add(new Label("Genre: "),   col[0], row[labelRow++]);
     gridPane.add(new Label("Style: "),   col[0], row[labelRow++]);
+    gridPane.add(new Label("BPM: "),     col[0], row[labelRow++]);
     gridPane.add(new Label("Singer: "),  col[0], row[labelRow++]);
     gridPane.add(new Label("Comment: "), col[0], row[labelRow++]);
     gridPane.add(new Label("Rating: "),  col[0], row[labelRow++]);
     
     int fieldRow=0;
     gridPane.add(title,    col[1], row[fieldRow++]);
+    gridPane.add(leader,   col[1], row[fieldRow++]);
     gridPane.add(artist,   col[1], row[fieldRow++]);
     gridPane.add(album,    col[1], row[fieldRow++]);
+    gridPane.add(track_no, col[1], row[fieldRow++]);
     gridPane.add(year,     col[1], row[fieldRow++]);
     gridPane.add(genre,    col[1], row[fieldRow++]);
     gridPane.add(styleComboBox,    col[1], row[fieldRow++]);
+    gridPane.add(bpm,   col[1], row[fieldRow++]);
     gridPane.add(singer,   col[1], row[fieldRow++]);
     gridPane.add(comment,  col[1], row[fieldRow++]);
-    gridPane.add(rating,   col[1], row[fieldRow++]);
+    gridPane.add(ratingComboBox,   col[1], row[fieldRow++]);
     gridPane.add(okButton,   col[1], row[fieldRow++]);
     
    // GridPane.setHalignment(handicapLabel, HPos.RIGHT);
@@ -129,8 +161,9 @@ public class MP3EditorDialog extends Stage
         updateMP3tag();
         close();	
       }});
-    
-    Scene myDialogScene = new Scene(gridPane, 300, 300);
+    double width=300;
+    double height=400;
+    Scene myDialogScene = new Scene(gridPane, width, height);
     setScene(myDialogScene);
     show();
   } 
@@ -167,8 +200,10 @@ public class MP3EditorDialog extends Stage
     trackDb.genre=genre.getText();
     trackDb.singer=singer.getText();
     trackDb.comment=comment.getText();
-    trackDb.rating=rating.getText();
-    trackDb.style=style;
+    // trackDb.rating=rating.getText();
+    //trackDb.style=style; set in combobox
+    trackDb.track_no=Integer.parseInt(track_no.getText());
+    trackDb.bpm=bpm.getText();
   }
   
   private void updateMP3tag() 
@@ -204,7 +239,7 @@ public class MP3EditorDialog extends Stage
     tag.setYearReleased(trackDb.track_year);
     tag.setSongGenre(trackDb.genre);
     tag.setSongComment(trackDb.comment);
-   
+    tag.setTrackNumberOnAlbum(""+trackDb.track_no);
     mp3.setID3v2Tag(tag);
     try
     {

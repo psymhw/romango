@@ -78,19 +78,6 @@ public class Db
 	*/
 	public static void loadTangoTracks(ObservableList<TangoTrack> tangoTracksData)
   {
-    String title;
-    String artist;
-    String album;
-    String genre;
-    String comment;
-    String singer;
-    String style;
-    String pathHash;
-    String path;
-    String track_year;
-    int cleanup;
-    int duration=0;
-      
     tangoTracksData.clear();
       
     TrackDb trackDb;
@@ -434,13 +421,16 @@ public class Db
 	  String sql = "update tracks set " 
 	               +" title = '"+trackDb.title+"', "
 	               +" album = '"+trackDb.album+"', "
+	               +" leader = '"+trackDb.leader+"', "
 	               +" artist = '"+trackDb.artist+"', "
 	               +" track_year = '"+trackDb.track_year+"', "
 	               +" comment = '"+trackDb.comment+"', "
 	               +" singer = '"+trackDb.singer+"', "
+	               +" genre = '"+trackDb.genre+"', "
 	               +" rating = '"+trackDb.rating+"', "
 	               +" adjectives = '"+trackDb.adjectives+"', "
 	               +" style = '"+trackDb.style+"', "
+	               +" bpm = '"+trackDb.bpm+"', "
 	               +" delay = "+trackDb.delay
 	               +" where pathHash =  '"+trackDb.pathHash+"'";
      try 

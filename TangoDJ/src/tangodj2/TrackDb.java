@@ -23,6 +23,7 @@ public class TrackDb
   
   public boolean metaComplete=false;
   
+  public TrackDb() {}
   
   public TrackDb(String title, 
 		               String artist, 

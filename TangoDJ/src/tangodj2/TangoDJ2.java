@@ -50,22 +50,114 @@ import javafx.stage.WindowEvent;
  * Change cleanup to non-tango
  * Handle bad directory address in preferences
  * Need an info line to show loading progress and error messages
- * Song adjectives: instramental, duet, female singer,peppy,perky
- * modern, dreamy, dramatic, slow, mediun, alternative, better, best
- * lots of feelings, heavy vocals, fast, old scratchy, sweet
- * rythmic, romantic, uplifting, others better, late night, 
- * mysterious, candombe, mild, special, trumpet, muted trumpet, clarinet
- * traspie, fun, high energy, paso double, horns, Big orchestra,
- * weak, piano, mellow, long intro, oboe, whistles, driving beat,
- * violins, crooner, happy, better, glosa (talking at beginning), best
- * bandonian, favored by other DJs, too old, wordy, sax, guitar
- * worst, challenging, complex rhythm, great vocals, interesting
- * breaks, fast, changes, lyrical, strings, wanders, drama, noises,
- * whimsical, minor, low energy, delightful, poor quality, lovley
- * flat, shrill, lush, confusing beat, busy, novelty, sad, angry
- * medium, inconsistent rhythm, anguish, laughing, sounds
- * melancholy, funky, organ, funny voices, live
- * Select tango table columns to show
+ * 
+ * 
+
+PARTICULARS
+special
+long intro
+live
+female singer
+duet
+heavy vocals
+big orchestra
+crooner
+glosa (talking at beginning)
+great vocals
+noises
+laughing
+sounds
+funny voices
+novelty
+
+MUSIC
+instramental
+trumpet
+muted trumpet
+clarinet
+horns
+piano
+oboe
+whistles
+violins
+bandonian
+sax
+guitar
+strings
+minor
+organ
+
+FEELING
+peppy
+perky
+dreamy,
+dramatic
+lots of feelings
+sweet
+rhythmic
+romantic
+uplifting
+mysterious
+fun
+happy
+interesting
+lyrical
+drama
+whimsical
+delightful
+lovely
+lush
+sad
+angry
+anguish
+melancholy
+funky
+
+RHYTHM
+paso double
+traspie
+candombe
+alternative
+modern
+sweet old 
+challenging
+complex rhythm
+breaks
+changes
+
+NEGATIVES
+low energy
+poor quality
+flat
+confusing beat
+shrill
+busy
+inconsistent rhythm
+wanders
+weak
+too old
+worst
+scratchy
+wordy
+others better
+
+PACE
+slow
+medium
+fast
+high energy
+mellow
+driving beat
+mild
+better
+best
+favored by other DJs
+
+MILONGA POSITION
+late night
+early
+
+ *  Select tango table columns to show
  * Save column widths too?
  * Oh Jeeze, what about column position?
  * Add BPM to tracks?
