@@ -206,7 +206,7 @@ public class TangoDJ2 extends Application
 	
 	
 	  VBox root = new VBox();
-    Scene scene = new Scene(root, 1200, 700, Color.WHITE);
+    Scene scene = new Scene(root, 1200, 600, Color.WHITE);
     r.setFill(Color.RED);
    
     final URL stylesheet = getClass().getResource("style.css");
