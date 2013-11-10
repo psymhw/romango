@@ -7,7 +7,7 @@ import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 import tangodj2.Db;
 import tangodj2.SharedValues;
-import tangodj2.TrackMeta;
+import tangodj2.TrackDb;
 
 public class TrackTreeItem extends BaseTreeItem
 {
@@ -32,14 +32,14 @@ public class TrackTreeItem extends BaseTreeItem
     //if (dimBallImage==null) dimBallImage = new Image(getClass().getResourceAsStream("/resources/images/dim_ball.png"));
    
   	setGraphic(new ImageView(gray_light));
-  	TrackMeta trackMeta=Db.getTrackInfo(trackHash);
-  	if (trackMeta.cleanup==1) setTreeType("cleanup");
-  	album = trackMeta.album;
-  	path = trackMeta.path;
-  	this.artist = trackMeta.artist;
-  	this.setValue(trackMeta.title);
+  	TrackDb TrackDb=Db.getTrackInfo(trackHash);
+  	if (TrackDb.cleanup==1) setTreeType("cleanup");
+  	album = TrackDb.album;
+  	path = TrackDb.path;
+  	this.artist = TrackDb.artist;
+  	this.setValue(TrackDb.title);
   	
-  	//this.getChildren().add(new DetailTreeItem("Length", formatTime(new Duration(trackMeta.duration))));
+  	//this.getChildren().add(new DetailTreeItem("Length", formatTime(new Duration(TrackDb.duration))));
     //this.getChildren().add(new DetailTreeItem("Artist", artist));
     //this.getChildren().add(new DetailTreeItem("Album", album));
        

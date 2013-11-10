@@ -1,7 +1,6 @@
 package tangodj2.PlaylistTree;
 
 import javafx.scene.image.ImageView;
-import tangodj2.TrackMeta;
 import tangodj2.cortina.CortinaTrack;
 
 public class CortinaTreeItem extends BaseTreeItem
