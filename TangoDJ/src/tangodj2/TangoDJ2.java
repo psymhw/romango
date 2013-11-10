@@ -53,113 +53,6 @@ import javafx.stage.WindowEvent;
  * Change cleanup to non-tango
  * Handle bad directory address in preferences
  * Need an info line to show loading progress and error messages
- * 
- * 
-
-PARTICULARS
-special
-long intro
-live
-female singer
-duet
-heavy vocals
-big orchestra
-crooner
-glosa (talking at beginning)
-great vocals
-noises
-laughing
-sounds
-funny voices
-novelty
-
-MUSIC
-instramental
-trumpet
-muted trumpet
-clarinet
-horns
-piano
-oboe
-whistles
-violins
-bandonian
-sax
-guitar
-strings
-minor
-organ
-
-FEELING
-peppy
-perky
-dreamy,
-dramatic
-lots of feelings
-sweet
-rhythmic
-romantic
-uplifting
-mysterious
-fun
-happy
-interesting
-lyrical
-drama
-whimsical
-delightful
-lovely
-lush
-sad
-angry
-anguish
-melancholy
-funky
-
-RHYTHM
-paso double
-traspie
-candombe
-alternative
-modern
-sweet old 
-challenging
-complex rhythm
-breaks
-changes
-
-NEGATIVES
-low energy
-poor quality
-flat
-confusing beat
-shrill
-busy
-inconsistent rhythm
-wanders
-weak
-too old
-worst
-scratchy
-wordy
-others better
-
-PACE
-slow
-medium
-fast
-high energy
-mellow
-driving beat
-mild
-better
-best
-favored by other DJs
-
-MILONGA POSITION
-late night
-early
-
  *  Select tango table columns to show
  * Save column widths too?
  * Oh Jeeze, what about column position?
@@ -168,6 +61,15 @@ early
  * Guess STYLE from title, genre and comment
  * Principle as band leader last name only. Artist has full artist name
  * Need track number in database in case I want to identify songs by album and track #
+ * Feedback col could say playing from playlist or playing from library
+ * Need to handle duplicate loading.
+ * Automatiacally play next in library. Also allow skip fwd and back from library
+ * Link to track folder from MP3 Editor
+ * Feedback could show # of track stats on startup
+ * Performance test with all tango and all non-tango loaded
+ * Pop up a window with load errors?
+ * Program should open while still loading tracks?
+ * Add balance to equilizer
  */
 public class TangoDJ2 extends Application 
 {
@@ -186,9 +88,8 @@ public class TangoDJ2 extends Application
    
   Rectangle r = new Rectangle(10,10,10,10);
   Player player;
-  public static Label feedback = new Label("FEEDBACK");
+  public static Label feedback = new Label("");
  
-  
 	
   public static void main(String[] args) 
   {
@@ -312,8 +213,8 @@ public class TangoDJ2 extends Application
    
     MenuItem menuAddTangoDir = new MenuItem("Add Tango Folder");
     MenuItem menuAddTangoFile = new MenuItem("Add Tango Track");
-    MenuItem menuAddCleanupDir = new MenuItem("Add Cortina\\Cleanup Folder");
-    MenuItem menuAddCleanupFile = new MenuItem("Add Cortina\\Cleanup Track");
+    MenuItem menuAddCleanupDir = new MenuItem("Add Non-Tango Folder");
+    MenuItem menuAddCleanupFile = new MenuItem("Add Non-Tango Track");
     MenuItem preferences = new MenuItem("Preferences");
     MenuItem about = new MenuItem("About");
     MenuItem manual = new MenuItem("TangoDJ Manual");

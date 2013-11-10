@@ -35,10 +35,12 @@ public class PlaylistBuilderTab extends Tab
   CortinaTable cortinaTable;
   Playlist playlist;
   final VBox vbox = new VBox();
-  int savedType=0;
+ // int savedType=0;
   Player player;
   TrackLoader3 trackLoader = new TrackLoader3();
   HBox hbox =  new HBox();
+  TextField searchField = new TextField();
+  String currentTable = "tango";
   
   public PlaylistBuilderTab(Playlist playlist, Player player)
   {
@@ -124,11 +126,55 @@ public class PlaylistBuilderTab extends Tab
     {
       public void handle(MouseEvent event) 
       {
-        playlist.printTracks();
+        System.out.println("Tango Tracks: "+TangoTable.tangoTracksData.size());
+        System.out.println("Non-Tango Tracks: "+CleanupTable.cleanupTracksData.size());
       }
     };
     testButton.setOnMouseClicked(bHandler);
     return testButton;
+  }
+  
+  private Button getSearchButton()
+  {
+    Button button = new Button("Filter"); 
+     
+    EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() 
+    {
+      public void handle(MouseEvent event) 
+      {
+       if ("tango".equals(currentTable))
+       {
+         TangoTable.reloadData(searchField.getText());
+       }
+       else
+       {
+         CleanupTable.reloadData(searchField.getText());
+       }
+      }
+    };
+    button.setOnMouseClicked(bHandler);
+    return button;
+  }
+  
+  private Button getClearButton()
+  {
+    Button button = new Button("X"); 
+     
+    EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() 
+    {
+      public void handle(MouseEvent event) 
+      {
+        searchField.setText("");
+        if ("tango".equals(currentTable))
+        
+          TangoTable.reloadData();
+        
+        else
+          CleanupTable.reloadData();
+      }
+    };
+    button.setOnMouseClicked(bHandler);
+    return button;
   }
   
   private HBox getSearchAndFilterBar()
@@ -137,7 +183,7 @@ public class PlaylistBuilderTab extends Tab
 	  label.setFont(new Font("Arial", 20));
 	  final RadioButton rb1 = new RadioButton("Tango");
 	  final RadioButton rb2 = new RadioButton("Cortina");
-	  final RadioButton rb3 = new RadioButton("Cleanup");
+	  final RadioButton rb3 = new RadioButton("Non-Tango");
 	  
 	  rb1.setId("tango");
 	  rb2.setId("cortina");
@@ -163,13 +209,13 @@ public class PlaylistBuilderTab extends Tab
 	  final Label spacer4 = new Label("  ");
     spacer4.setFont(new Font("Arial", 16));
 	
-	  TextField searchBox = new TextField();
-	
-	  Button searchButton = new Button("Filter");	
+	 
+	  
+	  
 	  HBox hbox = new HBox();
 	  hbox.setAlignment(Pos.BASELINE_CENTER);
 	
-	  hbox.getChildren().addAll(label,spacer,rb1,spacer3,rb2,spacer4,rb3,spacer2,searchBox, searchButton);
+	  hbox.getChildren().addAll(label,spacer,rb1,spacer3,rb2,spacer4,rb3,spacer2, searchField, getSearchButton(), getClearButton(), getTestButton());
 
 	  trackTypeGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
     public void changed(ObservableValue<? extends Toggle> ov,
@@ -183,21 +229,24 @@ public class PlaylistBuilderTab extends Tab
             vbox.getChildren().remove(cleanupTable);
             vbox.getChildren().remove(cortinaTable);
             vbox.getChildren().add(tangoTable);
-            savedType=0;
+            currentTable="tango";
+           // savedType=0;
           }
           else if (selectedStr.contains("cleanup")) 
           {
             vbox.getChildren().remove(tangoTable);
             vbox.getChildren().remove(cortinaTable);
             vbox.getChildren().add(cleanupTable);
-            savedType=1;
+            currentTable="cleanup";
+            //savedType=1;
           }
           else if (selectedStr.contains("cortina")) 
           {
             vbox.getChildren().remove(tangoTable);
             vbox.getChildren().remove(cleanupTable);
             vbox.getChildren().add(cortinaTable);
-            savedType=2;
+            currentTable="cortina";
+           // savedType=2;
           }
         }                
       }

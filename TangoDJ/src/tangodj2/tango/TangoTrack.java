@@ -22,6 +22,7 @@ public class TangoTrack
   private final SimpleStringProperty style;
   private final SimpleStringProperty rating;
   private final SimpleIntegerProperty duration;
+  private final SimpleIntegerProperty track_no;
   private final SimpleStringProperty bpm;
   
   private int cortina=0;
@@ -42,6 +43,7 @@ public class TangoTrack
     this.rating = new SimpleStringProperty(trackDb.rating);
     this.bpm = new SimpleStringProperty(trackDb.bpm);
     this.duration = new SimpleIntegerProperty(trackDb.duration);
+    this.track_no = new SimpleIntegerProperty(trackDb.track_no);
   }
     
 	
@@ -158,4 +160,16 @@ public class TangoTrack
     this.style.set(style);
   }
 
+
+
+  public int getTrack_no()
+  {
+    return track_no.get();
+  }
+
+  public void setTrack_no(int track_no_int)
+  {
+    track_no.set(track_no_int);
+  }
+  
 }

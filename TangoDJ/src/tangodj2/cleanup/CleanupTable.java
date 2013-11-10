@@ -1,5 +1,8 @@
 package tangodj2.cleanup;
 
+import java.util.ArrayList;
+
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -21,25 +24,63 @@ import tangodj2.Db;
 import tangodj2.Playlist;
 import tangodj2.SharedValues;
 import tangodj2.PlaylistTree.TandaTreeItem;
+import tangodj2.tango.TangoTrack;
 
 public class CleanupTable extends TableView<CleanupTrack>
 {
   private SimpleStringProperty action = new SimpleStringProperty("nada");
-  private CleanupTable cleanupTable=this;
+  private static TableView<CleanupTrack> cleanupTable;
   private int tableIndex=-1;
   
   public final static ObservableList<CleanupTrack> cleanupTracksData = FXCollections.observableArrayList();
 	 
   public CleanupTable()
   {
-	  Db.loadCleanupTracks(cleanupTracksData);
+	  this.cleanupTable=this;
 	  setupTable();
+	  reloadData();
   }
   
-  public void reloadData()
+  public static void reloadData()
   {
-    Db.loadCleanupTracks(cleanupTracksData);
+    cleanupTable.getSortOrder().clear();
+    Db.loadCleanupTracks(null);
   }
+  
+  public static void reloadData(final String search)
+  {
+    Platform.runLater(new Runnable() 
+    {
+      public void run() 
+      {
+    Db.loadCleanupTracks(search);
+    ArrayList<TableColumn<CleanupTrack, ?>> sortOrder = new ArrayList<>(cleanupTable.getSortOrder());
+    cleanupTable.getSortOrder().clear();
+    cleanupTable.getSortOrder().addAll(sortOrder);
+      }});
+  }
+  
+  
+  /*
+   * Platform.runLater(new Runnable() 
+    {
+      public void run() 
+      {
+        Db.loadTangoTracks(search);
+       ArrayList<TableColumn<TangoTrack, ?>> sortOrder = new ArrayList<>(tangoTable.getSortOrder());
+       tangoTable.getSortOrder().clear();
+       tangoTable.getSortOrder().addAll(sortOrder);
+      }
+    });
+  }
+  
+  public static void reloadData()
+  {
+    tangoTable.getSortOrder().clear();
+    reloadData(null);
+    
+  }
+   */
 	 
   private void setupTable() 
   {

@@ -10,6 +10,7 @@ import org.farng.mp3.id3.AbstractID3v2;
 import tangodj2.tango.TangoTable;
 import tangodj2.tango.TangoTrack;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -47,6 +48,8 @@ public class MP3EditorDialog extends Stage
  // TextField rating  = new TextField("");
   TangoTrack ttrack;
   TangoTable ttable;
+  
+  Label pathLabel = new Label();
  // int idx=0;
   final ComboBox styleComboBox = new ComboBox();
  // String style = "Tango";
@@ -91,6 +94,7 @@ public class MP3EditorDialog extends Stage
     comment.setText(trackDb.comment);
     bpm.setText(trackDb.bpm);
     singer.setText(trackDb.singer);
+    pathLabel.setText(trackDb.path);
     
     
     
@@ -148,6 +152,7 @@ public class MP3EditorDialog extends Stage
     gridPane.add(new Label("Singer: "),  col[0], row[labelRow++]);
     gridPane.add(new Label("Comment: "), col[0], row[labelRow++]);
     gridPane.add(new Label("Rating: "),  col[0], row[labelRow++]);
+    gridPane.add(new Label("File: "),  col[0], row[labelRow++]);
     
     int fieldRow=0;
     gridPane.add(title,    col[1], row[fieldRow++]);
@@ -162,6 +167,7 @@ public class MP3EditorDialog extends Stage
     gridPane.add(singer,   col[1], row[fieldRow++]);
     gridPane.add(comment,  col[1], row[fieldRow++]);
     gridPane.add(ratingComboBox,   col[1], row[fieldRow++]);
+    gridPane.add(pathLabel,  col[1], row[fieldRow++]);
     gridPane.add(okButton,   col[1], row[fieldRow++]);
     
    // GridPane.setHalignment(handicapLabel, HPos.RIGHT);
@@ -181,7 +187,12 @@ public class MP3EditorDialog extends Stage
         updateTrackDb();
         updateTangoTableView();
         Db.updateTrack(trackDb);
-        updateMP3tag();
+        Platform.runLater(new Runnable() 
+        {
+          public void run() 
+          {
+            updateMP3tag();
+          }});
         close();	
       }});
     double width=300;
@@ -195,6 +206,7 @@ public class MP3EditorDialog extends Stage
   {
     ttrack.setTitle(trackDb.title);
     ttrack.setArtist(trackDb.artist);
+    ttrack.setAlbum(trackDb.album);
     ttrack.setTrack_year(trackDb.track_year);
     ttrack.setGenre(trackDb.genre);
     ttrack.setComment(trackDb.comment);
@@ -226,6 +238,8 @@ public class MP3EditorDialog extends Stage
     trackDb.genre=notNull(genre.getText());
     trackDb.singer=notNull(singer.getText());
     trackDb.comment=notNull(comment.getText());
+    trackDb.leader=notNull(leader.getText());
+    trackDb.adjectives="";
     // trackDb.rating=rating.getText();
     //trackDb.style=style; set in combobox
     trackDb.track_no=Integer.parseInt(track_no.getText());

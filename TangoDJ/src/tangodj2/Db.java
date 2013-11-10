@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import tangodj2.PlaylistTree.PlaylistTreeItem;
@@ -16,9 +17,11 @@ import tangodj2.PlaylistTree.TandaTreeItem;
 import tangodj2.allPlaylistsTree.AllPlaylistsBaseItem;
 import tangodj2.allPlaylistsTree.AllPlaylistsFolderItem;
 import tangodj2.allPlaylistsTree.AllPlaylistsPlaylistItem;
+import tangodj2.cleanup.CleanupTable;
 import tangodj2.cleanup.CleanupTrack;
 import tangodj2.cortina.Cortina;
 import tangodj2.cortina.CortinaTrack;
+import tangodj2.tango.TangoTable;
 import tangodj2.tango.TangoTrack;
 
 public class Db 
@@ -76,20 +79,37 @@ public class Db
 	    } catch (Exception e) { e.printStackTrace();}
 	  }
 	*/
-	public static void loadTangoTracks(ObservableList<TangoTrack> tangoTracksData)
+	
+	public static void loadTangoTracks()
   {
-    tangoTracksData.clear();
-      
-    TrackDb trackDb;
+	  loadTangoTracks(null);
+  }
+	public static void loadTangoTracks(String search)
+  {
+	  
+    TangoTable.tangoTracksData.clear();
+    
+    
+    String sql;
+    
+    if (search==null)
+      sql= "select * from tracks where cleanup = 0 order by artist, album, track_no";
+    else
+    {  
+      search=search.toLowerCase();
+      sql = "select * from tracks where cleanup = 0 and (lower(title) like '%"+search+"%' or lower(leader) like '%"+search+"%') order by artist, album, track_no";
+    }
+      TrackDb trackDb;
+      System.out.println("Db - loadSql: "+sql);
     try
     {
       connect();
       Statement statement = connection.createStatement();
-      ResultSet resultSet = statement.executeQuery("select * from tracks where cleanup = 0 order by artist, album, title");
+      ResultSet resultSet = statement.executeQuery(sql);
       while(resultSet.next())
       {
         trackDb = getTrackDb(resultSet);
-        tangoTracksData.add(new TangoTrack(trackDb));
+        TangoTable.tangoTracksData.add(new TangoTrack(trackDb));
       }
       if (resultSet!=null) resultSet.close();
       if (statement!=null) statement.close();
@@ -97,7 +117,14 @@ public class Db
     } catch (Exception e) { e.printStackTrace();}
   }
 	
-	public static void loadCleanupTracks(ObservableList<CleanupTrack> cleanupTracksData)
+	
+	public static void loadCleanupTracks()
+  {
+	  loadCleanupTracks(null);
+  }
+	
+	
+	public static void loadCleanupTracks(String search)
   {
     String title;
     String artist;
@@ -110,13 +137,23 @@ public class Db
     int cleanup;
     int duration=0;
       
-    cleanupTracksData.clear();
+    CleanupTable.cleanupTracksData.clear();
+    
+String sql;
+    
+    if (search==null)
+      sql= "select * from tracks where cleanup = 1 order by artist, album, track_no";
+    else
+    {  
+      search=search.toLowerCase();
+      sql = "select * from tracks where cleanup = 1 and (lower(title) like '%"+search+"%' or lower(artist) like '%"+search+"%') order by artist, album, track_no";
+    }
       
     try
     {
       connect();
       Statement statement = connection.createStatement();
-      ResultSet resultSet = statement.executeQuery("select * from tracks where cleanup = 1 order by artist, album, title");
+      ResultSet resultSet = statement.executeQuery(sql);
       while(resultSet.next())
       {
         title=resultSet.getString("title");
@@ -130,7 +167,7 @@ public class Db
         path = resultSet.getString("path");
         duration=resultSet.getInt("duration");
         cleanup=resultSet.getInt("cleanup");
-        cleanupTracksData.add(new CleanupTrack(title, artist, album, genre, comment, pathHash, path, duration, cleanup, track_year));
+        CleanupTable.cleanupTracksData.add(new CleanupTrack(title, artist, album, genre, comment, pathHash, path, duration, cleanup, track_year));
         //System.out.println("added: "+title);
       }
       if (resultSet!=null) resultSet.close();
