@@ -13,6 +13,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -178,7 +179,7 @@ public class TrackLoader3
         public void handle(Event arg0)
         {
           sqlReadyTrackInfo();
-          insertRecords();
+          insertAllRecords();
           if (isTango) { tangoTable.reloadData(); }
           else cleanupTable.reloadData();
           try { out.close(); } catch (IOException e) { e.printStackTrace(); }
@@ -232,8 +233,18 @@ public class TrackLoader3
           trackDb.comment=(String)media.getMetadata().get("comment-0");
           trackDb.genre=(String)media.getMetadata().get("genre");
           trackDb.track_year = (String)media.getMetadata().get("year");
-          trackDb.track_no = (int)media.getMetadata().get("track number");
+          Object obj = media.getMetadata().get("track number");
+          if (obj!=null) trackDb.track_no = (int)obj;
         }
+        
+        if (trackDb.title==null) 
+        {
+          trackDb.title="STILL NO TITLE";
+          System.out.println("Still no title");
+          return;
+        }
+        if (trackDb.artist==null) trackDb.artist="";
+        if (trackDb.genre==null) trackDb.genre="";
         
         ArtistX artistX = getArtistX(trackDb.artist);
         if (artistX==null)
@@ -257,6 +268,12 @@ public class TrackLoader3
         if (lowerGenre.contains("vals")) styleGuess="Vals";
         
         trackDb.style=styleGuess;
+        
+        if (trackDb.comment!=null)
+        {
+          if (trackDb.comment.startsWith("Amazon.com")) trackDb.comment="";
+          if (trackDb.comment.startsWith("iTunPGAP")) trackDb.comment="";
+        }
         
         TangoDJ2.feedback.setText("Getting MP3 Tags: "+count+") "+trackDb.duration+", "+trackDb.title);
         //finalTrackInfo.add(trackDb);
@@ -360,9 +377,6 @@ public class TrackLoader3
     if (trackDb.title==null) trackDb.title="NO TITLE";
     else if (trackDb.title.trim().length()==0)  trackDb.title="NO TITLE";
     
-    
-    
-    
     farngCounter++;
     tag=null;
     
@@ -391,21 +405,29 @@ public class TrackLoader3
   return r;
   }
   
-  void insertRecords() 
+  void insertAllRecords() 
   {
-   int cleanup=0;  // TODO set this on load
-   if (!isTango) cleanup=1;
- try{
-   //Db.connect();
-    connection = DriverManager.getConnection(JDBC_URL2);
-    TrackDb trackDb;
-   
-    Iterator<TrackDb> it = trackInfo.iterator();
-    while(it.hasNext())
+    try
     {
-      trackDb=it.next();
+      connection = DriverManager.getConnection(JDBC_URL2);
+      TrackDb trackDb;
+   
+      Iterator<TrackDb> it = trackInfo.iterator();
+      while(it.hasNext())
+      {
+        trackDb=it.next();
+        insertRecord(trackDb);
+      }
+      connection.close(); 
+    } catch (Exception e) { e.printStackTrace(); }
+  }
+  
+  void insertRecord(TrackDb trackDb) throws Exception
+  {
+   int cleanup=0; 
+   if (!isTango) cleanup=1;
       
-      String sql="insert into tracks(cleanup, path, pathHash, title, leader, artist, album, duration, track_no, genre, comment, style, track_year) "
+   String sql="insert into tracks(cleanup, path, pathHash, title, leader, artist, album, duration, track_no, genre, comment, style, track_year) "
        +"values ("+cleanup+", '"+trackDb.path
                +"', '"+trackDb.pathHash
                +"', '"+trackDb.title
@@ -419,18 +441,15 @@ public class TrackLoader3
                +"', '"+trackDb.style
                +"', '"+trackDb.track_year
                +"')";
+      
    System.out.println("TrackLoader3, sql: "+sql);
    TangoDJ2.feedback.setText("Inserting Records: "+trackDb.title);
-    try {
-      // TODO java.sql.SQLIntegrityConstraintViolationException needs to be handled here
-    if (isSet(trackDb.title)) connection.createStatement().execute(sql);
-    } catch (Exception ex) { System.out.println("SQL ERROR: "+sql); 
-    ex.printStackTrace(); } 
-   }
-   connection.close(); 
-  // Db.disconnect();
- } catch (Exception e) { e.printStackTrace(); }
-}
+    try 
+    {
+      if (isSet(trackDb.title)) connection.createStatement().execute(sql);
+    } catch (SQLIntegrityConstraintViolationException v) { TangoDJ2.feedback.setText("DUPLICATE"); }
+  }
+  
   
   private ArtistX getArtistX(String artist)
   {
@@ -463,8 +482,11 @@ public class TrackLoader3
    trackDb.comment  = sqlReadyString(trackDb.comment);
    trackDb.path     = sqlReadyString(trackDb.path);
    trackDb.genre     = sqlReadyString(trackDb.genre);
+   trackDb.leader    = sqlReadyString(trackDb.leader);
    //trackDb.path = new File(trackDb.path).toURI().toString();
    trackDb.track_year     = sqlReadyString(trackDb.track_year);
+   
+   if (trackDb.comment.length()>100)  trackDb.comment=trackDb.comment.substring(0, 99);
   }
     
  }

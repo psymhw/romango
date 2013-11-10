@@ -77,6 +77,7 @@ public class TrackLoadingTest extends Application
   Label trackInfoSize = new Label("0");
   int finalTrackInfoSizeInt=0;
   Label finalTrackInfoSize = new Label("0");
+  boolean pause=false;
   
   public TrackLoadingTest()
   {
@@ -183,6 +184,18 @@ public class TrackLoadingTest extends Application
          }
        }
      });
+     
+     final Button pauseButton = new Button("Pause");
+     pauseButton.setOnAction(new EventHandler<ActionEvent>() 
+     {
+       public void handle(ActionEvent e) 
+       {
+        pause=!pause;
+        if (pause==true) pauseButton.setText("Continue");
+        else pauseButton.setText("Pause");
+       }
+     });
+    
     
    // HBox hbox = new HBox();
   //  hbox.setPadding(new Insets(10, 10, 10, 10));
@@ -205,6 +218,7 @@ public class TrackLoadingTest extends Application
     gridPane.add(trackInfoSize,                 col[1], row[6]);
     gridPane.add(new Label("Final TrackInfo Size: "), col[0],row[7]);
     gridPane.add(finalTrackInfoSize,                 col[1], row[7]);
+    gridPane.add(pauseButton,                 col[0], row[8]);
     
     root.getChildren().add(gridPane);
     Scene scene = new Scene(root, 950, 550, Color.WHITE);
@@ -284,18 +298,22 @@ public class TrackLoadingTest extends Application
     final int count=0;
     trackCount=0;
     
-    int trackSize=trackInfo.size();
+    final int trackSize=trackInfo.size();
     System.out.println("TrackInfo Size: "+trackSize);
     
-    Timeline timeline = new Timeline();
-    timeline.setCycleCount(trackSize);
-    KeyFrame keyFrame= new KeyFrame(Duration.seconds(.3), new EventHandler() 
+    final Timeline timeline = new Timeline();
+    timeline.setCycleCount(Timeline.INDEFINITE);
+    KeyFrame keyFrame= new KeyFrame(Duration.seconds(1), new EventHandler() 
     {
        public void handle(Event event) 
        {
-         final TrackDb trackDb = trackInfo.get(trackCount);
-         getTags(trackDb, trackCount);
-         trackCount++;
+         if (!pause)
+         {
+           final TrackDb trackDb = trackInfo.get(trackCount);
+           getTags(trackDb, trackCount);
+           trackCount++;
+         }
+         if (trackCount==(trackSize-1)) timeline.stop();
        }});
             
       timeline.getKeyFrames().add(keyFrame);
@@ -313,7 +331,7 @@ public class TrackLoadingTest extends Application
     
     Timeline timeline = new Timeline();
     timeline.setCycleCount(trackSize);
-    KeyFrame keyFrame= new KeyFrame(Duration.seconds(.3), new EventHandler() 
+    KeyFrame keyFrame= new KeyFrame(Duration.seconds(1), new EventHandler() 
     {
        public void handle(Event event) 
        {
@@ -347,6 +365,7 @@ public class TrackLoadingTest extends Application
    
     
     final MediaPlayer mp = new MediaPlayer(media);
+    
     players++;
     mp.setOnError(new Runnable() 
     {

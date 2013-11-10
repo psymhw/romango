@@ -1,8 +1,11 @@
 package tangodj2.tango;
 
 
+import java.util.ArrayList;
+
 import javafx.scene.input.MouseEvent;
 
+import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleStringProperty;
@@ -28,6 +31,7 @@ import tangodj2.Db;
 import tangodj2.Playlist;
 import tangodj2.SharedValues;
 import tangodj2.TangoDJ2;
+import tangodj2.TrackDb;
 import tangodj2.PlaylistTree.TandaTreeItem;
 
 public class TangoTable extends TableView<TangoTrack>
@@ -35,38 +39,37 @@ public class TangoTable extends TableView<TangoTrack>
   //private TableView<TangoTrack> table = new TableView<TangoTrack>();
   private Playlist playlist;
   private SimpleStringProperty action = new SimpleStringProperty("nada");
-  TableView<TangoTrack> tangoTable;
+  static TableView<TangoTrack> tangoTable;
   private int tableIndex=-1;
   
   public final static ObservableList<TangoTrack> tangoTracksData = FXCollections.observableArrayList();
 	 
   public TangoTable()
   {
-	  
 	  tangoTable=this;
-	 
-	 
-	  Db.loadTangoTracks(tangoTracksData);
 	  setupTable();
-	  //System.out.println("TangoTable - tracks loaded: "+tangoTracksData.size());
-	  /*
-	  if (SharedValues.allTracksData.size()>0)
-	  {
-	    Track firstTrack = SharedValues.allTracksData.get(0);
-	    if (type==TANGO)
-	    SharedValues.selectedTangoPathHash.set(firstTrack.getPathHash());
-	    if (type==CORTINA)
-	    SharedValues.selectedCleanupPathHash.set(firstTrack.getPathHash());
-
-	  }
-	  */
+	  reloadData();
   }
-	 
   
+  public static void reloadData(final String search)
+  {
+    Platform.runLater(new Runnable() 
+    {
+      public void run() 
+      {
+        Db.loadTangoTracks(search);
+        // reestablish the sort order.
+       ArrayList<TableColumn<TangoTrack, ?>> sortOrder = new ArrayList<>(tangoTable.getSortOrder());
+       tangoTable.getSortOrder().clear();
+       tangoTable.getSortOrder().addAll(sortOrder);
+      }
+    });
+  }
   
   public static void reloadData()
   {
-    Db.loadTangoTracks(tangoTracksData);
+    tangoTable.getSortOrder().clear();
+    reloadData(null);
   }
 	 
   /*
@@ -210,7 +213,7 @@ public class TangoTable extends TableView<TangoTrack>
 	   genreCol.setVisible(getVisibility(genreCol, true));
 	   
 	   // BPM COLUMN
-     TableColumn bpmCol = new TableColumn("bpm");
+     TableColumn bpmCol = new TableColumn("BPM");
      bpmCol.setMinWidth(30);
      bpmCol.setPrefWidth(getWidth(bpmCol, 30));
      bpmCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("bpm"));
@@ -218,7 +221,7 @@ public class TangoTable extends TableView<TangoTrack>
      bpmCol.setVisible(getVisibility(bpmCol, true));
      
       // RATING COLUMN
-     TableColumn ratingCol = new TableColumn("rating");
+     TableColumn ratingCol = new TableColumn("Rating");
      ratingCol.setMinWidth(30);
      ratingCol.setPrefWidth(getWidth(ratingCol, 40));
      ratingCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("rating"));
@@ -247,9 +250,15 @@ public class TangoTable extends TableView<TangoTrack>
 	  durationCol.setPrefWidth(getWidth(durationCol,50));
 	  durationCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("duration"));
 	  durationCol.setCellFactory(new MyCellFactory());
-	  
 	  durationCol.setVisible(getVisibility(durationCol, true));
 	 
+	// TRACK NUMBER       
+    TableColumn trackNoCol = new TableColumn("Trk");
+    trackNoCol.setMinWidth(30);
+    trackNoCol.setPrefWidth(getWidth(trackNoCol,50));
+    trackNoCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("track_no"));
+    trackNoCol.setCellFactory(new MyCellFactory());
+    trackNoCol.setVisible(getVisibility(trackNoCol, true));
 	      
 	  TableColumn yearCol = new TableColumn("Year");
 	  yearCol.setMinWidth(50);
@@ -260,7 +269,7 @@ public class TangoTable extends TableView<TangoTrack>
 	  yearCol.setVisible(getVisibility(yearCol, true));
 	
 	     
-	  this.getColumns().addAll(titleCol,  styleCol, leaderCol, artistCol, albumCol, ratingCol, durationCol, bpmCol, yearCol, singerCol, genreCol,  commentCol);
+	  this.getColumns().addAll(titleCol,  styleCol, leaderCol, artistCol, albumCol, trackNoCol, ratingCol, durationCol, bpmCol, yearCol, singerCol, genreCol,  commentCol);
 	  this.setTableMenuButtonVisible(true);  
 	  
   }
