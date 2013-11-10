@@ -1,5 +1,22 @@
 package tangodj2;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import tangodj2.PlaylistTree.TandaTreeItem;
 import tangodj2.cleanup.CleanupTable;
 import tangodj2.cleanup.CleanupTrack;
@@ -7,34 +24,6 @@ import tangodj2.cortina.CortinaTable;
 import tangodj2.cortina.CortinaTrack;
 import tangodj2.tango.TangoTable;
 import tangodj2.tango.TangoTrack;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.TreeCell;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.util.Callback;
 
 public class PlaylistBuilderTab extends Tab
 {
@@ -68,16 +57,19 @@ public class PlaylistBuilderTab extends Tab
 	  
 	  vbox.setPadding(new Insets(10, 10, 10, 10));
 	  vbox.setSpacing(20);
-	  vbox.setStyle("-fx-background-color: DAE6F3; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
+	  vbox.setStyle("-fx-background-color: DAE6F3; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 1px;"); 
 	 
 	  vbox.getChildren().add(getSearchAndFilterBar());
+	  
 	  vbox.getChildren().add(tangoTable);
-	 
+	  vbox.setVgrow(tangoTable, Priority.ALWAYS);
+	  vbox.setVgrow(cleanupTable, Priority.ALWAYS);
+	  vbox.setVgrow(cortinaTable, Priority.ALWAYS);
 	  
 	  hbox.setPadding(new Insets(10, 10, 10, 10));
 	  hbox.setSpacing(20);
 	  hbox.getChildren().add(vbox);
-	  hbox.setStyle("-fx-background-color: CC99CC; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
+	  hbox.setStyle("-fx-background-color: CC99CC; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 1px;"); 
 
   
     hbox.getChildren().add(this.playlist.getTreeView());

@@ -46,6 +46,9 @@ import javafx.util.Duration;
 
 public class Player 
 {
+  
+    int playerRegHeight=65;
+    int playerLargeHeight=150;
     private MediaView mediaView = new MediaView();
     private boolean atEndOfMedia = false;
     //private Duration duration;
@@ -56,6 +59,7 @@ public class Player
     private Slider volumeSlider;
     private HBox mediaBar;
     private MediaPlayer mediaPlayer;
+    
     
    // SimpleIntegerProperty cortinaLengthProperty = new SimpleIntegerProperty();
     
@@ -86,6 +90,7 @@ public class Player
     Label cortinaLengthLabel=null;
     
     Label currentTrackTitleLabel = new Label("");
+    
    // Duration currentTrackTime = new Duration(0);
     //private Duration currentTrackDuration = new Duration(0); //??
     String currentTrackHash="";
@@ -139,17 +144,33 @@ public class Player
     {
       this.equalizerTab=equalizerTab;
      
-      
+      HBox currentTrackBox = new HBox();
+      currentTrackBox.setPadding(new Insets(5, 0, 5, 20));
       currentTrackTitleLabel.setFont(new Font("Arial", 18));
+     // currentTrackTitleLabel.setStyle("-fx-background-color:rgba(250, 69, 208,.45);");
       currentTrackTitleLabel.setStyle("-fx-background-color: #bfc2c7;");
+     // currentTrackTitleLabel.setMinHeight(25);
+    //  currentTrackTitleLabel.setMaxHeight(25);
+    //  currentTrackTitleLabel.setPrefHeight(25);
+      
+      currentTrackBox.getChildren().add(currentTrackTitleLabel);
+     
+      
+      //vbox.setStyle("-fx-background-color: DAE6F3; -fx-border-color: RED; -fx-border-style: SOLID; -fx-border-width: 2px;");     
+      vbox.setStyle("-fx-background-color: #bfc2c7;");
       
      // setupListeners();
       mediaBar = new HBox();
       mediaBar.setSpacing(5);
-      mediaBar.setStyle("-fx-background-color: #bfc2c7;");
+     // mediaBar.setStyle("-fx-background-color: #bfc2c7;");
       mediaBar.setAlignment(Pos.CENTER);
-      mediaBar.setPadding(new Insets(5, 10, 5, 10));
-      BorderPane.setAlignment(mediaBar, Pos.CENTER);
+      mediaBar.setStyle("-fx-background-color: DAE6F3; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 1px;");   
+
+      int top=7;
+      int bottom=5;
+      int right=5;
+      int left=5;
+      mediaBar.setPadding(new Insets(top, right, bottom, left));
 
       setupButtons();
       
@@ -159,7 +180,7 @@ public class Player
       mediaBar.getChildren().add(skipButton);
       Label spacer = new Label("   ");
       mediaBar.getChildren().add(spacer);
-
+   
       Label timeLabel = new Label("Time: ");
       mediaBar.getChildren().add(timeLabel);
  
@@ -220,11 +241,14 @@ public class Player
            }
          }
        });
-       vbox.setStyle("-fx-background-color: #bfc2c7;");
        
-       vbox.getChildren().add(currentTrackTitleLabel);
+       
+       vbox.getChildren().add(currentTrackBox);
        vbox.getChildren().add(mediaBar);
+      // VBox.setVgrow(currentTrackTitleLabel, Priority.ALWAYS);
+       
        setupCortinaControls();
+      // setRegHeight();
       // setDefaultTrack();
        
        
@@ -315,11 +339,15 @@ public class Player
       {
         advancedControls=true;
         vbox.getChildren().add(cortinaCreatControls);
+       // setLargeHeight();
+       // System.out.println("Player - vbox size: "+vbox.getChildren().size());
       }
       else 
       {
         advancedControls=false;
         vbox.getChildren().remove(cortinaCreatControls);
+        //setRegHeight();
+       // System.out.println("Player - vbox size*: "+vbox.getChildren().size());
       }
     }
     
@@ -331,7 +359,7 @@ public class Player
       final int row[] = {0,1,2,3,4,5,6,7,8,9,10};
       cortinaCreatControls = new GridPane();
       cortinaCreatControls.setPadding(new Insets(10, 10, 10, 10));
-      cortinaCreatControls.setStyle("-fx-background-color: DAE6F3; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
+      cortinaCreatControls.setStyle("-fx-background-color: DAE6F3; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 1px;"); // border doesn't work
       cortinaCreatControls.setHgap(15);
       cortinaPlayTimeLabel = new Label();
       cortinaPlayTimeLabel.setPrefWidth(130);
@@ -1430,4 +1458,20 @@ public void setPlaylist(Playlist playlist) {
 	  playlist = new Playlist(playlistId);
 	  } catch (Exception e) {e.printStackTrace();};
   }
+  
+  /*
+  public void setLargeHeight()
+  {
+    //vbox.setMinHeight(playerLargeHeight);
+   // vbox.setMaxHeight(playerLargeHeight);
+  //  vbox.setPrefHeight(playerLargeHeight);
+  }
+  
+  public void setRegHeight()
+  {
+   // vbox.setMinHeight(playerRegHeight);
+   // vbox.setMaxHeight(playerRegHeight);
+   // vbox.setPrefHeight(playerRegHeight);
+  }
+  */
  }

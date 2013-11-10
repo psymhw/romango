@@ -9,6 +9,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -18,6 +19,8 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -174,13 +177,16 @@ public class TangoDJ2 extends Application
   static CortinaTab cortinaTab;
   static EventTab eventTab;
   public static Preferences prefs = new Preferences();
+  static VBox playerPane;
+  int sceneHeight=600;
+  int sceneWidth=1150;
   
   MenuBar menuBar;
   Playlist playlist;
    
   Rectangle r = new Rectangle(10,10,10,10);
   Player player;
-  public static Label feedback = new Label("FEEDBACK ");
+  public static Label feedback = new Label("FEEDBACK");
  
   
 	
@@ -206,7 +212,7 @@ public class TangoDJ2 extends Application
 	
 	
 	  VBox root = new VBox();
-    Scene scene = new Scene(root, 1200, 600, Color.WHITE);
+    Scene scene = new Scene(root, sceneWidth, sceneHeight, Color.WHITE);
     r.setFill(Color.RED);
    
     final URL stylesheet = getClass().getResource("style.css");
@@ -214,10 +220,14 @@ public class TangoDJ2 extends Application
 
     CreateDatabase cb = new CreateDatabase();
     try {if (!cb.exists()) cb.create(); } catch (Exception e) { e.printStackTrace(); }
-    loadPreferences();
+   
+    
+    try { loadPreferences(); } 
+    catch (Exception se) { System.out.println("PROGRAM ALREADY RUNNING"); System.exit(0); } 
+    
     
     TabPane tabPane = new TabPane();
-    BorderPane mainPane = new BorderPane();
+    
     setupMenuBar();
       
     try { playlist = new Playlist(prefs.currentPlaylist);} 
@@ -265,12 +275,30 @@ public class TangoDJ2 extends Application
     tabPane.getTabs().add(equalizerTab);
     tabPane.getTabs().add(cortinaTab);
     tabPane.getTabs().add(eventTab);
+   
+    VBox mainPane = new VBox();
+    //mainPane.setStyle("-fx-background-color: DAE6F3; -fx-border-color: RED; -fx-border-style: SOLID; -fx-border-width: 1px;");     
+    VBox.setVgrow(tabPane, Priority.ALWAYS);
+    mainPane.getChildren().add(tabPane);
+      
+    feedback.setPrefWidth(sceneWidth);
+    //feedback.setPrefHeight(30);
+    //feedback.setMaxHeight(30);
+   // feedback.setMinHeight(30);
+    feedback.setStyle("-fx-background-color: #bfc2c7;");
+   // VBox.setVgrow(feedback, Priority.NEVER);
+    HBox feedbackBox = new HBox();
+    feedbackBox.setPadding(new Insets(3, 0, 7, 20));  // top, right, bottom, left
+    feedbackBox.setStyle("-fx-background-color: #bfc2c7;");
+    feedbackBox.getChildren().add(feedback);
     
-    mainPane.setTop(tabPane);
-    mainPane.setCenter(player.get());
-    mainPane.setBottom(feedback);
-    mainPane.prefHeightProperty().bind(scene.heightProperty());
-    mainPane.prefWidthProperty().bind(scene.widthProperty());
+    VBox playerBox = player.get();
+    mainPane.setVgrow(playerBox, Priority.NEVER);
+    
+    mainPane.getChildren().add(playerBox);
+    mainPane.getChildren().add(feedbackBox);
+    mainPane.minHeightProperty().bind(scene.heightProperty().subtract(20));
+    mainPane.minWidthProperty().bind(scene.widthProperty());
     
     root.getChildren().addAll(menuBar, mainPane);
     primaryStage.setScene(scene);
@@ -385,7 +413,7 @@ public class TangoDJ2 extends Application
 	Font.loadFont(TangoDJ2.class.getResource("/resources/fonts/FFF_Tusj.ttf").toExternalForm(), 10  );
   }
 
-  private void loadPreferences()
+  private void loadPreferences() throws Exception
   {
 	 prefs=Db.getPreferences();
 	 //System.out.println("TangoDJ2 current playlist: "+prefs.currentPlaylist);

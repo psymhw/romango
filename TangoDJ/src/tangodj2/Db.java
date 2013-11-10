@@ -176,7 +176,7 @@ public class Db
       } catch (Exception e) { e.printStackTrace();}
     }
 	
-  public static Preferences getPreferences()
+  public static Preferences getPreferences() throws Exception
   {
 	  Preferences prefs = new Preferences();
       try
@@ -235,7 +235,7 @@ public class Db
     } catch (Exception e) { e.printStackTrace(); }
   }
   
-  public static boolean getTangoTableColumnVisible(String colName) 
+  public static boolean getTangoTableColumnVisible(String colName, boolean defaultVisibility) 
   {
     String strBool="true";
     boolean returnValue=true;
@@ -255,7 +255,8 @@ public class Db
       }
       else
       {
-        connection.createStatement().execute("insert into state (name, value) values('"+colName+"', 'true')");
+        if (defaultVisibility) strBool="true"; else strBool="false";
+        connection.createStatement().execute("insert into state (name, value) values('"+colName+"', '"+strBool+"')");
         returnValue= true;
       }
       disconnect();

@@ -243,7 +243,7 @@ public class TrackLoader3
         else
         {
           trackDb.leader=artistX.getLeader();
-          trackDb.artist=artistX.getArtist();
+          // trackDb.artist=artistX.getArtist();
         }
         String styleGuess="Tango";
         String lowerTitle;

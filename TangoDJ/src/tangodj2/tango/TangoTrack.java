@@ -11,6 +11,7 @@ public class TangoTrack
 {
 	private final SimpleStringProperty title;
   private final SimpleStringProperty artist;
+  private final SimpleStringProperty leader;
   private final SimpleStringProperty album;
   private final SimpleStringProperty genre;
   private final SimpleStringProperty comment;
@@ -19,7 +20,9 @@ public class TangoTrack
   private final SimpleStringProperty path;
   private final SimpleStringProperty singer;
   private final SimpleStringProperty style;
+  private final SimpleStringProperty rating;
   private final SimpleIntegerProperty duration;
+  private final SimpleStringProperty bpm;
   
   private int cortina=0;
     
@@ -27,6 +30,7 @@ public class TangoTrack
   {
     this.title = new SimpleStringProperty(trackDb.title);
     this.artist = new SimpleStringProperty(trackDb.artist);
+    this.leader = new SimpleStringProperty(trackDb.leader);
     this.album = new SimpleStringProperty(trackDb.album);
     this.genre = new SimpleStringProperty(trackDb.genre);
     this.comment = new SimpleStringProperty(trackDb.comment);
@@ -35,9 +39,9 @@ public class TangoTrack
     this.path = new SimpleStringProperty(trackDb.path);
     this.singer = new SimpleStringProperty(trackDb.singer);
     this.style = new SimpleStringProperty(trackDb.style);
+    this.rating = new SimpleStringProperty(trackDb.rating);
+    this.bpm = new SimpleStringProperty(trackDb.bpm);
     this.duration = new SimpleIntegerProperty(trackDb.duration);
-    this.cortina=cortina;
-    
   }
     
 	
@@ -83,6 +87,26 @@ public class TangoTrack
     
     public void setAlbum(String albumStr) {
     	album.set(albumStr); }
+    
+    public String getLeader() {
+      return leader.get(); }
+    
+    public void setLeader(String leaderStr) {
+      leader.set(leaderStr); }
+    
+    
+    public String getBpm() {
+      return bpm.get(); }
+    
+    public void setBpm(String bpmStr) {
+      bpm.set(bpmStr); }
+    
+    public String getRating() {
+      return rating.get(); }
+    
+    public void setRating(String ratingStr) {
+      rating.set(ratingStr); }
+    
     
     public String getDuration()
     {

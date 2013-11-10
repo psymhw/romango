@@ -20,6 +20,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -35,12 +36,14 @@ public class MP3EditorDialog extends Stage
   TextField artist  = new TextField("");
   TextField leader  = new TextField("");
   TextField album   = new TextField("");
-  TextField track_no= new TextField("");
-  TextField year    = new TextField("");
+ // TextField track_no= new TextField("");
+  RestrictiveTextField track_no   =   new RestrictiveTextField();
+  //TextField year    = new TextField("");
+  RestrictiveTextField year   =   new RestrictiveTextField();
   TextField genre   = new TextField("");
-  TextField bpm   = new TextField("");
+  RestrictiveTextField bpm   =   new RestrictiveTextField();
   TextField singer  = new TextField("");
-  TextField comment = new TextField("");
+  TextArea comment = new TextArea("");
  // TextField rating  = new TextField("");
   TangoTrack ttrack;
   TangoTable ttable;
@@ -61,6 +64,22 @@ public class MP3EditorDialog extends Stage
     track_no.setPrefWidth(50);
     track_no.setMaxWidth(50);
     
+    bpm.setMaxLength(3);
+    bpm.setRestrict("[0-9]");
+    bpm.setMaxWidth(35);
+    
+    year.setMaxLength(4);
+    year.setRestrict("[0-9]");
+    year.setMaxWidth(45);
+    
+    track_no.setMaxLength(3);
+    track_no.setRestrict("[0-9]");
+    track_no.setMaxWidth(35);
+    
+    comment.setPrefRowCount(2);
+    
+    
+    
     trackDb=Db.getTrackInfo(tangoTrack.getPathHash());
     title.setText(trackDb.title);
     leader.setText(trackDb.leader);
@@ -72,6 +91,9 @@ public class MP3EditorDialog extends Stage
     comment.setText(trackDb.comment);
     bpm.setText(trackDb.bpm);
     singer.setText(trackDb.singer);
+    
+    
+    
     // TODO implement style, singer, adjectives, rating (tango/vals etc)
     
     final ComboBox styleComboBox = new ComboBox();
@@ -146,6 +168,7 @@ public class MP3EditorDialog extends Stage
     ColumnConstraints col0 = new ColumnConstraints();
     ColumnConstraints col1 = new ColumnConstraints();
     col0.setHalignment(HPos.RIGHT);
+    col0.setMinWidth(60);
     col1.setMinWidth(200);
     gridPane.getColumnConstraints().addAll(col0, col1);
     //gridPane.add(okButton, col[0], row[2]);
@@ -177,6 +200,9 @@ public class MP3EditorDialog extends Stage
     ttrack.setComment(trackDb.comment);
     ttrack.setStyle(trackDb.style);
     ttrack.setSinger(trackDb.singer);
+    ttrack.setBpm(trackDb.bpm);
+    ttrack.setLeader(trackDb.leader);
+    ttrack.setRating(trackDb.rating);
     
     // this forces the table to update the row
     
@@ -193,17 +219,23 @@ public class MP3EditorDialog extends Stage
   
   private void updateTrackDb()
   {
-    trackDb.title=title.getText();
-    trackDb.artist=artist.getText();
-    trackDb.album=album.getText();
-    trackDb.track_year=year.getText();
-    trackDb.genre=genre.getText();
-    trackDb.singer=singer.getText();
-    trackDb.comment=comment.getText();
+    trackDb.title=notNull(title.getText());
+    trackDb.artist=notNull(artist.getText());
+    trackDb.album=notNull(album.getText());
+    trackDb.track_year=notNull(year.getText());
+    trackDb.genre=notNull(genre.getText());
+    trackDb.singer=notNull(singer.getText());
+    trackDb.comment=notNull(comment.getText());
     // trackDb.rating=rating.getText();
     //trackDb.style=style; set in combobox
     trackDb.track_no=Integer.parseInt(track_no.getText());
-    trackDb.bpm=bpm.getText();
+    trackDb.bpm=notNull(bpm.getText());
+  }
+  
+  private String notNull(String inStr)
+  {
+    if (inStr==null) return "";
+    else return inStr;
   }
   
   private void updateMP3tag() 
