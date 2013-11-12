@@ -62,7 +62,7 @@ import javafx.stage.WindowEvent;
  * Principle as band leader last name only. Artist has full artist name
  * Need track number in database in case I want to identify songs by album and track #
  * Feedback col could say playing from playlist or playing from library
- * Need to handle duplicate loading.
+ 
  * Automatiacally play next in library. Also allow skip fwd and back from library
  * Link to track folder from MP3 Editor
  * Feedback could show # of track stats on startup
@@ -70,6 +70,8 @@ import javafx.stage.WindowEvent;
  * Pop up a window with load errors?
  * Program should open while still loading tracks?
  * Add balance to equilizer
+ * Allow interactively new named playlist. Would allow non tango playlists.
+ * Remember equalizer values - for next tune and when program closed
  */
 public class TangoDJ2 extends Application 
 {
@@ -135,13 +137,15 @@ public class TangoDJ2 extends Application
     catch (SQLException se) { System.out.println("PROGRAM ALREADY RUNNING"); System.exit(0); } 
     catch (ClassNotFoundException e) { e.printStackTrace(); }
         
-    Tab equalizerTab = new Tab();
+   // Tab equalizerTab = new Tab();
   //  equalizerTab.setStyle("-fx-background-color: #bfc2c7;");
-    equalizerTab.setText("Equalizer");
+  //  equalizerTab.setText("Equalizer");
     
-    player = new Player(equalizerTab);
+    eventTab = new EventTab();
+    player = new Player(eventTab);
     player.setPlaylist(playlist);
-    eventTab = new EventTab(player);
+    eventTab.setPlayer(player);
+    
    
     playlistBuilderTab = new PlaylistBuilderTab(playlist,  player);
     tabPane.getTabs().add(playlistBuilderTab);
@@ -173,7 +177,7 @@ public class TangoDJ2 extends Application
       }
     });
       
-    tabPane.getTabs().add(equalizerTab);
+    //tabPane.getTabs().add(equalizerTab);
     tabPane.getTabs().add(cortinaTab);
     tabPane.getTabs().add(eventTab);
    

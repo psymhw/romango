@@ -37,7 +37,7 @@ import tangodj2.PlaylistTree.TandaTreeItem;
 public class TangoTable extends TableView<TangoTrack>
 {
   //private TableView<TangoTrack> table = new TableView<TangoTrack>();
-  private Playlist playlist;
+ // private Playlist playlist;
   private SimpleStringProperty action = new SimpleStringProperty("nada");
   static TableView<TangoTrack> tangoTable;
   private int tableIndex=-1;
@@ -132,9 +132,9 @@ public class TangoTable extends TableView<TangoTrack>
       MenuItem edit = new MenuItem("Edit");
       MenuItem play = new MenuItem("Play" );
       MenuItem delete = new MenuItem("Delete" );
-      final ContextMenu tandaContextMenu = new ContextMenu();
+      final ContextMenu contextMenu = new ContextMenu();
       
-      tandaContextMenu.setOnShowing(new EventHandler() 
+      contextMenu.setOnShowing(new EventHandler() 
       {
         public void handle(Event e) 
         {
@@ -142,7 +142,7 @@ public class TangoTable extends TableView<TangoTrack>
         }
       });
       
-      tandaContextMenu.getItems().addAll(addToTanda, edit, play);
+      contextMenu.getItems().addAll(addToTanda, edit, play);
       addToTanda.setOnAction(new EventHandler() 
         { public void handle(Event t) { action.set("addToTanda"); }});
       edit.setOnAction(new EventHandler() 
@@ -152,7 +152,7 @@ public class TangoTable extends TableView<TangoTrack>
       delete.setOnAction(new EventHandler() 
         { public void handle(Event t) { action.set("delete"); }});
       
-      return tandaContextMenu;
+      return contextMenu;
     } 
   
     private boolean getVisibility(TableColumn col, boolean defaultVisibility)

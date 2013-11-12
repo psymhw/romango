@@ -80,7 +80,7 @@ public class Player
     public final static int CORTINA_CREATE=4;
     private Playlist playlist=null;
     //int nextPlaylistTrack=0;
-    Tab equalizerTab;
+    EventTab eventTab;
     VBox vbox = new VBox();
     int mode = PLAYLIST_CREATE;
     GridPane cortinaCreatControls;
@@ -140,9 +140,9 @@ public class Player
    // SimpleStringProperty source = new SimpleStringProperty();
     public InfoWindow2 infoWindow;
 
-    public Player(Tab equalizerTab) 
+    public Player(EventTab eventTab) 
     {
-      this.equalizerTab=equalizerTab;
+      this.eventTab=eventTab;
      
       HBox currentTrackBox = new HBox();
       currentTrackBox.setPadding(new Insets(5, 0, 5, 20));
@@ -666,8 +666,8 @@ public class Player
      
       mediaView = new MediaView(mediaPlayer);
 
-      eq = new Equalizer(mediaPlayer);
-      equalizerTab.setContent(eq.getGridPane());
+     // eq = new Equalizer(mediaPlayer);
+     // eventTab.setEqualizer(eq.getGridPane());
       
       // IMPORTANT
       mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() 
@@ -734,8 +734,8 @@ public class Player
       
       mediaView = new MediaView(mediaPlayer);
 
-      eq = new Equalizer(mediaPlayer);
-      equalizerTab.setContent(eq.getGridPane());
+      //eq = new Equalizer(mediaPlayer);
+      //eventTab.setEqualizer(eq);
       
       // IMPORTANT
       mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() 
@@ -823,7 +823,7 @@ public class Player
       mediaView = new MediaView(mediaPlayer);
 
       eq = new Equalizer(mediaPlayer);
-      equalizerTab.setContent(eq.getGridPane());
+      eventTab.setEqualizer(eq);
       
       // IMPORTANT
       mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() 
@@ -906,8 +906,8 @@ public class Player
       
       mediaView = new MediaView(mediaPlayer);
 
-      eq = new Equalizer(mediaPlayer);
-      equalizerTab.setContent(eq.getGridPane());
+    //eq = new Equalizer(mediaPlayer);
+     // eventTab.setEqualizer(eq.getGridPane());
       
       
       

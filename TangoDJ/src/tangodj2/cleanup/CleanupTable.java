@@ -16,15 +16,9 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 import tangodj2.Db;
-import tangodj2.Playlist;
-import tangodj2.SharedValues;
-import tangodj2.PlaylistTree.TandaTreeItem;
-import tangodj2.tango.TangoTrack;
 
 public class CleanupTable extends TableView<CleanupTrack>
 {
@@ -37,6 +31,14 @@ public class CleanupTable extends TableView<CleanupTrack>
   public CleanupTable()
   {
 	  this.cleanupTable=this;
+	  
+	  cleanupTable.selectionModelProperty().get().selectedIndexProperty().addListener(new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+        tableIndex=(int)newValue;
+      }
+    });
 	  setupTable();
 	  reloadData();
   }
@@ -53,34 +55,16 @@ public class CleanupTable extends TableView<CleanupTrack>
     {
       public void run() 
       {
-    Db.loadCleanupTracks(search);
-    ArrayList<TableColumn<CleanupTrack, ?>> sortOrder = new ArrayList<>(cleanupTable.getSortOrder());
-    cleanupTable.getSortOrder().clear();
-    cleanupTable.getSortOrder().addAll(sortOrder);
-      }});
-  }
-  
-  
-  /*
-   * Platform.runLater(new Runnable() 
-    {
-      public void run() 
-      {
-        Db.loadTangoTracks(search);
-       ArrayList<TableColumn<TangoTrack, ?>> sortOrder = new ArrayList<>(tangoTable.getSortOrder());
-       tangoTable.getSortOrder().clear();
-       tangoTable.getSortOrder().addAll(sortOrder);
+        Db.loadCleanupTracks(search);
+        ArrayList<TableColumn<CleanupTrack, ?>> sortOrder = new ArrayList<>(cleanupTable.getSortOrder());
+        cleanupTable.getSortOrder().clear();
+        cleanupTable.getSortOrder().addAll(sortOrder);
       }
     });
   }
   
-  public static void reloadData()
-  {
-    tangoTable.getSortOrder().clear();
-    reloadData(null);
-    
-  }
-   */
+  
+  
 	 
   private void setupTable() 
   {
@@ -116,7 +100,7 @@ public class CleanupTable extends TableView<CleanupTrack>
       }};
           
       cell.setContextMenu(contextMenu);
-   
+      
       return cell;
     }
   }
@@ -127,17 +111,19 @@ public class CleanupTable extends TableView<CleanupTrack>
       MenuItem edit = new MenuItem("Edit");
       MenuItem play = new MenuItem("Play" );
       MenuItem delete = new MenuItem("Delete" );
-      final ContextMenu tandaContextMenu = new ContextMenu();
+      final ContextMenu contextMenu = new ContextMenu();
       
-      tandaContextMenu.setOnShowing(new EventHandler() 
+      contextMenu.setOnShowing(new EventHandler() 
       {
         public void handle(Event e) 
         {
-          tableIndex=cleanupTable.getSelectionModel().getSelectedIndex();
+          //tableIndex=cleanupTable.getSelectionModel().getSelectedIndex();
+          System.out.println("CleanupTable: index: "+tableIndex);
         }
       });
       
-      tandaContextMenu.getItems().addAll(addToTanda, edit, play);
+      
+      contextMenu.getItems().addAll(addToTanda, edit, play);
       addToTanda.setOnAction(new EventHandler() 
         { public void handle(Event t) { action.set("addToTanda"); }});
       edit.setOnAction(new EventHandler() 
@@ -146,7 +132,7 @@ public class CleanupTable extends TableView<CleanupTrack>
         { public void handle(Event t) { action.set("play"); }});
       delete.setOnAction(new EventHandler() 
         { public void handle(Event t) { action.set("delete"); }});
-      return tandaContextMenu;
+      return contextMenu;
     } 
   
 		  
