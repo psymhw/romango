@@ -314,9 +314,7 @@ public class PlaylistBuilderTab extends Tab
           String action=tangoTable.getAction().get();
           TangoTrack tangoTrack = tangoTable.getItems().get(row);
         
-        System.out.println("PlaylistBuilderTab - tangoTable Action: "
-            + action+" row: "
-                  +row+" "+tangoTrack.getTitle());
+        System.out.println("PlaylistBuilderTab - tangoTable Action: "+ action+" row: "+row+" "+tangoTrack.getTitle());
         
         
         if ("addToTanda".equals(action))
@@ -349,25 +347,22 @@ public class PlaylistBuilderTab extends Tab
         {
           int row = cleanupTable.getTableIndex();
           String action=cleanupTable.getAction().get();
-          CleanupTrack cleanupTrack = cleanupTable.getItems().get(row);
+          if (row>=0)
+          { 
+            CleanupTrack cleanupTrack = cleanupTable.getItems().get(row);
+            System.out.println("PlaylistBuilderTab, cleanupTable Action: "+ action+" row: "+row+" "+cleanupTrack.getTitle());
         
-        System.out.println("tangoTable Action: "
-            + action+" row: "
-                  +row+" "+cleanupTrack.getTitle());
-        
-        
-        if ("addToTanda".equals(action))
-        {
-          if (playlist.getTandaCount()>0)
-          {  
-            TandaTreeItem tandaTreeItem = playlist.getSelectedTanda();
-            
-            tandaTreeItem.addTrack(cleanupTrack.getPathHash());
-            playlist.generateFlatList();
+            if ("addToTanda".equals(action))
+            {
+              if (playlist.getTandaCount()>0)
+              {  
+                TandaTreeItem tandaTreeItem = playlist.getSelectedTanda();
+                tandaTreeItem.addTrack(cleanupTrack.getPathHash());
+                playlist.generateFlatList();
+              }
+            }
           }
-        }
-        
-        cleanupTable.getAction().set("nada");
+          cleanupTable.getAction().set("nada");
         }
       }
     };   

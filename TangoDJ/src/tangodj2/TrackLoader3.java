@@ -167,7 +167,7 @@ public class TrackLoader3
          if (trackCount<trackSize)
          {  
            final TrackDb trackDb = trackInfo.get(trackCount);
-           getTags(trackDb, trackCount);
+           getTags(trackDb, trackCount, trackSize);
            trackCount++;
          }
        }});
@@ -187,7 +187,7 @@ public class TrackLoader3
   }
   
   
-  private void getTags(final TrackDb trackDb, final int count)
+  private void getTags(final TrackDb trackDb, final int count, final int trackSize)
   {
     File file;
     final Media media;
@@ -275,7 +275,7 @@ public class TrackLoader3
           if (trackDb.comment.startsWith("iTunPGAP")) trackDb.comment="";
         }
         
-        TangoDJ2.feedback.setText("Getting MP3 Tags: "+count+") "+trackDb.duration+", "+trackDb.title);
+        TangoDJ2.feedback.setText("Getting MP3 Tags: "+count+" of "+trackSize+", "+trackDb.title);
         //finalTrackInfo.add(trackDb);
         //finalTrackInfoSizeInt++;
         // finalTrackInfoSize.setText(""+finalTrackInfoSizeInt);
@@ -476,19 +476,26 @@ public class TrackLoader3
    while(it.hasNext())
    {
    trackDb=it.next();
-   trackDb.title    = sqlReadyString(trackDb.title);
-   trackDb.artist   = sqlReadyString(trackDb.artist);
-   trackDb.album    = sqlReadyString(trackDb.album);
-   trackDb.comment  = sqlReadyString(trackDb.comment);
+   trackDb.title    = sqlReadyString(trackDb.title, 100);
+   trackDb.artist   = sqlReadyString(trackDb.artist, 40);
+   trackDb.album    = sqlReadyString(trackDb.album, 100);
+   trackDb.comment  = sqlReadyString(trackDb.comment, 100);
    trackDb.path     = sqlReadyString(trackDb.path);
-   trackDb.genre     = sqlReadyString(trackDb.genre);
+   trackDb.genre     = sqlReadyString(trackDb.genre, 40);
    trackDb.leader    = sqlReadyString(trackDb.leader);
    //trackDb.path = new File(trackDb.path).toURI().toString();
-   trackDb.track_year     = sqlReadyString(trackDb.track_year);
+   trackDb.track_year     = sqlReadyString(trackDb.track_year, 4);
    
    if (trackDb.comment.length()>100)  trackDb.comment=trackDb.comment.substring(0, 99);
   }
     
+ }
+ 
+ public static String sqlReadyString(String inStr, int maxLength)
+ {
+   String retStr = sqlReadyString(inStr);
+   if (retStr.length()>=maxLength) retStr=retStr.substring(0, maxLength-1);
+   return retStr;
  }
  
  public static String sqlReadyString(String inStr)

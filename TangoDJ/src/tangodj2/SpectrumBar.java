@@ -43,7 +43,8 @@ import javafx.scene.shape.Rectangle;
  *
  * @author dean
  */
-public class SpectrumBar extends VBox {
+public class SpectrumBar extends VBox 
+{
   private static final double SPACING = 1.0;
   private static final double ASPECT_RATIO = 3;
   private static final double MIN_BAR_HEIGHT = 3;
@@ -55,7 +56,8 @@ public class SpectrumBar extends VBox {
   private double lastWidth = 0;
   private double lastHeight = 0;
   
-  public SpectrumBar(int maxValue, int barCount) {
+  public SpectrumBar(int maxValue, int barCount) 
+  {
     this.maxValue = maxValue;
     this.barCount = barCount;
     
@@ -79,7 +81,8 @@ public class SpectrumBar extends VBox {
     }
   }
   
-  public void setValue(double value) {
+  public void setValue(double value) 
+  {
     int barsLit = Math.min(barCount, (int)Math.round(value/maxValue*barCount));
     ObservableList<Node> childList = getChildren();
     for (int i = 0; i < childList.size(); i++) {
@@ -108,8 +111,10 @@ public class SpectrumBar extends VBox {
   }
 
   @Override
-  protected void layoutChildren() {
-    if (lastWidth != getWidth() || lastHeight != getHeight()) {
+  protected void layoutChildren() 
+  {
+    if (lastWidth != getWidth() || lastHeight != getHeight()) 
+    {
       double spacing = SPACING * (barCount-1);
       double barHeight = (getHeight() - getVerticalPadding() - spacing) / barCount;
       double barWidth = Math.min(barHeight * ASPECT_RATIO, 
@@ -128,7 +133,8 @@ public class SpectrumBar extends VBox {
     super.layoutChildren();
   }
   
-  private double computeWidthForHeight(double barHeight) {
+  private double computeWidthForHeight(double barHeight) 
+  {
     double hpadding = getHorizontalPadding();
     return barHeight * ASPECT_RATIO + hpadding;
   }
