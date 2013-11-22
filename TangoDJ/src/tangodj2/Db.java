@@ -261,6 +261,24 @@ String sql;
     } catch (Exception e) { e.printStackTrace(); }
   }
   
+  public static boolean trackExists(String pathHash)
+  {
+    boolean exists=false;
+   
+    try 
+    {
+      
+      Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery("select * from tracks where pathHash = '"+pathHash+"'");
+      if (resultSet.next())
+      {
+        exists = true;
+      }
+           
+    } catch (Exception e) { e.printStackTrace(); }
+    return exists;
+  }
+  
   public static void updateTangoTableColumnWidth(String colName, double width)
   {
     String strDouble=""+(int)width;
@@ -527,6 +545,7 @@ String sql;
 	public static void disconnect() throws SQLException
 	{
 		if (connection!=null) connection.close();
+		connection=null;
 	}
 
 	public static int insertTanda(String artist, int styleId, int position) throws SQLException, ClassNotFoundException

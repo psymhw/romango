@@ -47,7 +47,7 @@ public class PlaylistBuilderTab extends Tab
     this.playlist=playlist;
     this.player=player;
     //this.cleanupTable=cleanupTable;
-    
+   
     tangoTable = new TangoTable();
     cleanupTable = new CleanupTable();
     cortinaTable = new CortinaTable();
