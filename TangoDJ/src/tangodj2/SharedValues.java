@@ -35,6 +35,10 @@ public class SharedValues
   public final static int CLEANUP = 5;
   public final static int CORTINA = 6;
   
+  public final static int FILE = 0;
+  public final static int DIRECTORY = 1;
+  
+  
   public final static ArrayList<String> styles = new ArrayList<String>(Arrays.asList(
 		  "Tango",
 		  "Vals",

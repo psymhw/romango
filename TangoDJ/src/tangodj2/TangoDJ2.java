@@ -4,6 +4,10 @@ import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
 
+import tangodj2.cleanup.CleanupTable;
+import tangodj2.cortina.CortinaTable;
+import tangodj2.tango.TangoTable;
+
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -91,6 +95,10 @@ public class TangoDJ2 extends Application
   Rectangle r = new Rectangle(10,10,10,10);
   Player player;
   public static Label feedback = new Label("");
+  TangoTable tangoTable;
+  CleanupTable cleanupTable;
+  CortinaTable cortinaTable;
+  TrackLoader3 trackLoader = new TrackLoader3();
  
 	
   public static void main(String[] args) 
@@ -109,7 +117,7 @@ public class TangoDJ2 extends Application
     public void handle(WindowEvent e)
     {
       savePreferences();
-      try { Db.disconnect(); } catch (SQLException e1) { e1.printStackTrace();}
+      try { Db.databaseDisconnect(); } catch (SQLException e1) { e1.printStackTrace();}
       System.out.println("Exit");
     }
    });
@@ -125,10 +133,27 @@ public class TangoDJ2 extends Application
     CreateDatabase cb = new CreateDatabase();
     try {if (!cb.exists()) cb.create(); } catch (Exception e) { e.printStackTrace(); }
    
+    try
+    {
+      Db.databaseConnect(false);
+    } catch (ClassNotFoundException e1)
+    {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    } catch (SQLException e1)
+    {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
     
     try { loadPreferences(); } 
     catch (Exception se) { System.out.println("PROGRAM ALREADY RUNNING"); System.exit(0); } 
     
+    tangoTable = new TangoTable();
+    cleanupTable = new CleanupTable();
+    cortinaTable = new CortinaTable();
+    trackLoader.setTangoTable(tangoTable);
+    trackLoader.setCleanupTable(cleanupTable);
     
     TabPane tabPane = new TabPane();
     
@@ -148,7 +173,7 @@ public class TangoDJ2 extends Application
     eventTab.setPlayer(player);
     
    
-    playlistBuilderTab = new PlaylistBuilderTab(playlist,  player);
+    playlistBuilderTab = new PlaylistBuilderTab(playlist,  player, tangoTable, cleanupTable, cortinaTable);
     tabPane.getTabs().add(playlistBuilderTab);
     
     playlistChoiceTab = new PlaylistChoiceTab(this, player, playlistBuilderTab, eventTab);
@@ -211,6 +236,7 @@ public class TangoDJ2 extends Application
     primaryStage.show();
   }
 
+  // MENU BAR ========================================================
   private void setupMenuBar()
   {
     menuBar = new MenuBar();
@@ -220,6 +246,8 @@ public class TangoDJ2 extends Application
     MenuItem menuAddTangoFile = new MenuItem("Add Tango Track");
     MenuItem menuAddCleanupDir = new MenuItem("Add Non-Tango Folder");
     MenuItem menuAddCleanupFile = new MenuItem("Add Non-Tango Track");
+    MenuItem menuAddCortinaFolder = new MenuItem("Add Prepared Cortina Folder");
+    MenuItem menuAddCortinaFile = new MenuItem("Add Prepared Cortina Track");
     MenuItem preferences = new MenuItem("Preferences");
     MenuItem about = new MenuItem("About");
     MenuItem manual = new MenuItem("TangoDJ Manual");
@@ -241,7 +269,11 @@ public class TangoDJ2 extends Application
         if(selectedDirectory == null) { System.out.println("No Directory selected"); } 
         else
         {
-          playlistBuilderTab.loadTangoDirectory(selectedDirectory.toPath().toString());
+          try
+          {
+            trackLoader.process(selectedDirectory.toPath().toString(), SharedValues.DIRECTORY, SharedValues.TANGO);
+            //tangoTable.reloadData();
+          } catch (Exception ex) {ex.printStackTrace();}
         }
       }
     });   
@@ -249,14 +281,17 @@ public class TangoDJ2 extends Application
     {
       public void handle(ActionEvent t) 
       {
-    	DirectoryChooser directoryChooser = new DirectoryChooser();
-    	directoryChooser.setInitialDirectory(new File(prefs.cleanupFolder));  // temporary 
-    	File selectedDirectory = directoryChooser.showDialog(primaryStage);
-    	if (selectedDirectory == null) { System.out.println("No Directory selected"); } 
-    	else
-    	{
-    	  playlistBuilderTab.loadCleanupDirectory(selectedDirectory.toPath().toString());
-    	}
+    	  DirectoryChooser directoryChooser = new DirectoryChooser();
+    	  directoryChooser.setInitialDirectory(new File(prefs.cleanupFolder));  // temporary 
+    	  File selectedDirectory = directoryChooser.showDialog(primaryStage);
+    	  if (selectedDirectory == null) { System.out.println("No Directory selected"); } 
+    	  else
+    	  {
+    	    try
+          {
+            trackLoader.process(selectedDirectory.toPath().toString(), SharedValues.DIRECTORY, SharedValues.CLEANUP);
+          } catch (Exception e) { e.printStackTrace();   }
+    	  }
       }
     });   
     	    
@@ -272,7 +307,11 @@ public class TangoDJ2 extends Application
         if(selectedFile == null) { System.out.println("No File selected"); } 
         else
         {
-          playlistBuilderTab.loadTangoFile(selectedFile.toPath().toString());
+          try
+          {
+            trackLoader.process(selectedFile.toPath().toString(), SharedValues.FILE, SharedValues.TANGO);
+            tangoTable.reloadData();
+          } catch (Exception ex) {ex.printStackTrace();}
         }
       }
     });   
@@ -289,10 +328,35 @@ public class TangoDJ2 extends Application
         if(selectedFile == null) { System.out.println("No File selected"); } 
         else
         {
-          playlistBuilderTab.loadCleanupFile(selectedFile.toPath().toString());
+          try
+          {
+            trackLoader.process(selectedFile.toPath().toString(), SharedValues.FILE, SharedValues.CLEANUP);
+            cleanupTable.reloadData();
+          } catch (Exception ex) {ex.printStackTrace();}
         }
       }
     });   
+    
+     menuAddCortinaFile.setOnAction(new EventHandler<ActionEvent>() 
+     {
+       public void handle(ActionEvent t) 
+       {
+         FileChooser fileChooser = new FileChooser();
+         fileChooser.setInitialDirectory(new File(prefs.cleanupFolder));  // temporary 
+         File selectedFile = 
+         fileChooser.showOpenDialog(primaryStage);
+                      
+         if(selectedFile == null) { System.out.println("No File selected"); } 
+         else
+         {
+           try
+           {
+             trackLoader.process(selectedFile.toPath().toString(), SharedValues.FILE, SharedValues.CORTINA);
+             cortinaTable.reloadData();
+           } catch (Exception ex) {ex.printStackTrace();}
+         }
+       }
+     });   
     	    
     preferences.setOnAction(new EventHandler<ActionEvent>() 
     { public void handle(ActionEvent t) { new PreferencesDialog(); }});
@@ -303,7 +367,7 @@ public class TangoDJ2 extends Application
      manual.setOnAction(new EventHandler<ActionEvent>() 
      { public void handle(ActionEvent t) { new ManualDialog(); }});
     
-    menuFile.getItems().addAll(menuAddTangoDir, menuAddTangoFile,menuAddCleanupDir, menuAddCleanupFile);
+    menuFile.getItems().addAll(menuAddTangoDir, menuAddTangoFile,menuAddCleanupDir, menuAddCleanupFile,menuAddCortinaFolder,menuAddCortinaFile);
     menuEdit.getItems().add(preferences);
     menuHelp.getItems().addAll(about, manual);
   }

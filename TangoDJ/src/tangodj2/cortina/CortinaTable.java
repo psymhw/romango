@@ -34,7 +34,7 @@ public class CortinaTable extends TableView<CortinaTrack>
 	  setupTable();
   }
 	 
-  public static void reloadloadData()
+  public static void reloadData()
   {
     cortinaTracksData.clear();
     Db.loadCortinaTracks(cortinaTracksData);

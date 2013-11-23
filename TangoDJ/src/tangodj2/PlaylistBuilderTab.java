@@ -37,23 +37,23 @@ public class PlaylistBuilderTab extends Tab
   final VBox vbox = new VBox();
  // int savedType=0;
   Player player;
-  TrackLoader3 trackLoader = new TrackLoader3();
+  //TrackLoader3 trackLoader = new TrackLoader3();
   HBox hbox =  new HBox();
   TextField searchField = new TextField();
   String currentTable = "tango";
   
-  public PlaylistBuilderTab(Playlist playlist, Player player)
+  public PlaylistBuilderTab(Playlist playlist, Player player, TangoTable tangoTable, CleanupTable cleanupTable, CortinaTable cortinaTable)
   {
     this.playlist=playlist;
     this.player=player;
     //this.cleanupTable=cleanupTable;
    
-    tangoTable = new TangoTable();
-    cleanupTable = new CleanupTable();
-    cortinaTable = new CortinaTable();
+    this.tangoTable = tangoTable;
+    this.cleanupTable = cleanupTable;
+    this.cortinaTable = cortinaTable;
     
-    trackLoader.setTangoTable(tangoTable);
-    trackLoader.setCleanupTable(cleanupTable);
+    //trackLoader.setTangoTable(tangoTable);
+    //trackLoader.setCleanupTable(cleanupTable);
     	  
 	  this.setText("Edit Playlist");
 	  
@@ -79,41 +79,6 @@ public class PlaylistBuilderTab extends Tab
     hbox.setHgrow(this.tangoTable, Priority.ALWAYS);
     setupListeners() ;
     this.setContent(hbox);
-  }
-  
-  public void loadTangoDirectory(String path)
-  {
-    try
-    {
-      trackLoader.process(path, false, true);
-      tangoTable.reloadData();
-    } catch (Exception ex) {ex.printStackTrace();}
-  }
-  
-  public void loadCleanupDirectory(String path)
-  {
-    try
-    {
-      trackLoader.process(path, false, false);
-      cleanupTable.reloadData();
-    } catch (Exception ex) {ex.printStackTrace();}
-  }
-  public void loadTangoFile(String path)
-  {
-    try
-    {
-      trackLoader.process(path, true, true);
-      tangoTable.reloadData();
-    } catch (Exception ex) {ex.printStackTrace();}
-  }
-  
-  public void loadCleanupFile(String path)
-  {
-    try
-    {
-      trackLoader.process(path, true, false);
-      cleanupTable.reloadData();
-    } catch (Exception ex) {ex.printStackTrace();}
   }
   
   

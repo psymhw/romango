@@ -532,7 +532,7 @@ public class Player
       else cortina.title=cortinaTitleOverride.getText();
      try {
            Db.updateCortina(cortina);
-           CortinaTable.reloadloadData();
+           CortinaTable.reloadData();
      } catch (Exception e) { e.printStackTrace(); }
      
      setCortinaControlsActive(false);

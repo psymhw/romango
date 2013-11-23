@@ -59,10 +59,11 @@ public class TrackLoader3
  // Label trackInfoSize = new Label("0");
   //int finalTrackInfoSizeInt=0;
   //Label finalTrackInfoSize = new Label("0");
-  public static final String DRIVER2 ="org.apache.derby.jdbc.EmbeddedDriver";
-  public static final String JDBC_URL2 ="jdbc:derby:tango_db;create=false";
-  static Connection connection;
-  private boolean isTango=true;
+ // public static final String DRIVER2 ="org.apache.derby.jdbc.EmbeddedDriver";
+ // public static final String JDBC_URL2 ="jdbc:derby:tango_db;create=false";
+ // static Connection connection;
+//  private boolean isTango=true;
+  private int type=SharedValues.TANGO;;
   
   TangoTable tangoTable;
   CleanupTable cleanupTable;
@@ -75,9 +76,9 @@ public class TrackLoader3
     artistsAll.addAll(SharedValues.artistsC);
   }
   
-  public void process(String inPath, boolean singleFile, boolean isTango) throws Exception
+  public void process(String inPath, int scope, int type) throws Exception
   {
-     this.isTango=isTango;
+    // this.isTango=isTango;
       fileCounter=0;
      File outFile = new File("out.txt");
      if (outFile.exists()) outFile.delete();
@@ -86,8 +87,8 @@ public class TrackLoader3
      fileList = new ArrayList<File>();
     // problemFileList = new ArrayList<ProblemFile>();
      
-     Db.connect();
-     if (singleFile)
+     //Db.connect();
+     if (scope==SharedValues.FILE)
      {
        File f = new File(inPath);
        processSingleFile(f.toPath());
@@ -97,13 +98,15 @@ public class TrackLoader3
        FileVisitor<Path> fileProcessor = new ProcessFile();
        Files.walkFileTree(Paths.get(inPath), fileProcessor);
      }   
-     Db.disconnect();
+     
      
      getFarngMP3Tags();
     
    //  System.out.println("Problems list: "+problemFileList.size());
    //  System.out.println("OK list: "+fileList.size());
      getDurations();
+     
+    // Db.disconnect();
      
   }
 
@@ -173,7 +176,7 @@ public class TrackLoader3
          {  
            final TrackDb trackDb = trackInfo.get(trackCount);
            getMediaPlayerTags(trackDb, trackCount, trackSize);
-           insertRecord(trackDb);
+           
            trackCount++;
          }
        }});
@@ -186,7 +189,7 @@ public class TrackLoader3
         {
          // sqlReadyTrackInfo();
          // insertAllRecords();
-          if (isTango) { tangoTable.reloadData(); }
+          if (type==SharedValues.TANGO) { tangoTable.reloadData(); }
           else cleanupTable.reloadData();
           try { out.close(); } catch (IOException e) { e.printStackTrace(); }
         }});
@@ -287,7 +290,14 @@ public class TrackLoader3
         // finalTrackInfoSize.setText(""+finalTrackInfoSizeInt);
         mp.dispose();
         //players--;
-       
+        if (type!=SharedValues.CORTINA)
+        {  
+          Db.insertTrack(trackDb, type);
+        }
+        else
+        {
+          Db.insertPremadeCortina(trackDb);
+        }
       }
     });
     
@@ -429,38 +439,6 @@ public class TrackLoader3
     } catch (Exception e) { e.printStackTrace(); }
   }
   */
-  void insertRecord(TrackDb trackDb) 
-  {
-   int cleanup=0; 
-   if (!isTango) cleanup=1;
-      
-   String sql="insert into tracks(cleanup, path, pathHash, title, leader, artist, album, duration, track_no, genre, comment, style, track_year) "
-       +"values ("+cleanup+", '"+trackDb.path
-               +"', '"+trackDb.pathHash
-               +"', '"+trackDb.title
-               +"', '"+trackDb.leader
-               +"', '"+trackDb.artist
-               +"', '"+trackDb.album
-               +"', "+trackDb.duration
-               +", "+trackDb.track_no
-               +", '"+trackDb.genre
-               +"', '"+trackDb.comment
-               +"', '"+trackDb.style
-               +"', '"+trackDb.track_year
-               +"')";
-      
-   System.out.println("TrackLoader3, sql: "+sql);
-   TangoDJ2.feedback.setText("Inserting Records: "+trackDb.title);
-    try 
-    {
-      if (isSet(trackDb.title)) connection.createStatement().execute(sql);
-    } catch (SQLIntegrityConstraintViolationException v) 
-    { 
-      TangoDJ2.feedback.setText("DUPLICATE"); 
-    }
-    catch (Exception e) { e.printStackTrace(); }
-  }
-  
   
   private ArtistX getArtistX(String artist)
   {
@@ -474,12 +452,7 @@ public class TrackLoader3
     return null;
   }
 
-  private boolean isSet(String inStr)
-  {
-     if (inStr==null) return false;
-     if (inStr.length()==0) return false;
-     return true;
-  }
+ 
  void sqlReadyTrackInfo(TrackDb trackDb)
  {
    
