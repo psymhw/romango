@@ -1,5 +1,7 @@
 package tangodj2.cortina;
 
+import java.text.DecimalFormat;
+
 import tangodj2.TrackDb;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.util.Duration;
@@ -32,7 +34,13 @@ public class CortinaTrack
     this.title = new SimpleStringProperty(title);
     this.start = new SimpleStringProperty(formatTime(new Duration(start)));
     this.stop = new SimpleStringProperty(formatTime(new Duration(stop)));
+    
+    if (premade==1)
+      this.length = new SimpleStringProperty(formatIntoMMSS(original_duration));
+    else
     this.length = new SimpleStringProperty(formatTime(new Duration(stop-start)));
+    
+    
     this.album = new SimpleStringProperty(album);
     this.artist = new SimpleStringProperty(artist);
     this.id=id;
@@ -74,6 +82,22 @@ public class CortinaTrack
      
    }
 
+  static String formatIntoMMSS(double secsIn)
+  {
+    secsIn=secsIn/1000;
+    int hours = (int)secsIn / 3600,
+    remainder = (int)secsIn % 3600,
+    minutes = remainder / 60,
+    seconds = remainder % 60;
+    DecimalFormat sec = new DecimalFormat( "00" );
+  DecimalFormat min = new DecimalFormat( "##" );
+  //return ( (minutes < 10 ? "0" : "") + minutes
+  //+ ":" + (seconds< 10 ? "0" : "") + seconds );
+  
+  return min.format(minutes)+":"+sec.format(seconds);
+
+  }
+  
   public int getId()
   {
     return id;

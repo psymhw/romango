@@ -443,14 +443,15 @@ String sql;
     else connection = DriverManager.getConnection(JDBC_URL2);
   }
 	
-	public static PlaylistTreeItem getPlaylist(int id) throws SQLException, ClassNotFoundException
+	public static PlaylistTreeItem getPlaylist(int id) 
 	{
 	  String name;	
 	  String location;
 	  Date incept;
 	  PlaylistTreeItem playlistTreeItem=null;
 	  
-	  connect();
+	  //connect();
+	  try {
 	 	Statement statement = connection.createStatement();
 	 	ResultSet resultSet = statement.executeQuery("select * from playlists where id = "+id);
 	 	if(resultSet.next())
@@ -463,8 +464,9 @@ String sql;
 	 	}
 	 	if (resultSet!=null) resultSet.close();
 	 	if (statement!=null) statement.close();
+	  } catch (Exception e) { e.printStackTrace(); }
 	 	
-	 	disconnect();
+	 	//disconnect();
 	  
 	 //System.out.println("DB - "+playlistTreeItem.toString());
 	  
@@ -751,6 +753,17 @@ String sql;
     disconnect();
   }
   
+  public static void updatePremadeCortina(Cortina cortina) throws SQLException, ClassNotFoundException
+  {
+    connect();
+    String sql="update cortinas set"
+              +" title = '"+cortina.title
+              +"' where id = "+cortina.id;
+    System.out.println("sql: "+sql);
+    connection.createStatement().execute(sql);
+    
+    disconnect();
+  }
   public static int insertCortina(Cortina cortina) throws SQLException, ClassNotFoundException
   {
     connect();

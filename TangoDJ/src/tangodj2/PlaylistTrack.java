@@ -22,6 +22,7 @@ public class PlaylistTrack
    
    public boolean cortina=false;
    
+   public int premade;
    public int fadein;
    public int fadeout;
    public int delay;

@@ -16,6 +16,7 @@ public class CortinaTreeItem extends BaseTreeItem
   private int fadein;
   private int fadeout;
   private int original_duration;
+  private int premade=0;
   
   public final static int PLAYING = 1;
   public final static int SELECTED = 2;
@@ -38,6 +39,7 @@ public class CortinaTreeItem extends BaseTreeItem
       this.fadein=cortinaTrack.getFadein();
       this.fadeout=cortinaTrack.getFadeout();
       this.original_duration=cortinaTrack.getOriginal_duration();
+      this.premade=cortinaTrack.getPremade();
 	  setGraphic(new ImageView(gray_light));
 	  setValue(cortinaTrack.getTitle());
   }
@@ -107,6 +109,16 @@ public int getOriginal_duration() {
 
 public String getArtist() {
 	return artist;
+}
+
+public int getPremade()
+{
+  return premade;
+}
+
+public void setPremade(int premade)
+{
+  this.premade = premade;
 }
 
   

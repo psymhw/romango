@@ -17,6 +17,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Priority;
@@ -28,28 +29,33 @@ public class EventTab extends Tab
   public	Playlist playlist=null;
   private Player player;
   private Button infoWindowButton = new Button("Info Window");
+  private Button syncPlaylistButton = new Button("Sync Playlist");
   HBox hbox =  new HBox();
+  HBox treeBox =  new HBox();
   VBox eventControls = new VBox();
+  TreeView treeView;
 	
   public EventTab()
   {
     this.setText("Event");
-	  try 
-	  {
-	    playlist = new Playlist(TangoDJ2.prefs.currentPlaylist);
-	  } catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
+	  
+	  playlist = new Playlist(TangoDJ2.prefs.currentPlaylist);
+	 
 	
 	  playlist.getTreeView().setPrefWidth(500);
 	
     hbox.setPadding(new Insets(10, 10, 10, 10));
 	  hbox.setSpacing(20);
 	  hbox.setStyle("-fx-background-color: CC99CC; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
-    hbox.getChildren().add(playlist.getTreeView());
+	  treeView = playlist.getTreeView();
+	  treeBox.getChildren().add(treeView);
+    hbox.getChildren().add(treeBox);
     
     eventControls.setPadding(new Insets(10, 10, 10, 10));
     eventControls.setSpacing(10);
     
-    eventControls.getChildren().add(infoWindowButton);
+    //eventControls.getChildren().add(infoWindowButton);
+    eventControls.getChildren().add(syncPlaylistButton);
     hbox.getChildren().add(eventControls);
     setContent(hbox);
     setupListeners();
@@ -74,6 +80,15 @@ public class EventTab extends Tab
     this.player=player;
   }
   
+  public void reloadPlaylist()
+  {
+    treeBox.getChildren().remove(treeView);
+    playlist = new Playlist(TangoDJ2.prefs.currentPlaylist);
+    playlist.getTreeView().setPrefWidth(500);
+    treeView = playlist.getTreeView();
+    treeBox.getChildren().add(treeView);
+  }
+  
   public void setEqualizer(Equalizer eq)
   {
    if (eventControls.getChildren().size()>1) eventControls.getChildren().remove(1);
@@ -89,6 +104,14 @@ public class EventTab extends Tab
 	     if (player.infoWindow==null)  player.infoWindow=new InfoWindow2(playlist, new ProgressBar());	
 	   }
    });
+	  
+	  syncPlaylistButton.setOnAction(new EventHandler<ActionEvent>() 
+	      {
+	        public void handle(ActionEvent actionEvent) 
+	       {
+	        reloadPlaylist();
+	       }
+	     });
 	  
 	 // PLAYLIST FOCUS LISTENER
 	 ChangeListener playlistFocusListener = new ChangeListener() 
