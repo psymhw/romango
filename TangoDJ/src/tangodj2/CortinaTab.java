@@ -90,9 +90,19 @@ public class CortinaTab extends Tab
         // TODO track Index?
         if (cortinaTrack!=null)
         {
-          player.setPlayMode(Player.PLAYMODE_CORTINA_SINGLE_TRACK);
-          player.setCortinaEditControls(cortinaTrack);
-          player.setCortinaControlsActive(true);
+          if (cortinaTrack.getPremade()==1)
+          {
+            player.setPlayMode(Player.PLAYMODE_PREMADE_CORTINA_SINGLE_TRACK);
+            player.setCortinaEditControls(cortinaTrack);
+            //player.setCortinaControlsActive(false);
+            //System.out.println("CortinaTab - cortinaTrackPath: "+cortinaTrack.getPath());
+          }
+          else
+          {
+            player.setPlayMode(Player.PLAYMODE_CORTINA_SINGLE_TRACK);
+            player.setCortinaEditControls(cortinaTrack);
+            player.setCortinaControlsActive(true);
+          }
         }
       }
     });

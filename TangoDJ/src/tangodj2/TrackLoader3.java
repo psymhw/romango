@@ -32,6 +32,7 @@ import org.farng.mp3.id3.AbstractID3v1;
 import org.farng.mp3.id3.AbstractID3v2;
 
 import tangodj2.cleanup.CleanupTable;
+import tangodj2.cortina.CortinaTable;
 import tangodj2.tango.TangoTable;
 
 
@@ -79,6 +80,7 @@ public class TrackLoader3
   public void process(String inPath, int scope, int type) throws Exception
   {
     // this.isTango=isTango;
+    this.type=type;
       fileCounter=0;
      File outFile = new File("out.txt");
      if (outFile.exists()) outFile.delete();
@@ -189,8 +191,10 @@ public class TrackLoader3
         {
          // sqlReadyTrackInfo();
          // insertAllRecords();
-          if (type==SharedValues.TANGO) { tangoTable.reloadData(); }
-          else cleanupTable.reloadData();
+          if (type==SharedValues.TANGO)  tangoTable.reloadData();
+          else if (type==SharedValues.CLEANUP) cleanupTable.reloadData();
+          else if (type==SharedValues.CORTINA) CortinaTable.reloadData();
+          
           try { out.close(); } catch (IOException e) { e.printStackTrace(); }
         }});
   }
@@ -296,6 +300,7 @@ public class TrackLoader3
         }
         else
         {
+          System.out.println("Trackloader3 - insert premade");
           Db.insertPremadeCortina(trackDb);
         }
       }
