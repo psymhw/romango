@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -423,17 +424,24 @@ String sql;
     }
   
 	
-	public static void connect()  throws SQLException, ClassNotFoundException
+	private static void connect()  throws SQLException, ClassNotFoundException
 	{
 		connect(false);
 	}
 	
-	public static void connect(boolean create)  throws SQLException, ClassNotFoundException
+	private static void connect(boolean create)  throws SQLException, ClassNotFoundException
 	{
-	  Class.forName(DRIVER);
-	  if (create) connection = DriverManager.getConnection(JDBC_URL);
-	  else connection = DriverManager.getConnection(JDBC_URL2);
+	 // Class.forName(DRIVER);
+	 // if (create) connection = DriverManager.getConnection(JDBC_URL);
+	//  else connection = DriverManager.getConnection(JDBC_URL2);
 	}
+	
+	public static void databaseConnect(boolean create)  throws SQLException, ClassNotFoundException
+  {
+    Class.forName(DRIVER);
+    if (create) connection = DriverManager.getConnection(JDBC_URL);
+    else connection = DriverManager.getConnection(JDBC_URL2);
+  }
 	
 	public static PlaylistTreeItem getPlaylist(int id) throws SQLException, ClassNotFoundException
 	{
@@ -542,11 +550,17 @@ String sql;
     return trackDb;
 	}
 	
-	public static void disconnect() throws SQLException
+	private static void disconnect() throws SQLException
 	{
-		if (connection!=null) connection.close();
-		connection=null;
+	//	if (connection!=null) connection.close();
+	//	connection=null;
 	}
+	
+	public static void databaseDisconnect() throws SQLException
+  {
+    if (connection!=null) connection.close();
+    connection=null;
+  }
 
 	public static int insertTanda(String artist, int styleId, int position) throws SQLException, ClassNotFoundException
 	{
@@ -773,6 +787,45 @@ String sql;
     return maxid;
   }
   
+  public static int insertPremadeCortina(TrackDb trackDb) 
+  {
+    //connect();
+    int maxid=0;
+    String sql="insert into cortinas (start, stop, fadein, fadeout, delay, original_duration, title, hash, path, album, artist, premade) values("
+    +0+", "
+    +0+", "
+    +0+", "
+    +0+", "
+    +0+", "
+    +trackDb.duration+", '"
+    +sqlReadyString(trackDb.title)+"', '"
+    +trackDb.pathHash+"', '"
+    +trackDb.path+"', '"
+    +trackDb.album+"', '"
+    +trackDb.artist+"', "
+    +1+")";
+    System.out.println("sql: "+sql);
+    try {
+    connection.createStatement().execute(sql);
+    
+   
+    sql="select max(id) maxid from cortinas";
+    System.out.println("sql: "+sql);
+    Statement statement = connection.createStatement();
+    ResultSet resultSet = statement.executeQuery(sql);
+    if(resultSet.next())
+    {
+      maxid= resultSet.getInt("maxid");
+    }  
+    if (resultSet!=null) resultSet.close();
+    if (statement!=null) statement.close();
+    
+    //disconnect();
+   
+    } catch (Exception e) { e.printStackTrace(); }
+    return maxid;
+  }
+  
   public static AllPlaylistsBaseItem getAllPlaylists()
   {
 	  AllPlaylistsBaseItem root=null;
@@ -864,6 +917,51 @@ public static AllPlaylistsBaseItem insertPlaylistsItem(String name, String locat
      disconnect();
 	} catch (Exception e) { e.printStackTrace(); }
   return apbi;
+}
+
+public static void insertTrack(TrackDb trackDb, int type) 
+{
+ int cleanup=0; 
+ if (type==SharedValues.CLEANUP) cleanup=1;
+    
+ String sql="insert into tracks(cleanup, path, pathHash, title, leader, artist, album, duration, track_no, genre, comment, style, track_year) "
+     +"values ("+cleanup+", '"+trackDb.path
+             +"', '"+trackDb.pathHash
+             +"', '"+trackDb.title
+             +"', '"+trackDb.leader
+             +"', '"+trackDb.artist
+             +"', '"+trackDb.album
+             +"', "+trackDb.duration
+             +", "+trackDb.track_no
+             +", '"+trackDb.genre
+             +"', '"+trackDb.comment
+             +"', '"+trackDb.style
+             +"', '"+trackDb.track_year
+             +"')";
+    
+ System.out.println("TrackLoader3, sql: "+sql);
+ TangoDJ2.feedback.setText("Inserting Records: "+trackDb.title);
+  try 
+  {
+    if (Db.connection==null)
+    System.out.println("TrackLoader3 - connection is null");
+    
+    if (isSet(trackDb.title)) 
+    {
+      Db.connection.createStatement().execute(sql);
+    }
+  } catch (SQLIntegrityConstraintViolationException v) 
+  { 
+    TangoDJ2.feedback.setText("DUPLICATE"); 
+  }
+  catch (Exception e) { e.printStackTrace(); }
+}
+
+private static boolean isSet(String inStr)
+{
+   if (inStr==null) return false;
+   if (inStr.length()==0) return false;
+   return true;
 }
 	
 }
