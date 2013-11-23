@@ -93,8 +93,8 @@ public class CortinaTab extends Tab
           if (cortinaTrack.getPremade()==1)
           {
             player.setPlayMode(Player.PLAYMODE_PREMADE_CORTINA_SINGLE_TRACK);
-            player.setCortinaEditControls(cortinaTrack);
-            //player.setCortinaControlsActive(false);
+            player.setPremadeCortinaEditControls(cortinaTrack);
+            player.setPremadeCortinaControlsActive(true);
             //System.out.println("CortinaTab - cortinaTrackPath: "+cortinaTrack.getPath());
           }
           else

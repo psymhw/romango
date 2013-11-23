@@ -159,10 +159,8 @@ public class TangoDJ2 extends Application
     
     setupMenuBar();
       
-    try { playlist = new Playlist(prefs.currentPlaylist);} 
-    catch (SQLException se) { System.out.println("PROGRAM ALREADY RUNNING"); System.exit(0); } 
-    catch (ClassNotFoundException e) { e.printStackTrace(); }
-        
+    playlist = new Playlist(prefs.currentPlaylist); 
+    
    // Tab equalizerTab = new Tab();
   //  equalizerTab.setStyle("-fx-background-color: #bfc2c7;");
   //  equalizerTab.setText("Equalizer");

@@ -62,12 +62,38 @@ public class CortinaTable extends TableView<CortinaTrack>
         super.updateItem(item, empty);
         if(item != null) 
         { 
-         // this.setStyle("-fx-background-color:rgba(219, 42, 199,.41);");
           this.getStyleClass().add("cortinaTableText");
-          // see http://rgba.it/
-         // this.setTextFill(Color.web("#0076a3"));
-          
           setText(item.toString()); 
+        }
+      }};
+          
+      cell.setContextMenu(contextMenu);
+   
+      return cell;
+    }
+  }
+  
+  private final class  MyCellFactory2 implements Callback<TableColumn,TableCell> 
+  {
+    private ContextMenu contextMenu;
+    public MyCellFactory2() 
+    {
+      contextMenu = setupContextMenu();
+    }
+
+    public TableCell call(TableColumn p) 
+    {
+      TableCell cell = new TableCell() {
+              
+      protected void updateItem(Object item, boolean empty) 
+      {
+        super.updateItem(item, empty);
+        if(item != null) 
+        { 
+          this.getStyleClass().add("cortinaTableText");
+          if ((int)item==1)
+          setText("X");
+          else setText(" ");
         }
       }};
           
@@ -113,6 +139,7 @@ public class CortinaTable extends TableView<CortinaTrack>
     this.setEditable(false);
     
     MyCellFactory myCellFactory = new MyCellFactory();
+    MyCellFactory2 myCellFactory2 = new MyCellFactory2();
 	    
    // table.setOnKeyReleased(keyEvent);
     
@@ -151,7 +178,14 @@ public class CortinaTable extends TableView<CortinaTrack>
     startCol.setCellValueFactory(new PropertyValueFactory<Cortina, String>("start"));
     startCol.setCellFactory(myCellFactory);
     startCol.setStyle("-fx-background-color:rgba(219, 42, 199,.41);");
-    this.getColumns().addAll(titleCol, lengthCol, artistCol, albumCol, startCol);
+    
+    TableColumn premadeCol = new TableColumn("Premade");
+    premadeCol.setMinWidth(40);
+    premadeCol.setPrefWidth(40);
+    premadeCol.setCellValueFactory(new PropertyValueFactory<Cortina, String>("premade"));
+    premadeCol.setCellFactory(myCellFactory2);
+    premadeCol.setStyle("-fx-background-color:rgba(219, 42, 199,.41);");
+    this.getColumns().addAll(premadeCol, titleCol, lengthCol, artistCol, albumCol, startCol);
   }
 
   public int getTableIndex()

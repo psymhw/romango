@@ -54,10 +54,10 @@ public class Playlist
   private int numberOfTandas=-1;
   public static SimpleIntegerProperty playlistFocus = new SimpleIntegerProperty(0);
   
-  public Playlist(int playlistId) throws SQLException, ClassNotFoundException
+  public Playlist(int playlistId) 
   {
-	setupTreeView(playlistId);	
-	setNextTrackToPlay();  
+	  setupTreeView(playlistId);	
+	  setNextTrackToPlay();  
   }
 	
   public void printTracks()
@@ -74,21 +74,21 @@ public class Playlist
 	
   public void stopPlaying()
   {
-	if (flatPlaylistTracks.size()==0) return;
-	flatPlaylistTracks.get(playingTrack).baseTreeItem.setNextPlayImage(false);
-	flatPlaylistTracks.get(playingTrack).baseTreeItem.setNextPlayImage(true);
+    if (flatPlaylistTracks.size()==0) return;
+	  flatPlaylistTracks.get(playingTrack).baseTreeItem.setNextPlayImage(false);
+	  flatPlaylistTracks.get(playingTrack).baseTreeItem.setNextPlayImage(true);
   }
 	
   public PlaylistTrack getTrack(int trackNo)
   {
-	if (trackNo>=flatPlaylistTracks.size()) return null;
+	  if (trackNo>=flatPlaylistTracks.size()) return null;
 	  return flatPlaylistTracks.get(trackNo);
   }
 	
   public void setPrevious()
   {
-	nextTrack-=2;
-	if (nextTrack<0) nextTrack=0;
+	  nextTrack-=2;
+	  if (nextTrack<0) nextTrack=0;
   }
 	
 	
@@ -184,6 +184,7 @@ public class Playlist
         playlistTrack.baseTreeItem=cortinaTreeItem;
         playlistTrack.trackHash=cortinaTreeItem.getPathHash();
         
+        playlistTrack.premade=cortinaTreeItem.getPremade();
         playlistTrack.startValue =cortinaTreeItem.getStart();
         playlistTrack.stopValue  =cortinaTreeItem.getStop();
         playlistTrack.fadein     =cortinaTreeItem.getFadein();
@@ -203,7 +204,7 @@ public class Playlist
       // if the last item in the tree is a tanda, there is no next track
       ti.setPlayableIndex(999);
     }
-    // printFlatList();
+     printFlatList();
   }
 	
   public void printFlatList()
@@ -250,8 +251,10 @@ public class Playlist
 	  System.out.println("Playlist tanda: "+tandaTreeItem.getArtist());
 	  return tandaTreeItem;
 	}
+  
+  
 	
-  private void setupTreeView(int playlistId) throws SQLException, ClassNotFoundException
+  private void setupTreeView(int playlistId) 
 	{
 	  playlistTreeItem =  Db.getPlaylist(playlistId);
 	  treeView = new TreeView<String>(playlistTreeItem);
@@ -441,9 +444,9 @@ public class Playlist
 	     {
 	       public void handle(Event t) 
 	       {
-	    	  
 	         playlistTreeItem.moveTandaUp(selectedTanda);   
 	         generateFlatList();
+	         
 	       }
 	     });
 	     moveDown.setOnAction(new EventHandler() 
