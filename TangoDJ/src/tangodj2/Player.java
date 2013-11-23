@@ -127,6 +127,7 @@ public class Player
     final static int PLAYMODE_PLAYLIST = 21;
     final static int PLAYMODE_CORTINA_SINGLE_TRACK = 22;
     final static int PLAYMODE_CLEANUP_TO_CORTINA_TRACK = 23;
+    final static int PLAYMODE_PREMADE_CORTINA_SINGLE_TRACK = 24;
     
     private int playMode=0;
     CleanupTrack currentCleanupTrack=null;
@@ -319,6 +320,12 @@ public class Player
           {
            // System.out.println("Player, PLAY_CORTINA");
             playCortina();
+          }
+          
+          if (playMode==PLAYMODE_PREMADE_CORTINA_SINGLE_TRACK)
+          {
+           // System.out.println("Player, PLAY_CORTINA");
+            playPremadeCortina();
           }
           
           if (playMode==PLAYMODE_CLEANUP_TO_CORTINA_TRACK)
@@ -949,6 +956,83 @@ public class Player
     
     
   }
+   
+   public void playPremadeCortina()
+   {
+      String sourcePath=null;
+      volumeSlider.setValue(holdVolume);
+      cortina=true;
+      
+      CortinaTrack cortinaTrack = Db.getCortinaTrack(currentCortinaId);
+     // TrackDb trackDb = Db.getTrackInfo(cortinaTrack.getPathHash()); // TODO CortinaTrack should already have this
+      sourcePath=cortinaTrack.getPath();
+     
+      playing=true;
+      playButton.setText("||");
+      stopButton.setDisable(false);
+      File file = new File(sourcePath);
+      
+      mediaPlayer = createMediaPlayer(file.toURI().toString(), true);
+      mediaPlayer.setVolume(volumeSlider.getValue());
+      mediaPlayer.volumeProperty().bindBidirectional(volumeSlider.valueProperty());
+      //mediaPlayer.setStartTime(new Duration(cortinaTrack.getStartValue()));
+      //mediaPlayer.setStopTime(new Duration(cortinaTrack.getStopValue()));
+      System.out.println("Player - total duration: "+mediaPlayer.getTotalDuration());
+     
+      // FADE IN
+      //if (cortinaTrack.getFadein()==1) fadeIn();
+      // FADE OUT
+      //if (cortinaTrack.getFadeout()==1) fadeOut=true; else fadeOut=false;
+      fadeOut=false;
+      mediaView = new MediaView(mediaPlayer);
+
+    //eq = new Equalizer(mediaPlayer);
+     // eventTab.setEqualizer(eq.getGridPane());
+      
+      
+      
+     
+      // IMPORTANT
+      mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() 
+      {
+        public void invalidated(Observable ov) 
+        {
+         // updateCortinaValues();
+          updateValues();
+        }
+      });
+   
+
+    mediaPlayer.setOnReady(new Runnable() 
+    {
+      public void run() 
+      {
+       // System.out.println("Playlist - mediaPlayer.setOnReady");
+       // currentTrackDuration = mediaPlayer.getMedia().getDuration();
+      //  updateCortinaValues();
+        updateValues();
+      }
+    });
+    
+
+    mediaPlayer.setOnEndOfMedia(new Runnable() 
+    {
+      public void run() 
+      {
+          stopButton.setDisable(true);
+          playButton.setText(">");
+          timeSlider.setValue(0);
+          atEndOfMedia = true;
+          mediaPlayer.stop();
+         // cortinaTrack.baseTreeItem.setPlayingImage(false);
+          return;
+      }
+    });
+    
+    
+  }
+   
+   
     private void fadeIn()
     {
       holdVolume=mediaPlayer.getVolume();
@@ -1344,10 +1428,21 @@ public class Player
       timeSlider.setDisable(false);
     }
     
+    if (playMode==PLAYMODE_PREMADE_CORTINA_SINGLE_TRACK)
+    {
+      System.out.println("Player - premade cortina play controls");
+      playButton.setDisable(false);
+      skipButton.setDisable(false);
+      previousButton.setDisable(false);
+      timeSlider.setDisable(false);
+    }
+    
   }
 
   public void setCortinaEditControls(CortinaTrack cortinaTrack)
   {
+    setCurrentCortinaId(cortinaTrack.getId());
+    if (cortinaTrack.getPremade()==1) return;
     cortinaMode=UPDATE;
     setCurrentCortinaId(cortinaTrack.getId());
     setCurrentTrackTitle(cortinaTrack.getTitle());  

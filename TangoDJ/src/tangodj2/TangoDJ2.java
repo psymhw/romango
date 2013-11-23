@@ -310,7 +310,7 @@ public class TangoDJ2 extends Application
           try
           {
             trackLoader.process(selectedFile.toPath().toString(), SharedValues.FILE, SharedValues.TANGO);
-            tangoTable.reloadData();
+            //tangoTable.reloadData();
           } catch (Exception ex) {ex.printStackTrace();}
         }
       }
@@ -331,7 +331,7 @@ public class TangoDJ2 extends Application
           try
           {
             trackLoader.process(selectedFile.toPath().toString(), SharedValues.FILE, SharedValues.CLEANUP);
-            cleanupTable.reloadData();
+           //cleanupTable.reloadData();
           } catch (Exception ex) {ex.printStackTrace();}
         }
       }
@@ -352,7 +352,7 @@ public class TangoDJ2 extends Application
            try
            {
              trackLoader.process(selectedFile.toPath().toString(), SharedValues.FILE, SharedValues.CORTINA);
-             cortinaTable.reloadData();
+             //cortinaTable.reloadData();
            } catch (Exception ex) {ex.printStackTrace();}
          }
        }
