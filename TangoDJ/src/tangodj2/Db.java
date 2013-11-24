@@ -487,6 +487,7 @@ String sql;
 	
 	public static void updateTrack(TrackDb trackDb)
 	{
+	  sqlReadyTrackInfo(trackDb);
 	  String sql = "update tracks set " 
 	               +" title = '"+trackDb.title+"', "
 	               +" album = '"+trackDb.album+"', "
@@ -605,17 +606,7 @@ String sql;
 	 	 if (statement!=null) statement.close();
 	 	 return maxid;
 	}
-	public static String sqlReadyString(String inStr)
-	{
-	   String returnStr = inStr.replace("'","''");
-	   returnStr = returnStr.replace("ÿþ","");
-	   returnStr = returnStr.replace("\\","\\\\");
-	   
-	   char tChar=0;
-	   returnStr = removeChar(returnStr, tChar);
-	   
-	   return returnStr;
-	}
+	
 	
 	public static String removeChar(String s, char c) 
     {
@@ -626,6 +617,41 @@ String sql;
 	  }
 	  return r;
     }
+	
+	static void sqlReadyTrackInfo(TrackDb trackDb)
+	 {
+	   
+	   trackDb.title    = sqlReadyString(trackDb.title, 100);
+	   trackDb.artist   = sqlReadyString(trackDb.artist, 40);
+	   trackDb.album    = sqlReadyString(trackDb.album, 100);
+	   trackDb.comment  = sqlReadyString(trackDb.comment, 100);
+	   trackDb.path     = sqlReadyString(trackDb.path);
+	   trackDb.genre     = sqlReadyString(trackDb.genre, 40);
+	   trackDb.leader    = sqlReadyString(trackDb.leader);
+	   //trackDb.path = new File(trackDb.path).toURI().toString();
+	   trackDb.track_year     = sqlReadyString(trackDb.track_year, 4);
+	  
+	 }
+	 
+	 public static String sqlReadyString(String inStr, int maxLength)
+	 {
+	   String retStr = sqlReadyString(inStr);
+	   if (retStr.length()>=maxLength) retStr=retStr.substring(0, maxLength-1);
+	   return retStr;
+	 }
+	 
+	 public static String sqlReadyString(String inStr)
+	 {
+	    if (inStr==null) return "";
+	    String returnStr = inStr.replace("'","''");
+	    returnStr = returnStr.replace("ÿþ","");
+	   // returnStr = returnStr.replace("\\","\\\\");
+	    //System.out.println(inStr);
+	    char tChar=0;
+	    returnStr = removeChar(returnStr, tChar);
+	    
+	    return returnStr;
+	 }
 	
 	
 	

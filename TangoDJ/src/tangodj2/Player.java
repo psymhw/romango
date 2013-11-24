@@ -619,17 +619,21 @@ public class Player
      } catch (Exception e) { e.printStackTrace(); }
     }
     
-    
-    
-    public void setFeaturesMode(int mode)
+
+    public void setMode(int mode)
     {
       this.mode=mode;
-      if (mode==CORTINA_CREATE) 
-      {
-        if (!advancedControls) showAdvancedControls(true);
-      }
-        else showAdvancedControls(false);
+      if (mode==CORTINA_CREATE) showAdvancedControls(!advancedControls);
+     // {
+     //   if (!advancedControls) showAdvancedControls(true);
+    //  }
+    //  else showAdvancedControls(false);
+      
+      if (mode==PLAYLIST_CREATE)   setPlaylist(PlaylistBuilderTab.playlist);
+      if (mode==EVENT_PLAYLIST)    setPlaylist(EventTab.playlist);
+      if (mode==PLAYLIST)          setPlayMode(PLAYMODE_PLAYLIST);
     }
+    
     
     public VBox get()
     {
