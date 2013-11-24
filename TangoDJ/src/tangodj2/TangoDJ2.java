@@ -160,6 +160,7 @@ public class TangoDJ2 extends Application
     setupMenuBar();
       
     playlist = new Playlist(prefs.currentPlaylist); 
+    System.out.println("TangoDJ2 - new Playlist for playlist builder tab");
     
    // Tab equalizerTab = new Tab();
   //  equalizerTab.setStyle("-fx-background-color: #bfc2c7;");
@@ -246,6 +247,7 @@ public class TangoDJ2 extends Application
     MenuItem menuAddCleanupFile = new MenuItem("Add Non-Tango Track");
     MenuItem menuAddCortinaFolder = new MenuItem("Add Prepared Cortina Folder");
     MenuItem menuAddCortinaFile = new MenuItem("Add Prepared Cortina Track");
+    MenuItem menuAddCortinaDir = new MenuItem("Add Prepared Cortina Folder");
     MenuItem preferences = new MenuItem("Preferences");
     MenuItem about = new MenuItem("About");
     MenuItem manual = new MenuItem("TangoDJ Manual");
@@ -292,6 +294,25 @@ public class TangoDJ2 extends Application
     	  }
       }
     });   
+    
+    menuAddCortinaDir.setOnAction(new EventHandler<ActionEvent>() 
+        {
+          public void handle(ActionEvent t) 
+          {
+            DirectoryChooser directoryChooser = new DirectoryChooser();
+            directoryChooser.setInitialDirectory(new File(prefs.cleanupFolder));  // temporary 
+            File selectedDirectory = directoryChooser.showDialog(primaryStage);
+            if (selectedDirectory == null) { System.out.println("No Directory selected"); } 
+            else
+            {
+              try
+              {
+                trackLoader.process(selectedDirectory.toPath().toString(), SharedValues.DIRECTORY, SharedValues.CORTINA);
+              } catch (Exception e) { e.printStackTrace();   }
+            }
+          }
+        });   
+              
     	    
     menuAddTangoFile.setOnAction(new EventHandler<ActionEvent>() 
     {
@@ -355,6 +376,7 @@ public class TangoDJ2 extends Application
          }
        }
      });   
+     
     	    
     preferences.setOnAction(new EventHandler<ActionEvent>() 
     { public void handle(ActionEvent t) { new PreferencesDialog(); }});
@@ -365,7 +387,7 @@ public class TangoDJ2 extends Application
      manual.setOnAction(new EventHandler<ActionEvent>() 
      { public void handle(ActionEvent t) { new ManualDialog(); }});
     
-    menuFile.getItems().addAll(menuAddTangoDir, menuAddTangoFile,menuAddCleanupDir, menuAddCleanupFile,menuAddCortinaFolder,menuAddCortinaFile);
+    menuFile.getItems().addAll(menuAddTangoDir, menuAddTangoFile,menuAddCleanupDir, menuAddCleanupFile,menuAddCortinaFolder,menuAddCortinaDir,menuAddCortinaFile);
     menuEdit.getItems().add(preferences);
     menuHelp.getItems().addAll(about, manual);
   }

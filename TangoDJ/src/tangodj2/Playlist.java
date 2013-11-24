@@ -1,6 +1,7 @@
 package tangodj2;
 
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -123,6 +124,7 @@ public class Playlist
     PlaylistTrack playlistTrack;
     numberOfTandas=0;
     int playableIndex=0;
+    double totalPlaylistTime=0;
     
     while( true)
     {
@@ -167,6 +169,9 @@ public class Playlist
         playlistTrack.trackHash=trackTreeItem.getTrackHash();
         flatPlaylistTracks.add(playlistTrack);
         tandaTrackCounter++;
+        playlistTrack.duration=trackTreeItem.getDuration();
+        totalPlaylistTime+=playlistTrack.duration;
+        
       }
       else if ("cortina".equals(ti.getTreeType()))
       {
@@ -191,7 +196,8 @@ public class Playlist
         playlistTrack.fadeout    =cortinaTreeItem.getFadeout();
         playlistTrack.delay      =cortinaTreeItem.getDelay();
         playlistTrack.original_duration  =cortinaTreeItem.getOriginal_duration();
-   
+        playlistTrack.duration=cortinaTreeItem.getDuration();
+        totalPlaylistTime+=playlistTrack.duration;
         flatPlaylistTracks.add(playlistTrack);
         // didn't set or increment tandaTrackCounter or set tandaCounter
       }
@@ -204,7 +210,9 @@ public class Playlist
       // if the last item in the tree is a tanda, there is no next track
       ti.setPlayableIndex(999);
     }
-     printFlatList();
+    
+     System.out.println("Playlist total duration: "+formatIntoMMSS(totalPlaylistTime));
+     //printFlatList();
   }
 	
   public void printFlatList()
@@ -222,6 +230,7 @@ public class Playlist
       +playlistTrack.tandaName+" "
       +playlistTrack.trackInTanda
       +" of "+playlistTrack.numberOfTracksInTanda+", "
+      +formatIntoMMSS(playlistTrack.duration)+", "
       +playlistTrack.title+", "
       +playlistTrack.album+", "
       +playlistTrack.path);
@@ -229,6 +238,23 @@ public class Playlist
     }
   }
 	
+  static String formatIntoMMSS(double millisIn)
+  {
+    millisIn=millisIn/1000;
+    int hours = (int)millisIn / 3600,
+    remainder = (int)millisIn % 3600,
+    minutes = remainder / 60,
+    seconds = remainder % 60;
+    DecimalFormat sec = new DecimalFormat( "00" );
+    DecimalFormat min = new DecimalFormat( "##" );
+    DecimalFormat hr = new DecimalFormat( "##" );
+  //return ( (minutes < 10 ? "0" : "") + minutes
+  //+ ":" + (seconds< 10 ? "0" : "") + seconds );
+  
+  return hr.format(hours)+":"+min.format(minutes)+":"+sec.format(seconds);
+
+  }
+  
   public TreeView<String> getTreeView() { return treeView; }
 	
   public void addTanda(String artist, int styleId)

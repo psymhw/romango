@@ -21,6 +21,7 @@ public class TrackTreeItem extends BaseTreeItem
   private String album;
   private String path;
   private String artist;
+  private double duration;
  
   
   public TrackTreeItem(String trackHash, int position)
@@ -32,12 +33,13 @@ public class TrackTreeItem extends BaseTreeItem
     //if (dimBallImage==null) dimBallImage = new Image(getClass().getResourceAsStream("/resources/images/dim_ball.png"));
    
   	setGraphic(new ImageView(gray_light));
-  	TrackDb TrackDb=Db.getTrackInfo(trackHash);
-  	if (TrackDb.cleanup==1) setTreeType("cleanup");
-  	album = TrackDb.album;
-  	path = TrackDb.path;
-  	this.artist = TrackDb.artist;
-  	this.setValue(TrackDb.title);
+  	TrackDb trackDb=Db.getTrackInfo(trackHash);
+  	if (trackDb.cleanup==1) setTreeType("cleanup");
+  	album = trackDb.album;
+  	path = trackDb.path;
+  	this.artist = trackDb.artist;
+  	this.duration=trackDb.duration;
+  	this.setValue(trackDb.title);
   	
   	//this.getChildren().add(new DetailTreeItem("Length", formatTime(new Duration(TrackDb.duration))));
     //this.getChildren().add(new DetailTreeItem("Artist", artist));
@@ -155,6 +157,16 @@ private static String formatTime(Duration duration)
 
 public String getArtist() {
 	return artist;
+}
+
+
+
+
+
+
+public double getDuration()
+{
+  return duration;
 }
 
 
