@@ -300,12 +300,13 @@ public class Player
         {
           if (playMode==PLAYMODE_SINGLE_TRACK)
           {
-            if (mediaPlayer == null) playTrack(); //playTrackDelay(5);
+            if (mediaPlayer == null) 
+            {  
+              playTrack();
+            }
             else
             {  
               Status status = mediaPlayer.getStatus();
-             // System.out.println("Player, status: "+status.toString());
-           
               if (status == Status.PLAYING) pauseTrack();
               else if (status == Status.PAUSED) resumeTrack();
               else playTrack();
@@ -314,7 +315,17 @@ public class Player
           
           if (playMode==PLAYMODE_PLAYLIST)
           {
-            playPlaylist();
+            if (mediaPlayer == null) 
+            {  
+              playPlaylist();
+            }
+            else
+            {
+              Status status = mediaPlayer.getStatus();
+              if (status == Status.PLAYING) pauseTrack();
+              else if (status == Status.PAUSED) resumeTrack();
+              else playPlaylist();
+            }
           }
           
           if (playMode==PLAYMODE_CORTINA_SINGLE_TRACK)
@@ -823,6 +834,7 @@ public class Player
     
     public void playPlaylist()
     {
+      System.out.println("Player - PLAYING PLAYLIST");
       String sourcePath=null;
       fadeOut=false;
       volumeSlider.setValue(holdVolume);
@@ -1230,7 +1242,7 @@ public class Player
       final String thisPath=path;
       Media  media = new Media(path);
       final MediaPlayer mp = new MediaPlayer(media);
-      mp.getTotalDuration();
+     // mp.getTotalDuration();
       mp.setOnError(new Runnable() 
       {
         public void run() 
