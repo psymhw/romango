@@ -26,7 +26,7 @@ import javafx.scene.media.MediaPlayer;
 
 public class EventTab extends Tab
 {
-  public	Playlist playlist=null;
+  public	static Playlist playlist=null;
   private Player player;
   private Button infoWindowButton = new Button("Info Window");
   private Button syncPlaylistButton = new Button("Sync Playlist");
@@ -120,8 +120,8 @@ public class EventTab extends Tab
 	 {
 	   public void changed(ObservableValue observable, Object oldValue, Object newValue) 
 	   {
-	     player.setPlayMode(Player.PLAYMODE_PLAYLIST);
-	     player.setFeaturesMode(Player.PLAYLIST);
+	     //player.setPlayMode(Player.PLAYMODE_PLAYLIST);
+	     player.setMode(Player.PLAYLIST);
 	   }};   
 	   playlist.playlistFocus.addListener(playlistFocusListener);
    }

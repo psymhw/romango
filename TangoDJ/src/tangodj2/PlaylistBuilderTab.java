@@ -33,7 +33,7 @@ public class PlaylistBuilderTab extends Tab
   TangoTable tangoTable;
   CleanupTable cleanupTable;
   CortinaTable cortinaTable;
-  Playlist playlist;
+  public static Playlist playlist;
   final VBox vbox = new VBox();
  // int savedType=0;
   Player player;
@@ -109,11 +109,11 @@ public class PlaylistBuilderTab extends Tab
       {
        if ("tango".equals(currentTable))
        {
-         TangoTable.reloadData(searchField.getText());
+         TangoTable.reloadData(searchField.getText().replaceAll("'", "''"));
        }
        else
        {
-         CleanupTable.reloadData(searchField.getText());
+         CleanupTable.reloadData(searchField.getText().replaceAll("'", "''"));
        }
       }
     };
@@ -371,8 +371,8 @@ public class PlaylistBuilderTab extends Tab
     {
       public void changed(ObservableValue observable, Object oldValue, Object newValue) 
       {
-        player.setPlayMode(Player.PLAYMODE_PLAYLIST);
-        player.setFeaturesMode(Player.PLAYLIST);
+       // player.setPlayMode(Player.PLAYMODE_PLAYLIST);
+        player.setMode(Player.PLAYLIST);
       }
     };   
     playlist.playlistFocus.addListener(playlistFocusListener);

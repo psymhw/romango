@@ -85,7 +85,7 @@ public class InfoWindow2
 	
 	
 	Artist currentArtist;
-  	Text titleText= new Text("--");
+  Text titleText= new Text("--");
   	Text titleText2= new Text("--");
   	
   	BorderPane borderPane = new BorderPane();	

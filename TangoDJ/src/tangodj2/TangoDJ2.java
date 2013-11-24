@@ -76,6 +76,7 @@ import javafx.stage.WindowEvent;
  * Add balance to equilizer
  * Allow interactively new named playlist. Would allow non tango playlists.
  * Remember equalizer values - for next tune and when program closed
+ * Recognize funny characters in artist names, like Calo, when loading and switch to english for Leader
  */
 public class TangoDJ2 extends Application 
 {
@@ -185,20 +186,9 @@ public class TangoDJ2 extends Application
     {
       public void changed(ObservableValue<? extends Tab> arg0, Tab arg1, Tab mostRecentlySelectedTab)
       {
-        if (mostRecentlySelectedTab.equals(cortinaTab))
-        {
-          player.setFeaturesMode(Player.CORTINA_CREATE);
-        }
-        if (mostRecentlySelectedTab.equals(playlistBuilderTab))
-        {
-          player.setFeaturesMode(Player.PLAYLIST_CREATE);
-          player.setPlaylist(playlist);
-        }
-        if (mostRecentlySelectedTab.equals(eventTab))
-        {
-          player.setFeaturesMode(Player.PLAYLIST_CREATE);
-          player.setPlaylist(eventTab.playlist);
-        }
+        if (mostRecentlySelectedTab.equals(cortinaTab))         player.setMode(Player.CORTINA_CREATE);
+        if (mostRecentlySelectedTab.equals(playlistBuilderTab)) player.setMode(Player.PLAYLIST_CREATE);
+        if (mostRecentlySelectedTab.equals(eventTab))           player.setMode(Player.EVENT_PLAYLIST);
       }
     });
       
