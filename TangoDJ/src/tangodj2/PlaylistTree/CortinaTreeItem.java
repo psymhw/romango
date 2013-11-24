@@ -22,6 +22,7 @@ public class CortinaTreeItem extends BaseTreeItem
   public final static int SELECTED = 2;
   public final static int NONE = 3;
   private int status=NONE;
+  private double duration=0;
   
   
   public CortinaTreeItem(CortinaTrack cortinaTrack)
@@ -40,6 +41,10 @@ public class CortinaTreeItem extends BaseTreeItem
       this.fadeout=cortinaTrack.getFadeout();
       this.original_duration=cortinaTrack.getOriginal_duration();
       this.premade=cortinaTrack.getPremade();
+      
+      if (premade==1) duration=cortinaTrack.getOriginal_duration();
+      else duration = (stop-start);
+      
 	  setGraphic(new ImageView(gray_light));
 	  setValue(cortinaTrack.getTitle());
   }
@@ -119,6 +124,11 @@ public int getPremade()
 public void setPremade(int premade)
 {
   this.premade = premade;
+}
+
+public double getDuration()
+{
+  return duration;
 }
 
   

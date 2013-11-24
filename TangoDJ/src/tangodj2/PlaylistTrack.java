@@ -30,6 +30,7 @@ public class PlaylistTrack
    public int startValue;
    public int stopValue;
    public boolean playing=false;
+   public double duration;
    
  
 }

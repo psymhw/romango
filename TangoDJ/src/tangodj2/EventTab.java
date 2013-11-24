@@ -32,7 +32,8 @@ public class EventTab extends Tab
   private Button syncPlaylistButton = new Button("Sync Playlist");
   HBox hbox =  new HBox();
   HBox treeBox =  new HBox();
-  VBox eventControls = new VBox();
+  VBox eventControlsBox = new VBox();
+  HBox buttonBox = new HBox();
   TreeView treeView;
 	
   public EventTab()
@@ -40,7 +41,7 @@ public class EventTab extends Tab
     this.setText("Event");
 	  
 	  playlist = new Playlist(TangoDJ2.prefs.currentPlaylist);
-	 
+	  System.out.println("TangoDJ2 - new Playlist for event tab");
 	
 	  playlist.getTreeView().setPrefWidth(500);
 	
@@ -51,12 +52,13 @@ public class EventTab extends Tab
 	  treeBox.getChildren().add(treeView);
     hbox.getChildren().add(treeBox);
     
-    eventControls.setPadding(new Insets(10, 10, 10, 10));
-    eventControls.setSpacing(10);
+    eventControlsBox.setPadding(new Insets(10, 10, 10, 10));
+    eventControlsBox.setSpacing(10);
     
-    //eventControls.getChildren().add(infoWindowButton);
-    eventControls.getChildren().add(syncPlaylistButton);
-    hbox.getChildren().add(eventControls);
+    buttonBox.setSpacing(20);
+    buttonBox.getChildren().addAll(infoWindowButton,syncPlaylistButton);
+    eventControlsBox.getChildren().add(buttonBox);
+    hbox.getChildren().add(eventControlsBox);
     setContent(hbox);
     setupListeners();
     
@@ -91,8 +93,8 @@ public class EventTab extends Tab
   
   public void setEqualizer(Equalizer eq)
   {
-   if (eventControls.getChildren().size()>1) eventControls.getChildren().remove(1);
-   eventControls.getChildren().add(eq.getPane());
+   if (eventControlsBox.getChildren().size()>1) eventControlsBox.getChildren().remove(1);
+   eventControlsBox.getChildren().add(eq.getPane());
   }
  
   private void setupListeners()
