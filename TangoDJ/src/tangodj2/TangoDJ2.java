@@ -265,10 +265,11 @@ public class TangoDJ2 extends Application
         directoryChooser.setInitialDirectory(new File(prefs.tangoFolder));  // temporary 
         File selectedDirectory = 
         directoryChooser.showDialog(primaryStage);
-                  
+               
         if(selectedDirectory == null) { System.out.println("No Directory selected"); } 
         else
         {
+          prefs.tangoFolder=selectedDirectory.getParent().toString();  
           try
           {
             trackLoader.process(selectedDirectory.toPath().toString(), SharedValues.DIRECTORY, SharedValues.TANGO);
@@ -343,10 +344,11 @@ public class TangoDJ2 extends Application
         fileChooser.setInitialDirectory(new File(prefs.cleanupFolder));  // temporary 
         File selectedFile = 
         fileChooser.showOpenDialog(primaryStage);
-                  
+              
         if(selectedFile == null) { System.out.println("No File selected"); } 
         else
         {
+          prefs.cleanupFolder=selectedFile.getParent();  
           try
           {
             trackLoader.process(selectedFile.toPath().toString(), SharedValues.FILE, SharedValues.CLEANUP);
@@ -370,6 +372,7 @@ public class TangoDJ2 extends Application
          {
            try
            {
+             prefs.cleanupFolder=selectedFile.getParent();  
              trackLoader.process(selectedFile.toPath().toString(), SharedValues.FILE, SharedValues.CORTINA);
              //cortinaTable.reloadData();
            } catch (Exception ex) {ex.printStackTrace();}
