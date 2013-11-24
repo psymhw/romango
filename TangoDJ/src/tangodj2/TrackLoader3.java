@@ -80,7 +80,7 @@ public class TrackLoader3
   public void process(String inPath, int scope, int type) throws Exception
   {
     // this.isTango=isTango;
-    this.type=type;
+      this.type=type;
       fileCounter=0;
      File outFile = new File("out.txt");
      if (outFile.exists()) outFile.delete();
@@ -133,7 +133,7 @@ public class TrackLoader3
         pathHash = hasher.getMd5Hash(pathStr2.getBytes());
         if (Db.trackExists(pathHash)) 
         {
-          System.out.println("ALDEAY LOADED: "+pathStr2);
+          TangoDJ2.feedback.setText("ALREADY LOADED: "+pathStr2);
           return FileVisitResult.CONTINUE;
         }
         TangoDJ2.feedback.setText("Preparing Files: "+fileCounter+" - "+pathStr2);
@@ -237,7 +237,7 @@ public class TrackLoader3
         //if (comment2!=null) { if (!"".equals(comment2)) {  System.out.println("comment 2: "+comment2); }}
         
         trackDb.duration=(int)mp.getTotalDuration().toMillis();
-        System.out.println("duration: "+trackDb.duration+", "+trackDb.title);
+        
         if ("NO TITLE".equals(trackDb.title))
         {
           trackDb.artist=(String)media.getMetadata().get("artist");
@@ -258,6 +258,8 @@ public class TrackLoader3
         }
         if (trackDb.artist==null) trackDb.artist="";
         if (trackDb.genre==null) trackDb.genre="";
+        
+        //System.out.println("track: "+trackDb.album+", "+trackDb.title);
         
         ArtistX artistX = getArtistX(trackDb.artist);
         if (artistX==null)
@@ -294,6 +296,7 @@ public class TrackLoader3
         // finalTrackInfoSize.setText(""+finalTrackInfoSizeInt);
         mp.dispose();
         //players--;
+        sqlReadyTrackInfo(trackDb);
         if (type!=SharedValues.CORTINA)
         {  
           Db.insertTrack(trackDb, type);
@@ -470,8 +473,6 @@ public class TrackLoader3
    trackDb.leader    = sqlReadyString(trackDb.leader);
    //trackDb.path = new File(trackDb.path).toURI().toString();
    trackDb.track_year     = sqlReadyString(trackDb.track_year, 4);
-   
-   if (trackDb.comment.length()>100)  trackDb.comment=trackDb.comment.substring(0, 99);
   
  }
  
@@ -488,7 +489,7 @@ public class TrackLoader3
     String returnStr = inStr.replace("'","''");
     returnStr = returnStr.replace("ÿþ","");
    // returnStr = returnStr.replace("\\","\\\\");
-    
+    //System.out.println(inStr);
     char tChar=0;
     returnStr = removeChar(returnStr, tChar);
     

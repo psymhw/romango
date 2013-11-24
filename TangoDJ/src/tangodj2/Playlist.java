@@ -382,14 +382,18 @@ public class Playlist
 	         }
 	         if ("playlist".equals(bti.getTreeType())) 
 	         {  
+	           
 	           setFont(Font.font("Serif", 20));
 	           setContextMenu(playlistContextMenu);
 	         }
 	         else if ("tanda".equals(bti.getTreeType())) 
 	         {	   
+	           this.getStyleClass().add("tandaTitleText");
 	           if (playlistTreeItem.getTandaPosition((TandaTreeItem)bti)==0) tandaContextMenu.getItems().get(0).setDisable(true);  // disable move up
 	           if (playlistTreeItem.getTandaPosition((TandaTreeItem)bti)==playlistTreeItem.getTandaCount()-1) tandaContextMenu.getItems().get(1).setDisable(true); // disable move down
-	           setFont(Font.font("Serif", 16));
+	          // Font tandaTitleFont=Font.font("Serif", 18);
+	           
+	           setFont(Font.font("Serif", 18));
 	           //Kludge alert
 	           tandaContextMenu.setId(""+playlistTreeItem.getTandaPosition((TandaTreeItem)bti));
 	           setContextMenu(tandaContextMenu);

@@ -104,6 +104,12 @@
   
 }
 
+.tandaTitleText {
+  -fx-text-fill: rgba(107, 0, 255,1);
+  -fx-font-size: 18pt;
+  -fx-font-weight: bold;
+}
+
 .eqLabel {
   -fx-padding: 2;
 }

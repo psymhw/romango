@@ -101,7 +101,7 @@ public class Db
       sql = "select * from tracks where cleanup = 0 and (lower(title) like '%"+search+"%' or lower(leader) like '%"+search+"%') order by artist, album, track_no";
     }
       TrackDb trackDb;
-      System.out.println("Db - loadSql: "+sql);
+      
     try
     {
       connect();
@@ -115,7 +115,10 @@ public class Db
       if (resultSet!=null) resultSet.close();
       if (statement!=null) statement.close();
       disconnect();
-    } catch (Exception e) { e.printStackTrace();}
+    } catch (Exception e) { 
+      System.out.println("Db - loadSql: "+sql);
+      e.printStackTrace();
+    }
   }
 	
 	
@@ -952,8 +955,8 @@ public static void insertTrack(TrackDb trackDb, int type)
              +"', '"+trackDb.track_year
              +"')";
     
- System.out.println("TrackLoader3, sql: "+sql);
- TangoDJ2.feedback.setText("Inserting Records: "+trackDb.title);
+ 
+ TangoDJ2.feedback.setText("Adding: "+trackDb.album+", "+trackDb.title);
   try 
   {
     if (Db.connection==null)
