@@ -41,10 +41,7 @@ import javafx.stage.WindowEvent;
  * Create a tangoGenre MP3tag and populate when making tandas?
  * MP3 tag editor
  * Event Tab: fade/next track
- * table search or restriction or fulltext
- * Spare DB fields for updates
- * try mediaPlayer.setOnReady instead of Timeline for loading MP3 tag info
- * Add treeitems below song title to show artist, time, album etc
+  * Spare DB fields for updates
  * Show total time for each tanda. Maybe even real end time from system clock
  * Add pre-made cortinas directly to cortinas table
  * When making cotinas, there should be a length counter
