@@ -388,18 +388,19 @@ public class Playlist
 	         }
 	         if ("playlist".equals(bti.getTreeType())) 
 	         {  
-	           
+	           this.getStyleClass().add("playlistBackground");
 	           setFont(Font.font("Serif", 20));
 	           setContextMenu(playlistContextMenu);
 	         }
 	         else if ("tanda".equals(bti.getTreeType())) 
 	         {	   
 	           this.getStyleClass().add("tandaTitleText");
+	           this.getStyleClass().add("playlistBackground");
 	           if (playlistTreeItem.getTandaPosition((TandaTreeItem)bti)==0) tandaContextMenu.getItems().get(0).setDisable(true);  // disable move up
 	           if (playlistTreeItem.getTandaPosition((TandaTreeItem)bti)==playlistTreeItem.getTandaCount()-1) tandaContextMenu.getItems().get(1).setDisable(true); // disable move down
 	          // Font tandaTitleFont=Font.font("Serif", 18);
 	           
-	           setFont(Font.font("Serif", 18));
+	           //setFont(Font.font("Serif", 18));
 	           //Kludge alert
 	           tandaContextMenu.setId(""+playlistTreeItem.getTandaPosition((TandaTreeItem)bti));
 	           setContextMenu(tandaContextMenu);
@@ -407,8 +408,9 @@ public class Playlist
 	         }
 	         else if ("tango".equals(bti.getTreeType()))
 	         {
-	           setFont(Font.font("Serif", 16));
-	           
+	           //setFont(Font.font("Serif", 16));
+	           this.getStyleClass().add("playlistBackground");
+	           this.getStyleClass().add("tangoPlaylistText");
 	           TrackTreeItem trackTreeItem = (TrackTreeItem)bti;
 	           this.setTooltip(new Tooltip("Album: "+trackTreeItem.getAlbum()+"\n"
 	               +"Orchestra: "+trackTreeItem.getArtist()));
@@ -431,7 +433,7 @@ public class Playlist
 	           this.getStyleClass().add("cortinaPlaylistText");
             // setStyle("-fx-border-color:rgba(219, 42, 199,.41);");
              CortinaTreeItem cortinaTreeItem = (CortinaTreeItem)bti;
-            
+             this.getStyleClass().add("playlistBackground");
             // int trackCount=((TandaTreeItem)cortinaTreeItem.getParent()).getTrackCount();
             // System.out.println("Playlist - cortina track found: "+trackCount+" - "+cortinaTreeItem.getValue());
              //int trackPosition=trackTreeItem.getTrackPosition(trackTreeItem);
@@ -450,6 +452,7 @@ public class Playlist
 	         else if ("cleanup".equals(bti.getTreeType()))
            {
              this.getStyleClass().add("cleanupPlaylistText");
+             this.getStyleClass().add("playlistBackground");
              TrackTreeItem cleanupTreeItem = (TrackTreeItem)bti;
              setContextMenu(trackContextMenu);
            }

@@ -98,6 +98,12 @@
   
 }
 
+.tangoPlaylistText {
+  -fx-text-fill: black;
+  -fx-font-size: 16pt;
+  
+}
+
 .cleanupTableText {
   -fx-text-fill: rgba(42, 54, 246,1);
   -fx-font-size: 12pt;
@@ -108,6 +114,14 @@
   -fx-text-fill: rgba(107, 0, 255,1);
   -fx-font-size: 18pt;
   -fx-font-weight: bold;
+  
+}
+
+.playlistBackground {
+	-fx-background-color: rgba(34, 35, 256,.26);
+	-fx-border-width: 0;
+	-fx-border-color: rgba(34, 35, 256,.26);
+	
 }
 
 .eqLabel {

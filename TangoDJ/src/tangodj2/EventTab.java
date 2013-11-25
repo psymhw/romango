@@ -108,12 +108,12 @@ public class EventTab extends Tab
    });
 	  
 	  syncPlaylistButton.setOnAction(new EventHandler<ActionEvent>() 
-	      {
-	        public void handle(ActionEvent actionEvent) 
-	       {
-	        reloadPlaylist();
-	       }
-	     });
+	  {
+	    public void handle(ActionEvent actionEvent) 
+	    {
+	      reloadPlaylist();
+	    }
+	  });
 	  
 	 // PLAYLIST FOCUS LISTENER
 	 ChangeListener playlistFocusListener = new ChangeListener() 
