@@ -119,6 +119,7 @@ public class TangoDJ2 extends Application
     {
       savePreferences();
       try { Db.databaseDisconnect(); } catch (SQLException e1) { e1.printStackTrace();}
+      if (player.infoWindow!=null) player.infoWindow.close();
       System.out.println("Exit");
     }
    });

@@ -30,7 +30,7 @@ public class InfoWindow2
 {
   Group root = new Group();
   ArrayList <ImageView>background = new ArrayList<ImageView>();
-  boolean showBorders=true;
+  boolean showBorders=false;
   boolean cortina=false;
 	
   FontMeta tusj = new FontMeta("FFF Tusj", FontWeight.BOLD);
@@ -39,26 +39,25 @@ public class InfoWindow2
   Font titleFont = Font.font(tusj.name, tusj.style, 70);
   boolean fontsLoaded=false;
   Playlist playlist;
-
-  
+  Stage infoWindow = new Stage();
   
   public InfoWindow2(Playlist playlist, ProgressBar progress2)
   { 
-	Stage infoWindow = new Stage();
-	this.playlist=playlist;
-	//infoWindow.initStyle(StageStyle.UNDECORATED);
-	infoWindow.initModality(Modality.NONE);
+	  
+	  this.playlist=playlist;
+	  //infoWindow.initStyle(StageStyle.UNDECORATED);
+	  infoWindow.initModality(Modality.NONE);
 	
-	setupBackgrounds();
-	Label test = new Label("TEST");
-	test.setFont(titleFont);
+	  setupBackgrounds();
+	  Label test = new Label("TEST");
+	  test.setFont(titleFont);
 	
 	
-	//maybe can have an image as part of the bar or
-	//use a stackPane with an image behind and some less opacity
-	//progress2.setClip(new ImageView(new Image()));
-	//progress2.setOpacity(.5);
-	Rectangle r = new Rectangle(1200,800);
+	  //maybe can have an image as part of the bar or
+	  //use a stackPane with an image behind and some less opacity
+	  //progress2.setClip(new ImageView(new Image()));
+	  //progress2.setOpacity(.5);
+	  Rectangle r = new Rectangle(1200,800);
     r.setFill(Color.DARKGRAY);
     
     root.getChildren().add(r);
@@ -69,27 +68,28 @@ public class InfoWindow2
     Scene scene = new Scene(root, 1200, 800);
     infoWindow.setScene(scene);
     infoWindow.show();
-	
+  }
+  
+  public void close()
+  {
+    infoWindow.close();
   }
   
   private void setupBackgrounds()
   {
-	background.add(new ImageView(new Image(InfoWindow2.class.getResourceAsStream("/resources/images/ebabgdag.jpg"))));
-	background.add(new ImageView(new Image(InfoWindow2.class.getResourceAsStream("/resources/images/black.png"))));
+	  background.add(new ImageView(new Image(InfoWindow2.class.getResourceAsStream("/resources/images/ebabgdag.jpg"))));
+	  background.add(new ImageView(new Image(InfoWindow2.class.getResourceAsStream("/resources/images/black.png"))));
   }
   
   public void update()
   {
-	
-	while (root.getChildren().size()>1) { root.getChildren().remove(1); }
-	
-	
-	Artist currentArtist;
-  Text titleText= new Text("--");
+	  while (root.getChildren().size()>1) { root.getChildren().remove(1); }
+  	Artist currentArtist;
+    Text titleText= new Text("--");
   	Text titleText2= new Text("--");
   	
   	BorderPane borderPane = new BorderPane();	
-borderPane.setPrefHeight(800);
+    borderPane.setPrefHeight(800);
   	
   	VBox vbox = getVBox();
   	vbox.setAlignment(Pos.TOP_CENTER);
@@ -105,6 +105,7 @@ borderPane.setPrefHeight(800);
   	  vbox.getChildren().add(getPane(Artist.getDistantLight("CORTINA", cortinaFont),200));
   	  vbox.getChildren().add(getPane(Artist.getDistantLight(playlist.getPlayingArtist(), titleFont), 100));
   	  vbox.getChildren().add(getPane(Artist.getDistantLight(playlist.getPlayingTitle(), titleFont), 100));
+  	  
       borderPane.setCenter(vbox);
   	
   	  borderPane.setBottom(getPane(getUpNext(), 100));
@@ -115,22 +116,21 @@ borderPane.setPrefHeight(800);
   	else
   	{
   	  root.getChildren().add(background.get(1));
-  	
-	  currentArtist=Artist.getArtist(playlist.getPlayingArtist());
-	  titleText = getTitleText(playlist.getPlayingTitle());
-	  Text artistLastNameText =  currentArtist.getLastNameText();
-	  Text artistFirstNameText =  currentArtist.getFirstNameText();
+	    currentArtist=Artist.getArtist(playlist.getPlayingArtist());
+	    titleText = getTitleText(playlist.getPlayingTitle());
+	    Text artistLastNameText =  currentArtist.getLastNameText();
+	    Text artistFirstNameText =  currentArtist.getFirstNameText();
 	  	
-	  borderPane.setTop(getPane(artistFirstNameText, 75));
+	    borderPane.setTop(getPane(artistFirstNameText, 75));
 	  	
-	  vbox.getChildren().add(getPane(artistLastNameText, 200));
-	  vbox.getChildren().add(getPane(titleText, 100));
-	  if (!titleText2.getText().equals("--")) vbox.getChildren().add(getPane(titleText2, 100));
-	   
+	    vbox.getChildren().add(getPane(artistLastNameText, 200));
+	    vbox.getChildren().add(getPane(titleText, 100));
+	    if (!titleText2.getText().equals("--")) vbox.getChildren().add(getPane(titleText2, 100));
+	    vbox.getChildren().add(getPane(Artist.getDistantLight(playlist.getPlayingTandaProgress(), titleFont), 100));
 	   // vbox.getChildren().add(getTandaProgress());
-	  borderPane.setCenter(vbox);
+	    borderPane.setCenter(vbox);
 	    
-	  borderPane.setBottom(getPane(getUpNext(), 100));
+	    borderPane.setBottom(getPane(getUpNext(), 100));
 	  	
 	  root.getChildren().add(borderPane);
   	}
@@ -138,11 +138,11 @@ borderPane.setPrefHeight(800);
   
   private VBox getVBox()
   {
-	VBox vbox;  
-	vbox = new VBox(); 
-	vbox.setPadding(new Insets(0,0,0,0));
-	// vbox.setVgap(2);
-	// vbox.setHgap(5);
+	  VBox vbox;  
+	  vbox = new VBox(); 
+	  vbox.setPadding(new Insets(0,0,0,0));
+	  // vbox.setVgap(2);
+	  // vbox.setHgap(5);
     return vbox;
   }
   
@@ -161,7 +161,7 @@ borderPane.setPrefHeight(800);
   private Text getUpNext()
   {
 	  System.out.println("InfoWindow - up next: "+playlist.getNextTandaInfo());
-	  return getTitleText(playlist.getNextTandaInfo());	  
+	  return getTitleText("Up Next: "+playlist.getNextTandaInfo());	  
   }
   
   public Text getTitleText(String title)
