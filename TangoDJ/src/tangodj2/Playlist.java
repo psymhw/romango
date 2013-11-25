@@ -142,7 +142,7 @@ public class Playlist
         tandaCounter++;
         TandaTreeItem tandaTreeItem = (TandaTreeItem)ti;
         tandaName = tandaTreeItem.getArtistAndStyle();
-        numberOfTracksInTanda=tandaTreeItem.getChildren().size();
+        numberOfTracksInTanda=tandaTreeItem.getChildren().size()-1; // minus 1 for cortina
         tandaTreeItem.setPlayableIndex(playableIndex);
       }
       else if ("tango".equals(ti.getTreeType())||"cleanup".equals(ti.getTreeType()))
@@ -162,13 +162,14 @@ public class Playlist
         playlistTrack.artist=trackTreeItem.getArtist();
         playlistTrack.path=trackTreeItem.getPath();
         playlistTrack.tandaNumber=tandaCounter;
+        tandaTrackCounter++;
         playlistTrack.trackInTanda=tandaTrackCounter;
         playlistTrack.numberOfTracksInTanda=numberOfTracksInTanda;
         playlistTrack.cortina=false;
         playlistTrack.baseTreeItem=trackTreeItem;
         playlistTrack.trackHash=trackTreeItem.getTrackHash();
         flatPlaylistTracks.add(playlistTrack);
-        tandaTrackCounter++;
+        
         playlistTrack.duration=trackTreeItem.getDuration();
         totalPlaylistTime+=playlistTrack.duration;
         
@@ -180,6 +181,11 @@ public class Playlist
         playableIndex++;
         playlistTrack = new PlaylistTrack();
         playlistTrack.title=cortinaTreeItem.getValue();
+        if ((tandaCounter+1)<numberOfTandas)
+        {
+          playlistTrack.nextTandaName=((TandaTreeItem)playlistTreeItem.getChildren().get(tandaCounter+1)).getArtistAndStyle();
+        }
+        else playlistTrack.nextTandaName="Good Night";
         playlistTrack.album = cortinaTreeItem.getAlbum();
         playlistTrack.artist = cortinaTreeItem.getArtist();
         playlistTrack.tandaName=tandaName;
@@ -721,14 +727,26 @@ public class Playlist
    {
 	 return flatPlaylistTracks.get(playingTrack).artist; 
    }
+   
+   
    public String getPlayingTitle()
    {
 	 return flatPlaylistTracks.get(playingTrack).title; 
    }
    
+   public String getPlayingTandaProgress()
+   {
+     PlaylistTrack playlistTrack = flatPlaylistTracks.get(playingTrack);
+     String progress=playlistTrack.trackInTanda+" of "+playlistTrack.numberOfTracksInTanda;
+     System.out.println("Playlist - progress: "+progress);
+     return  progress;
+   }
+   
+   
+   
    public String getNextTandaInfo()
    {
-	 return flatPlaylistTracks.get(playingTrack).nextTandaName; 
+	   return flatPlaylistTracks.get(playingTrack).nextTandaName; 
    }
 	 
    public boolean isCortina()

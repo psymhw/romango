@@ -851,6 +851,8 @@ public class Player
       playlistTrack.baseTreeItem.setPlayingImage(true);
       playlistTrack.playing=true;
       
+      if (infoWindow!=null) infoWindow.update();
+      
       cortina = playlistTrack.cortina;
       premade = playlistTrack.premade;
       sourcePath=playlistTrack.path;
