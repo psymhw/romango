@@ -15,6 +15,7 @@ import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -46,7 +47,6 @@ import javafx.util.Duration;
 
 public class Player 
 {
-  
     int playerRegHeight=65;
     int playerLargeHeight=150;
     private MediaView mediaView = new MediaView();
@@ -72,7 +72,7 @@ public class Player
     Button setStopButton = new Button("*");
   //  Button dummyButton = new Button(" ");
 
-    private boolean playing=false;
+    public static SimpleBooleanProperty playing=new SimpleBooleanProperty(false);
     private Equalizer eq;
     public final static int PLAYLIST_CREATE=1;
     public final static int PLAYLIST=2;
@@ -654,9 +654,10 @@ public class Player
     private void stopPlaying()
     {
       mediaPlayer.stop();
+      mediaPlayer.dispose();
       stopButton.setDisable(true);
       playButton.setText(">");
-      playing=false;
+      playing.set(false);
       timeSlider.setValue(0);
       atEndOfMedia = true;
       playlist.stopPlaying();
@@ -701,7 +702,7 @@ public class Player
       sourcePath=trackDb.path;
       currentTrackTitle=trackDb.title;
       
-      playing=true;
+      playing.set(true);
       playButton.setText("||");
       stopButton.setDisable(false);
 
@@ -780,7 +781,7 @@ public class Player
       sourcePath=trackDb.path;
       currentTrackTitle=trackDb.title;
       
-      playing=true;
+      playing.set(true);
       playButton.setText("||");
       stopButton.setDisable(false);
 
@@ -857,7 +858,7 @@ public class Player
       premade = playlistTrack.premade;
       sourcePath=playlistTrack.path;
       
-      playing=true;
+      playing.set(true);
       playButton.setText("||");
       stopButton.setDisable(false);
 
@@ -887,8 +888,11 @@ public class Player
       mediaPlayer.volumeProperty().bindBidirectional(volumeSlider.valueProperty());
       mediaView = new MediaView(mediaPlayer);
 
-      eq = new Equalizer(mediaPlayer);
-      eventTab.setEqualizer(eq);
+      if (mode==EVENT_PLAYLIST)
+      {
+        eq = new Equalizer(mediaPlayer);
+        eventTab.setEqualizer(eq);
+      }
       
       // IMPORTANT
       mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() 
@@ -933,6 +937,7 @@ public class Player
         timeSlider.setValue(0);
         atEndOfMedia = true;
         mediaPlayer.stop();
+        mediaPlayer.dispose();
         if (playlist.getPlayingTrack()==playlist.getNextTrack()) 
             playlist.setNextTrack(playlist.getNextTrack()+1);
           playPlaylist();
@@ -952,7 +957,7 @@ public class Player
      // TrackDb trackDb = Db.getTrackInfo(cortinaTrack.getPathHash()); // TODO CortinaTrack should already have this
       sourcePath=cortinaTrack.getPath();
      
-      playing=true;
+      playing.set(true);
       playButton.setText("||");
       stopButton.setDisable(false);
       File file = new File(sourcePath);
@@ -1025,7 +1030,7 @@ public class Player
      // TrackDb trackDb = Db.getTrackInfo(cortinaTrack.getPathHash()); // TODO CortinaTrack should already have this
       sourcePath=cortinaTrack.getPath();
      
-      playing=true;
+      playing.set(true);
       playButton.setText("||");
       stopButton.setDisable(false);
       File file = new File(sourcePath);

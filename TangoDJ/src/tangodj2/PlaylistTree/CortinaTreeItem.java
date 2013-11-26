@@ -25,7 +25,7 @@ public class CortinaTreeItem extends BaseTreeItem
   private double duration=0;
   
   
-  public CortinaTreeItem(CortinaTrack cortinaTrack)
+  public CortinaTreeItem(CortinaTrack cortinaTrack) 
   {
 	  super();
 	  this.setTreeType("cortina");

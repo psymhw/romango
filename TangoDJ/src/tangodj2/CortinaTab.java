@@ -19,6 +19,7 @@ public class CortinaTab extends Tab
  
   CleanupTable cleanupTable;
   CortinaTable cortinaTable;
+  CortinaTab cortinaTab;
   GridPane gridPane = new GridPane();
   final Player player;
   
@@ -28,6 +29,7 @@ public class CortinaTab extends Tab
     this.cleanupTable=cleanupTable;
    // this.cortinaTable=cortinaTable;
     this.player=player;
+    cortinaTab=this;
     
     cortinaTable = new CortinaTable();
     cleanupTable = new CleanupTable();
@@ -106,6 +108,19 @@ public class CortinaTab extends Tab
         }
       }
     });
+    
+    // PLAYER PLAYING LISTENER
+    ChangeListener playingListener = new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+        cortinaTab.setDisable(Player.playing.get());
+      }
+    };   
+   Player.playing.addListener(playingListener);
+  
+  
+    
   }
   
 }

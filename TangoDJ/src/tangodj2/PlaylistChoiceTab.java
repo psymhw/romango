@@ -44,6 +44,7 @@ public class PlaylistChoiceTab extends Tab
   EventTab eventTab;
   Player player;
   PlaylistBuilderTab playlistBuilderTab;
+  PlaylistChoiceTab playlistChoiceTab;
   
   
   public PlaylistChoiceTab(TangoDJ2 tangoDJ, Player player, PlaylistBuilderTab playlistBuilderTab, EventTab eventTab)
@@ -53,6 +54,7 @@ public class PlaylistChoiceTab extends Tab
 	this.eventTab=eventTab;
 	this.player=player;
 	this.playlistBuilderTab=playlistBuilderTab;
+	playlistChoiceTab=this;
 	/*
 	TableColumn nameCol = TableColumnBuilder.create()
             .text("Name")
@@ -158,6 +160,16 @@ public class PlaylistChoiceTab extends Tab
     vbox.getChildren().add(allPlaylistsTree);
     vbox.setMaxWidth(350);
     this.setContent(vbox);
+    
+    // PLAYER PLAYING LISTENER
+    ChangeListener playingListener = new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+        playlistChoiceTab.setDisable(Player.playing.get());
+      }
+    };   
+   Player.playing.addListener(playingListener);
   }
   
   private void setData() 

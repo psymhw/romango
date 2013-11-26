@@ -41,6 +41,7 @@ public class TangoTrack
     this.singer = new SimpleStringProperty(trackDb.singer);
     this.style = new SimpleStringProperty(trackDb.style);
     this.rating = new SimpleStringProperty(trackDb.rating);
+    if (this.rating.get()==null) this.rating.set("");
     this.bpm = new SimpleStringProperty(trackDb.bpm);
     this.duration = new SimpleIntegerProperty(trackDb.duration);
     this.track_no = new SimpleIntegerProperty(trackDb.track_no);

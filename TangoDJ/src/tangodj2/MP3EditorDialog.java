@@ -119,6 +119,7 @@ public class MP3EditorDialog extends Stage
     
     final ComboBox ratingComboBox = new ComboBox();
     ratingComboBox.getItems().addAll(
+        "",
         "*",
         "**",
         "***",

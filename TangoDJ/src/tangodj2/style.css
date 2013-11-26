@@ -54,10 +54,7 @@
   -fx-padding: 2;
 }
 
-.playlistTree
-{
-	-fx-background-color: white;
-}
+
 
 .playerButton {
 	-fx-background-color: #222, #888, black;
@@ -69,11 +66,45 @@
   -fx-font-size: 14pt;
 }
 
-.cortinaPlaylistText {
-  -fx-text-fill: rgba(219, 42, 199,1);
-  -fx-font-size: 16pt;
+.playlistTree
+{
+  -fx-background-color: rgba(34, 35, 256,.16);
+  -fx-font-size: 15pt;
+}
+
+/*
+.playlistPlaylistTreeItem 
+{
+  -fx-background-color: rgba(32, 47, 255,.82);
+  -fx-padding: 3,3,3,3;
+}
+
+.tandaPlaylistTreeItem 
+{
+  -fx-background-color: null;
+  -fx-padding: 3,3,3,3; 
+}
+
+.cortinaPlaylistTreeItem 
+{
+  
+   -fx-background-color: null;
+  -fx-padding: 3,3,3,3; 
   
 }
+
+.cleanupPlaylistTreeItem {
+   -fx-background-color: rgba(0, 102, 227,.90);
+}
+
+.tangoPlaylistTreeItem {
+	-fx-background-color: null;
+   -fx-text-fill: black;
+  -fx-font-size: 16pt; 
+  
+}
+
+*/
 
 .cortinaTableText {
   -fx-text-fill: rgba(219, 42, 199,1);
@@ -92,17 +123,9 @@
     -fx-text-fill: -fx-selection-bar-text;
 }
 
-.cleanupPlaylistText {
-  -fx-text-fill: rgba(42, 54, 246,1);
-  -fx-font-size: 16pt;
-  
-}
 
-.tangoPlaylistText {
-  -fx-text-fill: black;
-  -fx-font-size: 16pt;
-  
-}
+
+
 
 .cleanupTableText {
   -fx-text-fill: rgba(42, 54, 246,1);
@@ -117,12 +140,7 @@
   
 }
 
-.playlistBackground {
-	-fx-background-color: rgba(34, 35, 256,.26);
-	-fx-border-width: 0;
-	-fx-border-color: rgba(34, 35, 256,.26);
-	
-}
+
 
 .eqLabel {
   -fx-padding: 2;
