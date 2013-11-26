@@ -12,6 +12,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -34,6 +35,7 @@ public class PlaylistBuilderTab extends Tab
   CleanupTable cleanupTable;
   CortinaTable cortinaTable;
   public static Playlist playlist;
+  private PlaylistBuilderTab playlistBuilderTab;
   final VBox vbox = new VBox();
  // int savedType=0;
   Player player;
@@ -41,11 +43,13 @@ public class PlaylistBuilderTab extends Tab
   HBox hbox =  new HBox();
   TextField searchField = new TextField();
   String currentTable = "tango";
+  TreeView treeView;
   
   public PlaylistBuilderTab(Playlist playlist, Player player, TangoTable tangoTable, CleanupTable cleanupTable, CortinaTable cortinaTable)
   {
     this.playlist=playlist;
     this.player=player;
+    playlistBuilderTab=this;
     //this.cleanupTable=cleanupTable;
    
     this.tangoTable = tangoTable;
@@ -73,15 +77,13 @@ public class PlaylistBuilderTab extends Tab
 	  hbox.getChildren().add(vbox);
 	  hbox.setStyle("-fx-background-color: CC99CC; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 1px;"); 
 
-  
-    hbox.getChildren().add(this.playlist.getTreeView());
+    treeView=this.playlist.getTreeView();
+    hbox.getChildren().add(treeView);
    // hbox.setHgrow(this.playlist.getTreeView(), Priority.ALWAYS);
     hbox.setHgrow(this.tangoTable, Priority.ALWAYS);
     setupListeners() ;
     this.setContent(hbox);
   }
-  
-  
   
   private Button getTestButton()
   {
@@ -97,6 +99,15 @@ public class PlaylistBuilderTab extends Tab
     };
     testButton.setOnMouseClicked(bHandler);
     return testButton;
+  }
+  
+  public void reloadPlaylist()
+  {
+    hbox.getChildren().remove(treeView);
+    playlist = new Playlist(TangoDJ2.prefs.currentPlaylist);
+    playlist.getTreeView().setPrefWidth(500);
+    treeView = playlist.getTreeView();
+    hbox.getChildren().add(treeView);
   }
   
   private Button getSearchButton()
@@ -376,6 +387,17 @@ public class PlaylistBuilderTab extends Tab
       }
     };   
     playlist.playlistFocus.addListener(playlistFocusListener);
+   
+    
+    // PLAYER PLAYING LISTENER
+    ChangeListener playingListener = new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+        playlistBuilderTab.setDisable(Player.playing.get());
+      }
+    };   
+   Player.playing.addListener(playingListener);
     
   }
 
