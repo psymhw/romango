@@ -13,17 +13,21 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 public class EventTab extends Tab
@@ -67,7 +71,23 @@ public class EventTab extends Tab
     eventControlsBox.getChildren().add(buttonBox);
     hbox.getChildren().add(eventControlsBox);
     
-    infoGrid.add(new Text("Blah"), col[0], row[0]);
+    infoGrid.setHgap(5);
+    ColumnConstraints col0 = new ColumnConstraints();
+    col0.setHalignment(HPos.RIGHT);
+    infoGrid.getColumnConstraints().add(col0);
+    
+    Font labelFont=new Font("Arial", 12);
+    
+    Label playlistTimeLabel = new Label("Playlist Time");
+    Label playlistTimeVal = new Label(playlist.getTotalPlaylistTime());
+    
+    playlistTimeLabel.setFont(labelFont);
+    playlistTimeVal.setFont(labelFont);
+    
+    infoGrid.add(playlistTimeLabel, col[0], row[0]);
+    infoGrid.add(playlistTimeVal,   col[1], row[0]);
+    
+    
     infoGrid.add(new Text("End Position"),   col[0], row[1]);
     
     hbox.getChildren().add(infoGrid);

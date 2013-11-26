@@ -54,6 +54,7 @@ public class Playlist
   private int selectedTanda=-1;
   private int numberOfTandas=-1;
   public static SimpleIntegerProperty playlistFocus = new SimpleIntegerProperty(0);
+  double totalPlaylistTime=0;
   
   public Playlist(int playlistId) 
   {
@@ -129,7 +130,7 @@ public class Playlist
     PlaylistTrack playlistTrack;
     numberOfTandas=0;
     int playableIndex=0;
-    double totalPlaylistTime=0;
+    totalPlaylistTime=0;
     
     while( true)
     {
@@ -222,7 +223,7 @@ public class Playlist
       ti.setPlayableIndex(999);
     }
     
-     System.out.println("Playlist total duration: "+formatIntoMMSS(totalPlaylistTime));
+    // System.out.println("Playlist total duration: "+formatIntoMMSS(totalPlaylistTime));
      //printFlatList();
   }
 	
@@ -756,7 +757,10 @@ public class Playlist
      return  progress;
    }
    
-   
+   public String getTotalPlaylistTime()
+   {
+     return formatIntoMMSS(totalPlaylistTime);
+   }
    
    public String getNextTandaInfo()
    {
