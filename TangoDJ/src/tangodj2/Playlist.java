@@ -72,12 +72,17 @@ public class Playlist
 	  i++;
 	}
   }
-	
+    	
   public void stopPlaying()
   {
-    if (flatPlaylistTracks.size()==0) return;
+    int playlistSize=flatPlaylistTracks.size();
+    if (playlistSize==0) return;
 	  flatPlaylistTracks.get(playingTrack).baseTreeItem.setNextPlayImage(false);
-	  flatPlaylistTracks.get(playingTrack).baseTreeItem.setNextPlayImage(true);
+	  
+	 // if (playingTrack<(playlistSize-1))
+	  //{
+	 //   flatPlaylistTracks.get(playingTrack+1).baseTreeItem.setNextPlayImage(true);
+	// }
   }
 	
   public PlaylistTrack getTrack(int trackNo)
