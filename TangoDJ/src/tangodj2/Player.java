@@ -40,7 +40,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
-import javafx.scene.media.MediaView;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -49,8 +48,7 @@ public class Player
 {
     int playerRegHeight=65;
     int playerLargeHeight=150;
-    private MediaView mediaView = new MediaView();
-    private boolean atEndOfMedia = false;
+   
     //private Duration duration;
     private Slider timeSlider;
     private Slider cortinaTimeSlider;
@@ -651,17 +649,7 @@ public class Player
       mediaPlayer.play();
     }
     
-    private void stopPlaying()
-    {
-      mediaPlayer.stop();
-      mediaPlayer.dispose();
-      stopButton.setDisable(true);
-      playButton.setText(">");
-      playing.set(false);
-      timeSlider.setValue(0);
-      atEndOfMedia = true;
-      playlist.stopPlaying();
-    }   
+    
     
     public void playPreviousTrack()
     {
@@ -724,7 +712,6 @@ public class Player
         fadeOut=true; 
         else fadeOut=false;
      
-      mediaView = new MediaView(mediaPlayer);
 
      // eq = new Equalizer(mediaPlayer);
      // eventTab.setEqualizer(eq.getGridPane());
@@ -792,7 +779,6 @@ public class Player
       mediaPlayer.setVolume(holdVolume);
       mediaPlayer.volumeProperty().bindBidirectional(volumeSlider.valueProperty());
       
-      mediaView = new MediaView(mediaPlayer);
 
       //eq = new Equalizer(mediaPlayer);
       //eventTab.setEqualizer(eq);
@@ -839,11 +825,9 @@ public class Player
     
     public void playPlaylist()
     {
-      System.out.println("Player - PLAYING PLAYLIST");
       String sourcePath=null;
       fadeOut=false;
       volumeSlider.setValue(holdVolume);
-      int originalDuration=0;
       
       final PlaylistTrack playlistTrack=playlist.getTrack(playlist.getNextTrack());
       if (playlistTrack==null) return;
@@ -867,14 +851,12 @@ public class Player
       mediaPlayer = createMediaPlayer(file.toURI().toString(), true);
       mediaPlayer.setVolume(volumeSlider.getValue());
       
-      
       if (cortina)
       {
        if (premade==0) 
        {  
     	   mediaPlayer.setStartTime(new Duration(playlistTrack.startValue));
     	   mediaPlayer.setStopTime(new Duration(playlistTrack.stopValue));
-         originalDuration=playlistTrack.original_duration;
          // FADE IN
          if (playlistTrack.fadein==1) fadeIn();
          // FADE OUT
@@ -886,66 +868,55 @@ public class Player
       setCurrentTrackTitle(playlistTrack.title);
       
       mediaPlayer.volumeProperty().bindBidirectional(volumeSlider.valueProperty());
-      mediaView = new MediaView(mediaPlayer);
 
       if (mode==EVENT_PLAYLIST)
       {
         eq = new Equalizer(mediaPlayer);
         eventTab.setEqualizer(eq);
       }
-      
-      // IMPORTANT
+     
       mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() 
       {
-        public void invalidated(Observable ov) 
-        {
-          updateValues();
-        }
-      });
-   
+        public void invalidated(Observable ov) { updateValues(); } });
      
       mediaPlayer.setOnPaused(new Runnable() 
       {
-        public void run() 
-        {
-          playButton.setText(">");
-        }
-    });
+        public void run() { playButton.setText(">"); } });
 
-    mediaPlayer.setOnReady(new Runnable() 
-    {
-      public void run() 
+      mediaPlayer.setOnReady(new Runnable() 
       {
-        updateValues();
-      }
-    });
+        public void run() { updateValues(); } });
     
-    mediaPlayer.setOnStopped(new Runnable() 
-    {
-      public void run() 
+      mediaPlayer.setOnStopped(new Runnable() 
       {
-        playlistTrack.baseTreeItem.setPlayingImage(false);
-        playlistTrack.playing=false;
-      }
-    });
+        public void run() 
+       {
+          playlistTrack.baseTreeItem.setPlayingImage(false);
+          playlistTrack.playing=false;
+        }
+     });
+      
     mediaPlayer.setOnEndOfMedia(new Runnable() 
     {
       public void run() 
       {
-        stopButton.setDisable(true);
-        playButton.setText(">");
-        timeSlider.setValue(0);
-        atEndOfMedia = true;
-        mediaPlayer.stop();
-        mediaPlayer.dispose();
+        stopPlaying();
         if (playlist.getPlayingTrack()==playlist.getNextTrack()) 
             playlist.setNextTrack(playlist.getNextTrack()+1);
-          playPlaylist();
+        playPlaylist();
       }
     });
-    
-    
   }
+    
+    private void stopPlaying()
+    {
+      stopButton.setDisable(true);
+      playButton.setText(">");
+      playing.set(false);
+      timeSlider.setValue(0);
+      mediaPlayer.dispose();
+      playlist.stopPlaying();
+    }   
     
    public void playCortina()
    {
@@ -974,7 +945,6 @@ public class Player
       // FADE OUT
       if (cortinaTrack.getFadeout()==1) fadeOut=true; else fadeOut=false;
       
-      mediaView = new MediaView(mediaPlayer);
 
     //eq = new Equalizer(mediaPlayer);
      // eventTab.setEqualizer(eq.getGridPane());
@@ -1010,7 +980,6 @@ public class Player
           stopButton.setDisable(true);
           playButton.setText(">");
           timeSlider.setValue(0);
-          atEndOfMedia = true;
           mediaPlayer.stop();
          // cortinaTrack.baseTreeItem.setPlayingImage(false);
           return;
@@ -1047,7 +1016,6 @@ public class Player
       // FADE OUT
       //if (cortinaTrack.getFadeout()==1) fadeOut=true; else fadeOut=false;
       fadeOut=false;
-      mediaView = new MediaView(mediaPlayer);
 
     //eq = new Equalizer(mediaPlayer);
      // eventTab.setEqualizer(eq.getGridPane());
@@ -1086,7 +1054,6 @@ public class Player
           stopButton.setDisable(true);
           playButton.setText(">");
           timeSlider.setValue(0);
-          atEndOfMedia = true;
           mediaPlayer.stop();
          // cortinaTrack.baseTreeItem.setPlayingImage(false);
           return;
@@ -1196,7 +1163,6 @@ public class Player
       System.out.println("Player, playCortina -   Media stopTime: "+stopTime);
       
     
-      mediaView = new MediaView(mediaPlayer);
 
       eq = new Equalizer(mediaPlayer);
       equalizerTab.setContent(eq.getGridPane());
@@ -1238,7 +1204,6 @@ public class Player
           stopButton.setDisable(true);
           playButton.setText(">");
           timeSlider.setValue(0);
-          atEndOfMedia = true;
           mediaPlayer.stop();
          // cortinaTrack.baseTreeItem.setPlayingImage(false);
           return;
