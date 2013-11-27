@@ -376,18 +376,18 @@ public class PlaylistBuilderTab extends Tab
     };   
     cortinaTable.getAction().addListener(cortinaTableListener);
     
-    /*
+    
     // PLAYLIST FOCUS LISTENER
     ChangeListener playlistFocusListener = new ChangeListener() 
     {
       public void changed(ObservableValue observable, Object oldValue, Object newValue) 
       {
-       // player.setPlayMode(Player.PLAYMODE_PLAYLIST);
-        player.setMode(Player.PLAYLIST);
+        player.setPlayMode(Player.PLAYMODE_PLAYLIST);
+       // player.setMode(Player.PLAYLIST);
       }
     };   
     playlist.playlistFocus.addListener(playlistFocusListener);
-   */
+  
     
     // PLAYER PLAYING LISTENER
     ChangeListener playingListener = new ChangeListener() 

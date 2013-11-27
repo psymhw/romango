@@ -136,9 +136,11 @@ public class EventTab extends Tab
   
   public void reloadPlaylist()
   {
+    //int playNext=playlist.getNextTrack();
     treeBox.getChildren().remove(treeView);
     playlist = new Playlist(TangoDJ2.prefs.currentPlaylist);
     playlist.getTreeView().setPrefWidth(500);
+    //playlist.setNextTrack(playNext);
     treeView = playlist.getTreeView();
     treeBox.getChildren().add(treeView);
   }
@@ -166,18 +168,21 @@ public class EventTab extends Tab
 	      System.out.println("Fade to next track");
 	    }
 	  });
-	/*  
+	  
+	  /*
+	   * Now set in setActiveTab
 	 // PLAYLIST FOCUS LISTENER
 	 ChangeListener playlistFocusListener = new ChangeListener() 
 	 {
 	   public void changed(ObservableValue observable, Object oldValue, Object newValue) 
 	   {
-	     //player.setPlayMode(Player.PLAYMODE_PLAYLIST);
-	     player.setMode(Player.PLAYLIST);
+	     player.setPlayMode(Player.PLAYMODE_PLAYLIST);
+	     //player.setMode(Player.PLAYLIST);
 	   }
 	 };   
 	 playlist.playlistFocus.addListener(playlistFocusListener);
-	 */
+	*/ 
+	  
 // PLAYER PLAYING LISTENER
   ChangeListener playingListener = new ChangeListener() 
   {
@@ -191,8 +196,6 @@ public class EventTab extends Tab
 	   
    }
   
-  
-
   
    public void changePlaylist(int playlistId)
    {
