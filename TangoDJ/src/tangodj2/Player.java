@@ -621,15 +621,19 @@ public class Player
     public void setMode(int mode)
     {
       this.mode=mode;
+      System.out.println("Player mode: "+pmString)
+      
       if (mode==CORTINA_CREATE) showAdvancedControls(!advancedControls);
      // {
      //   if (!advancedControls) showAdvancedControls(true);
     //  }
     //  else showAdvancedControls(false);
       
-      if (mode==PLAYLIST_CREATE)   setPlaylist(PlaylistBuilderTab.playlist);
-      if (mode==EVENT_PLAYLIST)    setPlaylist(EventTab.playlist);
-      if (mode==PLAYLIST)          setPlayMode(PLAYMODE_PLAYLIST);
+      else if (mode==PLAYLIST_CREATE)   setPlaylist(PlaylistBuilderTab.playlist);
+      else if (mode==EVENT_PLAYLIST)    setPlaylist(EventTab.playlist);
+      else if (mode==PLAYLIST)          setPlayMode(PLAYMODE_PLAYLIST);
+      
+      
     }
     
     

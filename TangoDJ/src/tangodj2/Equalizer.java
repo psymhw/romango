@@ -31,7 +31,7 @@ public class Equalizer
       gp.getStyleClass().addAll("pane","grid");
       gp.setMaxHeight(height);
       gp.setMaxWidth(width);
-      gp.setStyle("-fx-background-color: BLACK; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 1px;"); 
+     // gp.setStyle("-fx-background-color: BLACK; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 1px;"); 
       // gp.getStyleClass().add("pane");
       // gp.setStyle("-fx-background-color: #bfc2c7;");
     	createEQBands(mp);
@@ -50,7 +50,7 @@ public class Equalizer
       
       vbox.getChildren().add(getBalanceControl());
       vbox.setAlignment(Pos.CENTER);
-      vbox.setStyle("-fx-background-color: BLACK; -fx-border-color: RED; -fx-border-style: SOLID; -fx-border-width: 1px;"); 
+     // vbox.setStyle("-fx-background-color: BLACK; -fx-border-color: RED; -fx-border-style: SOLID; -fx-border-width: 1px;"); 
     }
     
     public VBox getPane()

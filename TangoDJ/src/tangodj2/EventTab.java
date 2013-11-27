@@ -4,9 +4,8 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
-
-
-
+import tangodj2.clock.AnalogueClock;
+import tangodj2.clock.EffectUtilities;
 import tangodj2.infoWindow.InfoWindow2;
 
 import javafx.beans.value.ChangeListener;
@@ -29,6 +28,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 public class EventTab extends Tab
 {
@@ -45,6 +45,9 @@ public class EventTab extends Tab
   GridPane infoGrid = new GridPane();
   final int col[] = {0,1,2,3,4,5,6,7,8,9,10};
   final int row[] = {0,1,2,3,4,5,6,7,8,9,10};
+  final String BRAND_NAME   = "Tango DJ";
+  final double CLOCK_RADIUS = 70;
+
 	
   public EventTab()
   {
@@ -57,7 +60,7 @@ public class EventTab extends Tab
 	  playlist.getTreeView().setPrefWidth(500);
 	
     hbox.setPadding(new Insets(10, 10, 10, 10));
-	  hbox.setSpacing(20);
+	  hbox.setSpacing(5);
 	  hbox.setStyle("-fx-background-color: CC99CC; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
 	  treeView = playlist.getTreeView();
 	  treeBox.getChildren().add(treeView);
@@ -87,10 +90,18 @@ public class EventTab extends Tab
     infoGrid.add(playlistTimeLabel, col[0], row[0]);
     infoGrid.add(playlistTimeVal,   col[1], row[0]);
     
+    VBox rightPanel = new VBox();
+    rightPanel.setStyle("-fx-background-color: CC99CC; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
+
     
     infoGrid.add(new Text("End Position"),   col[0], row[1]);
     
-    hbox.getChildren().add(infoGrid);
+    rightPanel.getChildren().add(infoGrid);
+    
+    final AnalogueClock analogueClock = new AnalogueClock(BRAND_NAME, CLOCK_RADIUS);
+    rightPanel.getChildren().add(analogueClock);
+    
+    hbox.getChildren().add(rightPanel);
     
     setContent(hbox);
     setupListeners();
@@ -112,6 +123,12 @@ public class EventTab extends Tab
     
   }
  
+  private AnalogueClock makeAnalogueClock() 
+  {
+    final AnalogueClock analogueClock = new AnalogueClock(BRAND_NAME, CLOCK_RADIUS);
+    return analogueClock;
+  }
+  
   public void setPlayer(Player player)
   {
     this.player=player;

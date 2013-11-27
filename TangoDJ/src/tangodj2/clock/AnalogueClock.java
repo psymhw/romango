@@ -23,7 +23,7 @@ public class AnalogueClock extends Group {
   final int SECOND_HAND_LENGTH = 88;
   final int SECOND_HAND_OFFSET = 15;
 
-  AnalogueClock(String brandName, double clockRadius) {
+  public AnalogueClock(String brandName, double clockRadius) {
     setId("analogueClock");
 
    
