@@ -62,6 +62,7 @@ public void setPlayableIndex(int playableIndex)
 
 public void setPlayingImage(boolean set)
 {
+   //System.out.println("BaseTreeItem - Set Playing Image: "+set);
    if (set)
    {
      setGraphic(new ImageView(green_light));
@@ -82,6 +83,7 @@ public void setPlayingImage(boolean set)
 
 public void setNextPlayImage(boolean set)
 {
+  //System.out.println("BaseTreeItem - Set Next Play Image: "+set);
    if (set) 
    {  
        setGraphic(new ImageView(selected_light));
