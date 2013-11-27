@@ -128,6 +128,12 @@ public class Player
     final static int PLAYMODE_CLEANUP_TO_CORTINA_TRACK = 23;
     final static int PLAYMODE_PREMADE_CORTINA_SINGLE_TRACK = 24;
     
+    final static int PLAYLIST_BUILDER_TAB = 0;
+    final static int EVENT_TAB = 1;
+    final static int PLAYLIST_CHOICE_TAB = 2;
+    final static int CORTINA_CREATE_TAB = 3;
+    
+    
     private int playMode=0;
     CleanupTrack currentCleanupTrack=null;
     TextField cortinaTitleOverride = new TextField("");
@@ -136,6 +142,7 @@ public class Player
     final private static int INSERT = 0;
     final private static int UPDATE = 1;
     int cortinaMode=INSERT;
+    private int active_tab=0;
     
    // SimpleStringProperty source = new SimpleStringProperty();
     public InfoWindow2 infoWindow;
@@ -262,7 +269,7 @@ public class Player
         public void handle(ActionEvent e) 
         {
           stopPlaying();
-          
+          playlist.skip();
           playPreviousTrack();
         }
       });
@@ -273,8 +280,10 @@ public class Player
         public void handle(ActionEvent e) 
         {
           stopPlaying();
+          
           if (playlist.getPlayingTrack()==playlist.getNextTrack()) 
               playlist.setNextTrack(playlist.getNextTrack()+1);
+          playlist.skip();
           playPlaylist();
         }
       });
@@ -286,7 +295,7 @@ public class Player
         public void handle(ActionEvent e) 
         {
           stopPlaying();
-            playlist.stopPlaying();
+          playlist.stopPlaying();
         }
       });
       
@@ -617,36 +626,16 @@ public class Player
      } catch (Exception e) { e.printStackTrace(); }
     }
     
-
-    public void setMode(int mode)
+    public void setActiveTab(int active_tab)
     {
-      this.mode=mode;
-      String pmString="";
-      if (mode==CORTINA_CREATE) pmString = "CORTINA_CREATE";
-       
-       else if (mode==PLAYLIST_CREATE)   pmString = "PLAYLIST_CREATE";
-       else if (mode==EVENT_PLAYLIST)    pmString = "EVENT_PLAYLIST";
-       else if (mode==PLAYLIST)          pmString = "PLAYLIST";
-       
+      this.active_tab=active_tab;
+      if (active_tab==EVENT_TAB) { setPlaylist(EventTab.playlist); setPlayMode(Player.PLAYMODE_PLAYLIST); }
+      else if (active_tab==PLAYLIST_BUILDER_TAB) setPlaylist(PlaylistBuilderTab.playlist);
       
-      System.out.println("Player mode: "+pmString);
-      
-      if (mode==CORTINA_CREATE) showAdvancedControls(!advancedControls);
-     // {
-     //   if (!advancedControls) showAdvancedControls(true);
-    //  }
-    //  else showAdvancedControls(false);
-      
-      else if (mode==PLAYLIST_CREATE)   setPlaylist(PlaylistBuilderTab.playlist);
-      else if (mode==EVENT_PLAYLIST)    
-      { 
-    	  setPlaylist(EventTab.playlist);
-    	  setPlayMode(PLAYMODE_PLAYLIST);
-    	  }
-      else if (mode==PLAYLIST)          setPlayMode(PLAYMODE_PLAYLIST);
-      
-      
+      if (active_tab==CORTINA_CREATE_TAB) showAdvancedControls(true);
+      else showAdvancedControls(false);
     }
+
     
     
     public VBox get()
@@ -670,7 +659,7 @@ public class Player
     public void playPreviousTrack()
     {
       playlist.setPrevious();
-    //  playTrack();
+      playPlaylist();
     }
     
     public void playTrackDelay(final int delayTime)
@@ -845,12 +834,14 @@ public class Player
       fadeOut=false;
       volumeSlider.setValue(holdVolume);
       
-      final PlaylistTrack playlistTrack=playlist.getTrack(playlist.getNextTrack());
+      int trackToPlay=playlist.getNextTrack();
+      System.out.println("Player - track to play: "+trackToPlay);
+      final PlaylistTrack playlistTrack=playlist.getTrack(trackToPlay);
       if (playlistTrack==null) return;
       playlist.setPlayingTrack(playlist.getNextTrack());
       
-      playlistTrack.baseTreeItem.setPlayingImage(true);
-      playlistTrack.playing=true;
+     // playlistTrack.baseTreeItem.setPlayingImage(true);
+     // playlistTrack.playing=true;
       
       if (infoWindow!=null) infoWindow.update();
       
@@ -885,7 +876,7 @@ public class Player
       
       mediaPlayer.volumeProperty().bindBidirectional(volumeSlider.valueProperty());
 
-      if (mode==EVENT_PLAYLIST)
+      if (active_tab==EVENT_TAB)
       {
         eq = new Equalizer(mediaPlayer);
         eventTab.setEqualizer(eq);
@@ -919,6 +910,7 @@ public class Player
         stopPlaying();
         if (playlist.getPlayingTrack()==playlist.getNextTrack()) 
             playlist.setNextTrack(playlist.getNextTrack()+1);
+        
         playPlaylist();
       }
     });
@@ -931,7 +923,8 @@ public class Player
       playing.set(false);
       timeSlider.setValue(0);
       mediaPlayer.dispose();
-      playlist.stopPlaying();
+     
+      
     }   
     
    public void playCortina()

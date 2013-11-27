@@ -78,12 +78,25 @@ public class Playlist
   {
     int playlistSize=flatPlaylistTracks.size();
     if (playlistSize==0) return;
-	  flatPlaylistTracks.get(playingTrack).baseTreeItem.setNextPlayImage(false);
+	  flatPlaylistTracks.get(playingTrack).baseTreeItem.setPlayingImage(false);
+	  flatPlaylistTracks.get(playingTrack).baseTreeItem.setNextPlayImage(true);
 	  
 	 // if (playingTrack<(playlistSize-1))
 	  //{
 	 //   flatPlaylistTracks.get(playingTrack+1).baseTreeItem.setNextPlayImage(true);
 	// }
+  }
+  
+  public void skip()
+  {
+    int playlistSize=flatPlaylistTracks.size();
+    if (playlistSize==0) return;
+    flatPlaylistTracks.get(playingTrack).baseTreeItem.setPlayingImage(false);
+    
+   // if (playingTrack<(playlistSize-1))
+    //{
+   //   flatPlaylistTracks.get(playingTrack+1).baseTreeItem.setNextPlayImage(true);
+  // }
   }
 	
   public PlaylistTrack getTrack(int trackNo)
@@ -94,19 +107,19 @@ public class Playlist
 	
   public void setPrevious()
   {
-	  nextTrack-=2;
+	  nextTrack-=1;
 	  if (nextTrack<0) nextTrack=0;
   }
 	
 	
   public void setNextTrackToPlay()
   {
-	if (selectedPlaylistTrack==-1) return;
-	if (flatPlaylistTracks==null) return;
-	if (flatPlaylistTracks.size()==0) return;
-	PlaylistTrack playlistTrack = flatPlaylistTracks.get(selectedPlaylistTrack);
+	  if (selectedPlaylistTrack==-1) return;
+	  if (flatPlaylistTracks==null) return;
+	  if (flatPlaylistTracks.size()==0) return;
+	  PlaylistTrack playlistTrack = flatPlaylistTracks.get(selectedPlaylistTrack);
 	
-	if (playlistTrack.baseTreeItem.getStatus()!=TrackTreeItem.PLAYING)
+	  if (playlistTrack.baseTreeItem.getStatus()!=TrackTreeItem.PLAYING)
     {  
       playlistTrack.baseTreeItem.setNextPlayImage(true);
       nextTrack=selectedPlaylistTrack;
@@ -117,6 +130,7 @@ public class Playlist
       }
       previouslySelectedTrack=playlistTrack;
     }
+	  System.out.println("Playlist next track: "+nextTrack);
   }
 	
   public void generateFlatList()
@@ -224,7 +238,7 @@ public class Playlist
     }
     
     // System.out.println("Playlist total duration: "+formatIntoMMSS(totalPlaylistTime));
-     //printFlatList();
+     printFlatList();
   }
 	
   public void printFlatList()
@@ -285,7 +299,7 @@ public class Playlist
 	
   public TandaTreeItem  getTanda(int index)
   {
-  TandaTreeItem tandaTreeItem = (TandaTreeItem)playlistTreeItem.getChildren().get(index);
+    TandaTreeItem tandaTreeItem = (TandaTreeItem)playlistTreeItem.getChildren().get(index);
 	  System.out.println("Playlist tanda: "+tandaTreeItem.getArtist());
 	  return tandaTreeItem;
 	}
@@ -736,6 +750,9 @@ public class Playlist
     public void setPlayingTrack(int playingTrack)
     {
       this.playingTrack = playingTrack;
+      PlaylistTrack playlistTrack= getTrack(playingTrack);
+      playlistTrack.baseTreeItem.setPlayingImage(true);
+      playlistTrack.playing=true;
     }
 
    public String getPlayingArtist()

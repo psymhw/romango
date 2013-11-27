@@ -184,9 +184,20 @@ public class TangoDJ2 extends Application
     {
       public void changed(ObservableValue<? extends Tab> arg0, Tab arg1, Tab mostRecentlySelectedTab)
       {
-        if (mostRecentlySelectedTab.equals(cortinaTab))         player.setMode(Player.CORTINA_CREATE);
-        if (mostRecentlySelectedTab.equals(playlistBuilderTab)) { player.setMode(Player.PLAYLIST_CREATE); playlistBuilderTab.reloadPlaylist(); }
-        if (mostRecentlySelectedTab.equals(eventTab))           { player.setMode(Player.EVENT_PLAYLIST); eventTab.reloadPlaylist(); }
+        if (mostRecentlySelectedTab.equals(cortinaTab))       
+        {  
+          player.setActiveTab(Player.CORTINA_CREATE_TAB);
+        }
+        if (mostRecentlySelectedTab.equals(playlistBuilderTab)) 
+        { 
+          playlistBuilderTab.reloadPlaylist();   // this has to happen first
+          player.setActiveTab(Player.PLAYLIST_BUILDER_TAB); // before this
+        }
+        if (mostRecentlySelectedTab.equals(eventTab))           
+        { 
+          eventTab.reloadPlaylist();  // this has to happen first
+          player.setActiveTab(Player.EVENT_TAB);  // before this
+        }
       }
     });
       
