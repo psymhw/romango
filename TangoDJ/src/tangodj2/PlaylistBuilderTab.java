@@ -376,7 +376,7 @@ public class PlaylistBuilderTab extends Tab
     };   
     cortinaTable.getAction().addListener(cortinaTableListener);
     
-    
+    /*
     // PLAYLIST FOCUS LISTENER
     ChangeListener playlistFocusListener = new ChangeListener() 
     {
@@ -387,7 +387,7 @@ public class PlaylistBuilderTab extends Tab
       }
     };   
     playlist.playlistFocus.addListener(playlistFocusListener);
-   
+   */
     
     // PLAYER PLAYING LISTENER
     ChangeListener playingListener = new ChangeListener() 
