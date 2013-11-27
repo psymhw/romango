@@ -166,7 +166,7 @@ public class EventTab extends Tab
 	      System.out.println("Fade to next track");
 	    }
 	  });
-	  
+	/*  
 	 // PLAYLIST FOCUS LISTENER
 	 ChangeListener playlistFocusListener = new ChangeListener() 
 	 {
@@ -177,7 +177,7 @@ public class EventTab extends Tab
 	   }
 	 };   
 	 playlist.playlistFocus.addListener(playlistFocusListener);
-	 
+	 */
 // PLAYER PLAYING LISTENER
   ChangeListener playingListener = new ChangeListener() 
   {
