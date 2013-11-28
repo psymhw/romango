@@ -56,6 +56,7 @@ public class Playlist
   private int numberOfTandas=-1;
   public static SimpleIntegerProperty playlistFocus = new SimpleIntegerProperty(0);
   public static SimpleDoubleProperty totalPlaylistTimeProperty = new SimpleDoubleProperty(0);
+  public static SimpleDoubleProperty timeLeftProperty = new SimpleDoubleProperty(0);
  
   
   public Playlist(int playlistId) 
@@ -756,7 +757,21 @@ public class Playlist
       PlaylistTrack playlistTrack= getTrack(playingTrack);
       playlistTrack.baseTreeItem.setPlayingImage(true);
       playlistTrack.playing=true;
+      timeLeftProperty.set(getTimeLeft());
     }
+    
+   private double getTimeLeft()
+   {
+     
+     double remainingPlaylistTime=0;
+     for(int i=playingTrack; i< flatPlaylistTracks.size(); i++)
+     {
+       remainingPlaylistTime+=flatPlaylistTracks.get(i).duration;
+     }
+     
+     System.out.println("Playlist - remaining playlist time: "+playingTrack+", "+remainingPlaylistTime);
+    return remainingPlaylistTime;
+   }
 
    public String getPlayingArtist()
    {
