@@ -24,6 +24,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.media.Media;
@@ -36,12 +37,11 @@ public class EventTab extends Tab
 {
   public	static Playlist playlist=null;
   private Player player;
-  private Button infoWindowButton = new Button("Info Window");
+  
  
   HBox hbox =  new HBox();
   HBox treeBox =  new HBox();
   VBox eventControlsBox = new VBox();
-  HBox buttonBox = new HBox();
   TreeView treeView;
   EventTab eventTab;
   GridPane infoGrid = new GridPane();
@@ -73,9 +73,6 @@ public class EventTab extends Tab
     eventControlsBox.setPadding(new Insets(10, 10, 10, 10));
     eventControlsBox.setSpacing(10);
     
-    buttonBox.setSpacing(20);
-    buttonBox.getChildren().addAll(infoWindowButton);
-    eventControlsBox.getChildren().add(buttonBox);
     hbox.getChildren().add(eventControlsBox);
     
     infoGrid.setHgap(5);
@@ -127,7 +124,7 @@ public class EventTab extends Tab
       Media media = new Media(f.toURI().toString());
       MediaPlayer mp = new MediaPlayer(media);
       Equalizer eq = new Equalizer(mp);
-      setEqualizer(eq);
+      setEqualizer(eq.getPane());
     } catch (Exception e)
     {
       e.printStackTrace();
@@ -158,21 +155,15 @@ public class EventTab extends Tab
     treeBox.getChildren().add(treeView);
   }
   
-  public void setEqualizer(Equalizer eq)
+  public void setEqualizer(Pane eqPane)
   {
-   if (eventControlsBox.getChildren().size()>1) eventControlsBox.getChildren().remove(1);
-   eventControlsBox.getChildren().add(eq.getPane());
+    if (eventControlsBox.getChildren().size()>0)  eventControlsBox.getChildren().remove(0);
+   eventControlsBox.getChildren().add(eqPane);
   }
  
   private void setupListeners()
   {
-	  infoWindowButton.setOnAction(new EventHandler<ActionEvent>() 
-	  {
-	    public void handle(ActionEvent actionEvent) 
-	   {
-	     if (player.infoWindow==null)  player.infoWindow=new InfoWindow2(playlist, new ProgressBar());	
-	   }
-   });
+	  
 	  
 	  
 	  

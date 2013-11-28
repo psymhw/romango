@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import tangodj2.cleanup.CleanupTable;
 import tangodj2.cortina.CortinaTable;
+import tangodj2.infoWindow.InfoWindow2;
 import tangodj2.tango.TangoTable;
 
 import javafx.application.Application;
@@ -15,10 +16,12 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
@@ -97,6 +100,7 @@ public class TangoDJ2 extends Application
   CleanupTable cleanupTable;
   CortinaTable cortinaTable;
   TrackLoader3 trackLoader = new TrackLoader3();
+  private Button infoWindowButton = new Button("Info Window");
  
 	
   public static void main(String[] args) 
@@ -108,7 +112,8 @@ public class TangoDJ2 extends Application
   {
 	primaryStage=stage;
 	loadFonts();
-	feedback.setPrefWidth(800);
+	//feedback.setPrefWidth(800);
+	infoWindowButton.setDisable(true);
 	
 	stage.setOnCloseRequest(new EventHandler<WindowEvent>() 
     {
@@ -196,8 +201,10 @@ public class TangoDJ2 extends Application
         if (mostRecentlySelectedTab.equals(eventTab))           
         { 
           eventTab.reloadPlaylist();  // this has to happen first
+          infoWindowButton.setDisable(false);
           player.setActiveTab(Player.EVENT_TAB);  // before this
         }
+        else { infoWindowButton.setDisable(true); }
       }
     });
       
@@ -210,7 +217,7 @@ public class TangoDJ2 extends Application
     VBox.setVgrow(tabPane, Priority.ALWAYS);
     mainPane.getChildren().add(tabPane);
       
-    feedback.setPrefWidth(sceneWidth);
+    feedback.setPrefWidth(sceneWidth-120);
     //feedback.setPrefHeight(30);
     //feedback.setMaxHeight(30);
    // feedback.setMinHeight(30);
@@ -220,7 +227,7 @@ public class TangoDJ2 extends Application
     feedbackBox.setPadding(new Insets(3, 0, 7, 20));  // top, right, bottom, left
     feedbackBox.setStyle("-fx-background-color: #bfc2c7;");
     feedbackBox.getChildren().add(feedback);
-    
+    feedbackBox.getChildren().add(infoWindowButton);
     VBox playerBox = player.get();
     mainPane.setVgrow(playerBox, Priority.NEVER);
     
@@ -234,9 +241,18 @@ public class TangoDJ2 extends Application
     primaryStage.show();
   }
 
-  // MENU BAR ========================================================
+  // INFO WINDOW BUTTON ========================================================
   private void setupMenuBar()
   {
+    infoWindowButton.setOnAction(new EventHandler<ActionEvent>() 
+    {
+      public void handle(ActionEvent actionEvent) 
+      {
+        if (player.infoWindow==null)  player.infoWindow=new InfoWindow2(EventTab.playlist, new ProgressBar());  
+      }
+   });
+    
+ // MENU BAR ========================================================
     menuBar = new MenuBar();
     Menu menuFile = new Menu("File");
    
@@ -437,4 +453,6 @@ public class TangoDJ2 extends Application
        // System.out.println(i+") "+columnName+", "+width+", "+visible);
       }
   }
+  
+  
 }
