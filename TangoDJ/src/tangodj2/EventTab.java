@@ -50,6 +50,7 @@ public class EventTab extends Tab
   final String BRAND_NAME   = "Tango DJ";
   final double CLOCK_RADIUS = 70;
   Label playlistTimeVal; 
+  Label remainingTimeVal;
 
 	
   public EventTab()
@@ -82,23 +83,31 @@ public class EventTab extends Tab
     col0.setHalignment(HPos.RIGHT);
     infoGrid.getColumnConstraints().add(col0);
     
-    Font labelFont=new Font("Arial", 12);
+    Font labelFont=new Font("Arial", 14);
     
-    Label playlistTimeLabel = new Label("Playlist Time");
+    Label playlistTimeLabel = new Label("Total Time");
+    Label remainingTimeLabel = new Label("Time Left");
+    
+    playlistTimeLabel.setFont(labelFont);
+    remainingTimeLabel.setFont(labelFont);
     
     playlistTimeVal = new Label(formatIntoMMSS(playlist.totalPlaylistTimeProperty.get()));
-    playlistTimeLabel.setFont(labelFont);
+    remainingTimeVal = new Label(formatIntoMMSS(playlist.totalPlaylistTimeProperty.get()));
+    
     playlistTimeVal.setFont(labelFont);
+    remainingTimeVal.setFont(labelFont);
     
     
     infoGrid.add(playlistTimeLabel, col[0], row[0]);
     infoGrid.add(playlistTimeVal,   col[1], row[0]);
     
+    infoGrid.add(remainingTimeLabel, col[0], row[1]);
+    infoGrid.add(remainingTimeVal,   col[1], row[1]);
+    
     VBox rightPanel = new VBox();
     rightPanel.setStyle("-fx-background-color: CC99CC; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
 
     
-    infoGrid.add(new Text("End Position"),   col[0], row[1]);
     
     rightPanel.getChildren().add(infoGrid);
     
@@ -206,6 +215,16 @@ public class EventTab extends Tab
    }
  };   
  Playlist.totalPlaylistTimeProperty.addListener(totalPlaylistTimeListener);
+ 
+//REMAINING PLAYLIST TIME LISTENER
+ChangeListener remainingPlaylistTimeListener = new ChangeListener() 
+{
+ public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+ {
+   remainingTimeVal.setText(formatIntoMMSS((double)newValue));
+ }
+};   
+Playlist.timeLeftProperty.addListener(remainingPlaylistTimeListener);
   
 	   
    }
