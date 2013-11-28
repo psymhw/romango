@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -54,7 +55,8 @@ public class Playlist
   private int selectedTanda=-1;
   private int numberOfTandas=-1;
   public static SimpleIntegerProperty playlistFocus = new SimpleIntegerProperty(0);
-  double totalPlaylistTime=0;
+  public static SimpleDoubleProperty totalPlaylistTimeProperty = new SimpleDoubleProperty(0);
+ 
   
   public Playlist(int playlistId) 
   {
@@ -144,7 +146,8 @@ public class Playlist
     PlaylistTrack playlistTrack;
     numberOfTandas=0;
     int playableIndex=0;
-    totalPlaylistTime=0;
+    double totalPlaylistTime=0;
+   
     
     while( true)
     {
@@ -236,9 +239,9 @@ public class Playlist
       // if the last item in the tree is a tanda, there is no next track
       ti.setPlayableIndex(999);
     }
-    
+    totalPlaylistTimeProperty.set(totalPlaylistTime);
     // System.out.println("Playlist total duration: "+formatIntoMMSS(totalPlaylistTime));
-     printFlatList();
+    // printFlatList();
   }
 	
   public void printFlatList()
@@ -774,10 +777,7 @@ public class Playlist
      return  progress;
    }
    
-   public String getTotalPlaylistTime()
-   {
-     return formatIntoMMSS(totalPlaylistTime);
-   }
+   
    
    public String getNextTandaInfo()
    {

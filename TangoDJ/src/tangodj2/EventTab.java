@@ -4,6 +4,8 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+
 import tangodj2.clock.AnalogueClock;
 import tangodj2.clock.EffectUtilities;
 import tangodj2.infoWindow.InfoWindow2;
@@ -47,6 +49,7 @@ public class EventTab extends Tab
   final int row[] = {0,1,2,3,4,5,6,7,8,9,10};
   final String BRAND_NAME   = "Tango DJ";
   final double CLOCK_RADIUS = 70;
+  Label playlistTimeVal; 
 
 	
   public EventTab()
@@ -82,10 +85,11 @@ public class EventTab extends Tab
     Font labelFont=new Font("Arial", 12);
     
     Label playlistTimeLabel = new Label("Playlist Time");
-    Label playlistTimeVal = new Label(playlist.getTotalPlaylistTime());
     
+    playlistTimeVal = new Label(formatIntoMMSS(playlist.totalPlaylistTimeProperty.get()));
     playlistTimeLabel.setFont(labelFont);
     playlistTimeVal.setFont(labelFont);
+    
     
     infoGrid.add(playlistTimeLabel, col[0], row[0]);
     infoGrid.add(playlistTimeVal,   col[1], row[0]);
@@ -193,6 +197,16 @@ public class EventTab extends Tab
   };   
   Player.playing.addListener(playingListener);
 	   
+// TOTAL PLAYLIST TIME LISTENER
+ ChangeListener totalPlaylistTimeListener = new ChangeListener() 
+ {
+   public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+   {
+     playlistTimeVal.setText(formatIntoMMSS((double)newValue));
+   }
+ };   
+ Playlist.totalPlaylistTimeProperty.addListener(totalPlaylistTimeListener);
+  
 	   
    }
   
@@ -206,4 +220,23 @@ public class EventTab extends Tab
 	     hbox.getChildren().add(0, playlist.getTreeView());
 	  } catch (Exception e) {e.printStackTrace();};
  } 
+   
+   
+   static String formatIntoMMSS(double millisIn)
+   {
+     millisIn=millisIn/1000;
+     int hours = (int)millisIn / 3600,
+     remainder = (int)millisIn % 3600,
+     minutes = remainder / 60,
+     seconds = remainder % 60;
+     DecimalFormat sec = new DecimalFormat( "00" );
+     DecimalFormat min = new DecimalFormat( "##" );
+     DecimalFormat hr = new DecimalFormat( "##" );
+   //return ( (minutes < 10 ? "0" : "") + minutes
+   //+ ":" + (seconds< 10 ? "0" : "") + seconds );
+   
+   return hr.format(hours)+":"+min.format(minutes)+":"+sec.format(seconds);
+
+   }
+   
 }
