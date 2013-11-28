@@ -32,15 +32,15 @@
 }
 
 .eqSlider {
-  -fx-background-radius: 5;
-  -fx-background-color: #222, #888, black;
+  -fx-background-radius: 2;
+  -fx-background-color: CC99CC;
   -fx-background-insets: 0, 1 0 0 1, 1;
-  -fx-padding: 2;
+  -fx-padding: 1;
 }
 
 .eqSlider .thumb {
   -fx-background-image: url("resources/thumb.png");
-  -fx-padding: 12;
+  -fx-padding: 6;
 }
 
 .eqSlider:vertical .track{
@@ -48,10 +48,10 @@
 }
 
 .spectrumBar {
-  -fx-background-radius: 5;
-  -fx-background-color: #222, #888, black;
+  -fx-background-radius: 2;
+  -fx-background-color: CC99CC;
   -fx-background-insets: 0, 1 0 0 1, 1;
-  -fx-padding: 2;
+  -fx-padding: 1;
 }
 
 

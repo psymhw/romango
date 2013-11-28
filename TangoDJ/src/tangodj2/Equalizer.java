@@ -23,7 +23,7 @@ public class Equalizer
     GridPane gp = new GridPane();
     VBox vbox = new VBox();
     int height=400;
-    int width = 500;
+    int width = 200;
     Slider balanceSlider = new Slider(-1, 1, 0);
     
     public Equalizer(MediaPlayer mp)
@@ -31,6 +31,8 @@ public class Equalizer
       gp.getStyleClass().addAll("pane","grid");
       gp.setMaxHeight(height);
       gp.setMaxWidth(width);
+      gp.setPrefWidth(width);
+      gp.setMinWidth(width);
      // gp.setStyle("-fx-background-color: BLACK; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 1px;"); 
       // gp.getStyleClass().add("pane");
       // gp.setStyle("-fx-background-color: #bfc2c7;");
@@ -41,9 +43,9 @@ public class Equalizer
       
       vbox.getChildren().add(gp);
       
-      balanceSlider.setMinWidth(200);
-      balanceSlider.setMaxWidth(200);
-      balanceSlider.setPrefWidth(200);
+      balanceSlider.setMinWidth(75);
+      balanceSlider.setMaxWidth(75);
+      balanceSlider.setPrefWidth(75);
       balanceSlider.setMinHeight(30);
       
       mp.balanceProperty().bindBidirectional(balanceSlider.valueProperty());
@@ -99,7 +101,7 @@ public class Equalizer
       GridPane.setHalignment(s, HPos.CENTER);
       GridPane.setHgrow(s, Priority.ALWAYS);
 
-      gp.add(l, i, 1);
+      //gp.add(l, i, 1);
       gp.add(s, i, 2);
     }
   }
@@ -110,7 +112,7 @@ public class Equalizer
 	  s.getStyleClass().add("eqSlider");
 	  s.setOrientation(Orientation.VERTICAL);
 	  s.valueProperty().bindBidirectional(eb.gainProperty());
-	  s.setPrefWidth(44);
+	  s.setPrefWidth(30);
 	  return s;
 	}
 

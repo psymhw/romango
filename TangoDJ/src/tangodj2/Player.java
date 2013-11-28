@@ -888,7 +888,7 @@ public class Player
       if (active_tab==EVENT_TAB)
       {
         eq = new Equalizer(mediaPlayer);
-        eventTab.setEqualizer(eq);
+        eventTab.setEqualizer(eq.getPane());
       }
      
       mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() 

@@ -115,7 +115,8 @@ public class SpectrumBar extends VBox
   {
     if (lastWidth != getWidth() || lastHeight != getHeight()) 
     {
-      double spacing = SPACING * (barCount-1);
+     // double spacing = SPACING * (barCount-1);
+      double spacing = 5;
       double barHeight = (getHeight() - getVerticalPadding() - spacing) / barCount;
       double barWidth = Math.min(barHeight * ASPECT_RATIO, 
                                  getWidth()-getHorizontalPadding());
