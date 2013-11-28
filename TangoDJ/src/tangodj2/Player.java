@@ -64,6 +64,7 @@ public class Player
     Button playButton=null;
     Button stopButton=null;
     Button skipButton=null;
+    private Button fadeButton = new Button("Fade to Next");
     Button previousButton=null;
     Button saveCortinaButton=null;
     Button setStartButton = new Button("*");
@@ -160,8 +161,15 @@ public class Player
     //  currentTrackTitleLabel.setMaxHeight(25);
     //  currentTrackTitleLabel.setPrefHeight(25);
       
+      fadeButton.setOnAction(new EventHandler<ActionEvent>() 
+          {
+            public void handle(ActionEvent actionEvent) 
+            {
+              System.out.println("Fade to next track");
+            }
+          });
       currentTrackBox.getChildren().add(currentTrackTitleLabel);
-     
+    
       
       //vbox.setStyle("-fx-background-color: DAE6F3; -fx-border-color: RED; -fx-border-style: SOLID; -fx-border-width: 2px;");     
       vbox.setStyle("-fx-background-color: #bfc2c7;");
@@ -185,6 +193,7 @@ public class Player
       mediaBar.getChildren().add(stopButton);
       mediaBar.getChildren().add(playButton);
       mediaBar.getChildren().add(skipButton);
+      mediaBar.getChildren().add(fadeButton);
       Label spacer = new Label("   ");
       mediaBar.getChildren().add(spacer);
    

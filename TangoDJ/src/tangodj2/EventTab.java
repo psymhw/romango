@@ -37,7 +37,7 @@ public class EventTab extends Tab
   public	static Playlist playlist=null;
   private Player player;
   private Button infoWindowButton = new Button("Info Window");
-  private Button fadeButton = new Button("Fade to Next Track");
+ 
   HBox hbox =  new HBox();
   HBox treeBox =  new HBox();
   VBox eventControlsBox = new VBox();
@@ -74,7 +74,7 @@ public class EventTab extends Tab
     eventControlsBox.setSpacing(10);
     
     buttonBox.setSpacing(20);
-    buttonBox.getChildren().addAll(infoWindowButton,fadeButton);
+    buttonBox.getChildren().addAll(infoWindowButton);
     eventControlsBox.getChildren().add(buttonBox);
     hbox.getChildren().add(eventControlsBox);
     
@@ -174,13 +174,7 @@ public class EventTab extends Tab
 	   }
    });
 	  
-	  fadeButton.setOnAction(new EventHandler<ActionEvent>() 
-	  {
-	    public void handle(ActionEvent actionEvent) 
-	    {
-	      System.out.println("Fade to next track");
-	    }
-	  });
+	  
 	  
 	  /*
 	   * Now set in setActiveTab
