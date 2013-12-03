@@ -53,13 +53,14 @@ public class SpectrumBar extends VBox
   private final int maxValue;
   private final int barCount;
 
-  private double lastWidth = 0;
-  private double lastHeight = 0;
+ 
+  private double height = 130;
   
   public SpectrumBar(int maxValue, int barCount) 
   {
     this.maxValue = maxValue;
     this.barCount = barCount;
+    setPrefHeight(height);
     
     getStyleClass().add("spectrumBar");
     setSpacing(SPACING);
@@ -90,6 +91,7 @@ public class SpectrumBar extends VBox
     }
   }
   
+  /*
   @Override
   protected double computeMinHeight(double width) {
     return computeHeight(MIN_BAR_HEIGHT);
@@ -109,7 +111,7 @@ public class SpectrumBar extends VBox
   protected double computePrefWidth(double height) {
     return computeWidthForHeight(5);
   }
-
+  
   @Override
   protected void layoutChildren() 
   {
@@ -133,7 +135,7 @@ public class SpectrumBar extends VBox
     
     super.layoutChildren();
   }
-  
+ 
   private double computeWidthForHeight(double barHeight) 
   {
     double hpadding = getHorizontalPadding();
@@ -157,5 +159,25 @@ public class SpectrumBar extends VBox
   private double getHorizontalPadding() {
     final Insets padding = getPadding();
     return padding.getLeft() + padding.getRight();
+  }
+   */
+  
+  protected void layoutChildren() 
+  {
+    
+      //double spacing = SPACING * (barCount-1);
+      double spacing = 5;
+      double barHeight = (height/barCount)-spacing;
+      double barWidth = 17;
+
+      for (Node node : getChildren()) {
+        Rectangle r = (Rectangle) node;
+        r.setWidth(barWidth);
+        r.setHeight(barHeight);
+     
+     
+    }
+    
+    super.layoutChildren();
   }
 }

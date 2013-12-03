@@ -1,6 +1,9 @@
 package tangodj2;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.net.URL;
 import java.sql.SQLException;
 
@@ -77,6 +80,8 @@ import javafx.stage.WindowEvent;
  * Allow interactively new named playlist. Would allow non tango playlists.
  * Remember equalizer values - for next tune and when program closed
  * Recognize funny characters in artist names, like Calo, when loading and switch to english for Leader
+ * Index on tracks to make them load faster
+ * >> does fade to next
  */
 public class TangoDJ2 extends Application 
 {
@@ -110,6 +115,16 @@ public class TangoDJ2 extends Application
 	
   public void start(Stage stage) 
   {
+    try
+    { 
+      File f = new File("tdj_error.txt");
+      if (f.exists()) f.delete();
+      PrintStream ps = new PrintStream(
+        new BufferedOutputStream(new FileOutputStream(
+        new File("tdj_error.txt"))), true);
+        System.setOut(ps);         
+        System.setErr(ps);    
+    } catch (Exception e) { e.printStackTrace(); }
 	primaryStage=stage;
 	loadFonts();
 	//feedback.setPrefWidth(800);
