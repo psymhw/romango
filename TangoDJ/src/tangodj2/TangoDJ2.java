@@ -57,17 +57,11 @@ import javafx.stage.WindowEvent;
  *    then a pointer from the tracks file
  * Spell check band leaders
  * Create playlists from tandas.
- * Change cleanup to non-tango
  * Handle bad directory address in preferences
  * Need an info line to show loading progress and error messages
  *  Select tango table columns to show
  * Save column widths too?
  * Oh Jeeze, what about column position?
- * Add BPM to tracks?
- * Add lyrics?
- * Guess STYLE from title, genre and comment
- * Principle as band leader last name only. Artist has full artist name
- * Need track number in database in case I want to identify songs by album and track #
  * Feedback col could say playing from playlist or playing from library
  
  * Automatiacally play next in library. Also allow skip fwd and back from library
@@ -75,13 +69,11 @@ import javafx.stage.WindowEvent;
  * Feedback could show # of track stats on startup
  * Performance test with all tango and all non-tango loaded
  * Pop up a window with load errors?
- * Program should open while still loading tracks?
- * Add balance to equilizer
- * Allow interactively new named playlist. Would allow non tango playlists.
+ * Allow interactively new named playlist(text field). Would allow non tango playlists.
  * Remember equalizer values - for next tune and when program closed
  * Recognize funny characters in artist names, like Calo, when loading and switch to english for Leader
  * Index on tracks to make them load faster
- * >> does fade to next
+ * put distribution version in state file
  */
 public class TangoDJ2 extends Application 
 {
