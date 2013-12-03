@@ -9,6 +9,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.EqualizerBand;
 import javafx.scene.media.MediaPlayer;
@@ -22,7 +23,7 @@ public class Equalizer
     private SpectrumListener spectrumListener;
     GridPane gp = new GridPane();
     VBox vbox = new VBox();
-    int height=400;
+    int height=275;
     int width = 200;
     Slider balanceSlider = new Slider(-1, 1, 0);
     
@@ -30,9 +31,19 @@ public class Equalizer
     {
       gp.getStyleClass().addAll("pane","grid");
       gp.setMaxHeight(height);
+      gp.setPrefHeight(height);
+      gp.setMinHeight(height);
+      
       gp.setMaxWidth(width);
       gp.setPrefWidth(width);
       gp.setMinWidth(width);
+      
+      RowConstraints spectrumBarRow = new RowConstraints();
+      spectrumBarRow.setMaxHeight(130);
+      spectrumBarRow.setMinHeight(130);
+      spectrumBarRow.setPrefHeight(130);
+      
+      gp.getRowConstraints().add(spectrumBarRow);
      // gp.setStyle("-fx-background-color: BLACK; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 1px;"); 
       // gp.getStyleClass().add("pane");
       // gp.setStyle("-fx-background-color: #bfc2c7;");
@@ -43,9 +54,9 @@ public class Equalizer
       
       vbox.getChildren().add(gp);
       
-      balanceSlider.setMinWidth(75);
-      balanceSlider.setMaxWidth(75);
-      balanceSlider.setPrefWidth(75);
+      balanceSlider.setMinWidth(50);
+      balanceSlider.setMaxWidth(50);
+      balanceSlider.setPrefWidth(50);
       balanceSlider.setMinHeight(30);
       
       mp.balanceProperty().bindBidirectional(balanceSlider.valueProperty());
@@ -112,7 +123,10 @@ public class Equalizer
 	  s.getStyleClass().add("eqSlider");
 	  s.setOrientation(Orientation.VERTICAL);
 	  s.valueProperty().bindBidirectional(eb.gainProperty());
-	  s.setPrefWidth(30);
+	  s.setPrefWidth(20);
+	  s.setMaxWidth(20);
+	  s.setMinWidth(20);
+	  
 	  return s;
 	}
 
@@ -120,8 +134,8 @@ public class Equalizer
 	  spectrumBars = new SpectrumBar[BAND_COUNT];
 
 	  for (int i = 0; i < spectrumBars.length; i++) {
-	    spectrumBars[i] = new SpectrumBar(100, 20);
-	    spectrumBars[i].setMaxWidth(44);
+	    spectrumBars[i] = new SpectrumBar(100, 18);
+	    spectrumBars[i].setMaxWidth(30);
 	    GridPane.setHalignment(spectrumBars[i], HPos.CENTER);
 	    gp.add(spectrumBars[i], i, 0);
 	  }
@@ -149,5 +163,14 @@ public class Equalizer
 	    hb.setAlignment(Pos.CENTER);
 	    return hb;
 	    
+	  }
+	  
+	  public void clear()
+	  {
+	    System.out.println("Equaliszer clear");
+	    for(int i=0; i<spectrumBars.length; i++)
+	    {
+	      spectrumBars[i].setValue(0);
+	    }
 	  }
 }

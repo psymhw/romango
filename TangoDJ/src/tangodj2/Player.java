@@ -64,7 +64,7 @@ public class Player
     Button playButton=null;
     Button stopButton=null;
     Button skipButton=null;
-    private Button fadeButton = new Button("Fade to Next");
+    
     Button previousButton=null;
     Button saveCortinaButton=null;
     Button setStartButton = new Button("*");
@@ -161,13 +161,7 @@ public class Player
     //  currentTrackTitleLabel.setMaxHeight(25);
     //  currentTrackTitleLabel.setPrefHeight(25);
       
-      fadeButton.setOnAction(new EventHandler<ActionEvent>() 
-          {
-            public void handle(ActionEvent actionEvent) 
-            {
-              System.out.println("Fade to next track");
-            }
-          });
+     
       currentTrackBox.getChildren().add(currentTrackTitleLabel);
     
       
@@ -193,7 +187,6 @@ public class Player
       mediaBar.getChildren().add(stopButton);
       mediaBar.getChildren().add(playButton);
       mediaBar.getChildren().add(skipButton);
-      mediaBar.getChildren().add(fadeButton);
       Label spacer = new Label("   ");
       mediaBar.getChildren().add(spacer);
    
@@ -288,12 +281,36 @@ public class Player
       {
         public void handle(ActionEvent e) 
         {
-          stopPlaying();
-          
-          if (playlist.getPlayingTrack()==playlist.getNextTrack()) 
-              playlist.setNextTrack(playlist.getNextTrack()+1);
-          playlist.skip();
-          playPlaylist();
+          if (active_tab==EVENT_TAB)
+          {
+            skipButton.setDisable(true);
+            final Timeline fadeOutTimeline = new Timeline(
+              new KeyFrame(FADE_DURATION, new KeyValue(mediaPlayer.volumeProperty(), 0.0)));
+            fadeOutTimeline.setOnFinished(new EventHandler() 
+            {
+              public void handle(Event arg0)
+              {
+                stopPlaying();
+              
+                 if (playlist.getPlayingTrack()==playlist.getNextTrack()) 
+                   playlist.setNextTrack(playlist.getNextTrack()+1);
+                 playlist.skip();
+                playPlaylist();
+                skipButton.setDisable(false);
+              }
+            });
+            fadeOutTimeline.play();
+          }
+          else
+          {
+            stopPlaying();
+            
+            if (playlist.getPlayingTrack()==playlist.getNextTrack()) 
+                 playlist.setNextTrack(playlist.getNextTrack()+1);
+            playlist.skip();
+             playPlaylist(); 
+          }
+        
         }
       });
       
@@ -917,6 +934,7 @@ public class Player
       public void run() 
       {
         stopPlaying();
+        playlistTrack.baseTreeItem.setPlayingImage(false);
         if (playlist.getPlayingTrack()==playlist.getNextTrack()) 
             playlist.setNextTrack(playlist.getNextTrack()+1);
         
@@ -927,10 +945,15 @@ public class Player
     
     private void stopPlaying()
     {
+      if (active_tab==EVENT_TAB)
+      {
+        eq.clear();
+      }
       stopButton.setDisable(true);
       playButton.setText(">");
       playing.set(false);
       timeSlider.setValue(0);
+     // mediaPlayer.setAudioSpectrumListener(null);
       mediaPlayer.dispose();
      
       

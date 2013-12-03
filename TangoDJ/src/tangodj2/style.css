@@ -19,37 +19,43 @@
 }
 
 .pane {
-    -fx-background-color: black;
+    -fx-background-color: rgba(44, 44, 62,.66);
 }
 
 .grid {
-    -fx-background-color: CC99CC;
-    -fx-background-radius: 5.0;
-    -fx-background-insets: 0.0 5.0 0.0 5.0;
-    -fx-padding: 10;
-    -fx-hgap: 10;
-    -fx-vgap: 10;
+    -fx-background-color: rgba(44, 44, 62,.30);
+   /* -fx-background-radius: 5.0;
+    -fx-background-insets: 0.0 5.0 0.0 5.0;*/
+    -fx-padding: 5;  
+    -fx-hgap: 2;
+    -fx-vgap: 2;
+    -fx-border-color: rgba(44, 44, 62,.30); 
+    -fx-border-style: solid; 
+    -fx-border-width: 2px; 
+    -fx-border-radius: 4;
 }
 
 .eqSlider {
   -fx-background-radius: 2;
-  -fx-background-color: CC99CC;
-  -fx-background-insets: 0, 1 0 0 1, 1;
+  -fx-background-color: null;
+  /*-fx-background-insets: 0, 1 0 0 1, 1;*/
   -fx-padding: 1;
 }
 
+/*
 .eqSlider .thumb {
   -fx-background-image: url("resources/thumb.png");
   -fx-padding: 6;
 }
 
+
 .eqSlider:vertical .track{
   -fx-padding: 5;
 }
-
+*/
 .spectrumBar {
   -fx-background-radius: 2;
-  -fx-background-color: CC99CC;
+  -fx-background-color: rgba(255, 255, 255,.05);
   -fx-background-insets: 0, 1 0 0 1, 1;
   -fx-padding: 1;
 }

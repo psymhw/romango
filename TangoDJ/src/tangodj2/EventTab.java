@@ -1,24 +1,14 @@
 package tangodj2;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.text.DecimalFormat;
-
-import tangodj2.clock.AnalogueClock;
-import tangodj2.clock.EffectUtilities;
-import tangodj2.infoWindow.InfoWindow2;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.ColumnConstraints;
@@ -26,12 +16,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
+import tangodj2.clock.AnalogueClock;
 
 public class EventTab extends Tab
 {
