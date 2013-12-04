@@ -1,5 +1,6 @@
 package tangodj2.infoWindow;
 
+import javafx.scene.control.Label;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
 import javafx.scene.paint.Color;
@@ -36,12 +37,17 @@ public class Artist
   
   public Text getLastNameText()
   {
-	return getDistantLight(lastName, lastNameFont);
+	   return getDistantLight(lastName, lastNameFont);
+  }
+  
+  public Label getLastNameLabel()
+  {
+     return getDistantLightLabel(lastName, lastNameFont);
   }
   
   public Text getFirstNameText()
   {
-	return getDistantLight(firstName, firstNameFont);
+	  return getDistantLight(firstName, firstNameFont);
   }
   
   public static Text getDistantLight(String inStr, Font f)
@@ -65,13 +71,40 @@ public class Artist
 	  return t;
 	}
   
+  public static Label getDistantLightLabel(String inStr, Font f)
+  {
+    Light.Distant light = new Light.Distant();
+    light.setAzimuth(-135.0f);
+    light.setElevation(30.0f);
+
+    Lighting l = new Lighting();
+    l.setLight(light);
+    l.setSurfaceScale(5.0f);
+
+    final Label t = new Label();
+    t.setText(inStr);
+    t.setTextFill(Color.RED);
+    t.setFont(f);
+        
+
+    t.setEffect(l);
+  
+    return t;
+  }
+  
   public static Artist getArtist(String inStr)
 	{
-	  int MAX=300;
-	  int MEDIUM=250;
-	  int SMALL=200;
-	  int SMALLER=150;
-	  int VERY_SMALL=100;
+	  //int MAX=300;
+	 // int MEDIUM=250;
+	 // int SMALL=200;
+	 // int SMALLER=150;
+	//  int VERY_SMALL=100;
+	  
+	  int MAX=50;
+    int MEDIUM=50;
+    int SMALL=50;
+    int SMALLER=50;
+    int VERY_SMALL=50;
 	  	 	  
 	  if (inStr.toLowerCase().contains("cortina"))     return new Artist("",          "CORTINA",               carousel, 250);
 	  if (inStr.toLowerCase().contains("biagi"))       return new Artist("Rudolfo",   "Biagi",                 tusj, MAX);

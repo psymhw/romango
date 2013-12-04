@@ -3,6 +3,9 @@ package tangodj2.test;
 import java.io.File;
 import java.util.ArrayList;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.value.ChangeListener;
@@ -37,6 +40,7 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.Duration;
 
 import org.farng.mp3.MP3File;
 import org.farng.mp3.id3.AbstractID3v1;
@@ -51,21 +55,28 @@ import tangodj2.Player;
 public class FontResizeTest extends Application
 {
   FontMeta tusj = new FontMeta("FFF Tusj", FontWeight.BOLD);
-  Font titleFont = Font.font(tusj.name, tusj.style, 200);
+  int fontSize=20;
+  Font titleFont = Font.font(tusj.name, tusj.style, fontSize);
   Label testLabel = new Label("Test Text");
   double origStageHeight;
   double origStageWidth;
+  Button testButton = new Button("Test");
+  int counter=0;
   
   public static void main(String[] args) {  launch(args);}
   
   public void start(Stage stage) 
   {
     testLabel.setFont(titleFont);
-    origStageHeight=stage.getHeight();
-    origStageWidth=stage.getWidth();
     
-    
-    
+    testButton.setOnAction(new EventHandler<ActionEvent>() 
+        {
+      public void handle(ActionEvent e) 
+      {
+        System.out.println("width: "+testLabel.getWidth());
+      }
+    });
+    /*
 	  stage.heightProperty().addListener(new ChangeListener() {
       @Override
       public void changed(ObservableValue o, Object oldVal, Object newVal) 
@@ -84,21 +95,74 @@ public class FontResizeTest extends Application
         testLabel.setScaleX((rodp.doubleValue()/950));
       }
     });
-	  
+	  */
 	  Group rootGroup = new Group();
 	  VBox vbox = new VBox();
 	  
 	  
-	  
-	  
 	  vbox.getChildren().add(testLabel);
+	  vbox.getChildren().add(testButton);
 	  rootGroup.getChildren().add(vbox);
 	  Scene scene = new Scene(rootGroup, 950, 550, Color.WHITE);
 	  stage.setScene(scene);
 	  stage.show();
+	  origStageHeight=stage.getHeight();
+    origStageWidth=stage.getWidth();
+	  System.out.println("starting width: "+testLabel.getWidth());
+	  System.out.println("starting stage width: "+origStageWidth);
+	  
+	  
+	  /*
+	  
+	  int counter=0;
+	  while(testLabel.getWidth()<(origStageWidth-20))
+	  {
+	    fontSize+=5;
+	    Font titleFont = Font.font(tusj.name, tusj.style, fontSize);
+	    testLabel.setFont(titleFont);
+	    counter++;
+	    System.out.println("Counter: "+counter+", "+testLabel.getWidth());
+	    if (counter>=100) break;
+	  }
+	 
+	  */
+	  counter=0;
+	  final Timeline timeline = new Timeline();
+	  timeline.setCycleCount(Timeline.INDEFINITE);
+    KeyFrame keyFrame  =  new KeyFrame(Duration.seconds(.01),  new EventHandler() 
+    {
+      public void handle(Event event) 
+      {
+        fontSize+=5;
+        Font titleFont = Font.font(tusj.name, tusj.style, fontSize);
+        testLabel.setFont(titleFont);
+        double width=testLabel.getWidth();
+        System.out.println("width: "+width); 
+        counter++;
+        if (width>=origStageWidth-60) timeline.stop();
+        if (counter>=100) timeline.stop();
+      }
+    });
+    
+    timeline.getKeyFrames().add(keyFrame);
+    timeline.play();
+	  
+      /*
+	  for(int i=0; i<10; i++)
+	  {
+	    fontSize+=5;
+      Font titleFont = Font.font(tusj.name, tusj.style, fontSize);
+      testLabel.setFont(titleFont);
+      System.out.println("width: "+testLabel.getWidth());
+	  }
+   */
 	
   
 }
   
+  private void changeLabelWidth(double target)
+  {
+    
+  }
   
 }
