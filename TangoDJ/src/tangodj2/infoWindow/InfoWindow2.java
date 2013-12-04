@@ -2,9 +2,11 @@ package tangodj2.infoWindow;
 
 import java.util.ArrayList;
 
-import tangodj.Artist;
-import tangodj.FontMeta;
 import tangodj2.Playlist;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -25,6 +27,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class InfoWindow2 
 {
@@ -40,6 +43,9 @@ public class InfoWindow2
   boolean fontsLoaded=false;
   Playlist playlist;
   Stage infoWindow = new Stage();
+  
+  int counter=0;
+  int fontSize=50;
   
   public InfoWindow2(Playlist playlist, ProgressBar progress2)
   { 
@@ -93,7 +99,7 @@ public class InfoWindow2
   	
   	VBox vbox = getVBox();
   	vbox.setAlignment(Pos.TOP_CENTER);
-  	vbox.setPrefWidth(1190);
+  	vbox.setPrefWidth(1200);
   	if (showBorders) vbox.setStyle("-fx-border-style: solid;"
             + "-fx-border-width: 2;"
             + "-fx-border-color: black");
@@ -118,12 +124,14 @@ public class InfoWindow2
   	  root.getChildren().add(background.get(1));
 	    currentArtist=Artist.getArtist(playlist.getPlayingArtist());
 	    titleText = getTitleText(playlist.getPlayingTitle());
-	    Text artistLastNameText =  currentArtist.getLastNameText();
+	    Label artistLastNameLabel =  currentArtist.getLastNameLabel();
+	    
+      sizeToFitWidth(artistLastNameLabel, 1150);	    
 	    Text artistFirstNameText =  currentArtist.getFirstNameText();
 	  	
 	    borderPane.setTop(getPane(artistFirstNameText, 75));
 	  	
-	    vbox.getChildren().add(getPane(artistLastNameText, 200));
+	    vbox.getChildren().add(getPane(artistLastNameLabel, 200));
 	    vbox.getChildren().add(getPane(titleText, 100));
 	    if (!titleText2.getText().equals("--")) vbox.getChildren().add(getPane(titleText2, 100));
 	    vbox.getChildren().add(getPane(Artist.getDistantLight(playlist.getPlayingTandaProgress(), titleFont), 100));
@@ -132,10 +140,36 @@ public class InfoWindow2
 	    
 	    borderPane.setBottom(getPane(getUpNext(), 100));
 	  	
-	  root.getChildren().add(borderPane);
+	    root.getChildren().add(borderPane);
   	}
   }
   
+  private void sizeToFitWidth(final Label label, final int sceneWidth)
+  {
+    counter=0;
+    fontSize=50;
+    final Timeline timeline = new Timeline();
+    timeline.setCycleCount(Timeline.INDEFINITE);
+    KeyFrame keyFrame  =  new KeyFrame(Duration.seconds(.05),  new EventHandler() 
+    {
+      public void handle(Event event) 
+      {
+        fontSize+=5;
+        Font titleFont = Font.font(tusj.name, tusj.style, fontSize);
+        label.setFont(titleFont);
+        double width=label.getWidth();
+        System.out.println("width: "+width); 
+        counter++;
+        if (width>=sceneWidth-100) timeline.stop();
+        if (counter>=100) timeline.stop();
+      }
+    });
+    
+    timeline.getKeyFrames().add(keyFrame);
+    timeline.play();
+    
+  }
+
   private VBox getVBox()
   {
 	  VBox vbox;  
@@ -158,6 +192,18 @@ public class InfoWindow2
       return stackPane;
   }
   
+  public Pane getPane(Label label, int height)
+  {
+    StackPane stackPane = new StackPane();
+      stackPane.setPrefHeight(height);
+      stackPane.setAlignment(Pos.CENTER);  
+      stackPane.getChildren().add(label);
+      if (showBorders) stackPane.setStyle("-fx-border-style: solid;"
+              + "-fx-border-width: 1;"
+              + "-fx-border-color: red");
+      return stackPane;
+  }
+  
   private Text getUpNext()
   {
 	  System.out.println("InfoWindow - up next: "+playlist.getNextTandaInfo());
@@ -172,6 +218,7 @@ public class InfoWindow2
 	if (bounds.getWidth()>1150)
 	{
 		titleFont = Font.font(tusj.name, tusj.style, 60);
+		
 		trialText = Artist.getDistantLight(title, titleFont);
 	}
 	

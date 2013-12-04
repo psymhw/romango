@@ -650,6 +650,8 @@ public class Player
            int cortinaId=Db.insertCortina(cortina);
            CortinaTable.addTrack(cortinaId);
      } catch (Exception e) { e.printStackTrace(); }
+     
+      cortinaTitleOverride.setText("");
     }
     
     public void setActiveTab(int active_tab)
