@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import tangodj2.Playlist;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
@@ -33,7 +35,7 @@ public class InfoWindow2
 {
   Group root = new Group();
   ArrayList <ImageView>background = new ArrayList<ImageView>();
-  boolean showBorders=false;
+  boolean showBorders=true;
   boolean cortina=false;
 	
   FontMeta tusj = new FontMeta("FFF Tusj", FontWeight.BOLD);
@@ -43,9 +45,13 @@ public class InfoWindow2
   boolean fontsLoaded=false;
   Playlist playlist;
   Stage infoWindow = new Stage();
+  Label artistLastNameLabel;
   
   int counter=0;
-  int fontSize=50;
+  double fontSize=100;
+  final int LARGER = 0;
+  final int SMALLER = 1;
+  final int maxNameHeight=350;
   
   public InfoWindow2(Playlist playlist, ProgressBar progress2)
   { 
@@ -57,16 +63,16 @@ public class InfoWindow2
 	  setupBackgrounds();
 	  Label test = new Label("TEST");
 	  test.setFont(titleFont);
-	
+	 
 	
 	  //maybe can have an image as part of the bar or
 	  //use a stackPane with an image behind and some less opacity
 	  //progress2.setClip(new ImageView(new Image()));
 	  //progress2.setOpacity(.5);
-	  Rectangle r = new Rectangle(1200,800);
-    r.setFill(Color.DARKGRAY);
+	 // Rectangle r = new Rectangle(1200,800);
+   // r.setFill(Color.DARKGRAY);
     
-    root.getChildren().add(r);
+    //root.getChildren().add(r);
     
    // update(playlist, progress2);
     update();
@@ -74,6 +80,20 @@ public class InfoWindow2
     Scene scene = new Scene(root, 1200, 800);
     infoWindow.setScene(scene);
     infoWindow.show();
+    
+    infoWindow.widthProperty().addListener(new ChangeListener() {
+      @Override
+      public void changed(ObservableValue o, Object oldVal, Object newVal) 
+      {
+         int direction=-1;
+         if ( ((Number)newVal).doubleValue()> ((Number)oldVal).doubleValue() )
+         {
+            direction = LARGER;
+         } else direction=SMALLER;
+         sizeToFitWidth(artistLastNameLabel, ((Number)newVal).doubleValue(), direction, 1); 
+        // changeLabelWidth(((Number)newVal).doubleValue(), direction);
+      }
+    });
   }
   
   public void close()
@@ -89,7 +109,7 @@ public class InfoWindow2
   
   public void update()
   {
-	  while (root.getChildren().size()>1) { root.getChildren().remove(1); }
+	  while (root.getChildren().size()>0) { root.getChildren().remove(0); }
   	Artist currentArtist;
     Text titleText= new Text("--");
   	Text titleText2= new Text("--");
@@ -99,10 +119,11 @@ public class InfoWindow2
   	
   	VBox vbox = getVBox();
   	vbox.setAlignment(Pos.TOP_CENTER);
-  	vbox.setPrefWidth(1200);
+  
+  	
   	if (showBorders) vbox.setStyle("-fx-border-style: solid;"
             + "-fx-border-width: 2;"
-            + "-fx-border-color: black");
+            + "-fx-border-color: red");
   	if (playlist.isCortina())
   	{
   	  root.getChildren().add(background.get(0));
@@ -124,9 +145,9 @@ public class InfoWindow2
   	  root.getChildren().add(background.get(1));
 	    currentArtist=Artist.getArtist(playlist.getPlayingArtist());
 	    titleText = getTitleText(playlist.getPlayingTitle());
-	    Label artistLastNameLabel =  currentArtist.getLastNameLabel();
+	    artistLastNameLabel =  currentArtist.getLastNameLabel();
 	    
-      sizeToFitWidth(artistLastNameLabel, 1150);	    
+      sizeToFitWidth(artistLastNameLabel, 1150, LARGER, 5);	    
 	    Text artistFirstNameText =  currentArtist.getFirstNameText();
 	  	
 	    borderPane.setTop(getPane(artistFirstNameText, 75));
@@ -144,16 +165,43 @@ public class InfoWindow2
   	}
   }
   
-  private void sizeToFitWidth(final Label label, final int sceneWidth)
+  private void sizeToFitWidth(final Label label, final double target, final int direction, final int increment)
   {
     counter=0;
-    fontSize=50;
+    fontSize=label.getFont().getSize();
     final Timeline timeline = new Timeline();
     timeline.setCycleCount(Timeline.INDEFINITE);
+    
     KeyFrame keyFrame  =  new KeyFrame(Duration.seconds(.05),  new EventHandler() 
     {
       public void handle(Event event) 
       {
+        double width=label.getWidth();
+        double height=label.getHeight();
+        if (direction==LARGER)
+        {  
+          if (width>=(target-60)) { timeline.stop(); return; }
+          if (counter>=300) { timeline.stop(); return; }
+          if (height>=maxNameHeight) { timeline.stop(); return; }
+          fontSize+=increment;
+          //System.out.println("label is smaller");
+        }
+        if (direction==SMALLER)
+        {
+          if (width<=(target-60)) { timeline.stop(); return; }
+          if (counter>=300) { timeline.stop(); return; }
+          fontSize-=increment;
+         // System.out.println("label is larger");
+        }
+        
+        Font titleFont = Font.font(tusj.name, tusj.style, fontSize);
+        label.setFont(titleFont);
+        
+      //  System.out.println(counter+") width: "+width+" target: "+(target-60)); 
+        counter++;
+        
+        
+        /*
         fontSize+=5;
         Font titleFont = Font.font(tusj.name, tusj.style, fontSize);
         label.setFont(titleFont);
@@ -162,6 +210,7 @@ public class InfoWindow2
         counter++;
         if (width>=sceneWidth-100) timeline.stop();
         if (counter>=100) timeline.stop();
+        */
       }
     });
     

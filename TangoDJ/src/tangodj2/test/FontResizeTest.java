@@ -7,6 +7,9 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -55,19 +58,25 @@ import tangodj2.Player;
 public class FontResizeTest extends Application
 {
   FontMeta tusj = new FontMeta("FFF Tusj", FontWeight.BOLD);
-  int fontSize=20;
+  double fontSize=20;
   Font titleFont = Font.font(tusj.name, tusj.style, fontSize);
-  Label testLabel = new Label("Test Text");
+  Label testLabel = new Label("Test Text Blah Blah");
   double origStageHeight;
   double origStageWidth;
   Button testButton = new Button("Test");
   int counter=0;
+  Stage mainStage;
+  final int LARGER = 0;
+  final int SMALLER = 1;
   
   public static void main(String[] args) {  launch(args);}
   
   public void start(Stage stage) 
   {
+    mainStage=stage;
     testLabel.setFont(titleFont);
+    
+    
     
     testButton.setOnAction(new EventHandler<ActionEvent>() 
         {
@@ -76,26 +85,24 @@ public class FontResizeTest extends Application
         System.out.println("width: "+testLabel.getWidth());
       }
     });
-    /*
-	  stage.heightProperty().addListener(new ChangeListener() {
-      @Override
-      public void changed(ObservableValue o, Object oldVal, Object newVal) 
-      {
-        Double rodp = (Double)newVal;
-        System.out.println("scale x: "+ (rodp.doubleValue()/550));
-        testLabel.setScaleX((rodp.doubleValue()/550));
-      }
-    });
+    
 	  stage.widthProperty().addListener(new ChangeListener() {
       @Override
       public void changed(ObservableValue o, Object oldVal, Object newVal) 
       {
-        Double rodp = (Double)newVal;
-        System.out.println("scale y: "+ (rodp.doubleValue()/950));
-        testLabel.setScaleX((rodp.doubleValue()/950));
+         int direction=-1;
+         if ( ((Number)newVal).doubleValue()> ((Number)oldVal).doubleValue() )
+         {
+	          direction = LARGER;
+         } else direction=SMALLER;
+         
+         changeLabelWidth(((Number)newVal).doubleValue(), direction);
       }
     });
-	  */
+    
+     
+	  
+	 
 	  Group rootGroup = new Group();
 	  VBox vbox = new VBox();
 	  
@@ -108,61 +115,52 @@ public class FontResizeTest extends Application
 	  stage.show();
 	  origStageHeight=stage.getHeight();
     origStageWidth=stage.getWidth();
-	  System.out.println("starting width: "+testLabel.getWidth());
-	  System.out.println("starting stage width: "+origStageWidth);
-	  
-	  
-	  /*
-	  
-	  int counter=0;
-	  while(testLabel.getWidth()<(origStageWidth-20))
-	  {
-	    fontSize+=5;
-	    Font titleFont = Font.font(tusj.name, tusj.style, fontSize);
-	    testLabel.setFont(titleFont);
-	    counter++;
-	    System.out.println("Counter: "+counter+", "+testLabel.getWidth());
-	    if (counter>=100) break;
-	  }
-	 
-	  */
-	  counter=0;
-	  final Timeline timeline = new Timeline();
-	  timeline.setCycleCount(Timeline.INDEFINITE);
+	//  System.out.println("starting width: "+testLabel.getWidth());
+	//  System.out.println("starting stage width: "+origStageWidth);
+    
+    changeLabelWidth(+origStageWidth, LARGER);
+	}
+  
+  private void changeLabelWidth(final double target, final int direction)
+  {
+    counter=0;
+   // System.out.println("CHANGE CALLED");
+    fontSize = testLabel.getFont().getSize();
+    
+    final Timeline timeline = new Timeline();
+    timeline.setCycleCount(Timeline.INDEFINITE);
+    
     KeyFrame keyFrame  =  new KeyFrame(Duration.seconds(.01),  new EventHandler() 
     {
       public void handle(Event event) 
       {
-        fontSize+=5;
+        double width=testLabel.getWidth();
+        if (direction==LARGER)
+        {  
+          if (width>=(target-60)) { timeline.stop(); return; }
+          if (counter>=300) { timeline.stop(); return; }
+          fontSize+=1;
+          //System.out.println("label is smaller");
+        }
+        if (direction==SMALLER)
+        {
+          if (width<=(target-60)) { timeline.stop(); return; }
+          if (counter>=300) { timeline.stop(); return; }
+          fontSize-=1;
+         // System.out.println("label is larger");
+        }
+        
         Font titleFont = Font.font(tusj.name, tusj.style, fontSize);
         testLabel.setFont(titleFont);
-        double width=testLabel.getWidth();
-        System.out.println("width: "+width); 
+        
+      //  System.out.println(counter+") width: "+width+" target: "+(target-60)); 
         counter++;
-        if (width>=origStageWidth-60) timeline.stop();
-        if (counter>=100) timeline.stop();
+       
       }
     });
     
     timeline.getKeyFrames().add(keyFrame);
     timeline.play();
-	  
-      /*
-	  for(int i=0; i<10; i++)
-	  {
-	    fontSize+=5;
-      Font titleFont = Font.font(tusj.name, tusj.style, fontSize);
-      testLabel.setFont(titleFont);
-      System.out.println("width: "+testLabel.getWidth());
-	  }
-   */
-	
-  
-}
-  
-  private void changeLabelWidth(double target)
-  {
-    
   }
   
 }
