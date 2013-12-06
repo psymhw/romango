@@ -74,6 +74,7 @@ import javafx.stage.WindowEvent;
  * Recognize funny characters in artist names, like Calo, when loading and switch to english for Leader
  * Index on tracks to make them load faster
  * put distribution version in state file
+ * Lists tab where you can create various lists of tracks. Then be able to add them from the PlalistBuilder tab
  */
 public class TangoDJ2 extends Application 
 {
@@ -107,6 +108,7 @@ public class TangoDJ2 extends Application
 	
   public void start(Stage stage) 
   {
+    /*
     try
     { 
       File f = new File("tdj_error.txt");
@@ -117,6 +119,8 @@ public class TangoDJ2 extends Application
         System.setOut(ps);         
         System.setErr(ps);    
     } catch (Exception e) { e.printStackTrace(); }
+    
+    */
 	primaryStage=stage;
 	loadFonts();
 	//feedback.setPrefWidth(800);
