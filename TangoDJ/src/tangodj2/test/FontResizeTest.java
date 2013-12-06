@@ -33,6 +33,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -103,14 +104,24 @@ public class FontResizeTest extends Application
      
 	  
 	 
-	  Group rootGroup = new Group();
+	 // Group rootGroup = new Group();
 	  VBox vbox = new VBox();
+	  VBox vbox2 = new VBox();
+	  vbox.setStyle("-fx-border-style: solid;"
+        + "-fx-border-width: 2;"
+        + "-fx-border-color: blue");
+	  vbox2.setStyle("-fx-border-style: solid;"
+        + "-fx-border-width: 2;"
+        + "-fx-border-color: red");
+    
 	  
 	  
 	  vbox.getChildren().add(testLabel);
 	  vbox.getChildren().add(testButton);
-	  rootGroup.getChildren().add(vbox);
-	  Scene scene = new Scene(rootGroup, 950, 550, Color.WHITE);
+	  vbox.setVgrow(testLabel, Priority.ALWAYS);
+	 // vbox2.getChildren().add(vbox);
+	 // rootGroup.getChildren().add(vbox);
+	  Scene scene = new Scene(vbox, 950, 550, Color.WHITE);
 	  stage.setScene(scene);
 	  stage.show();
 	  origStageHeight=stage.getHeight();

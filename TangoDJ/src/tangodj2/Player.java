@@ -146,7 +146,7 @@ public class Player
     private int active_tab=0;
     
    // SimpleStringProperty source = new SimpleStringProperty();
-    public InfoWindow2 infoWindow;
+    public static InfoWindow2 infoWindow;
 
     public Player(EventTab eventTab) 
     {
@@ -1338,19 +1338,18 @@ public class Player
              {
                if (cortina)
                {
-            	 Duration fullTrackPosition =  mediaPlayer.getCurrentTime();
-            	 Duration cortinaTrackPosition = fullTrackPosition.subtract(mediaPlayer.getStartTime());
+            	   Duration fullTrackPosition =  mediaPlayer.getCurrentTime();
+            	   Duration cortinaTrackPosition = fullTrackPosition.subtract(mediaPlayer.getStartTime());
                  Double cortinaLength = mediaPlayer.getTotalDuration().toMillis();
-                
                  timeSlider.setValue(cortinaTrackPosition.divide(cortinaLength).toMillis()* 100.0);
                  playTimeLabel.setText(formatTime(cortinaTrackPosition, new Duration(cortinaLength)));
                }
                else
                {
-               timeSlider.setValue(trackPosition.divide(trackLength).toMillis()* 100.0);
-               playTimeLabel.setText(formatTime(trackPosition, new Duration(trackLength)));
+                 timeSlider.setValue(trackPosition.divide(trackLength).toMillis()* 100.0);
+                 playTimeLabel.setText(formatTime(trackPosition, new Duration(trackLength)));
                }
-               }
+             }
              
              if (fadeOut==true)
              {

@@ -52,6 +52,7 @@ public class Playlist
   private int playingTrack=0;
   private int selectedPlaylistTrack=0;
   private ArrayList<PlaylistTrack> flatPlaylistTracks =  new ArrayList<PlaylistTrack>();
+  private ArrayList<TandaInfo> tandas =  new ArrayList<TandaInfo>();
   private int selectedTanda=-1;
   private int numberOfTandas=-1;
   public static SimpleIntegerProperty playlistFocus = new SimpleIntegerProperty(0);
@@ -148,6 +149,7 @@ public class Playlist
     numberOfTandas=0;
     int playableIndex=0;
     double totalPlaylistTime=0;
+    TandaInfo tandaInfo=null;
    
     
     while( true)
@@ -162,12 +164,23 @@ public class Playlist
       }
       else if ("tanda".equals(ti.getTreeType()))
       {
+        if (tandaInfo!=null) tandas.add(tandaInfo);
+        tandaInfo = new TandaInfo();
         tandaTrackCounter=0;
         tandaCounter++;
         TandaTreeItem tandaTreeItem = (TandaTreeItem)ti;
         tandaName = tandaTreeItem.getArtistAndStyle();
         numberOfTracksInTanda=tandaTreeItem.getChildren().size()-1; // minus 1 for cortina
         tandaTreeItem.setPlayableIndex(playableIndex);
+        
+        tandaInfo.numberOfTracksInTanda=0;
+        tandaInfo.tandaNumber=tandaCounter;
+        tandaInfo.tandaName=tandaName;
+        tandaInfo.numberOfTracksInTanda=numberOfTracksInTanda;
+        if ((tandaCounter+1)<numberOfTandas)
+        {
+          tandaInfo.nextTandaName=((TandaTreeItem)playlistTreeItem.getChildren().get(tandaCounter+1)).getArtistAndStyle();
+        }
       }
       else if ("tango".equals(ti.getTreeType())||"cleanup".equals(ti.getTreeType()))
       {
@@ -196,7 +209,8 @@ public class Playlist
         
         playlistTrack.duration=trackTreeItem.getDuration();
         totalPlaylistTime+=playlistTrack.duration;
-        
+        tandaInfo.tandaDuration+=playlistTrack.duration;
+        playlistTrack.tandaInfo=tandaInfo;
       }
       else if ("cortina".equals(ti.getTreeType()))
       {
@@ -240,9 +254,14 @@ public class Playlist
       // if the last item in the tree is a tanda, there is no next track
       ti.setPlayableIndex(999);
     }
+    else
+    {
+      tandas.add(tandaInfo);
+    }
     totalPlaylistTimeProperty.set(totalPlaylistTime);
     // System.out.println("Playlist total duration: "+formatIntoMMSS(totalPlaylistTime));
-    // printFlatList();
+     printFlatList();
+   // printTandaInfoList();
   }
 	
   public void printFlatList()
@@ -257,6 +276,7 @@ public class Playlist
     {
       playlistTrack = it.next();
       System.out.println(i+") "
+      +formatIntoMMSS(playlistTrack.tandaInfo.tandaDuration)+" "
       +playlistTrack.tandaName+" "
       +playlistTrack.trackInTanda
       +" of "+playlistTrack.numberOfTracksInTanda+", "
@@ -267,6 +287,26 @@ public class Playlist
       i++;
     }
   }
+  
+  public void printTandaInfoList()
+  {
+  int i=0;
+  System.out.println("print tanda info list");
+  TandaInfo tandaInfo;
+    Iterator<TandaInfo> it = tandas.iterator();
+    while(it.hasNext())
+    {
+      tandaInfo = it.next();
+      System.out.println(i+") "
+      +tandaInfo.tandaNumber+" "
+      +tandaInfo.tandaName+" "
+      +tandaInfo.numberOfTracksInTanda+", "
+      +formatIntoMMSS(tandaInfo.tandaDuration)+", "
+      +tandaInfo.nextTandaName);
+      i++;
+    }
+  }
+  
 	
   static String formatIntoMMSS(double millisIn)
   {

@@ -32,5 +32,7 @@ public class PlaylistTrack
    public boolean playing=false;
    public double duration;
    
+   public TandaInfo tandaInfo = new TandaInfo(); // so it's not null for cortinas
+   
  
 }

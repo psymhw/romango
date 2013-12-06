@@ -243,6 +243,7 @@ public class PlaylistBuilderTab extends Tab
           player.setPlayMode(Player.PLAYMODE_SINGLE_TRACK);
           player.setCurrentTrackHash(tangoTrack.getPathHash());
           player.setCurrentTrackTitle(tangoTrack.getTitle());
+          System.out.println("PlaylistBuilder - artist: "+tangoTrack.getArtist());
          // player.setTrack(tangoTrack.getPathHash(), Player.PLAYLIST_BUILD_TANGO_TABLE);
         }
       }

@@ -12,6 +12,8 @@ public class Artist
 {
   public String firstName;
   public String lastName;
+  
+  /*
   FontMeta fontMeta;
   int lastNameSize;
   Font lastNameFont;
@@ -34,7 +36,16 @@ public class Artist
 	  lastNameFont =  Font.font(fontMeta.name, fontMeta.style, lastNameSize);
 	  firstNameFont =  Font.font(fontMeta.name, fontMeta.style, 70);
   }
+  */
   
+  public Artist(String firstName, String lastName)
+  {
+    this.firstName=firstName;
+    this.lastName=lastName;
+  }
+  
+  
+  /*
   public Text getLastNameText()
   {
 	   return getDistantLight(lastName, lastNameFont);
@@ -49,7 +60,7 @@ public class Artist
   {
 	  return getDistantLight(firstName, firstNameFont);
   }
-  
+ 
   public static Text getDistantLight(String inStr, Font f)
 	{
 	  Light.Distant light = new Light.Distant();
@@ -85,13 +96,11 @@ public class Artist
     t.setText(inStr);
     t.setTextFill(Color.RED);
     t.setFont(f);
-        
-
     t.setEffect(l);
-  
     return t;
   }
-  
+   */
+  /*
   public static Artist getArtist(String inStr)
 	{
 	  //int MAX=300;
@@ -131,4 +140,33 @@ public class Artist
 	  
 	  return new Artist("", inStr, deftone, 200);
 	}
+	
+	*/
+ 
+  public static Artist getArtist(String inStr)
+  {
+    if (inStr.toLowerCase().contains("cortina"))     return new Artist("",          "CORTINA");
+    if (inStr.toLowerCase().contains("biagi"))       return new Artist("Rudolfo",   "Biagi");
+    if (inStr.toLowerCase().contains("calo"))        return new Artist("Miguel",    "Caló");
+    if (inStr.toLowerCase().contains("caló"))        return new Artist("Miguel",    "Caló");
+    if (inStr.toLowerCase().contains("canaro"))      return new Artist("Francisco", "Canaro");
+    if (inStr.toLowerCase().contains("rodriguez"))   return new Artist("Enrique",   "Rodriguez");
+    if (inStr.toLowerCase().contains("d'arienzo"))   return new Artist("Juan",      "D'Arienzo");
+    if (inStr.toLowerCase().contains("angelise"))    return new Artist("Alfredo",   "De Angelise");
+    if (inStr.toLowerCase().contains("di sarli"))    return new Artist("Carlos",    "Di Sarli");
+    if (inStr.toLowerCase().contains("firpo"))       return new Artist("Roberto",   "Firpo");
+    if (inStr.toLowerCase().contains("tipica"))      return new Artist("",          "Orquesta Tipica Victor");
+    if (inStr.toLowerCase().contains("ortiz"))       return new Artist("Ciriaco",   "Ortiz");
+    if (inStr.toLowerCase().contains("caro"))        return new Artist("Julio",     "De Caro");    
+    if (inStr.toLowerCase().contains("donato"))      return new Artist("Edgardo",   "Donato");
+    if (inStr.toLowerCase().contains("castillo"))    return new Artist("Alberto",   "Castillo");
+    if (inStr.toLowerCase().contains("lomuto"))      return new Artist("Francisco", "Lomuto");
+    if (inStr.toLowerCase().contains("d'agostino"))  return new Artist("Angel",     "D'Agostino");
+    if (inStr.toLowerCase().contains("tanturi"))     return new Artist("Ricardo",    "Tanturi");
+    if (inStr.toLowerCase().contains("pugliese"))    return new Artist("Osvaldo",    "Pugliese");
+    if (inStr.toLowerCase().contains("troilo"))      return new Artist("Anibal",      "Troilo");
+    if (inStr.toLowerCase().contains("quinteto pirincho"))    return new Artist("",  "Quinteto Pirincho");
+    
+    return new Artist("", inStr);
+  }
 }
