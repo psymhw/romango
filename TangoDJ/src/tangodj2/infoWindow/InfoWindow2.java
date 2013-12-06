@@ -120,6 +120,11 @@ public class InfoWindow2
     });
   }
   
+  public void updateProgress(double currentTrackTime)
+  {
+	  
+  }
+  
   public void close()
   {
     infoWindow.close();

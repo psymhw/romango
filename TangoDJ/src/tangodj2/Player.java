@@ -1348,6 +1348,8 @@ public class Player
                {
                  timeSlider.setValue(trackPosition.divide(trackLength).toMillis()* 100.0);
                  playTimeLabel.setText(formatTime(trackPosition, new Duration(trackLength)));
+                 if (infoWindow!=null) infoWindow.updateProgress(trackPosition.toMillis());  
+                 
                }
              }
              
