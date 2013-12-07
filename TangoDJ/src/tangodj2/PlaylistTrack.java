@@ -7,15 +7,15 @@ import tangodj2.PlaylistTree.TrackTreeItem;
 public class PlaylistTrack
 {
    public String title;
-   public String tandaName;
-   public String nextTandaName;
+   //public String tandaName;
+  // public String nextTandaName;
    public String artist;
    public String album;
    public String path;
    
-   public int tandaNumber;
+  // public int tandaNumber;
    public int trackInTanda=0;
-   public int numberOfTracksInTanda;
+  // public int numberOfTracksInTanda;
    public BaseTreeItem baseTreeItem;
    //CortinaTreeItem cortinaTreeItem;
    public String trackHash;
@@ -31,6 +31,8 @@ public class PlaylistTrack
    public int stopValue;
    public boolean playing=false;
    public double duration;
+   public double startTimeInTanda;
+   public double startTimeInPlaylist;
    
    public TandaInfo tandaInfo = new TandaInfo(); // so it's not null for cortinas
    

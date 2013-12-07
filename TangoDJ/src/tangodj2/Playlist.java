@@ -1,5 +1,6 @@
 package tangodj2;
 
+import java.net.URL;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -52,18 +53,20 @@ public class Playlist
   private int playingTrack=0;
   private int selectedPlaylistTrack=0;
   private ArrayList<PlaylistTrack> flatPlaylistTracks =  new ArrayList<PlaylistTrack>();
-  private ArrayList<TandaInfo> tandas =  new ArrayList<TandaInfo>();
+ // private ArrayList<TandaInfo> tandas =  new ArrayList<TandaInfo>();
   private int selectedTanda=-1;
   private int numberOfTandas=-1;
   public static SimpleIntegerProperty playlistFocus = new SimpleIntegerProperty(0);
   public static SimpleDoubleProperty totalPlaylistTimeProperty = new SimpleDoubleProperty(0);
   public static SimpleDoubleProperty timeLeftProperty = new SimpleDoubleProperty(0);
- 
+  //final URL tree_stylesheet = getClass().getResource("tree.css");
   
   public Playlist(int playlistId) 
   {
 	  setupTreeView(playlistId);	
 	  setNextTrackToPlay();  
+	 
+	  
   }
 	
   public void printTracks()
@@ -150,7 +153,7 @@ public class Playlist
     int playableIndex=0;
     double totalPlaylistTime=0;
     TandaInfo tandaInfo=null;
-   
+    double startTimeInTanda=0;
     
     while( true)
     {
@@ -164,7 +167,7 @@ public class Playlist
       }
       else if ("tanda".equals(ti.getTreeType()))
       {
-        if (tandaInfo!=null) tandas.add(tandaInfo);
+        startTimeInTanda=0;
         tandaInfo = new TandaInfo();
         tandaTrackCounter=0;
         tandaCounter++;
@@ -189,28 +192,22 @@ public class Playlist
         playableIndex++;
         playlistTrack = new PlaylistTrack();
         playlistTrack.title=trackTreeItem.getValue();
-        playlistTrack.tandaName=tandaName;
-        if ((tandaCounter+1)<numberOfTandas)
-        {
-          playlistTrack.nextTandaName=((TandaTreeItem)playlistTreeItem.getChildren().get(tandaCounter+1)).getArtistAndStyle();
-        }
-        else playlistTrack.nextTandaName="Good Night";
         playlistTrack.album=trackTreeItem.getAlbum();
         playlistTrack.artist=trackTreeItem.getArtist();
         playlistTrack.path=trackTreeItem.getPath();
-        playlistTrack.tandaNumber=tandaCounter;
         tandaTrackCounter++;
         playlistTrack.trackInTanda=tandaTrackCounter;
-        playlistTrack.numberOfTracksInTanda=numberOfTracksInTanda;
         playlistTrack.cortina=false;
         playlistTrack.baseTreeItem=trackTreeItem;
         playlistTrack.trackHash=trackTreeItem.getTrackHash();
-        flatPlaylistTracks.add(playlistTrack);
-        
         playlistTrack.duration=trackTreeItem.getDuration();
+        playlistTrack.startTimeInPlaylist=totalPlaylistTime;
         totalPlaylistTime+=playlistTrack.duration;
+        playlistTrack.startTimeInTanda=startTimeInTanda;
+        startTimeInTanda+=playlistTrack.duration;
         tandaInfo.tandaDuration+=playlistTrack.duration;
         playlistTrack.tandaInfo=tandaInfo;
+        flatPlaylistTracks.add(playlistTrack);
       }
       else if ("cortina".equals(ti.getTreeType()))
       {
@@ -219,16 +216,9 @@ public class Playlist
         playableIndex++;
         playlistTrack = new PlaylistTrack();
         playlistTrack.title=cortinaTreeItem.getValue();
-        if ((tandaCounter+1)<numberOfTandas)
-        {
-          playlistTrack.nextTandaName=((TandaTreeItem)playlistTreeItem.getChildren().get(tandaCounter+1)).getArtistAndStyle();
-        }
-        else playlistTrack.nextTandaName="Good Night";
         playlistTrack.album = cortinaTreeItem.getAlbum();
         playlistTrack.artist = cortinaTreeItem.getArtist();
-        playlistTrack.tandaName=tandaName;
         playlistTrack.path=cortinaTreeItem.getPath();
-        playlistTrack.tandaNumber=tandaCounter;
         playlistTrack.cortina=true;
         playlistTrack.baseTreeItem=cortinaTreeItem;
         playlistTrack.trackHash=cortinaTreeItem.getPathHash();
@@ -241,7 +231,12 @@ public class Playlist
         playlistTrack.delay      =cortinaTreeItem.getDelay();
         playlistTrack.original_duration  =cortinaTreeItem.getOriginal_duration();
         playlistTrack.duration=cortinaTreeItem.getDuration();
+        
+        playlistTrack.tandaInfo=tandaInfo;
+        playlistTrack.startTimeInPlaylist=totalPlaylistTime;
         totalPlaylistTime+=playlistTrack.duration;
+        playlistTrack.startTimeInTanda=startTimeInTanda;
+        startTimeInTanda+=playlistTrack.duration;
         flatPlaylistTracks.add(playlistTrack);
         // didn't set or increment tandaTrackCounter or set tandaCounter
       }
@@ -256,11 +251,11 @@ public class Playlist
     }
     else
     {
-      tandas.add(tandaInfo);
+     // tandas.add(tandaInfo);
     }
     totalPlaylistTimeProperty.set(totalPlaylistTime);
     // System.out.println("Playlist total duration: "+formatIntoMMSS(totalPlaylistTime));
-     printFlatList();
+    // printFlatList();
    // printTandaInfoList();
   }
 	
@@ -277,9 +272,9 @@ public class Playlist
       playlistTrack = it.next();
       System.out.println(i+") "
       +formatIntoMMSS(playlistTrack.tandaInfo.tandaDuration)+" "
-      +playlistTrack.tandaName+" "
+      +playlistTrack.tandaInfo.tandaName+" "
       +playlistTrack.trackInTanda
-      +" of "+playlistTrack.numberOfTracksInTanda+", "
+      +" of "+playlistTrack.tandaInfo.numberOfTracksInTanda+", "
       +formatIntoMMSS(playlistTrack.duration)+", "
       +playlistTrack.title+", "
       +playlistTrack.album+", "
@@ -288,6 +283,7 @@ public class Playlist
     }
   }
   
+  /*
   public void printTandaInfoList()
   {
   int i=0;
@@ -306,7 +302,7 @@ public class Playlist
       i++;
     }
   }
-  
+  */
 	
   static String formatIntoMMSS(double millisIn)
   {
@@ -354,9 +350,15 @@ public class Playlist
 	{
 	  playlistTreeItem =  Db.getPlaylist(playlistId);
 	  treeView = new TreeView<String>(playlistTreeItem);
+	  treeView.setMinWidth(300);
+	  treeView.setPrefWidth(300);
+	  treeView.setMaxWidth(400);
+	  
 	  treeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 	 
-	  treeView.getStyleClass().add("playlistTree");
+	  //treeView.getStyleClass().add("playlistTree");
+	 // treeView.getStyleClass().add("tree_stylesheet");
+	  
 	  treeView.getSelectionModel().select(playlistTreeItem);
 		treeView.setShowRoot(true);
 		ArrayList<TandaTreeItem> tandaTreeItems=null;
@@ -411,7 +413,7 @@ public class Playlist
      if (selectedPlaylistTrack==999) return numberOfTandas-1;
      if (selectedPlaylistTrack==-1) return 0;
      PlaylistTrack playlistTrack = flatPlaylistTracks.get(selectedPlaylistTrack);
-     return playlistTrack.tandaNumber;
+     return playlistTrack.tandaInfo.tandaNumber;
    }
      
      
@@ -790,6 +792,12 @@ public class Playlist
     {
       return playingTrack;
     }
+    
+    public PlaylistTrack getPlayingPlaylistTrack()
+    {
+      return flatPlaylistTracks.get(playingTrack);
+    }
+
 
     public void setPlayingTrack(int playingTrack)
     {
@@ -813,6 +821,8 @@ public class Playlist
     return remainingPlaylistTime;
    }
 
+   
+   
    public String getPlayingArtist()
    {
 	 return flatPlaylistTracks.get(playingTrack).artist; 
@@ -821,13 +831,20 @@ public class Playlist
    
    public String getPlayingTitle()
    {
-	 return flatPlaylistTracks.get(playingTrack).title; 
+	   return flatPlaylistTracks.get(playingTrack).title; 
    }
+   
+   public double getStartTimeInPlaylist()
+   {
+     return flatPlaylistTracks.get(playingTrack).startTimeInTanda; 
+   }
+   
+  
    
    public String getPlayingTandaProgress()
    {
      PlaylistTrack playlistTrack = flatPlaylistTracks.get(playingTrack);
-     String progress=playlistTrack.trackInTanda+" of "+playlistTrack.numberOfTracksInTanda;
+     String progress=playlistTrack.trackInTanda+" of "+playlistTrack.tandaInfo.numberOfTracksInTanda;
      System.out.println("Playlist - progress: "+progress);
      return  progress;
    }
@@ -836,7 +853,7 @@ public class Playlist
    
    public String getNextTandaInfo()
    {
-	   return flatPlaylistTracks.get(playingTrack).nextTandaName; 
+	   return flatPlaylistTracks.get(playingTrack).tandaInfo.nextTandaName; 
    }
 	 
    public boolean isCortina()

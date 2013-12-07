@@ -39,6 +39,7 @@ public class EventTab extends Tab
   final double CLOCK_RADIUS = 70;
   Label playlistTimeVal; 
   Label remainingTimeVal;
+  final URL tree_stylesheet = getClass().getResource("PlaylistTree/tree.css");
 
 	
   public EventTab()
@@ -55,6 +56,7 @@ public class EventTab extends Tab
 	  hbox.setSpacing(5);
 	  hbox.setStyle("-fx-background-color: CC99CC; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
 	  treeView = playlist.getTreeView();
+	  treeBox.getStylesheets().add(tree_stylesheet.toString());
 	  treeBox.getChildren().add(treeView);
     hbox.getChildren().add(treeBox);
     
