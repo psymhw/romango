@@ -61,7 +61,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import com.leapmotion.leap.Controller;
+//import com.leapmotion.leap.Controller;
 
 
 public class GoClient extends Application  
@@ -70,10 +70,12 @@ public class GoClient extends Application
   final static int BLACK = 1;
   final static int WHITE = 2;
   
-  final static int RESET =0;
-  final static int MAKE_MOVE=1;
-  final static int SWIPE_RIGHT=2;
-  final static int SWIPE_LEFT=3;
+  final static int RESET                   = 0;
+  final static int MAKE_MOVE               = 1;
+  final static int SWIPE_RIGHT             = 2;
+  final static int SWIPE_LEFT              = 3;
+  final static int CIRCLE_CLOCKWISE        = 4;
+  final static int CIRCLE_COUNTERCLOCKWISE = 5 ;
    
   final static int START=0;
   final static int NORTH=1;
@@ -301,7 +303,7 @@ public class GoClient extends Application
 //  private double leapMoveX=0;
 //  private double leapMoveY=0;
 //  private boolean leapCoordinateFreeze=false;
-   LeapCursor leapCursor = new LeapCursor();
+  // LeapCursor leapCursor = new LeapCursor();
   
   public static void main(final String[] arguments)  
   {  
@@ -516,8 +518,10 @@ public class GoClient extends Application
  	//  leapCursor.setX(imageOffset);
 	//  leapCursor.setY(imageOffset);
 
-	  mainGroup.getChildren().add(leapCursor);
 	  
+	 // mainGroup.getChildren().add(leapCursor);
+	  
+    /*
 	  ChangeListener cl2 = new ChangeListener() 
 	    {
 	      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
@@ -531,21 +535,34 @@ public class GoClient extends Application
 	        	   System.out.println("Swipe Right");
 	        	   leapCursor.resetAction();
 	        	   if (!commitButton.isDisabled()) commit();
+	        	  // leapCursor.fade();
 	        	   break;
 	          case SWIPE_LEFT:
 	        	   System.out.println("Swipe Left");
 	        	   leapCursor.resetAction();
+	        	  
 	        	   if (!deleteLastMoveButton.isDisabled()) deleteLastMove();
+	        	   break;
+	          case CIRCLE_COUNTERCLOCKWISE:
+	        	   System.out.println("circle Counter Clockwise");
+	        	   leapCursor.resetAction();
+	        	   slowLocalMoveRollback();
+	        	  // if (!refreshButton.isDisabled())
+	        	  // {
+	        	  //   reviewPosition=0;
+		        //	 refreshLocal();
+	        	 //  }
 	        	   break;
 	          case MAKE_MOVE:
 	        	      moveRequest(leapCursor.getMove(getMoveColor()));
+	        	      leapCursor.setMoveColor(getMoveColor());
 	        	      break;
 	        	      
 	        }
 	      }
 	    };   
 	    leapCursor.action.addListener(cl2);
-	 
+	 /*
 	  
 	    
 	/*
@@ -782,6 +799,7 @@ public void stop()
 	}
 	
 	updateControls();
+	
 	//showVars("refreshStartup");
 	feedbackArea.insertText(0, commentsStr);
 	feedbackArea.insertText(0, loginSuccessStr);
@@ -1993,6 +2011,29 @@ void restoreMoveMap(int[][] savedMoveMap)
     deleteLastMoveButton.setPrefHeight(28);
     deleteLastMoveButton.setTooltip(new Tooltip("Delete Last Move"));
   }
+  
+  private void slowLocalMoveRollback()
+  {
+	  while (localMoves>0) 
+	  {
+		  deleteLastMove();
+	    wait(1);
+	  }
+  }
+  
+  public static void wait (int k)
+  {
+	  long time0=0; 
+	  long timex=0;
+	  
+	  time0 = System.currentTimeMillis();
+	  
+	  while ((timex-time0) < (k * 1000))
+	  {
+	    timex = System.currentTimeMillis();
+	  } 
+   }
+  
   
   private void deleteLastMove()
   {
@@ -3411,6 +3452,7 @@ void playNextStone()
      //System.out.println("UPDATE CONTROLS");
 	 String gameStatusStr="";
 	 gameStatusText.setText(""); 
+	// leapCursor.setMoveColor(getMoveColor());
 	 if (lastSgfMove==null)  // for first move, no handicap
 	 {
 	   // System.out.println("UpdateControls(): lastSgfMove==null");

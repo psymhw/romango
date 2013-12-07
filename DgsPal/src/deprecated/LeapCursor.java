@@ -21,10 +21,11 @@ public class LeapCursor extends Group
   public float moveX=0;
   public float moveY=0;
   public boolean coordinateFreeze=false;
-  private ImageView imageView;
-  private ImageView imageView_green;
-  private ImageView imageView_red;
-  final int imageOffset=8;
+  private ImageView cursorView;
+  private ImageView greenCross;
+  private ImageView redCross;
+  private ImageView yellowCross;
+  final int imageOffset=7;
   final int baseX=350;
   final int baseY=800;
   private boolean active = false;
@@ -32,42 +33,43 @@ public class LeapCursor extends Group
   static Controller controller;
   public SimpleIntegerProperty action= new SimpleIntegerProperty(0);
   private long inactivityTime =0;
+  String src="/resources";
+  Image b_cursor = new Image(Stone.class.getResourceAsStream(src+"/images/b.gif")); 
+  Image w_cursor = new Image(Stone.class.getResourceAsStream(src+"/images/w.gif")); 
   
   private Move move;
 	
   public LeapCursor()
   {
-	String src="/resources";
-	Image black_ghost_image = new Image(Stone.class.getResourceAsStream(src+"/images/b_ghost.png")); 
-	Image green_ghost = new Image(Stone.class.getResourceAsStream(src+"/images/green_ghost_overlay.png")); 
-	Image red_ghost = new Image(Stone.class.getResourceAsStream(src+"/images/red_ghost_overlay.png")); 
-	imageView = new ImageView(black_ghost_image);
-	imageView_green = new ImageView(green_ghost);
-	imageView_red = new ImageView(red_ghost);
+	
+	Image red_cross = new Image(Stone.class.getResourceAsStream(src+"/images/red_cross.png")); 
+	Image green_cross = new Image(Stone.class.getResourceAsStream(src+"/images/green_cross.png")); 
+	Image yellow_cross = new Image(Stone.class.getResourceAsStream(src+"/images/yellow_cross.png")); 
+	
+	redCross = new ImageView(red_cross);
+	greenCross = new ImageView(green_cross);
+	yellowCross = new ImageView(yellow_cross);
+	
+	cursorView = new ImageView(b_cursor);
 	final int imageOffset=8;
 	
 	 listener = new LeapListener();
 	 controller = new Controller();
 	 controller.addListener(listener);
 	  
-	imageView.setX(imageOffset);
-	imageView.setY(imageOffset);
+	setPositions(imageOffset, imageOffset);
 	
-	imageView.setVisible(false);
-	
-	imageView_green.setX(imageOffset);
-	imageView_green.setY(imageOffset);
-	imageView_green.setOpacity(0);
-	
-	imageView_red.setX(imageOffset);
-	imageView_red.setY(imageOffset);
-	imageView_red.setOpacity(0);
+	cursorView.setOpacity(0);
+	redCross.setOpacity(0);
+	greenCross.setOpacity(0);
+	yellowCross.setOpacity(0);
 	
 	
+	this.getChildren().add(cursorView);
+	this.getChildren().add(yellowCross);
+	this.getChildren().add(redCross);
+	this.getChildren().add(greenCross);
 	
-	this.getChildren().add(imageView);
-	this.getChildren().add(imageView_green);
-	this.getChildren().add(imageView_red);
 	
 	inactivityTime=System.currentTimeMillis();
 	
@@ -102,10 +104,10 @@ public class LeapCursor extends Group
 	    	 }
 	    	 
 	    	 
-	    	 imageView_green.setOpacity(0);
 	    	 if ((myFinger.z>-30)&&(myFinger.z<0))
 	    	 {
-	    		 imageView_red.setOpacity(-(myFinger.z/30)); 
+	    	   greenCross.setOpacity(0);
+	    	   redCross.setOpacity(-(myFinger.z/30));
 	    	 }
 	    	 
 	    	 if (!moveFlag)
@@ -120,11 +122,14 @@ public class LeapCursor extends Group
 	       else
 	       {
 	    	 setPosition(myFinger.x, myFinger.y);
-	    	 if ((myFinger.z<30)&&(myFinger.z>0))
-	    	 {
-	    	  imageView_red.setOpacity(0); 	 
-	    	   imageView_green.setOpacity(1-(myFinger.z/30));
-	    	 }
+             if (moveFlag==false)
+             {
+               if ((myFinger.z<30)&&(myFinger.z>0))
+	    	   {
+            	 redCross.setOpacity(0);  
+            	 greenCross.setOpacity(1-(myFinger.z/30));
+	    	   }
+             }
 	       }
 	       lastZ=myFinger.z;
 	     }
@@ -133,7 +138,7 @@ public class LeapCursor extends Group
 	       if (active)
 	       {
 	         long currentTime = System.currentTimeMillis();
-	         if (currentTime>inactivityTime+1000) fade();
+	         if (currentTime>inactivityTime+3000) fade();
 	       }
 	     }
 	   }
@@ -159,22 +164,16 @@ public class LeapCursor extends Group
   
   public void setPosition(float x, float y)
   {
-	//  imageView_green.setOpacity(0);
-	//  imageView_red.setOpacity(0);
 	inactivityTime=System.currentTimeMillis();
+	
 	moveFlag=false;  
 	coordinateFreeze=false;
 	if (action.get()!=GoClient.RESET) resetAction();
-	if (!active) { active=true; imageView.setVisible(true); }
+	//if (!active) { active=true; cursorView.setOpacity(1); yellowCross.setOpacity(1); }
+	 active=true; cursorView.setOpacity(1); 
+	 yellowCross.setOpacity(1);
 	String sgfPos=getSgfPosition(x, y);
-	//System.out.println("SGF pos: "+sgfPos);
-	imageView.setX(Move.calcSceneX(sgfPos)+imageOffset);
-	imageView.setY(Move.calcSceneY(sgfPos)+imageOffset);
-	imageView_green.setX(Move.calcSceneX(sgfPos)+imageOffset);
-	imageView_green.setY(Move.calcSceneY(sgfPos)+imageOffset);
-	imageView_red.setX(Move.calcSceneX(sgfPos)+imageOffset);
-	imageView_red.setY(Move.calcSceneY(sgfPos)+imageOffset);
-	
+	setPositions(Move.calcSceneX(sgfPos)+imageOffset, Move.calcSceneY(sgfPos)+imageOffset);
   }
   
   private String getSgfPosition(float x, float y)
@@ -196,13 +195,24 @@ public class LeapCursor extends Group
       action.set(GoClient.MAKE_MOVE);
   }
   
-  private void fade()
+  public void fade()
   {
-	  FadeTransition fadeTransition = new FadeTransition(Duration.millis(500), imageView);
-      fadeTransition.setFromValue(0.0);
-      fadeTransition.setToValue(1.0);
+	  redCross.setOpacity(0);
+      greenCross.setOpacity(0);
+      //yellowCross.setOpacity(0);
+      
+	  FadeTransition fadeTransition = new FadeTransition(Duration.millis(500), cursorView);
+      fadeTransition.setFromValue(1);
+      fadeTransition.setToValue(0);
+      
+      FadeTransition fadeTransition2 = new FadeTransition(Duration.millis(500), yellowCross);
+      fadeTransition2.setFromValue(1);
+      fadeTransition2.setToValue(0);
+      
       fadeTransition.play();
-      imageView.setVisible(false);
+      fadeTransition2.play();
+      
+     // imageView.setVisible(false);
       active = false;
       swipeFlag=false;
   }
@@ -216,5 +226,28 @@ public class LeapCursor extends Group
   public void resetAction()
   {
 	action.set(GoClient.RESET);
+	//fade();
+  }
+  
+  public void setMoveColor(int moveColor)
+  {
+	if (moveColor==GoClient.BLACK) cursorView.setImage(b_cursor);
+	else { 
+		
+		cursorView.setImage(w_cursor);
+	
+	}
+  }
+  
+  private void setPositions(float x, float y)
+  {
+	cursorView.setX(x);
+	cursorView.setY(y);
+	redCross.setX(x);
+	redCross.setY(y);
+	greenCross.setX(x);
+	greenCross.setY(y);
+	yellowCross.setX(x);
+	yellowCross.setY(y);
   }
 }

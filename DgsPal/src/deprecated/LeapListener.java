@@ -1,5 +1,6 @@
 package main;
 
+import com.leapmotion.leap.CircleGesture;
 import com.leapmotion.leap.Controller;
 import com.leapmotion.leap.Finger;
 import com.leapmotion.leap.FingerList;
@@ -23,6 +24,7 @@ class LeapListener extends Listener
   { 
 	System.out.println("Connected");
     controller.enableGesture(Gesture.Type.TYPE_SWIPE); 
+    controller.enableGesture(Gesture.Type.TYPE_CIRCLE);
   }
 
   public void onExit(Controller controller) { System.out.println("Exited"); }
@@ -62,7 +64,29 @@ class LeapListener extends Listener
                    + ", speed: " + swipe.speed());
           */
         }
-       
+        if (gesture.type()==Gesture.Type.TYPE_CIRCLE)
+        {
+        	 CircleGesture circle = new CircleGesture(gesture);
+             
+             String clockwiseness;
+             if (circle.pointable().direction().angleTo(circle.normal()) <= Math.PI/4) 
+             {
+                // Clockwise if angle is less than 90 degrees
+                clockwiseness = "clockwise";
+             } else { clockwiseness = "counterclockwise";  }
+             
+             if (swipeAction==GoClient.RESET)
+             {	 
+            	if ("counterclockwise".equals(clockwiseness)) 
+            	{
+            		if (circle.radius()>50) swipeAction=GoClient.CIRCLE_COUNTERCLOCKWISE;
+            	 //System.out.println("CIRCLE radius "+circle.radius());
+            	}
+            	
+            	// else swipeAction=GoClient.CIRCLE_COUNTERCLOCKWISE;
+             }
+             
+        }
     }
   }
     
