@@ -8,6 +8,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TreeView;
@@ -15,6 +16,8 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -66,11 +69,14 @@ public class EventTab extends Tab
     hbox.getChildren().add(eventControlsBox);
     
     infoGrid.setHgap(5);
+    
+    
     ColumnConstraints col0 = new ColumnConstraints();
     col0.setHalignment(HPos.RIGHT);
     infoGrid.getColumnConstraints().add(col0);
     
     Font labelFont=new Font("Arial", 14);
+    Font headerFont=new Font("Arial", 18);
     
     Label playlistTimeLabel = new Label("Total Time");
     Label remainingTimeLabel = new Label("Time Left");
@@ -84,24 +90,34 @@ public class EventTab extends Tab
     playlistTimeVal.setFont(labelFont);
     remainingTimeVal.setFont(labelFont);
     
+    Label playlistLabel = new Label("Playlist");
+    playlistLabel.setFont(headerFont);
+    infoGrid.add(playlistLabel, col[0], row[0]);
+    infoGrid.add(playlistTimeLabel, col[0], row[1]);
+    infoGrid.add(playlistTimeVal,   col[1], row[1]);
     
-    infoGrid.add(playlistTimeLabel, col[0], row[0]);
-    infoGrid.add(playlistTimeVal,   col[1], row[0]);
+    infoGrid.add(remainingTimeLabel, col[0], row[2]);
+    infoGrid.add(remainingTimeVal,   col[1], row[2]);
     
-    infoGrid.add(remainingTimeLabel, col[0], row[1]);
-    infoGrid.add(remainingTimeVal,   col[1], row[1]);
     
+    infoGrid.setStyle("-fx-background-color: CC99CC; -fx-border-color: red; -fx-border-style: SOLID; -fx-border-width: 1px;"); 
     VBox rightPanel = new VBox();
-    rightPanel.setStyle("-fx-background-color: CC99CC; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); // border doesn't work
-
-    
-    
-    rightPanel.getChildren().add(infoGrid);
+    rightPanel.setStyle("-fx-background-color: CC99CC; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 3px;"); 
+    rightPanel.setMinWidth(500);
+    rightPanel.setPrefWidth(500);
+   
     
     final AnalogueClock analogueClock = new AnalogueClock(BRAND_NAME, CLOCK_RADIUS);
     rightPanel.getChildren().add(analogueClock);
     
+    rightPanel.setAlignment(Pos.TOP_RIGHT);
+    
+    
+    rightPanel.getChildren().add(infoGrid);
+   
+    
     hbox.getChildren().add(rightPanel);
+    hbox.setHgrow(rightPanel, Priority.ALWAYS);
     
     setContent(hbox);
     setupListeners();
