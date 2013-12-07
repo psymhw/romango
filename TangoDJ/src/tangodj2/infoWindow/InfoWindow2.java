@@ -1,5 +1,6 @@
 package tangodj2.infoWindow;
 
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -7,6 +8,7 @@ import tangodj2.Db;
 import tangodj2.MyDouble;
 import tangodj2.Player;
 import tangodj2.Playlist;
+import tangodj2.PlaylistTrack;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
@@ -62,9 +64,11 @@ public class InfoWindow2
   final int minNameHeight=50;
   Scene scene;
   VBox vbox = new VBox();
+  ProgressBar tandaProgressBar = new ProgressBar(0);
+  PlaylistTrack playlistTrack;
   
   
-  public InfoWindow2(Playlist playlist, ProgressBar progress2)
+  public InfoWindow2(Playlist playlist, URL xxx)
   { 
 	  
 	  this.playlist=playlist;
@@ -83,6 +87,9 @@ public class InfoWindow2
 	      System.out.println("Exit Info Window");
 	    }
 	  });
+	  
+	
+	 // tandaProgressBar.getStyleClass().add("progress-bar");
 	  //maybe can have an image as part of the bar or
 	  //use a stackPane with an image behind and some less opacity
 	  //progress2.setClip(new ImageView(new Image()));
@@ -99,6 +106,14 @@ public class InfoWindow2
 	  
 	  
 	  scene = new Scene(stackPane, 1200, 800);
+	  
+	  final URL stylesheet = getClass().getResource("progress.css");
+    scene.getStylesheets().add(stylesheet.toString());
+
+    tandaProgressBar.setMinHeight(100);
+    tandaProgressBar.setMinWidth(400);
+    tandaProgressBar.getStyleClass().add("red-bar");
+    
     update();
     
    
@@ -122,7 +137,8 @@ public class InfoWindow2
   
   public void updateProgress(double currentTrackTime)
   {
-	  
+	  double progressVal=(currentTrackTime+playlistTrack.startTimeInTanda)/playlistTrack.tandaInfo.tandaDuration;
+	  tandaProgressBar.setProgress(progressVal);
   }
   
   public void close()
@@ -149,15 +165,16 @@ public class InfoWindow2
         + "-fx-border-color: blue");
   	vbox.setAlignment(Pos.TOP_CENTER);
   
+  	playlistTrack = playlist.getPlayingPlaylistTrack();
   	
-  	if (playlist.isCortina()) // CORTINA
+  	if (playlistTrack.cortina) // CORTINA
   	{
   	  stackPane.getChildren().get(0).setVisible(true);
   	  borderPane.setTop(getPane(new Label(""),75));
   	   
   	  vbox.getChildren().add(getPane(getDistantLightLabel("CORTINA", cortinaFont),200));
-  	  vbox.getChildren().add(getPane(getDistantLightLabel(playlist.getPlayingArtist(), titleFont), 100));
-  	  vbox.getChildren().add(getPane(getDistantLightLabel(playlist.getPlayingTitle(), titleFont), 100));
+  	  vbox.getChildren().add(getPane(getDistantLightLabel(playlistTrack.artist, titleFont), 100));
+  	  vbox.getChildren().add(getPane(getDistantLightLabel(playlistTrack.title, titleFont), 100));
   	  
       borderPane.setCenter(vbox);
   	
@@ -168,8 +185,8 @@ public class InfoWindow2
   	else  // TANGO
   	{
   	  stackPane.getChildren().get(0).setVisible(false);
-	    currentArtist=Artist.getArtist(playlist.getPlayingArtist());
-	    titleLabel = getTitleLabel(playlist.getPlayingTitle());
+	    currentArtist=Artist.getArtist(playlistTrack.artist);
+	    titleLabel = getTitleLabel(playlistTrack.title);
 	    artistLastNameLabel =  getDistantLightLabel(currentArtist.lastName, titleFont);
 	    
       sizeToFitWidth(artistLastNameLabel, 1150, LARGER, 5);	    
@@ -179,8 +196,9 @@ public class InfoWindow2
 	    vbox.getChildren().add(getPane(artistLastNameLabel, 200));
 	    vbox.getChildren().add(getPane(titleLabel, 100));
 	    if (!titleLabel2.getText().equals("--")) vbox.getChildren().add(getPane(titleLabel2, 100));
-	    vbox.getChildren().add(getPane(getDistantLightLabel(playlist.getPlayingTandaProgress(), titleFont), 100));
-	    
+	   // vbox.getChildren().add(getPane(getDistantLightLabel(playlistTrack.trackInTanda+" of "+playlistTrack.tandaInfo.numberOfTracksInTanda, titleFont), 100));
+	  //  vbox.getChildren().add(tandaProgressBar);
+	    vbox.getChildren().add(getProgressPane());
 	    borderPane.setBottom(getPane(getUpNext(), 100));
 	   
 	    borderPane.setCenter(vbox);
@@ -238,6 +256,21 @@ public class InfoWindow2
       return stackPane;
   }
   
+  public Pane getProgressPane()
+  {
+    
+    StackPane stackPane = new StackPane();
+    
+     // stackPane.setPrefHeight(height);
+      stackPane.setAlignment(Pos.CENTER);  
+      stackPane.getChildren().add(tandaProgressBar);
+      stackPane.getChildren().add(getDistantLightLabel(playlistTrack.trackInTanda+" of "+playlistTrack.tandaInfo.numberOfTracksInTanda, titleFont));
+      if (showBorders) stackPane.setStyle("-fx-border-style: solid;"
+              + "-fx-border-width: 1;"
+              + "-fx-border-color: red");
+      return stackPane;
+  }
+  
   public Pane getShadedPane(Label label, int height)
   {
     
@@ -253,8 +286,8 @@ public class InfoWindow2
   
   private Label getUpNext()
   {
-	  System.out.println("InfoWindow - up next: "+playlist.getNextTandaInfo());
-	  return getTitleLabel("Up Next: "+playlist.getNextTandaInfo());	  
+	  System.out.println("InfoWindow - up next: "+playlistTrack.tandaInfo.nextTandaName);
+	  return getTitleLabel("Up Next: "+playlistTrack.tandaInfo.nextTandaName);	  
   }
   
   public Label getTitleLabel(String title)

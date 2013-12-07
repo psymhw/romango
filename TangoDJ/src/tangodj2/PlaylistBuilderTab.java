@@ -1,5 +1,7 @@
 package tangodj2;
 
+import java.net.URL;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -44,6 +46,8 @@ public class PlaylistBuilderTab extends Tab
   TextField searchField = new TextField();
   String currentTable = "tango";
   TreeView treeView;
+  final URL tree_stylesheet = getClass().getResource("PlaylistTree/tree.css");
+  
   
   public PlaylistBuilderTab(Playlist playlist, Player player, TangoTable tangoTable, CleanupTable cleanupTable, CortinaTable cortinaTable)
   {
@@ -72,6 +76,7 @@ public class PlaylistBuilderTab extends Tab
 	  vbox.setVgrow(cleanupTable, Priority.ALWAYS);
 	  vbox.setVgrow(cortinaTable, Priority.ALWAYS);
 	  
+	  hbox.getStylesheets().add(tree_stylesheet.toString());
 	  hbox.setPadding(new Insets(10, 10, 10, 10));
 	  hbox.setSpacing(20);
 	  hbox.getChildren().add(vbox);

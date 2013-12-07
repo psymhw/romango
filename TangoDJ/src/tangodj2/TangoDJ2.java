@@ -99,7 +99,7 @@ public class TangoDJ2 extends Application
   CortinaTable cortinaTable;
   TrackLoader3 trackLoader = new TrackLoader3();
   private Button infoWindowButton = new Button("Info Window");
- 
+  final URL stylesheet = getClass().getResource("style.css");
 	
   public static void main(String[] args) 
   {
@@ -142,7 +142,7 @@ public class TangoDJ2 extends Application
     Scene scene = new Scene(root, sceneWidth, sceneHeight, Color.WHITE);
     r.setFill(Color.RED);
    
-    final URL stylesheet = getClass().getResource("style.css");
+    //final URL stylesheet = getClass().getResource("style.css");
     scene.getStylesheets().add(stylesheet.toString());
 
     CreateDatabase cb = new CreateDatabase();
@@ -259,7 +259,7 @@ public class TangoDJ2 extends Application
     {
       public void handle(ActionEvent actionEvent) 
       {
-        if (player.infoWindow==null)  player.infoWindow=new InfoWindow2(EventTab.playlist, new ProgressBar());  
+        if (player.infoWindow==null)  player.infoWindow=new InfoWindow2(EventTab.playlist, stylesheet);  
       }
    });
     

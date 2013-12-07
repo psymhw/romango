@@ -1,0 +1,27 @@
+@CHARSET "ISO-8859-1";
+
+/*
+.root { -fx-background-color: cornsilk; -fx-padding: 15; }
+*/
+
+/*
+.progress-bar { -fx-box-border: goldenrod; -fx-background-color: cornsilk; }
+
+.green-bar  { -fx-accent: green;  }
+.yellow-bar { -fx-accent: yellow; }
+.orange-bar { -fx-accent: orange; }
+.red-bar    { -fx-accent: red;    }
+*/
+
+.progress-bar .bar {
+    -fx-background-color: dodgerblue;
+    -fx-background-insets: 3;
+    -fx-padding: 1em;
+}
+.progress-bar:indeterminate .bar {  
+    -fx-background-color: rgb(45,137,239);
+    -fx-border-style:none;
+}
+.progress-bar .track {
+    -fx-background-color: indigo; 
+} 
