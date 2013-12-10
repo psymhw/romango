@@ -939,7 +939,7 @@ private String getComments()
 		feedbackArea.insertText(0, loadFromStr);
 		
 		updateControls();
-	//	showVars("refreshLocal");
+		//showVars("refreshLocal");
   }
   
   void showVars(String call)
@@ -988,7 +988,7 @@ private String getComments()
 	  gameNoVal.setText(""+dragonAccess.getCurrentGame());
 	  if (userId!=null)
 	  {
-		if (userId.equals(dragonAccess.getLoginNameBlack())) thisPlayerColor=BLACK;
+		if (userId.toLowerCase().equals(dragonAccess.getLoginNameBlack())) thisPlayerColor=BLACK;
 		else thisPlayerColor=WHITE;
 	  }
  }
@@ -1494,7 +1494,6 @@ private GridPane getRightPane()
 					try {
 						dir2 = new File(directory.getCanonicalPath());
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 	        	    fileChooser.setInitialDirectory(dir2);
@@ -2904,8 +2903,6 @@ void markLocalMove()
 
 
 
-
-
 void markLastSgfStone()
 {
   if (moves==null) return;	
@@ -3400,11 +3397,12 @@ void playNextStone()
 	 if (timeline!=null) timeline.stop();
    }
    
-   
    private void enableCommit()
    {
-	 if (dragonAccess.isLoggedIn()&&(thisPlayerColor==colorToPlay)) commitButton.setDisable(false);
-	 else commitButton.setDisable(true);
+    // System.out.println("thisPlayerColor: "+thisPlayerColor);
+    // System.out.println("colorToPlay: "+colorToPlay);
+	   if (dragonAccess.isLoggedIn()&&(thisPlayerColor==colorToPlay)) commitButton.setDisable(false);
+	   else commitButton.setDisable(true);
    }
    
    private void enableEndgameControls()
