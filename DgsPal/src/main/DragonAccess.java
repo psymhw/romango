@@ -500,7 +500,7 @@ public void parseLine(String line)
 	   int i = line.indexOf('(');
 	   if (i>0) playerBlack = line.substring(3,i);
 	   int j=line.indexOf(')');
-	   loginNameBlack=line.substring(i+1,j);
+	   loginNameBlack=line.substring(i+1,j).toLowerCase();
 	   return;
 	 }
 	 if (line.startsWith(";MN"))  // get first white move
