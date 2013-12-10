@@ -863,21 +863,25 @@ public class Player
       volumeSlider.setValue(holdVolume);
       
       int trackToPlay=playlist.getNextTrack();
-      System.out.println("Player - track to play: "+trackToPlay);
+      //System.out.println("Player - track to play: "+trackToPlay);
       final PlaylistTrack playlistTrack=playlist.getTrack(trackToPlay);
       if (playlistTrack==null) return;
       playlist.setPlayingTrack(playlist.getNextTrack());
       
      // playlistTrack.baseTreeItem.setPlayingImage(true);
      // playlistTrack.playing=true;
-      
-      if (infoWindow!=null) infoWindow.update();
+      playing.set(true);
+      if (active_tab==EVENT_TAB)
+      {
+        if (infoWindow!=null) infoWindow.update();
+        eventTab.update();
+      }
       
       cortina = playlistTrack.cortina;
       premade = playlistTrack.premade;
       sourcePath=playlistTrack.path;
       
-      playing.set(true);
+     
       playButton.setText("||");
       stopButton.setDisable(false);
 
@@ -1343,13 +1347,14 @@ public class Player
                  Double cortinaLength = mediaPlayer.getTotalDuration().toMillis();
                  timeSlider.setValue(cortinaTrackPosition.divide(cortinaLength).toMillis()* 100.0);
                  playTimeLabel.setText(formatTime(cortinaTrackPosition, new Duration(cortinaLength)));
+                 if (active_tab==EVENT_TAB) eventTab.updateProgress(trackPosition.toMillis());
                }
                else
                {
                  timeSlider.setValue(trackPosition.divide(trackLength).toMillis()* 100.0);
                  playTimeLabel.setText(formatTime(trackPosition, new Duration(trackLength)));
                  if (infoWindow!=null) infoWindow.updateProgress(trackPosition.toMillis());  
-                 
+                 if (active_tab==EVENT_TAB) eventTab.updateProgress(trackPosition.toMillis());
                }
              }
              

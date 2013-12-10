@@ -22,6 +22,8 @@ public class TrackTreeItem extends BaseTreeItem
   private String path;
   private String artist;
   private double duration;
+  private String singer;
+  private String comment;
  
   
   public TrackTreeItem(String trackHash, int position)
@@ -39,6 +41,8 @@ public class TrackTreeItem extends BaseTreeItem
   	path = trackDb.path;
   	this.artist = trackDb.artist;
   	this.duration=trackDb.duration;
+  	this.singer=trackDb.singer;
+  	this.comment=trackDb.comment;
   	this.setValue(trackDb.title);
   	
   	//this.getChildren().add(new DetailTreeItem("Length", formatTime(new Duration(TrackDb.duration))));
@@ -167,6 +171,26 @@ public String getArtist() {
 public double getDuration()
 {
   return duration;
+}
+
+
+
+
+
+
+public String getSinger()
+{
+  return singer;
+}
+
+
+
+
+
+
+public String getComment()
+{
+  return comment;
 }
 
 

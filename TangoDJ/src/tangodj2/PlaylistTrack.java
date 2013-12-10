@@ -1,8 +1,6 @@
 package tangodj2;
 
 import tangodj2.PlaylistTree.BaseTreeItem;
-import tangodj2.PlaylistTree.CortinaTreeItem;
-import tangodj2.PlaylistTree.TrackTreeItem;
 
 public class PlaylistTrack
 {
@@ -12,6 +10,9 @@ public class PlaylistTrack
    public String artist;
    public String album;
    public String path;
+   public String style;
+   public String singer;
+   public String comment;
    
   // public int tandaNumber;
    public int trackInTanda=0;

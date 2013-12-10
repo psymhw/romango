@@ -23,7 +23,7 @@ public class Equalizer
     private SpectrumListener spectrumListener;
     GridPane gp = new GridPane();
     VBox vbox = new VBox();
-    int height=275;
+    int height=230;
     int width = 200;
     Slider balanceSlider = new Slider(-1, 1, 0);
     
@@ -39,9 +39,9 @@ public class Equalizer
       gp.setMinWidth(width);
       
       RowConstraints spectrumBarRow = new RowConstraints();
-      spectrumBarRow.setMaxHeight(130);
-      spectrumBarRow.setMinHeight(130);
-      spectrumBarRow.setPrefHeight(130);
+      spectrumBarRow.setMaxHeight(100);
+      spectrumBarRow.setMinHeight(100);
+      spectrumBarRow.setPrefHeight(100);
       
       gp.getRowConstraints().add(spectrumBarRow);
      // gp.setStyle("-fx-background-color: BLACK; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 1px;"); 
@@ -54,9 +54,9 @@ public class Equalizer
       
       vbox.getChildren().add(gp);
       
-      balanceSlider.setMinWidth(50);
-      balanceSlider.setMaxWidth(50);
-      balanceSlider.setPrefWidth(50);
+      balanceSlider.setMinWidth(70);
+      balanceSlider.setMaxWidth(70);
+      balanceSlider.setPrefWidth(70);
       balanceSlider.setMinHeight(30);
       
       mp.balanceProperty().bindBidirectional(balanceSlider.valueProperty());

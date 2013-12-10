@@ -1,16 +1,8 @@
 package tangodj2;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.net.URL;
 import java.sql.SQLException;
-
-import tangodj2.cleanup.CleanupTable;
-import tangodj2.cortina.CortinaTable;
-import tangodj2.infoWindow.InfoWindow2;
-import tangodj2.tango.TangoTable;
 
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -24,11 +16,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -39,6 +29,10 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import tangodj2.cleanup.CleanupTable;
+import tangodj2.cortina.CortinaTable;
+import tangodj2.infoWindow.InfoWindow2;
+import tangodj2.tango.TangoTable;
 /*
  * TODO export playlist?
  * MP3 Tagtools
@@ -175,7 +169,7 @@ public class TangoDJ2 extends Application
     setupMenuBar();
       
     playlist = new Playlist(prefs.currentPlaylist); 
-    System.out.println("TangoDJ2 - new Playlist for playlist builder tab");
+   // System.out.println("TangoDJ2 - new Playlist for playlist builder tab");
     
    // Tab equalizerTab = new Tab();
   //  equalizerTab.setStyle("-fx-background-color: #bfc2c7;");
