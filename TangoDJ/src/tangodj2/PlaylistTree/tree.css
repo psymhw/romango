@@ -5,8 +5,14 @@
    -fx-text-fill: #212121;
    -fx-font: 12px "Segoe UI";
 }
+
+.tree-view {
+	-fx-padding: 0.8em 0.8em 0.8em 0.8em;
+	 -fx-background-color: plum;
+}
+
 .tree-view:focused {
-   -fx-background-color: -fx-box-border,-fx-box-border,white;
+   -fx-background-color: mediumpurple;
 }
 .tree-view .tree-cell:empty:hover {
     -fx-background-color: white;
