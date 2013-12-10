@@ -39,11 +39,10 @@ import tangodj2.tango.TangoTable;
  * CDEX
  * Get rating from iTunes XML file?
  * Create a tangoGenre MP3tag and populate when making tandas?
- * MP3 tag editor
- * Event Tab: fade/next track
+
+ 
  * Spare DB fields for updates
  * Show total time for each tanda. Maybe even real end time from system clock
- * Add pre-made cortinas directly to cortinas table
  * When making cotinas, there should be a length counter
  *   from the time the set start position button is pressed
  * Tooltips on TreeItems (treeCell?) to show time, album, etc
@@ -52,16 +51,12 @@ import tangodj2.tango.TangoTable;
  * Spell check band leaders
  * Create playlists from tandas.
  * Handle bad directory address in preferences
- * Need an info line to show loading progress and error messages
- *  Select tango table columns to show
- * Save column widths too?
- * Oh Jeeze, what about column position?
+ 
  * Feedback col could say playing from playlist or playing from library
  
  * Automatiacally play next in library. Also allow skip fwd and back from library
  * Link to track folder from MP3 Editor
  * Feedback could show # of track stats on startup
- * Performance test with all tango and all non-tango loaded
  * Pop up a window with load errors?
  * Allow interactively new named playlist(text field). Would allow non tango playlists.
  * Remember equalizer values - for next tune and when program closed

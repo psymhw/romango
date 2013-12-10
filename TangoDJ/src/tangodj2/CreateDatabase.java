@@ -35,6 +35,8 @@ public class CreateDatabase
 	  createStateTable();
 	  createTandasTable();
 	  createCortinasTable();
+	  createListsTable();
+	  createListMembersTable();
 	  disconnect();
 	   //Db.disconnect();
 	  System.out.println("database initiallized");	
@@ -69,6 +71,26 @@ public class CreateDatabase
 		connection.createStatement().execute("insert into playlists (name, location, level, parent, folder, position) values('PLAYLISTS', '', 0, 0, 1, 0)");
 		System.out.println("Playlists table created");
 	}
+	
+	private void createListsTable() throws SQLException
+  {
+    connection.createStatement().execute("create table lists(" +
+          "id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
+          "name varchar(100), " +
+          "incept TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP" +
+          ")"); 
+    System.out.println("Lists table created");
+  }
+  
+	 private void createListMembersTable() throws SQLException
+	  {
+	    connection.createStatement().execute("create table listmembers(" +
+	          "id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
+	          "pathHash varchar(32), " +
+	          "track_id integer " +
+	          ")"); 
+	    System.out.println("List Members table created");
+	  }
 	
 	private void createStateTable() throws SQLException
 	{

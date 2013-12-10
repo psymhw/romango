@@ -495,8 +495,8 @@ public class Playlist
 	          // this.getStyleClass().add("tangoPlaylistText");
 	           TrackTreeItem trackTreeItem = (TrackTreeItem)bti;
 	           this.getStyleClass().add("cortinaPlaylistText");
-	           this.setTooltip(new Tooltip("Album: "+trackTreeItem.getAlbum()+"\n"
-	               +"Orchestra: "+trackTreeItem.getArtist()));
+	          // this.setTooltip(new Tooltip("Album: "+trackTreeItem.getAlbum()+"\n"
+	           //    +"Orchestra: "+trackTreeItem.getArtist()));
 	         
 	           int trackCount=((TandaTreeItem)trackTreeItem.getParent()).getTrackCount();
 	           int trackPosition=trackTreeItem.getTrackPosition(trackTreeItem);
