@@ -10,6 +10,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
@@ -42,7 +43,7 @@ public class PlaylistBuilderTab extends Tab
  // int savedType=0;
   Player player;
   //TrackLoader3 trackLoader = new TrackLoader3();
-  HBox hbox =  new HBox();
+  HBox rightBox =  new HBox();
   TextField searchField = new TextField();
   String currentTable = "tango";
   TreeView treeView;
@@ -76,18 +77,27 @@ public class PlaylistBuilderTab extends Tab
 	  vbox.setVgrow(cleanupTable, Priority.ALWAYS);
 	  vbox.setVgrow(cortinaTable, Priority.ALWAYS);
 	  
-	  hbox.getStylesheets().add(tree_stylesheet.toString());
-	  hbox.setPadding(new Insets(10, 10, 10, 10));
-	  hbox.setSpacing(20);
-	  hbox.getChildren().add(vbox);
-	  hbox.setStyle("-fx-background-color: CC99CC; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 1px;"); 
+	  rightBox.getStylesheets().add(tree_stylesheet.toString());
+	  rightBox.setPadding(new Insets(10, 5, 10, 5));
+	  rightBox.setSpacing(20);
+	//  hbox.getChildren().add(vbox);
+	 // hbox.setStyle("-fx-background-color: CC99CC; -fx-border-color: BLACK; -fx-border-style: SOLID; -fx-border-width: 1px;"); 
 
     treeView=this.playlist.getTreeView();
-    hbox.getChildren().add(treeView);
+    rightBox.getChildren().add(treeView);
    // hbox.setHgrow(this.playlist.getTreeView(), Priority.ALWAYS);
-    hbox.setHgrow(this.tangoTable, Priority.ALWAYS);
+  //  hbox.setHgrow(this.tangoTable, Priority.ALWAYS);
     setupListeners() ;
-    this.setContent(hbox);
+    
+    SplitPane sp = new SplitPane();
+    sp.setStyle("-fx-background-color: plum;");
+    
+    
+    sp.getItems().addAll(vbox, rightBox);
+    sp.setDividerPositions( 0.75f, .9f);
+    sp.setStyle("-fx-background-color: plum;");
+    
+    this.setContent(sp);
   }
   
   private Button getTestButton()
@@ -108,11 +118,11 @@ public class PlaylistBuilderTab extends Tab
   
   public void reloadPlaylist()
   {
-    hbox.getChildren().remove(treeView);
+    rightBox.getChildren().remove(treeView);
     playlist = new Playlist(TangoDJ2.prefs.currentPlaylist);
     playlist.getTreeView().setPrefWidth(500);
     treeView = playlist.getTreeView();
-    hbox.getChildren().add(treeView);
+    rightBox.getChildren().add(treeView);
   }
   
   private Button getSearchButton()
@@ -417,8 +427,8 @@ public void changePlaylist(int playlistId)
 {
 	  try {
 	  playlist = new Playlist(playlistId);
-	  hbox.getChildren().remove(1);
-	  hbox.getChildren().add(playlist.getTreeView());
+	  rightBox.getChildren().remove(1);
+	  rightBox.getChildren().add(playlist.getTreeView());
 	  } catch (Exception e) {e.printStackTrace();};
 }
   

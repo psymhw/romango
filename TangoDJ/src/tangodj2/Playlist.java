@@ -444,7 +444,7 @@ public class Playlist
 	       setupTrackContextMenu(trackContextMenu);
            setupPlaylistContextMenu(playlistContextMenu);
 	       setupCortinaContextMenu(cortinaContextMenu);
-	       this.getStyleClass().add("playlistTree");
+	      // this.getStyleClass().add("playlistTree");
 	     }
 	       
 	     @Override
@@ -813,6 +813,8 @@ public class Playlist
     
     public PlaylistTrack getFirstPlaylistTrack()
     {
+      if (flatPlaylistTracks==null) return null;
+      if (flatPlaylistTracks.size()<1) return null;
       return flatPlaylistTracks.get(0);
     }
 
