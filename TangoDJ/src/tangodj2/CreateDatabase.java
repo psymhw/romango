@@ -132,6 +132,7 @@ public class CreateDatabase
 	    		")");
 	    
 	    connection.createStatement().execute("CREATE UNIQUE INDEX pathInd ON TRACKS(PATHHASH)");
+	    connection.createStatement().execute("CREATE INDEX loadInd ON TRACKS(cleanup,artist,album,track_no)");
 	    System.out.println("Tracks table created");
 	}
 	

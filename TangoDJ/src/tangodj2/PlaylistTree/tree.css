@@ -3,7 +3,14 @@
 .tree-cell {   
  /*  -fx-padding: 0.8em 0em 0.8em 0.3em; */
    -fx-text-fill: #212121;
-   -fx-font: 12px "Segoe UI";
+   -fx-background-color: plum;
+   -fx-font: 15px "Segoe UI"; 
+}
+
+.playlistTree
+{
+  -fx-background-color: plum;
+  -fx-font-size: 15pt;
 }
 
 .tree-view {
@@ -12,29 +19,29 @@
 }
 
 .tree-view:focused {
-   -fx-background-color: mediumpurple;
+   -fx-background-color: plum;
 }
 .tree-view .tree-cell:empty:hover {
     -fx-background-color: white;
 }
 .tree-view .tree-cell:hover {
-    -fx-background-color: -fx-box-border,rgb(231,231,231);
+    -fx-background-color: -fx-box-border, plum;
 }
 .tree-view .tree-cell:filled:selected:hover {
-    -fx-background-color: -fx-box-border, rgb(205,205,205);
+    -fx-background-color: -fx-box-border, plum;
 }
 .tree-view:focused .tree-cell:focused {
-    -fx-background-color: -fx-box-border, white;   
+    -fx-background-color: -fx-box-border, plum;   
 }
 .tree-view:focused .tree-cell:focused:hover {
-    -fx-background-color: -fx-box-border,rgb(231,231,231);   
+    -fx-background-color: -fx-box-border,plum;   
 }
 .tree-view:focused .tree-cell:filled:focused:selected,
 .tree-view:focused .tree-cell:filled:focused:selected:hover {
-    -fx-background-color: -fx-box-border, rgb(205,205,205); 
+    -fx-background-color: -fx-box-border, plum; 
 }
 .tree-cell:filled:selected:focused, .tree-cell:filled:selected {
-    -fx-background-color: -fx-box-border,rgb(205,205,205);   
+    -fx-background-color: -fx-box-border, plum;   
 }
 .tree-cell .tree-disclosure-node .arrow {
     -fx-background-color: -fx-mark-highlight-color, -fx-mark-color;

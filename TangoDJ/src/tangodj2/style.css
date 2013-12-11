@@ -88,13 +88,14 @@
   -fx-font-size: 14pt;
 }
 
+/*
 .playlistTree
 {
   -fx-background-color: rgba(34, 35, 256,.16);
   -fx-font-size: 15pt;
 }
 
-/*
+
 .playlistPlaylistTreeItem 
 {
   -fx-background-color: rgba(32, 47, 255,.82);

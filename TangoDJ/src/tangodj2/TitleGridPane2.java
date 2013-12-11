@@ -15,10 +15,10 @@ import javafx.scene.text.FontWeight;
 public class TitleGridPane2 extends GridPane
 {
   private Font titleFont=Font.font("Arial", FontWeight.BOLD, 20);
-  private Font labelFont=Font.font("Arial", FontWeight.BOLD, 14);
-  private Font valueFont=Font.font("Arial", FontWeight.NORMAL, 14);
+  private Font labelFont=Font.font("Arial", FontWeight.BOLD, 18);
+  private Font valueFont=Font.font("Arial", FontWeight.NORMAL, 18);
   private int row=1;
-  private final String LABEL_STYLE = "-fx-text-fill: black; -fx-font-size: 14;"
+  private final String LABEL_STYLE = "-fx-text-fill: black; -fx-font-size: 18;"
                                    + "-fx-effect: dropshadow(one-pass-box, maroon, 5, 0, 1, 1);";
   private String title;
   
@@ -79,7 +79,7 @@ public class TitleGridPane2 extends GridPane
     
     GridPane.setHalignment(value, HPos.LEFT);
     stackPane.getChildren().add(value);
-    stackPane.setMaxWidth(55);
+    stackPane.setMaxWidth(65);
     return stackPane;
   }
   

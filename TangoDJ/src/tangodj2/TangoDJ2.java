@@ -1,6 +1,9 @@
 package tangodj2;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.net.URL;
 import java.sql.SQLException;
 
@@ -97,7 +100,7 @@ public class TangoDJ2 extends Application
 	
   public void start(Stage stage) 
   {
-    /*
+    
     try
     { 
       File f = new File("tdj_error.txt");
@@ -109,7 +112,7 @@ public class TangoDJ2 extends Application
         System.setErr(ps);    
     } catch (Exception e) { e.printStackTrace(); }
     
-    */
+    
 	primaryStage=stage;
 	loadFonts();
 	//feedback.setPrefWidth(800);
@@ -260,7 +263,6 @@ public class TangoDJ2 extends Application
     MenuItem menuAddTangoFile = new MenuItem("Add Tango Track");
     MenuItem menuAddCleanupDir = new MenuItem("Add Non-Tango Folder");
     MenuItem menuAddCleanupFile = new MenuItem("Add Non-Tango Track");
-    MenuItem menuAddCortinaFolder = new MenuItem("Add Prepared Cortina Folder");
     MenuItem menuAddCortinaFile = new MenuItem("Add Prepared Cortina Track");
     MenuItem menuAddCortinaDir = new MenuItem("Add Prepared Cortina Folder");
     MenuItem preferences = new MenuItem("Preferences");
@@ -405,7 +407,7 @@ public class TangoDJ2 extends Application
      manual.setOnAction(new EventHandler<ActionEvent>() 
      { public void handle(ActionEvent t) { new ManualDialog(); }});
     
-    menuFile.getItems().addAll(menuAddTangoDir, menuAddTangoFile,menuAddCleanupDir, menuAddCleanupFile,menuAddCortinaFolder,menuAddCortinaDir,menuAddCortinaFile);
+    menuFile.getItems().addAll(menuAddTangoDir, menuAddTangoFile,menuAddCleanupDir, menuAddCleanupFile,menuAddCortinaDir,menuAddCortinaFile);
     menuEdit.getItems().add(preferences);
     menuHelp.getItems().addAll(about, manual);
   }
