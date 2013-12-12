@@ -51,7 +51,7 @@ public class InfoWindow2
   FontMeta tusj = new FontMeta("FFF Tusj", FontWeight.BOLD);
   FontMeta carousel = new FontMeta("Carousel", FontWeight.BOLD);
   Font cortinaFont = Font.font(carousel.name, carousel.style, 240);
-  Font titleFont = Font.font(tusj.name, tusj.style, 70);
+  Font titleFont = Font.font(tusj.name, tusj.style, 100);
   boolean fontsLoaded=false;
   Playlist playlist;
   Stage infoWindow = new Stage();
@@ -189,7 +189,7 @@ public class InfoWindow2
 	    titleLabel = getTitleLabel(playlistTrack.title);
 	    artistLastNameLabel =  getDistantLightLabel(currentArtist.lastName, titleFont);
 	    
-      sizeToFitWidth(artistLastNameLabel, 1150, LARGER, 5);	    
+      sizeToFitWidth(artistLastNameLabel, 1150, LARGER, 1);	    
 	    Label artistFirstNameLabel =  getDistantLightLabel(currentArtist.firstName, titleFont);
 	  	
 	    borderPane.setTop(getPane(artistFirstNameLabel, 75));
@@ -209,6 +209,9 @@ public class InfoWindow2
   {
     final Timeline timeline = new Timeline();
     timeline.setCycleCount(300);  // maximum cycles
+    final int numbChars = label.getText().length();
+    
+    
     
     KeyFrame keyFrame  =  new KeyFrame(Duration.seconds(.05),  new EventHandler() 
     {
@@ -216,17 +219,21 @@ public class InfoWindow2
       {
         double width=label.getWidth();
         double height=label.getHeight();
-        double fontSize = label.getFont().getSize();
+        double fontSize = 200;
+        
+        if (numbChars>10) fontSize=100;
+        
         if (direction==LARGER)
         {  
-          if (width>=(target-60)) { timeline.stop(); return; }
-          if (height>=maxNameHeight) { timeline.stop(); return; }
+          if (width>=(target-60)) { timeline.stop(); System.out.println("Final font size: "+fontSize); return;  }
+          if (height>=maxNameHeight) { timeline.stop(); System.out.println("Final font size: "+fontSize); return; }
+          
           fontSize+=increment;
         }
         if (direction==SMALLER)
         {
-          if (width<=(target-60)) { timeline.stop(); return; }
-          if (height<=minNameHeight) { timeline.stop(); return; }
+          if (width<=(target-60)) { timeline.stop(); System.out.println("Final font size: "+fontSize); return; }
+          if (height<=minNameHeight) { timeline.stop(); System.out.println("Final font size: "+fontSize); return; }
           fontSize-=increment;
         }
         
@@ -286,8 +293,8 @@ public class InfoWindow2
   
   private Label getUpNext()
   {
-	  System.out.println("InfoWindow - up next: "+playlistTrack.tandaInfo.nextTandaName);
-	  return getTitleLabel("Up Next: "+playlistTrack.tandaInfo.nextTandaName);	  
+	  //System.out.println("InfoWindow - up next: "+playlistTrack.tandaInfo.nextTandaName);
+	  return getTitleLabel("Next: "+playlistTrack.tandaInfo.nextTandaName);	  
   }
   
   public Label getTitleLabel(String title)

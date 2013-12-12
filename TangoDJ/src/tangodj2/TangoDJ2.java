@@ -100,7 +100,7 @@ public class TangoDJ2 extends Application
 	
   public void start(Stage stage) 
   {
-    
+    /*
     try
     { 
       File f = new File("tdj_error.txt");
@@ -112,7 +112,7 @@ public class TangoDJ2 extends Application
         System.setErr(ps);    
     } catch (Exception e) { e.printStackTrace(); }
     
-    
+    */
 	primaryStage=stage;
 	loadFonts();
 	//feedback.setPrefWidth(800);
