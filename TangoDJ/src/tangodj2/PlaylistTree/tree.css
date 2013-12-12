@@ -38,7 +38,7 @@
 }
 .tree-view:focused .tree-cell:filled:focused:selected,
 .tree-view:focused .tree-cell:filled:focused:selected:hover {
-    -fx-background-color: -fx-box-border, plum; 
+    -fx-background-color: -fx-box-border, mediumpurple; 
 }
 .tree-cell:filled:selected:focused, .tree-cell:filled:selected {
     -fx-background-color: -fx-box-border, plum;   
