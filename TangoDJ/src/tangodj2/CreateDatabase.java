@@ -154,7 +154,19 @@ public class CreateDatabase
 	    		"trackHash_7 varchar(32), " +
 	    		"trackHash_8 varchar(32), " +
 	    		"trackHash_9 varchar(32), " +
-	    		"cortinaId INTEGER " +
+	    		"cortinaId INTEGER, " +
+	    		"tanda_disable INTEGER NOT NULL DEFAULT 0, "+
+	    		"disable_t0 INTEGER NOT NULL DEFAULT 0, "+
+	    		"disable_t1 INTEGER NOT NULL DEFAULT 0, "+
+	    		"disable_t2 INTEGER NOT NULL DEFAULT 0, "+
+	    		"disable_t3 INTEGER NOT NULL DEFAULT 0, "+
+	    		"disable_t4 INTEGER NOT NULL DEFAULT 0, "+
+	    		"disable_t5 INTEGER NOT NULL DEFAULT 0, "+
+	    		"disable_t6 INTEGER NOT NULL DEFAULT 0, "+
+	    		"disable_t7 INTEGER NOT NULL DEFAULT 0, "+
+	    		"disable_t8 INTEGER NOT NULL DEFAULT 0, "+
+	    		"disable_t9 INTEGER NOT NULL DEFAULT 0, "+
+	    		"disable_cortina INTEGER NOT NULL DEFAULT 0"+
 	    		")";
 		//System.out.println(sql);
 		connection.createStatement().execute(sql);	

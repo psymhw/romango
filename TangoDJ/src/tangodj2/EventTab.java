@@ -289,7 +289,9 @@ Playlist.timeLeftProperty.addListener(remainingPlaylistTimeListener);
    public void update()
    {
      // playlist
-     this.playlistTrack=playlist.getPlayingPlaylistTrack();
+     playlistTrack=playlist.getPlayingPlaylistTrack();
+     if (playlistTrack==null) return;
+     
      playlistTimeVal.setText(formatIntoMMSS(playlist.getTotalPlaylistTime())); // in case we changed playlist
      
      // tanda

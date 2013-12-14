@@ -16,6 +16,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -27,6 +28,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+//import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -59,11 +61,7 @@ public class Playlist
   private int numberOfTandas=-1;
   double totalPlaylistTime=0;
   public static SimpleIntegerProperty playlistFocus = new SimpleIntegerProperty(0);
- // public static SimpleIntegerProperty selectedPlaylistTrack = new SimpleIntegerProperty(0);
- // public static SimpleDoubleProperty totalPlaylistTimeProperty = new SimpleDoubleProperty(0);
-// public static SimpleDoubleProperty timeLeftProperty = new SimpleDoubleProperty(0);
-  //final URL tree_stylesheet = getClass().getResource("tree.css");
-  
+   
   public Playlist(int playlistId) 
   {
 	  setupTreeView(playlistId);	
@@ -142,7 +140,41 @@ public class Playlist
     }
 	  //System.out.println("Playlist next track: "+nextTrack);
   }
+  
+  public void disableTrack(boolean set)
+  {
+    if (selectedPlaylistTrack==-1) return;
+    if (flatPlaylistTracks==null) return;
+    if (flatPlaylistTracks.size()==0) return;
+    PlaylistTrack playlistTrack = flatPlaylistTracks.get(selectedPlaylistTrack);
+  
+    if (playlistTrack.baseTreeItem.getStatus()!=TrackTreeItem.PLAYING)
+    {  
+      TandaTreeItem tandaTreeItem = getSelectedTanda();
+      Db.disableTrack(set, tandaTreeItem.getDbId(), playlistTrack.trackInTanda);
+      playlistTrack.baseTreeItem.setDisableImage(set);
+    }
+  }
+  
+  public void disableTanda(boolean set)
+  {
+    TandaTreeItem tandaTreeItem = getSelectedTanda();
+    tandaTreeItem.setDisableImage(set);
+    BaseTreeItem baseTreeItem=null;
+    
+    //System.out.println("disable tanda: "+tandaTreeItem.getDbId());
+    Db.disableTanda(set, tandaTreeItem.getDbId());
+    
+    // disable the tracks but not in the DB file
+    for(int i=0; i<tandaTreeItem.getChildren().size(); i++)
+    {
+      baseTreeItem=(BaseTreeItem)tandaTreeItem.getChildren().get(i);
+      baseTreeItem.setDisableImage(set);
+    }
+    
+  }
 	
+  /*
   public void generateFlatList()
   {
     int i=0;
@@ -159,6 +191,8 @@ public class Playlist
     double startTimeInTanda=0;
     totalPlaylistTime=0;
     String style="";
+    
+    
     
     while( true)
     {
@@ -268,9 +302,150 @@ public class Playlist
     }
   //  totalPlaylistTimeProperty.set(totalPlaylistTime);
     // System.out.println("Playlist total duration: "+formatIntoMMSS(totalPlaylistTime));
-    // printFlatList();
+   //  printFlatList();
    // printTandaInfoList();
+  //  collapseTandas();
   }
+   */
+  
+  public void generateFlatList()
+  {
+   // int i=0;
+    flatPlaylistTracks.clear();
+    int tandaCounter=-1;
+    int tandaTrackCounter=0;
+    int numberOfTracksInTanda=0;
+    String tandaName=null;
+    PlaylistTrack playlistTrack;
+    numberOfTandas=0;
+    int playableIndex=0;
+    
+    TandaInfo tandaInfo=null;
+    double startTimeInTanda=0;
+    totalPlaylistTime=0;
+    String style="";
+    
+    PlaylistTreeItem playlistTreeItem = (PlaylistTreeItem)treeView.getTreeItem(0);
+    playlistTreeItem.setPlayableIndex(0);
+    numberOfTandas=playlistTreeItem.getChildren().size();
+    
+    for(int j=0; j<playlistTreeItem.getChildren().size(); j++)
+    {
+      TandaTreeItem tandaTreeItem = (TandaTreeItem)playlistTreeItem.getChildren().get(j);
+      startTimeInTanda=0;
+      tandaInfo = new TandaInfo();
+      tandaTrackCounter=0;
+      tandaCounter++;
+      tandaName = tandaTreeItem.getArtistAndStyle();
+      style= tandaTreeItem.getStyle();
+      numberOfTracksInTanda=tandaTreeItem.getChildren().size()-1; // minus 1 for cortina
+      tandaTreeItem.setPlayableIndex(playableIndex);
+      
+      tandaInfo.numberOfTracksInTanda=0;
+      tandaInfo.tandaNumber=tandaCounter;
+      tandaInfo.tandaName=tandaName;
+      tandaInfo.numberOfTracksInTanda=numberOfTracksInTanda;
+      if ((tandaCounter+1)<numberOfTandas)
+      {
+        tandaInfo.nextTandaName=((TandaTreeItem)playlistTreeItem.getChildren().get(tandaCounter+1)).getArtistAndStyle();
+      }
+      
+      if (tandaTreeItem.getChildren().size()==0) tandaTreeItem.setPlayableIndex(999); // no tracks in tanda
+      for(int k=0; k<tandaTreeItem.getChildren().size(); k++)
+      {
+        BaseTreeItem baseTreeItem = (BaseTreeItem)tandaTreeItem.getChildren().get(k);
+        
+        if ("tango".equals(baseTreeItem.getTreeType())||"cleanup".equals(baseTreeItem.getTreeType()))
+        {
+          TrackTreeItem trackTreeItem = (TrackTreeItem)baseTreeItem;
+          trackTreeItem.setPlayableIndex(playableIndex);
+          playableIndex++;
+          playlistTrack = new PlaylistTrack();
+          playlistTrack.title=trackTreeItem.getValue();
+          playlistTrack.album=trackTreeItem.getAlbum();
+          playlistTrack.artist=trackTreeItem.getArtist();
+          playlistTrack.singer=trackTreeItem.getSinger();
+          playlistTrack.comment=trackTreeItem.getComment();
+          playlistTrack.path=trackTreeItem.getPath();
+          playlistTrack.style=style;
+          tandaTrackCounter++;
+          playlistTrack.trackInTanda=tandaTrackCounter;
+          playlistTrack.cortina=false;
+          playlistTrack.baseTreeItem=trackTreeItem;
+          playlistTrack.trackHash=trackTreeItem.getTrackHash();
+          playlistTrack.duration=trackTreeItem.getDuration();
+          playlistTrack.startTimeInPlaylist=totalPlaylistTime;
+          totalPlaylistTime+=playlistTrack.duration;
+          playlistTrack.startTimeInTanda=startTimeInTanda;
+          startTimeInTanda+=playlistTrack.duration;
+          tandaInfo.tandaDuration+=playlistTrack.duration;
+          playlistTrack.tandaInfo=tandaInfo;
+          flatPlaylistTracks.add(playlistTrack);
+        }
+        else if ("cortina".equals(baseTreeItem.getTreeType()))
+        {
+          CortinaTreeItem cortinaTreeItem = (CortinaTreeItem)baseTreeItem;
+          cortinaTreeItem.setPlayableIndex(playableIndex);
+          playableIndex++;
+          playlistTrack = new PlaylistTrack();
+          playlistTrack.title=cortinaTreeItem.getValue();
+          playlistTrack.album = cortinaTreeItem.getAlbum();
+          playlistTrack.artist = cortinaTreeItem.getArtist();
+          playlistTrack.singer="";
+          playlistTrack.comment="";
+          playlistTrack.style="Cortina";
+          playlistTrack.path=cortinaTreeItem.getPath();
+          playlistTrack.cortina=true;
+          playlistTrack.baseTreeItem=cortinaTreeItem;
+          playlistTrack.trackHash=cortinaTreeItem.getPathHash();
+          
+          playlistTrack.premade=cortinaTreeItem.getPremade();
+          playlistTrack.startValue =cortinaTreeItem.getStart();
+          playlistTrack.stopValue  =cortinaTreeItem.getStop();
+          playlistTrack.fadein     =cortinaTreeItem.getFadein();
+          playlistTrack.fadeout    =cortinaTreeItem.getFadeout();
+          playlistTrack.delay      =cortinaTreeItem.getDelay();
+          playlistTrack.original_duration  =cortinaTreeItem.getOriginal_duration();
+          playlistTrack.duration=cortinaTreeItem.getDuration();
+          
+          playlistTrack.tandaInfo=tandaInfo;
+          playlistTrack.startTimeInPlaylist=totalPlaylistTime;
+          totalPlaylistTime+=playlistTrack.duration;
+          tandaInfo.tandaDuration+=playlistTrack.duration;
+          playlistTrack.startTimeInTanda=startTimeInTanda;
+          startTimeInTanda+=playlistTrack.duration;
+          flatPlaylistTracks.add(playlistTrack);
+          // didn't set or increment tandaTrackCounter or set tandaCounter
+        }
+        
+        //System.out.println(k+", "+baseTreeItem.getValue());
+      }
+    }
+    
+    
+    // System.out.println("Playlist total duration: "+formatIntoMMSS(totalPlaylistTime));
+   //  printFlatList();
+   // printTandaInfoList();
+  //  collapseTandas();
+  }
+  
+  private void collapseTandas()
+  {
+    int i=0;
+ 
+    while( true)
+    {
+      BaseTreeItem ti = (BaseTreeItem)treeView.getTreeItem(i);
+      if (ti==null) break;
+      if ("tanda".equals(ti.getTreeType()))
+      {
+        TandaTreeItem tandaTreeItem = (TandaTreeItem)ti;
+        tandaTreeItem.setExpanded(false);
+      }
+      i++;
+    }
+  }
+ 
 	
   public void printFlatList()
   {
@@ -294,6 +469,11 @@ public class Playlist
       +playlistTrack.path);
       i++;
     }
+  }
+  
+  public int getFlatPlaylistSize()
+  {
+    return flatPlaylistTracks.size();
   }
   
   /*
@@ -387,15 +567,16 @@ public class Playlist
 		   playlistTreeItem.getChildren().addAll(tandaTreeItems);
 		 }
 			 
+		// treeView.setCellFactory(CheckBoxTreeCell.<String>forTreeView());
 		 treeView.setCellFactory(new Callback<TreeView<String>,TreeCell<String>>()
 		 {
 		   @Override
 		   public TreeCell<String> call(TreeView<String> p) 
 		   {
-			 return new MyCellFactory();
+			   return new MyCellFactory();
 		   }
 		  });
-			 
+			
 		 /* 
 		  * Detect tree item selected
 		  */
@@ -425,6 +606,8 @@ public class Playlist
    {
      if (selectedPlaylistTrack==999) return numberOfTandas-1;
      if (selectedPlaylistTrack==-1) return 0;
+     if (flatPlaylistTracks==null) return 0;
+     if (flatPlaylistTracks.size()==0) return 0;
      PlaylistTrack playlistTrack = flatPlaylistTracks.get(selectedPlaylistTrack);
      return playlistTrack.tandaInfo.tandaNumber;
    }
@@ -442,9 +625,8 @@ public class Playlist
 	     {
 	       setupTandaContextMenu(tandaContextMenu);
 	       setupTrackContextMenu(trackContextMenu);
-           setupPlaylistContextMenu(playlistContextMenu);
+         setupPlaylistContextMenu(playlistContextMenu);
 	       setupCortinaContextMenu(cortinaContextMenu);
-	      // this.getStyleClass().add("playlistTree");
 	     }
 	       
 	     @Override
@@ -468,77 +650,49 @@ public class Playlist
 	         }
 	         if ("playlist".equals(bti.getTreeType())) 
 	         {  
-	           //this.getStyleClass().add("playlistBackground");
-	          // this.getStyleClass().add("playlistPlaylistTreeItem");
-	           //setFont(Font.font("Serif", 20));
 	           setContextMenu(playlistContextMenu);
 	         }
 	         else if ("tanda".equals(bti.getTreeType())) 
 	         {	   
-	           //this.getStyleClass().add("tandaTitleText");
-	          // this.getStyleClass().add("playlistBackground");
-	         //  this.getStyleClass().add("tandaPlaylistTreeItem");
 	           if (playlistTreeItem.getTandaPosition((TandaTreeItem)bti)==0) tandaContextMenu.getItems().get(0).setDisable(true);  // disable move up
 	           if (playlistTreeItem.getTandaPosition((TandaTreeItem)bti)==playlistTreeItem.getTandaCount()-1) tandaContextMenu.getItems().get(1).setDisable(true); // disable move down
-	          // Font tandaTitleFont=Font.font("Serif", 18);
-	           
-	           //setFont(Font.font("Serif", 18));
-	           //Kludge alert
-	           tandaContextMenu.setId(""+playlistTreeItem.getTandaPosition((TandaTreeItem)bti));
-	           setContextMenu(tandaContextMenu);
-	          // setGraphic(getTreeItem().getGraphic());
+		           tandaContextMenu.setId(""+playlistTreeItem.getTandaPosition((TandaTreeItem)bti));
+		       
+		            // set disable checkmark in context menu
+		           CheckMenuItem cmi = (CheckMenuItem)tandaContextMenu.getItems().get(3);
+		           cmi.setSelected(bti.isDisabled());
+		             
+		           setContextMenu(tandaContextMenu);
 	         }
 	         else if ("tango".equals(bti.getTreeType()))
 	         {
-	           //setFont(Font.font("Serif", 16));
-	         //  this.getStyleClass().add("tangoPlaylistTreeItem");
-	          // this.getStyleClass().add("tangoPlaylistText");
 	           TrackTreeItem trackTreeItem = (TrackTreeItem)bti;
 	           this.getStyleClass().add("cortinaPlaylistText");
-	          // this.setTooltip(new Tooltip("Album: "+trackTreeItem.getAlbum()+"\n"
-	           //    +"Orchestra: "+trackTreeItem.getArtist()));
 	         
 	           int trackCount=((TandaTreeItem)trackTreeItem.getParent()).getTrackCount();
 	           int trackPosition=trackTreeItem.getTrackPosition(trackTreeItem);
 	           
 	           if (trackPosition==0) trackContextMenu.getItems().get(0).setDisable(true);  // disable move up
 	           if (trackPosition==trackCount-1) trackContextMenu.getItems().get(1).setDisable(true); // disable move down
+	          
 	           //Kludge alert
 	           trackContextMenu.setId(trackTreeItem.getTandaAndTrackPosition(trackTreeItem));
+	           
+	           // TODO
+	           CheckMenuItem cmi = (CheckMenuItem)trackContextMenu.getItems().get(4);
+             cmi.setSelected(bti.isDisabled());
 	           setContextMenu(trackContextMenu);
-	           //System.out.println("track update: "+trackTreeItem.getValue());
-	           //trackTreeItem.setSelected(true);
-	          // if (trackTreeItem.isSelected()) setGraphic(new ImageView(TrackTreeItem.greenCheckBallImage));
-	          // else setGraphic(new ImageView(TrackTreeItem.dimBallImage));
 	         }
 	         else if ("cortina".equals(bti.getTreeType()))
            {
-	         
              CortinaTreeItem cortinaTreeItem = (CortinaTreeItem)bti;
-          //   this.getStyleClass().add("cortinaPlaylistTreeItem");
-             // setStyle("-fx-border-color:rgba(219, 42, 199,.41);");
-            // this.getStyleClass().add("playlistBackground");
-            // int trackCount=((TandaTreeItem)cortinaTreeItem.getParent()).getTrackCount();
-            // System.out.println("Playlist - cortina track found: "+trackCount+" - "+cortinaTreeItem.getValue());
-             //int trackPosition=trackTreeItem.getTrackPosition(trackTreeItem);
-             
-            // if (trackPosition==0) trackContextMenu.getItems().get(0).setDisable(true);  // disable move up
-            // if (trackPosition==trackCount-1) trackContextMenu.getItems().get(1).setDisable(true); // disable move down
-             //Kludge alert
-           //  trackContextMenu.setId(trackTreeItem.getTandaAndTrackPosition(trackTreeItem));
-           //  setContextMenu(trackContextMenu);
-             //System.out.println("track update: "+trackTreeItem.getValue());
-             //trackTreeItem.setSelected(true);
-            // if (trackTreeItem.isSelected()) setGraphic(new ImageView(TrackTreeItem.greenCheckBallImage));
-            // else setGraphic(new ImageView(TrackTreeItem.dimBallImage));
              setContextMenu(cortinaContextMenu);
            }
 	         else if ("cleanup".equals(bti.getTreeType()))
            {
-            // this.getStyleClass().add("cleanupPlaylistText");
-            // this.getStyleClass().add("playlistBackground");
-           //  this.getStyleClass().add("cleanupPlaylistTreeItem");
              TrackTreeItem cleanupTreeItem = (TrackTreeItem)bti;
+             CheckMenuItem cmi = (CheckMenuItem)trackContextMenu.getItems().get(4);
+             cmi.setSelected(bti.isDisabled());
              setContextMenu(trackContextMenu);
            }
 	         setGraphic(getTreeItem().getGraphic());
@@ -553,54 +707,42 @@ public class Playlist
 	   
 	   private void setupTandaContextMenu(final ContextMenu tandaContextMenu)
 	   {
-		   MenuItem moveUp = new MenuItem("Move Tanda Up"); 
+	     MenuItem moveUp = new MenuItem("Move Tanda Up"); 
 	     MenuItem moveDown = new MenuItem("Move Tanda Down");
 	     MenuItem delete = new MenuItem("Delete Tanda" );
-	     tandaContextMenu.setOnShowing(new EventHandler() 
-	     {
-	       public void handle(Event e) 
-	       {
-	         //selectedTanda= Integer.parseInt(tandaContextMenu.getId());
-	       }
-	     });
-	     tandaContextMenu.getItems().addAll(moveUp, moveDown, delete);
+	     final CheckMenuItem disableItem = new CheckMenuItem("Skip Tanda"); 
+	     
+	     // don't change the positions of menu items. The cell factory gets them by index
+	     tandaContextMenu.getItems().addAll(moveUp, moveDown, delete, disableItem);
+	     
+	     disableItem.setOnAction(new EventHandler() 
+       {
+         public void handle(Event t) 
+         {
+          // System.out.println("Playlist - disable menu: "+disableItem.isSelected());
+           disableTanda(disableItem.isSelected()); generateFlatList();}
+       });
+	     
 	     moveUp.setOnAction(new EventHandler() 
 	     {
-	       public void handle(Event t) 
-	       {
-	         playlistTreeItem.moveTandaUp(selectedTanda);   
-	         generateFlatList();
-	         
-	       }
+	       public void handle(Event t) { playlistTreeItem.moveTandaUp(selectedTanda); generateFlatList(); }
 	     });
+	     
 	     moveDown.setOnAction(new EventHandler() 
 	     {
-	       public void handle(Event t) 
-	       {
-	         playlistTreeItem.moveTandaDown(selectedTanda);   
-	         generateFlatList();
-	       }
+	       public void handle(Event t) { playlistTreeItem.moveTandaDown(selectedTanda); generateFlatList(); }
 	     });
+	     
 	     delete.setOnAction(new EventHandler() 
 	     {
-	       public void handle(Event t) 
-	       {
-	         playlistTreeItem.deleteTanda(selectedTanda); 
-	         generateFlatList();
-	       }
+	       public void handle(Event t) { playlistTreeItem.deleteTanda(selectedTanda); generateFlatList();  }
 	     });
 	   } 
 	   
 	   private void setupPlaylistContextMenu(final ContextMenu playlistContextMenu)
      {
        MenuItem newTanda = new MenuItem("New Tanda"); 
-     //  playlistContextMenu.setOnShowing(new EventHandler() 
-      // {
-     //    public void handle(Event e) 
-      //   {
-      //     SharedValues.selectedTanda= Integer.parseInt(tandaContextMenu.getId());
-      //   }
-     //  });
+     
        playlistContextMenu.getItems().add(newTanda);
        newTanda.setOnAction(new EventHandler() 
        {
@@ -638,72 +780,44 @@ public class Playlist
 	       
 	   private void setupTrackContextMenu(final ContextMenu trackContextMenu)
 	   {
-		   MenuItem moveUp = new MenuItem("Move Track Up"); 
+	     
+	     MenuItem moveUp = new MenuItem("Move Track Up"); 
 	     MenuItem moveDown = new MenuItem("Move Track Down");
 	     MenuItem delete = new MenuItem("Remove Track");
 	     MenuItem playNext = new MenuItem("Play Next");
+	     final CheckMenuItem disableItem = new CheckMenuItem("Skip Track"); 
 	     
-	     
-	     trackContextMenu.setOnShowing(new EventHandler() 
-	     {
-	       public void handle(Event e) 
-	       {
-	         /*
-	    	 String trackId = trackContextMenu.getId();  
-	    	 String[] tokens = trackId.split(",");
-	    	 
-	    	 for (int i = 0; i < tokens.length; i++)
-	    	 {
-	    	   if (i==0)
-	    	   {
-	    	     selectedTanda=Integer.parseInt(tokens[i]);
-	    	   }
-	    	   if (i==1) 
-	    	   {
-	    	     selectedPlaylistTrack=Integer.parseInt(tokens[i]);
-	    	   }
-	       }
-	       */
-       }
-	   });
-	   trackContextMenu.getItems().addAll(moveUp, moveDown, delete, playNext);
+	     trackContextMenu.getItems().addAll(moveUp, moveDown, delete, playNext, disableItem);
 	   
-	   playNext.setOnAction(new EventHandler() 
+	     playNext.setOnAction(new EventHandler() 
+       {
+         public void handle(Event t) { setNextTrackToPlay(); }
+       });
+	     
+	     disableItem.setOnAction(new EventHandler() 
        {
          public void handle(Event t) 
-         {
-           setNextTrackToPlay();
+         { 
+           disableTrack(disableItem.isSelected()); 
+           generateFlatList();
          }
-     });
+       });
 	   
-	   
-	   moveUp.setOnAction(new EventHandler() 
-	   {
-	     public void handle(Event t) 
+	     moveUp.setOnAction(new EventHandler() 
 	     {
-	       playlistTreeItem.getTanda(selectedTanda).moveTrackUp(selectedPlaylistTrack);
-	       generateFlatList();
-	     }
-	   });
+	       public void handle(Event t) { playlistTreeItem.getTanda(selectedTanda).moveTrackUp(selectedPlaylistTrack); generateFlatList(); }
+	     });
 	   
-	   moveDown.setOnAction(new EventHandler() 
-	   {
-	     public void handle(Event t) 
+	     moveDown.setOnAction(new EventHandler() 
 	     {
-	       playlistTreeItem.getTanda(selectedTanda).moveTrackDown(selectedPlaylistTrack);
-	       generateFlatList();
-	     }
-	   });
+	       public void handle(Event t) { playlistTreeItem.getTanda(selectedTanda).moveTrackDown(selectedPlaylistTrack); generateFlatList(); }
+	     });
 	   
-	   delete.setOnAction(new EventHandler() 
-	   {
-	     public void handle(Event t) 
+	     delete.setOnAction(new EventHandler() 
 	     {
-	       playlistTreeItem.getTanda(selectedTanda).deleteTrack(selectedPlaylistTrack);
-	       generateFlatList();
-	     }
-	   });
-	 } 
+	       public void handle(Event t) { playlistTreeItem.getTanda(selectedTanda).deleteTrack(selectedPlaylistTrack); generateFlatList(); }
+	     });
+	   } 
 
 	   private void newTandaDialog() 
 	   {
@@ -808,6 +922,15 @@ public class Playlist
     
     public PlaylistTrack getPlayingPlaylistTrack()
     {
+      if ((playingTrack<0)||(flatPlaylistTracks==null)||(flatPlaylistTracks.size()==0))
+      {
+        System.out.println("Playlist-getPlayingPlaylistTrack() unexpected null");
+        System.out.println("Playlist-playingTrack: "+playingTrack);
+        if (flatPlaylistTracks==null) System.out.println("Playlist-flatPlaylistTracks is null ");
+        else System.out.println("Playlist-flatPlaylistTracks size: "+flatPlaylistTracks.size());
+        return null;
+      }
+    
       return flatPlaylistTracks.get(playingTrack);
     }
     

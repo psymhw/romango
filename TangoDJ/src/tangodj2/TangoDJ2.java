@@ -214,6 +214,9 @@ public class TangoDJ2 extends Application
     //tabPane.getTabs().add(equalizerTab);
     tabPane.getTabs().add(cortinaTab);
     tabPane.getTabs().add(eventTab);
+    AdminTab adminTab = new AdminTab();
+    adminTab.setText("Admin");
+    tabPane.getTabs().add(adminTab);
    
     VBox mainPane = new VBox();
     //mainPane.setStyle("-fx-background-color: DAE6F3; -fx-border-color: RED; -fx-border-style: SOLID; -fx-border-width: 1px;");     
