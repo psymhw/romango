@@ -108,8 +108,7 @@ public class PlaylistBuilderTab extends Tab
     {
       public void handle(MouseEvent event) 
       {
-        System.out.println("Tango Tracks: "+TangoTable.tangoTracksData.size());
-        System.out.println("Non-Tango Tracks: "+CleanupTable.cleanupTracksData.size());
+        System.out.println("Flatlist size: "+playlist.getFlatPlaylistSize());
       }
     };
     testButton.setOnMouseClicked(bHandler);

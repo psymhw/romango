@@ -653,14 +653,56 @@ String sql;
 	    return returnStr;
 	 }
 	
+	public static void execute(String sql)
+	{
+	  try
+    {
+      connection.createStatement().execute(sql);
+    } catch (SQLException e)
+    {
+      e.printStackTrace();
+    }
+	}
 	
+	public static void disableTanda(boolean set, int id)
+	{
+	  int value=0;
+	  if (set==true) value=1;
+	  String sql="update tandas set tanda_disable = "+value
+	      +", disable_t0 = "+value
+	      +", disable_t1 = "+value
+	      +", disable_t2 = "+value
+	      +", disable_t3 = "+value
+	      +", disable_t4 = "+value
+	      +", disable_t5 = "+value
+	      +", disable_t6 = "+value
+	      +", disable_t7 = "+value
+	      +", disable_t8 = "+value
+	      +", disable_t9 = "+value
+	      +", disable_cortina = "+value
+	      +" where id="+id;
+	  try {
+    connection.createStatement().execute(sql);
+	  } catch (Exception e) {e.printStackTrace(); }
+	}
+	
+	public static void disableTrack(boolean set, int tandaId, int trackInTanda)
+	{
+	  int value=0;
+    if (set==true) value=1;
+	  //System.out.println("Db - trackInTanda: "+trackInTanda);
+	  String sql="update tandas set disable_t"+(trackInTanda-1)+" = "+value +" where id="+tandaId;
+	  try {
+	    connection.createStatement().execute(sql);
+	    } catch (Exception e) {e.printStackTrace(); }
+	}
 	
 	public static ArrayList<TandaTreeItem> getTandaTreeItems(int playlistId)  throws SQLException, ClassNotFoundException
 	{
 	  ArrayList<TandaTreeItem> tandaTreeItems = new ArrayList<TandaTreeItem>();
 	  connect();
 	  String sql="select * from tandas where playlistId="+playlistId+" order by position";
-	  connection.createStatement().execute(sql);
+	 // connection.createStatement().execute(sql);
 	 
      // System.out.println("sql: "+sql);
       Statement statement = connection.createStatement();
@@ -672,19 +714,29 @@ String sql;
     	  tandaTreeItem = new TandaTreeItem(resultSet.getString("artist"), resultSet.getInt("styleId"));
     	  tandaTreeItem.setDbId(resultSet.getInt("id"));
     	  tandaTreeItem.setCortinaId(resultSet.getInt("cortinaId"));
-    	  //System.out.println("Db - getTandaTreeItems - cortinaId: "+tandaTreeItem.getCortinaId());
+    	  int tanda_disable=resultSet.getInt("tanda_disable");
+    	  tandaTreeItem.setDisabled(tanda_disable);
+    
     	  // GET THE TRACKS 
     	  for(int i=0; i<10; i++)
     	  {
     	 	  String trackName="trackHash_"+i;
+    	 	  String disableName="disable_t"+i;
     		  String trackHash=resultSet.getString(trackName);
-    		//System.out.println("Db - trackHash Found: "+i+" - "+trackHash);
-    		  if (trackHash!=null) tandaTreeItem.loadTrack(trackHash);
+    		  int track_disable=resultSet.getInt(disableName);
+    		  //if (tanda_disable==1) track_disable=1; // If the tanda is disables, so are all the tracks, regardless of their db setting
+    		  
+    		  // LOAD THE TRACKS INTO THE TANDA
+    		  if (trackHash!=null) tandaTreeItem.loadTrack(trackHash, track_disable);
+    	  		  
     	  }
     	  
-    	  // GET THE CORTINA
-    	  tandaTreeItem.loadCortina(tandaTreeItem.getCortinaId());
     	  
+    	  // GET THE CORTINA
+    	  int cortina_disable = resultSet.getInt("disable_cortina");
+    	 // if (tanda_disable==1) cortina_disable=1; // If the tanda is disables, so is the cortina, regardless of its db setting
+    	  tandaTreeItem.loadCortina(tandaTreeItem.getCortinaId(), cortina_disable);
+    	  tandaTreeItem.setExpanded(false);
     	  tandaTreeItems.add(tandaTreeItem);
       }
    	  if (resultSet!=null) resultSet.close();

@@ -26,7 +26,7 @@ public class TandaTreeItem extends BaseTreeItem
    private int cortinaStart=0;
    private int cortinaStop;
    private String treeType="";
-   private static Image flagsImage;
+  // private static Image flagsImage;
       
    public TandaTreeItem(String artist, int styleId)
    {
@@ -34,8 +34,8 @@ public class TandaTreeItem extends BaseTreeItem
   	 this.setTreeType("tanda");
   	 this.artist=artist;
   	 this.styleId=styleId;
-  	 if (flagsImage==null) flagsImage = new Image(getClass().getResourceAsStream("/resources/images/small_flags.png"));
-  	 setGraphic(new ImageView(flagsImage));
+  	 //if (flagsImage==null) flagsImage = new Image(getClass().getResourceAsStream("/resources/images/small_flags.png"));
+  	// setGraphic(new ImageView(flagsImage));
   	 this.style=SharedValues.styles.get(styleId) ;
   	 this.setValue(artist + " - "+style);
    }
@@ -158,17 +158,18 @@ public class TandaTreeItem extends BaseTreeItem
     }
     
   
-  public void loadTrack(String trackHash)
+  public void loadTrack(String trackHash, int disabled)
   {
   	if (trackHash==null) return;  
   	trackHashCodes.add(trackHash);
   	TrackTreeItem tti = new TrackTreeItem(trackHash, trackHashCodes.size());
+  	tti.setDisabled(disabled);
   	getChildren().add(tti);
   	setExpanded(true);
 	//numberOfTracks++;
   }
   
-  public void loadCortina(int cortinaId)
+  public void loadCortina(int cortinaId, int disable)
   {
     //System.out.println("TandaTreeItem - loadCortinaTrack: "+cortinaId);
     if (cortinaId==-1) return;  
@@ -179,6 +180,7 @@ public class TandaTreeItem extends BaseTreeItem
       return;
     }
     CortinaTreeItem cti = new CortinaTreeItem(cortinaTrack);
+    cti.setDisabled(disable);
     getChildren().add(cti);
     setExpanded(true);
   //numberOfTracks++;
@@ -286,6 +288,30 @@ public void setCortinaId(int cortinaId)
   this.cortinaId = cortinaId;
 }
 
+// these 2 funcs override the ones in BaseTreeItem
+public void setDisabled(int set)
+{
+  if (set==1) setDisableImage(true);
+  else setDisableImage(false);
+}
 
+public void setDisableImage(boolean set)
+{
+  //System.out.println("BaseTreeItem - Set Next Play Image: "+set);
+   if (set) 
+   {  
+       setGraphic(new ImageView(disable));
+       status=DISABLED;
+   }
+   else 
+   {  
+     setGraphic(new ImageView(flagsImage));
+     status=NONE;
+   }
+   // have to set and reset the value here or the image doesn't change
+   String tValue = getValue();
+   setValue(tValue+" ");
+   setValue(tValue);
+}
    
 }
