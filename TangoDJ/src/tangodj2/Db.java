@@ -690,8 +690,9 @@ String sql;
 	{
 	  int value=0;
     if (set==true) value=1;
-	  //System.out.println("Db - trackInTanda: "+trackInTanda);
+	  
 	  String sql="update tandas set disable_t"+(trackInTanda-1)+" = "+value +" where id="+tandaId;
+	 // System.out.println("Db - trackInTanda: "+sql);
 	  try {
 	    connection.createStatement().execute(sql);
 	    } catch (Exception e) {e.printStackTrace(); }

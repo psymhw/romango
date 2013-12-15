@@ -10,4 +10,5 @@ public class TandaInfo
   public String tandaName;
   public String nextTandaName;
   public TandaTreeItem tandaTreeItem;
+  public int dbId=0;
 }

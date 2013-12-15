@@ -164,6 +164,7 @@ public class TandaTreeItem extends BaseTreeItem
   
   public void loadTrack(String trackHash, int disabled)
   {
+    //System.out.println("TandaTreeItem - trackHash: "+trackHash+", disabled: "+disabled);
   	if (trackHash==null) return;  
   	trackHashCodes.add(trackHash);
   	TrackTreeItem tti = new TrackTreeItem(trackHash, trackHashCodes.size());

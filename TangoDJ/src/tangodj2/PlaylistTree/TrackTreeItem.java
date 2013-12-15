@@ -24,7 +24,7 @@ public class TrackTreeItem extends BaseTreeItem
   private double duration;
   private String singer;
   private String comment;
- 
+  
   
   public TrackTreeItem(String trackHash, int position)
   {
@@ -70,6 +70,13 @@ public class TrackTreeItem extends BaseTreeItem
 	  TandaTreeItem tandaTreeItem = (TandaTreeItem)getParent();
 	  int trackIndex = tandaTreeItem.getChildren().indexOf(tti);
 	  return trackIndex;
+  }
+  
+  public int getTrackPosition()
+  {
+    TandaTreeItem tandaTreeItem = (TandaTreeItem)getParent();
+    int trackIndex = tandaTreeItem.getChildren().indexOf(this);
+    return trackIndex;
   }
 
   public String getTrackHash() {
@@ -192,6 +199,12 @@ public String getComment()
 {
   return comment;
 }
+
+
+
+
+
+
 
 
 }
