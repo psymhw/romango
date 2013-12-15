@@ -755,7 +755,7 @@ String sql;
 	   int position = playlistTreeItem.getTandaPosition(tandaTreeItem);
 	   
 	   ArrayList<String> trackHashCodes = tandaTreeItem.getTrackHashCodes();
-	   System.out.println("Db - trackHashCodes size: "+trackHashCodes.size());
+	   //System.out.println("Db - trackHashCodes size: "+trackHashCodes.size());
 	   Iterator<String> it = trackHashCodes.iterator();
 	   int counter=0;
 	   while(it.hasNext())
