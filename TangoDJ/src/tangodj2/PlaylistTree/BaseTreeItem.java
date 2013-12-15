@@ -15,6 +15,7 @@ public class BaseTreeItem extends TreeItem<String>
   public static Image flagsImage;
   public static Image disable;
   public int playableIndex=-1;
+  private int trackInTree;
   
   public final static int PLAYING = 1;
   public final static int SELECTED = 2;
@@ -109,7 +110,7 @@ public void setNextPlayImage(boolean set)
 
 public void setDisableImage(boolean set)
 {
-  //System.out.println("BaseTreeItem - Set Next Play Image: "+set);
+  //System.out.println("BaseTreeItem - Set Next Disable Image: "+set);
    if (set) 
    {  
        setGraphic(new ImageView(disable));
@@ -117,7 +118,7 @@ public void setDisableImage(boolean set)
    }
    else 
    {  
-     if ("tanda".equals(treeType)) setGraphic(new ImageView(flagsImage)); else setGraphic(new ImageView(gray_light));
+     setGraphic(new ImageView(gray_light));
      status=NONE;
    }
    // have to set and reset the value here or the image doesn't change
@@ -147,6 +148,16 @@ public void setDisabled(int set)
 public int getStatus()
 {
   return status;
+}
+
+public int getTrackInTree()
+{
+  return trackInTree;
+}
+
+public void setTrackInTree(int trackInTree)
+{
+  this.trackInTree = trackInTree;
 }
 
 

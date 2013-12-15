@@ -48,6 +48,7 @@ import tangodj2.cortina.CortinaTrack;
 public class Playlist 
 {
   private PlaylistTreeItem playlistTreeItem;
+  private BaseTreeItem selectedBaseTreeItem;
   private TreeView<String> treeView;
   private PlaylistTrack previouslyPlayingTrack=null;
   private PlaylistTrack previouslySelectedTrack=null;
@@ -143,16 +144,13 @@ public class Playlist
   
   public void disableTrack(boolean set)
   {
-    if (selectedPlaylistTrack==-1) return;
-    if (flatPlaylistTracks==null) return;
-    if (flatPlaylistTracks.size()==0) return;
-    PlaylistTrack playlistTrack = flatPlaylistTracks.get(selectedPlaylistTrack);
+    TrackTreeItem trackTreeItem = (TrackTreeItem)selectedBaseTreeItem;
+    //System.out.println("Playlist disable track: "+set);
   
-    if (playlistTrack.baseTreeItem.getStatus()!=TrackTreeItem.PLAYING)
+    if (trackTreeItem.getStatus()!=BaseTreeItem.PLAYING)
     {  
-      TandaTreeItem tandaTreeItem = getSelectedTanda();
-      Db.disableTrack(set, tandaTreeItem.getDbId(), playlistTrack.trackInTanda);
-      playlistTrack.baseTreeItem.setDisableImage(set);
+      Db.disableTrack(set, trackTreeItem.getTandaDbId(), trackTreeItem.getTrackInTree());
+      trackTreeItem.setDisableImage(set);
     }
   }
   
@@ -349,6 +347,7 @@ public class Playlist
       tandaInfo.tandaNumber=tandaCounter;
       tandaInfo.tandaName=tandaName;
       tandaInfo.numberOfTracksInTanda=numberOfTracksInTanda;
+      tandaInfo.dbId=j;
       int checkIndex=tandaCounter+1;
       while (checkIndex<numberOfTandas)
       {
@@ -371,6 +370,8 @@ public class Playlist
       for(int k=0; k<tandaTreeItem.getChildren().size(); k++)
       {
         BaseTreeItem baseTreeItem = (BaseTreeItem)tandaTreeItem.getChildren().get(k);
+        baseTreeItem.setTrackInTree(k);
+        
         if (baseTreeItem.isDisabled()) continue;
         
         
@@ -379,6 +380,7 @@ public class Playlist
         if ("tango".equals(baseTreeItem.getTreeType())||"cleanup".equals(baseTreeItem.getTreeType()))
         {
           TrackTreeItem trackTreeItem = (TrackTreeItem)baseTreeItem;
+          
           trackTreeItem.setPlayableIndex(playableIndex);
           playableIndex++;
           playlistTrack = new PlaylistTrack();
@@ -549,8 +551,8 @@ public class Playlist
 	
   public TandaTreeItem getSelectedTanda()
   {
-	if (selectedTanda==-1) selectedTanda=0;
-	return getTanda(selectedTanda);
+	  if (selectedTanda==-1) selectedTanda=0;
+	  return getTanda(selectedTanda);
   }
 	
   public TandaTreeItem  getTanda(int index)
@@ -610,16 +612,19 @@ public class Playlist
 			   if (newItem!=null)
 			   {
 			     BaseTreeItem bti = (BaseTreeItem)newItem;
-			     // TODO
+			     selectedBaseTreeItem=bti;
+			     // TODO got a bit of a mixed model going here. Maybe should just have 
+			     // selected tree item, which will have the playable index.
 			     selectedTanda=-1;
 			     if ("tanda".equals(bti.getTreeType()))
 			     {
 			       TandaTreeItem tandaTreeItem = (TandaTreeItem)bti;
 			       selectedTanda = tandaTreeItem.getPlaylistIndex();
 			     }
+			     
 			     selectedPlaylistTrack=-1;
 			     selectedPlaylistTrack=bti.getPlayableIndex();
-			    // System.out.println("Playlist - selectedIndex: "+selectedPlaylistTrack);
+			     System.out.println("Playlist - selectedIndex: "+selectedPlaylistTrack);
 			    // selectedTanda=getTandaNumber(selectedPlaylistTrack);
            
 			     playlistFocus.set(playlistFocus.get()+1);
