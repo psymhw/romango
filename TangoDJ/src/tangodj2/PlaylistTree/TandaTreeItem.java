@@ -26,6 +26,7 @@ public class TandaTreeItem extends BaseTreeItem
    private int cortinaStart=0;
    private int cortinaStop;
    private String treeType="";
+   private int playlistIndex=0; // irregardless of disabled or not
   // private static Image flagsImage;
       
    public TandaTreeItem(String artist, int styleId)
@@ -42,18 +43,21 @@ public class TandaTreeItem extends BaseTreeItem
    
    public void moveTrackUp(int index)
    {
- 	 TrackTreeItem tti =  (TrackTreeItem)getChildren().get(index);
- 	 getChildren().remove(index);
- 	 getChildren().add(index-1, tti);
+ 	   TrackTreeItem tti =  (TrackTreeItem)getChildren().get(index);
+ 	   //System.out.println("TandaTreeItem - moveTrackUp - index: "+index+", "+tti.getValue());
+ 	   getChildren().remove(index);
+ 	   getChildren().add(index-1, tti);
  	 
- 	 String trackHashCode = trackHashCodes.get(index);
- 	 trackHashCodes.remove(index);
- 	 trackHashCodes.add(index-1, trackHashCode);
+ 	   String trackHashCode = trackHashCodes.get(index);
+ 	   trackHashCodes.remove(index);
+ 	   trackHashCodes.add(index-1, trackHashCode);
  	 
  	 try 
       {
  	   Db.updateTandaTracks(this);
  	} catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
+ 	
+ 	   
    }
    
    public void moveTrackDown(int index)
@@ -312,6 +316,16 @@ public void setDisableImage(boolean set)
    String tValue = getValue();
    setValue(tValue+" ");
    setValue(tValue);
+}
+
+public int getPlaylistIndex()
+{
+  return playlistIndex;
+}
+
+public void setPlaylistIndex(int playlistIndex)
+{
+  this.playlistIndex = playlistIndex;
 }
    
 }

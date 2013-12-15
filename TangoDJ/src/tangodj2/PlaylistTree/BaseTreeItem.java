@@ -132,6 +132,12 @@ public boolean isDisabled()
   else return false;
 }
 
+public boolean isPlaying()
+{
+  if (status==PLAYING) return true;
+  else return false;
+}
+
 public void setDisabled(int set)
 {
   if (set==1) setDisableImage(true);
@@ -142,6 +148,8 @@ public int getStatus()
 {
   return status;
 }
+
+
 /*
 public boolean isSelected()
 {

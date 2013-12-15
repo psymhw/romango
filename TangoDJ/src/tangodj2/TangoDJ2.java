@@ -67,9 +67,12 @@ import tangodj2.tango.TangoTable;
  * Index on tracks to make them load faster
  * put distribution version in state file
  * Lists tab where you can create various lists of tracks. Then be able to add them from the PlalistBuilder tab
+ * App icon
+ * * sunset screen for cleanup?
  */
 public class TangoDJ2 extends Application 
 {
+  public final static String version = "1.5";
   static Stage primaryStage;
   static PlaylistBuilderTab playlistBuilderTab;
   static PlaylistChoiceTab playlistChoiceTab;
