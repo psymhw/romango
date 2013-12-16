@@ -464,6 +464,7 @@ String sql;
 	 	  incept = resultSet.getDate("incept");
 	 	  id = resultSet.getInt("id");
 	 	  playlistTreeItem = new PlaylistTreeItem(id, name);
+	 	  playlistTreeItem.setTreeType("playlist");
 	 	}
 	 	if (resultSet!=null) resultSet.close();
 	 	if (statement!=null) statement.close();

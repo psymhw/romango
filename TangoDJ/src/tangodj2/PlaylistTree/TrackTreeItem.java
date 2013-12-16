@@ -51,18 +51,14 @@ public class TrackTreeItem extends BaseTreeItem
        
   }
     
-  
- 
-  
-  
-  
-  public String getTandaAndTrackPosition(TrackTreeItem tti)
+    
+  public String getTandaAndTrackPosition()
   {
-  	TandaTreeItem tandaTreeItem = (TandaTreeItem)getParent();
-  	PlaylistTreeItem playlistTreeItem = (PlaylistTreeItem)tandaTreeItem.getParent();
-  	int tandaIndex = playlistTreeItem.getTandaPosition(tandaTreeItem);
-  	int trackIndex = tandaTreeItem.getChildren().indexOf(tti);
-  	return tandaIndex+","+trackIndex;
+    TandaTreeItem tandaTreeItem = (TandaTreeItem)getParent();
+    PlaylistTreeItem playlistTreeItem = (PlaylistTreeItem)tandaTreeItem.getParent();
+    int tandaIndex = playlistTreeItem.getTandaPosition(tandaTreeItem);
+    int trackIndex = tandaTreeItem.getChildren().indexOf(this);
+    return tandaIndex+","+trackIndex;
   }
   
   public int getTrackPosition(TrackTreeItem tti)
@@ -105,6 +101,11 @@ public class TrackTreeItem extends BaseTreeItem
 
 public int getTandaDbId() {
 	return tandaDbId;
+}
+
+public TandaTreeItem getTanda()
+{
+  return (TandaTreeItem)getParent();
 }
 
 public void setTandaDbId(int tandaDbId) {

@@ -60,6 +60,30 @@ public class TandaTreeItem extends BaseTreeItem
  	   
    }
    
+   public void moveTrackUp(TrackTreeItem tti)
+   {
+     //TrackTreeItem tti =  (TrackTreeItem)getChildren().get(index);
+     //System.out.println("TandaTreeItem - moveTrackUp - index: "+index+", "+tti.getValue());
+     int index = tti.getTrackPosition();
+     getChildren().remove(index);
+     getChildren().add(index-1, tti);
+   
+     String trackHashCode = trackHashCodes.get(index);
+     trackHashCodes.remove(index);
+     trackHashCodes.add(index-1, trackHashCode);
+     try 
+     {
+       Db.updateTandaTracks(this);
+     } catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
+   }
+   
+   public String getTandaAndTrackPosition()
+   {
+     PlaylistTreeItem playlistTreeItem = (PlaylistTreeItem)getParent();
+     int tandaIndex = playlistTreeItem.getTandaPosition(this);
+     return tandaIndex+","+"-1";
+   }
+   
    public void moveTrackDown(int index)
    {
  	 TrackTreeItem tti =  (TrackTreeItem)getChildren().get(index);
@@ -161,6 +185,11 @@ public class TandaTreeItem extends BaseTreeItem
   	//numberOfTracks++;
     }
     
+  public TrackTreeItem getFirstTrack()
+  {
+    if (getChildren().size()==0) return null;
+    return (TrackTreeItem)getChildren().get(0);
+  }
   
   public void loadTrack(String trackHash, int disabled)
   {

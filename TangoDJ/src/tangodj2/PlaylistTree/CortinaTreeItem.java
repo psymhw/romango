@@ -54,9 +54,23 @@ public class CortinaTreeItem extends BaseTreeItem
     return album;
   }
 
+  public String getTandaAndTrackPosition()
+  {
+    TandaTreeItem tandaTreeItem = (TandaTreeItem)getParent();
+    PlaylistTreeItem playlistTreeItem = (PlaylistTreeItem)tandaTreeItem.getParent();
+    int tandaIndex = playlistTreeItem.getTandaPosition(tandaTreeItem);
+    int trackIndex = tandaTreeItem.getChildren().indexOf(this);
+    return tandaIndex+","+trackIndex;
+  }
+  
   public void setAlbum(String album)
   {
     this.album = album;
+  }
+  
+  public TandaTreeItem getTanda()
+  {
+    return (TandaTreeItem)getParent();
   }
 
   public String getPath()

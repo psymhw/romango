@@ -160,7 +160,10 @@ public void setTrackInTree(int trackInTree)
   this.trackInTree = trackInTree;
 }
 
-
+public String toString()
+{
+  return getValue();
+}
 /*
 public boolean isSelected()
 {
