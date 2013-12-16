@@ -26,7 +26,7 @@ public class PlaylistTrack
    public int premade;
    public int fadein;
    public int fadeout;
-   public int delay;
+   public boolean delay;
    public int original_duration;
    public int startValue;
    public int stopValue;

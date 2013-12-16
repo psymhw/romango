@@ -690,23 +690,31 @@ public class Player
       playPlaylist();
     }
     
-    public void playTrackDelay(final int delayTime)
+    public void playPlaylistDelayed(final PlaylistTrack playlistTrack)
     {
+      currentTrackTitleLabel.setText("Delay 3");
       final Timeline timeline = new Timeline();
-      timeline.setCycleCount(Timeline.INDEFINITE);
+      timeline.setCycleCount(3);
+      
       KeyFrame keyFrame= new KeyFrame(Duration.seconds(1), new EventHandler() 
       {
-        int seconds=delayTime;
+        int seconds=3;
         public void handle(Event event) 
         {
-         seconds--;
-         if (seconds<=0) 
-         {
-           timeline.stop();
-     //      playTrack();
-         }
+           currentTrackTitleLabel.setText("Delay "+seconds);
+           seconds--;
          }});
               
+        timeline.setOnFinished(new EventHandler() 
+        {
+          public void handle(Event arg0)
+          {
+            playlistTrack.baseTreeItem.setPlayingImage(false);
+            if (playlist.getPlayingTrack()==playlist.getNextTrack()) 
+                playlist.setNextTrack(playlist.getNextTrack()+1);
+            playPlaylist();
+          }
+        });
         timeline.getKeyFrames().add(keyFrame);
         timeline.playFromStart();
     }
@@ -940,11 +948,16 @@ public class Player
       public void run() 
       {
         stopPlaying();
-        playlistTrack.baseTreeItem.setPlayingImage(false);
-        if (playlist.getPlayingTrack()==playlist.getNextTrack()) 
-            playlist.setNextTrack(playlist.getNextTrack()+1);
+       
         
-        playPlaylist();
+        if (playlistTrack.delay) playPlaylistDelayed(playlistTrack);
+        else 
+        {  
+          playlistTrack.baseTreeItem.setPlayingImage(false);
+          if (playlist.getPlayingTrack()==playlist.getNextTrack()) 
+              playlist.setNextTrack(playlist.getNextTrack()+1);
+          playPlaylist();
+        }
       }
     });
   }

@@ -24,6 +24,8 @@ public class TrackTreeItem extends BaseTreeItem
   private double duration;
   private String singer;
   private String comment;
+  private int delay=0;
+  private int dbId=-1;
   
   
   public TrackTreeItem(String trackHash, int position)
@@ -31,8 +33,6 @@ public class TrackTreeItem extends BaseTreeItem
   	super();
   	this.trackHash=trackHash;
   	this.setTreeType("tango");
-  	//if (greenCheckBallImage==null) greenCheckBallImage = new Image(getClass().getResourceAsStream("/resources/images/green_check_ball.png"));
-    //if (dimBallImage==null) dimBallImage = new Image(getClass().getResourceAsStream("/resources/images/dim_ball.png"));
    
   	setGraphic(new ImageView(gray_light));
   	TrackDb trackDb=Db.getTrackInfo(trackHash);
@@ -43,6 +43,8 @@ public class TrackTreeItem extends BaseTreeItem
   	this.duration=trackDb.duration;
   	this.singer=trackDb.singer;
   	this.comment=trackDb.comment;
+  	this.delay=trackDb.delay;
+  	this.dbId=trackDb.id;
   	this.setValue(trackDb.title);
   	
   	//this.getChildren().add(new DetailTreeItem("Length", formatTime(new Duration(TrackDb.duration))));
@@ -202,6 +204,28 @@ public String getComment()
 }
 
 
+public int getDelay()
+{
+  return delay;
+}
+
+
+public void setDelay(int delay)
+{
+  this.delay = delay;
+}
+
+public boolean isDelay()
+{
+  if (delay>0) return true;
+  return false;
+}
+
+
+public int getDbId()
+{
+  return dbId;
+}
 
 
 

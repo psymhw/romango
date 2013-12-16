@@ -41,6 +41,7 @@ public class TandaTreeItem extends BaseTreeItem
   	 this.setValue(artist + " - "+style);
    }
    
+   /*
    public void moveTrackUp(int index)
    {
  	   TrackTreeItem tti =  (TrackTreeItem)getChildren().get(index);
@@ -60,10 +61,33 @@ public class TandaTreeItem extends BaseTreeItem
  	   
    }
    
+   public void moveTrackDown(int index)
+   {
+   TrackTreeItem tti =  (TrackTreeItem)getChildren().get(index);
+  String trackHashCode = trackHashCodes.get(index);
+   
+  getChildren().remove(index);
+  trackHashCodes.remove(index);
+   
+  if (getTrackCount()<index)
+  { 
+    getChildren().add(tti);
+    trackHashCodes.add(trackHashCode);
+  }
+  else
+  {
+    trackHashCodes.add(index+1, trackHashCode);
+    getChildren().add(index+1, tti);
+  }
+   try 
+      {
+     Db.updateTandaTracks(this);
+  } catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
+   }
+   */
+   
    public void moveTrackUp(TrackTreeItem tti)
    {
-     //TrackTreeItem tti =  (TrackTreeItem)getChildren().get(index);
-     //System.out.println("TandaTreeItem - moveTrackUp - index: "+index+", "+tti.getValue());
      int index = tti.getTrackPosition();
      getChildren().remove(index);
      getChildren().add(index-1, tti);
@@ -71,10 +95,7 @@ public class TandaTreeItem extends BaseTreeItem
      String trackHashCode = trackHashCodes.get(index);
      trackHashCodes.remove(index);
      trackHashCodes.add(index-1, trackHashCode);
-     try 
-     {
-       Db.updateTandaTracks(this);
-     } catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
+     try { Db.updateTandaTracks(this); } catch (Exception e) { e.printStackTrace(); }
    }
    
    public String getTandaAndTrackPosition()
@@ -84,41 +105,52 @@ public class TandaTreeItem extends BaseTreeItem
      return tandaIndex+","+"-1";
    }
    
-   public void moveTrackDown(int index)
+  
+   public void moveTrackDown(TrackTreeItem tti)
    {
- 	 TrackTreeItem tti =  (TrackTreeItem)getChildren().get(index);
- 	String trackHashCode = trackHashCodes.get(index);
- 	 
- 	getChildren().remove(index);
- 	trackHashCodes.remove(index);
- 	 
- 	if (getTrackCount()<index)
- 	{	
-	  getChildren().add(tti);
-	  trackHashCodes.add(trackHashCode);
- 	}
-	else
-	{
-	  trackHashCodes.add(index+1, trackHashCode);
-	  getChildren().add(index+1, tti);
-	}
- 	 try 
-      {
- 	   Db.updateTandaTracks(this);
- 	} catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
+     int index = tti.getTrackPosition();
+     String trackHashCode = trackHashCodes.get(index);
+   
+     getChildren().remove(index);
+     trackHashCodes.remove(index);
+   
+     if (getTrackCount()<index)
+     { 
+       getChildren().add(tti);
+       trackHashCodes.add(trackHashCode);
+     }
+     else
+     {
+       trackHashCodes.add(index+1, trackHashCode);
+       getChildren().add(index+1, tti);
+     }
+     
+     try { Db.updateTandaTracks(this); } catch (Exception e) { e.printStackTrace(); }
    }
    
-   public void deleteTrack(int index)
+   public void deleteTrack(TrackTreeItem tti)
    {
-   	 TrackTreeItem tti =  (TrackTreeItem)getChildren().get(index);
+     int index = tti.getTrackPosition();
    	 getChildren().remove(index);
    	 trackHashCodes.remove(index);
   	 
    	 try 
-     {
-	   Db.updateTandaTracks(this);
-	} catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
+     { Db.updateTandaTracks(this); } catch (Exception e) { e.printStackTrace(); }
    }
+   
+   /*
+   public void deleteTrack(int index)
+   {
+     TrackTreeItem tti =  (TrackTreeItem)getChildren().get(index);
+     getChildren().remove(index);
+     trackHashCodes.remove(index);
+     
+     try 
+     {
+     Db.updateTandaTracks(this);
+  } catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
+   }
+   */
    
    public void removeCortina()
    {

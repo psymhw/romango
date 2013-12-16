@@ -20,6 +20,7 @@ public class TrackDb
   public String style="";
   public String adjectives="";
   public int    delay=0;
+  public int id;
   
   public boolean metaComplete=false;
   
