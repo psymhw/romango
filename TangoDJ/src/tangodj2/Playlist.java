@@ -159,6 +159,17 @@ public class Playlist
     }
   }
   
+  public void delayTrack(boolean set)
+  {
+    TrackTreeItem trackTreeItem = (TrackTreeItem)selectedBaseTreeItem;
+    System.out.println("Playlist delay track: "+set);
+  
+    if (trackTreeItem.getStatus()!=BaseTreeItem.PLAYING)
+    {  
+      Db.setTrackDelay(set, trackTreeItem.getDbId());
+    }
+  }
+  
   public void disableTanda(boolean set)
   {
     TandaTreeItem tandaTreeItem = getSelectedTanda();
@@ -396,6 +407,7 @@ public class Playlist
           playlistTrack.comment=trackTreeItem.getComment();
           playlistTrack.path=trackTreeItem.getPath();
           playlistTrack.style=style;
+          playlistTrack.delay=trackTreeItem.isDelay();
           tandaTrackCounter++;
           playlistTrack.trackInTanda=tandaTrackCounter;
           playlistTrack.cortina=false;
@@ -433,7 +445,7 @@ public class Playlist
           playlistTrack.stopValue  =cortinaTreeItem.getStop();
           playlistTrack.fadein     =cortinaTreeItem.getFadein();
           playlistTrack.fadeout    =cortinaTreeItem.getFadeout();
-          playlistTrack.delay      =cortinaTreeItem.getDelay();
+          // playlistTrack.delay      =cortinaTreeItem.getDelay();
           playlistTrack.original_duration  =cortinaTreeItem.getOriginal_duration();
           playlistTrack.duration=cortinaTreeItem.getDuration();
           
@@ -718,7 +730,7 @@ public class Playlist
      playlistFocus.set(playlistFocus.get()+1);
      treeView.getSelectionModel().select(bti);
      
-     boolean debug=true;
+     boolean debug=false;
      if (debug)
      {
        System.out.println("Playlist - treeType: "+treeType);
@@ -813,9 +825,13 @@ public class Playlist
 	           
 	           CheckMenuItem skipTrackMenuItem = (CheckMenuItem)trackContextMenu.getItems().get(4);
 	           MenuItem playNextMenuItem = (MenuItem)trackContextMenu.getItems().get(3);
+	           CheckMenuItem delayMenuItem = (CheckMenuItem)trackContextMenu.getItems().get(5);
+	           
 	           skipTrackMenuItem.setSelected(bti.isDisabled());
+	           delayMenuItem.setSelected(trackTreeItem.isDelay());
 	           playNextMenuItem.setDisable(bti.isDisabled()); // can't play next if disabled
              
+	           
 	           setContextMenu(trackContextMenu);
 	         }
 	         else if ("cortina".equals(bti.getTreeType()))
@@ -876,19 +892,19 @@ public class Playlist
 	     {
 	       public void handle(Event t) 
 	       { 
-	         playlistTreeItem.moveTandaUp(selectedTandaIndex);
+	         playlistTreeItem.moveTandaUp(selectedTandaTreeItem);
 	         generateFlatList(); 
 	       }
 	     });
 	     
 	     moveDown.setOnAction(new EventHandler() 
 	     {
-	       public void handle(Event t) { playlistTreeItem.moveTandaDown(selectedTandaIndex); generateFlatList(); }
+	       public void handle(Event t) { playlistTreeItem.moveTandaDown(selectedTandaTreeItem); generateFlatList(); }
 	     });
 	     
 	     delete.setOnAction(new EventHandler() 
 	     {
-	       public void handle(Event t) { playlistTreeItem.deleteTanda(selectedTandaIndex); generateFlatList();  }
+	       public void handle(Event t) { playlistTreeItem.deleteTanda(selectedTandaTreeItem); generateFlatList();  }
 	     });
 	   } 
 	   
@@ -898,11 +914,11 @@ public class Playlist
      
        playlistContextMenu.getItems().add(newTanda);
        
-      playlistContextMenu.setOnShowing(new EventHandler() 
+       playlistContextMenu.setOnShowing(new EventHandler() 
        {
          public void handle(Event t) 
          {
-           System.out.println("Playlist - Playlist Context Menu: "+playlistContextMenu.getId());
+          // System.out.println("Playlist - Playlist Context Menu: "+playlistContextMenu.getId());
            setSelectedTreeItems(playlistContextMenu.getId());
          }
        });
@@ -958,10 +974,13 @@ public class Playlist
 	     MenuItem delete = new MenuItem("Remove Track");
 	     MenuItem playNext = new MenuItem("Play Next");
 	     final CheckMenuItem disableItem = new CheckMenuItem("Skip Track"); 
+	     final CheckMenuItem delayItem = new CheckMenuItem("Add 3 sec silence"); 
 	     
-	     trackContextMenu.getItems().addAll(moveUp, moveDown, delete, playNext, disableItem);
+	     trackContextMenu.getItems().addAll(moveUp, moveDown, delete, playNext, disableItem, delayItem);
 	     trackContextMenu.setConsumeAutoHidingEvents(true);
 	     
+	     
+	   
 	     trackContextMenu.setOnShowing(new EventHandler() 
        {
          public void handle(Event t) 
@@ -976,6 +995,16 @@ public class Playlist
          public void handle(Event t) { setNextTrackToPlay(); }
        });
 	     
+	     delayItem.setOnAction(new EventHandler() 
+       {
+         public void handle(Event t) 
+         { 
+           delayTrack(delayItem.isSelected());
+           generateFlatList();
+         }
+       });
+       
+	     
 	     disableItem.setOnAction(new EventHandler() 
        {
          public void handle(Event t) 
@@ -985,7 +1014,7 @@ public class Playlist
          }
        });
 	   
-// TODO  //?
+
 	     moveUp.setOnAction(new EventHandler() 
 	     {
 	       public void handle(Event t) 
@@ -1007,9 +1036,12 @@ public class Playlist
 	     {
 	       public void handle(Event t) 
 	       { 
+	         /*
 	         PlaylistTrack playlistTrack = getSelectedPlaylistTrack();
            TandaTreeItem tandaTreeItem = playlistTrack.tandaInfo.tandaTreeItem;
            tandaTreeItem.moveTrackDown(playlistTrack.trackInTanda-1); 
+           */
+           selectedTandaTreeItem.moveTrackDown(selectedTrackTreeItem);
            generateFlatList();
 	       }
 	     });
@@ -1018,9 +1050,12 @@ public class Playlist
 	     {
 	       public void handle(Event t) 
 	       { 
+	         /*
 	         PlaylistTrack playlistTrack = getSelectedPlaylistTrack();
            TandaTreeItem tandaTreeItem = playlistTrack.tandaInfo.tandaTreeItem;
            tandaTreeItem.deleteTrack(playlistTrack.trackInTanda-1); 
+           */
+	         selectedTandaTreeItem.deleteTrack(selectedTrackTreeItem);
            generateFlatList(); }
 	     });
 	   } 

@@ -75,6 +75,7 @@ public class PlaylistTreeItem  extends BaseTreeItem
      return (TandaTreeItem)getChildren().get(0);  
    }
 
+   /*
   public void moveTandaUp(int index)
   {
 	//System.out.println(" SharedValues.selectedTanda: "+SharedValues.selectedTanda);
@@ -101,15 +102,37 @@ public class PlaylistTreeItem  extends BaseTreeItem
 	  Db.updateTandaPositions(this);
 	} catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
   }
-
-  public void deleteTanda(int index)
+*/
+  public void moveTandaUp(TandaTreeItem tti)
   {
-	TandaTreeItem tti =  (TandaTreeItem)getChildren().get(index);
-	getChildren().remove(index);
-	try 
-    {
-	  Db.deleteTanda(tti);
-	  Db.updateTandaPositions(this);
-	} catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
+    int index = tti.getPlaylistIndex();
+    getChildren().remove(index);
+    getChildren().add(index-1, tti);
+   
+    try { Db.updateTandaPositions(this); } catch (Exception e) { e.printStackTrace(); }
+  }
+
+  public void moveTandaDown(TandaTreeItem tti)
+  {
+    int index = tti.getPlaylistIndex();
+    getChildren().remove(index);
+    if (getTandaCount()<index) 
+      getChildren().add( tti);
+    else
+      getChildren().add(index+1, tti);
+    
+    
+    try 
+    { Db.updateTandaPositions(this); } catch (Exception e) { e.printStackTrace(); }
+  }
+
+  
+  public void deleteTanda(TandaTreeItem tti)
+  {
+    int index = tti.getPlaylistIndex();
+	  getChildren().remove(index);
+	  
+	  try 
+    { Db.deleteTanda(tti); Db.updateTandaPositions(this);	} catch (Exception e) { e.printStackTrace(); }
   }
 }

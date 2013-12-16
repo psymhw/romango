@@ -15,6 +15,7 @@ import javafx.collections.ObservableList;
 
 import tangodj2.PlaylistTree.PlaylistTreeItem;
 import tangodj2.PlaylistTree.TandaTreeItem;
+import tangodj2.PlaylistTree.TrackTreeItem;
 import tangodj2.allPlaylistsTree.AllPlaylistsBaseItem;
 import tangodj2.allPlaylistsTree.AllPlaylistsFolderItem;
 import tangodj2.allPlaylistsTree.AllPlaylistsPlaylistItem;
@@ -513,6 +514,16 @@ String sql;
      } catch (Exception e) { e.printStackTrace();}
    }
 	
+	public static void setTrackDelay(boolean set, int id)
+  {
+    
+    int delayAmt=0;
+    if (set) delayAmt=3;
+    String sql = "update tracks set delay = "+delayAmt+" where id =  "+id;
+     
+    try { connection.createStatement().execute(sql); } catch (Exception e) { e.printStackTrace();}
+  }
+	
 	public static TrackDb getTrackInfo(String pathHash)
 	{
 	  TrackDb trackDb=null;
@@ -553,7 +564,7 @@ String sql;
     trackDb.bpm=resultSet.getString("bpm");
     trackDb.track_no= resultSet.getInt("track_no");
     trackDb.delay= resultSet.getInt("delay");
-
+    trackDb.id = resultSet.getInt("id");
     return trackDb;
 	}
 	
