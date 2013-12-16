@@ -68,6 +68,12 @@ public class PlaylistTreeItem  extends BaseTreeItem
    {
 	 return (TandaTreeItem)getChildren().get(i);  
    }
+   
+   public TandaTreeItem getFirstTanda()
+   {
+     if (getChildren().size()==0) return null;
+     return (TandaTreeItem)getChildren().get(0);  
+   }
 
   public void moveTandaUp(int index)
   {

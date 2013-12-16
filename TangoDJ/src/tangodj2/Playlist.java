@@ -47,18 +47,23 @@ import tangodj2.cortina.CortinaTrack;
 
 public class Playlist 
 {
+  ChangeListener<TreeItem<String>> treeViewChangeListener;
   private PlaylistTreeItem playlistTreeItem;
   private BaseTreeItem selectedBaseTreeItem;
+  private TandaTreeItem selectedTandaTreeItem=null;
+  private TrackTreeItem selectedTrackTreeItem=null;
+  private CortinaTreeItem selectedCortinaTreeItem=null;
   private TreeView<String> treeView;
   private PlaylistTrack previouslyPlayingTrack=null;
   private PlaylistTrack previouslySelectedTrack=null;
+  private int selectedFlatPlayableIndex=-1;
   
   private int nextTrack=0; 
   private int playingTrack=0;
-  private int selectedPlaylistTrack=0;
+ // private int selectedPlaylistTrack=0;
   private ArrayList<PlaylistTrack> flatPlaylistTracks =  new ArrayList<PlaylistTrack>();
  // private ArrayList<TandaInfo> tandas =  new ArrayList<TandaInfo>();
-  private int selectedTanda=-1;
+  private int selectedTandaIndex=-1;
   private int numberOfTandas=-1;
   double totalPlaylistTime=0;
   public static SimpleIntegerProperty playlistFocus = new SimpleIntegerProperty(0);
@@ -123,15 +128,15 @@ public class Playlist
 	
   public void setNextTrackToPlay()
   {
-	  if (selectedPlaylistTrack==-1) return;
+	  if (selectedFlatPlayableIndex==-1) return;
 	  if (flatPlaylistTracks==null) return;
 	  if (flatPlaylistTracks.size()==0) return;
-	  PlaylistTrack playlistTrack = flatPlaylistTracks.get(selectedPlaylistTrack);
+	  PlaylistTrack playlistTrack = flatPlaylistTracks.get(selectedFlatPlayableIndex);
 	
 	  if (playlistTrack.baseTreeItem.getStatus()!=TrackTreeItem.PLAYING)
     {  
       playlistTrack.baseTreeItem.setNextPlayImage(true);
-      nextTrack=selectedPlaylistTrack;
+      nextTrack=selectedFlatPlayableIndex;
       if (previouslySelectedTrack!=null) 
       {
         if (!previouslySelectedTrack.playing)
@@ -551,8 +556,8 @@ public class Playlist
 	
   public TandaTreeItem getSelectedTanda()
   {
-	  if (selectedTanda==-1) selectedTanda=0;
-	  return getTanda(selectedTanda);
+	  if (selectedTandaIndex==-1) selectedTandaIndex=0;
+	  return getTanda(selectedTandaIndex);
   }
 	
   public TandaTreeItem  getTanda(int index)
@@ -605,36 +610,126 @@ public class Playlist
 		 /* 
 		  * Detect tree item selected
 		  */
-		 ChangeListener<TreeItem<String>> treeViewChangeListener = new ChangeListener<TreeItem<String>>() 
+		// ChangeListener<TreeItem<String>> treeViewChangeListener = new ChangeListener<TreeItem<String>>() 
+		 treeViewChangeListener = new ChangeListener<TreeItem<String>>() 
 		 {
 		   public void changed(ObservableValue<? extends TreeItem<String>> observableValue, TreeItem<String> oldItem, TreeItem<String> newItem) 
 		   {
 			   if (newItem!=null)
 			   {
 			     BaseTreeItem bti = (BaseTreeItem)newItem;
-			     selectedBaseTreeItem=bti;
-			     // TODO got a bit of a mixed model going here. Maybe should just have 
-			     // selected tree item, which will have the playable index.
-			     selectedTanda=-1;
-			     if ("tanda".equals(bti.getTreeType()))
-			     {
-			       TandaTreeItem tandaTreeItem = (TandaTreeItem)bti;
-			       selectedTanda = tandaTreeItem.getPlaylistIndex();
-			     }
-			     
-			     selectedPlaylistTrack=-1;
-			     selectedPlaylistTrack=bti.getPlayableIndex();
-			     System.out.println("Playlist - selectedIndex: "+selectedPlaylistTrack);
-			    // selectedTanda=getTandaNumber(selectedPlaylistTrack);
-           
-			     playlistFocus.set(playlistFocus.get()+1);
-			  //   System.out.println("Playlist - Tanda/Flat Track: "+selectedTanda+"/"+selectedPlaylistTrack+" - "+ newItem.getValue()); 
+			     setSelectedTreeItems(bti);
 			 }
 		 }};
 							 
-		 treeView.getSelectionModel().selectedItemProperty().addListener(treeViewChangeListener);
+		 //treeView.focusedProperty().addListener(treeViewChangeListener);
+		// treeView.
+		// treeView.setOnMouseClicked(treeViewChangeListener);
+		//treeView.getSelectionModel().selectedItemProperty().addListener(treeViewChangeListener);
+		/*
+		treeView.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+		  
+      @Override
+      public void changed(ObservableValue<? extends Number> arg0,
+              Number arg1, Number arg2) {
+          System.out.println("Playlist index change listener");
+      }
+
+  });
+ */
+		//treeView.getSelectionModel().
+		// treeView.getFocusModel().focusedItemProperty().addListener(treeViewChangeListener);
+		 
 		 generateFlatList();
 	 }
+
+  private void setSelectedTreeItems(String contextId)
+  {
+    int tandaIndex=-1;
+    int trackIndex=-1;
+   
+    String[] tokens = contextId.split(",");
+    tandaIndex = Integer.parseInt(tokens[0]);
+    trackIndex = Integer.parseInt(tokens[1]);
+    
+    if (tandaIndex==-1) // playlist
+    {
+      setSelectedTreeItems((BaseTreeItem)playlistTreeItem);
+      return;
+    }
+    else if (trackIndex==-1) // tanda
+    {
+      setSelectedTreeItems((BaseTreeItem)playlistTreeItem.getChildren().get(tandaIndex));
+      return;
+    }
+    else
+    {
+      TandaTreeItem tandaTreeItem = (TandaTreeItem)playlistTreeItem.getChildren().get(tandaIndex);
+      BaseTreeItem baseTreeItem = (BaseTreeItem)tandaTreeItem.getChildren().get(trackIndex);
+      setSelectedTreeItems(baseTreeItem);
+    }
+    
+    
+  }
+ 
+   private void setSelectedTreeItems(BaseTreeItem bti)
+   {
+     selectedBaseTreeItem=bti;
+     selectedFlatPlayableIndex=-1;
+     selectedTandaIndex=-1;
+     selectedTandaTreeItem=null;
+     selectedTrackTreeItem=null;
+     selectedCortinaTreeItem=null;
+     
+     String treeType = bti.getTreeType();
+     switch(treeType)
+     {
+       case "playlist":
+            selectedTandaTreeItem = playlistTreeItem.getFirstTanda();
+            if (selectedTandaTreeItem!=null) selectedTrackTreeItem = selectedTandaTreeItem.getFirstTrack();
+            if (selectedTrackTreeItem!=null) selectedFlatPlayableIndex = selectedTrackTreeItem.getPlayableIndex();
+            break;
+       case "tanda":
+            selectedTandaTreeItem = (TandaTreeItem)bti;
+            selectedTrackTreeItem = selectedTandaTreeItem.getFirstTrack();
+            if (selectedTrackTreeItem!=null) selectedFlatPlayableIndex = selectedTrackTreeItem.getPlayableIndex();
+            break;
+       case "tango":
+           selectedTrackTreeItem = (TrackTreeItem)bti;
+           selectedTandaTreeItem = selectedTrackTreeItem.getTanda();
+           selectedFlatPlayableIndex = selectedTrackTreeItem.getPlayableIndex();
+           break;
+       case "cleanup":
+           selectedTrackTreeItem = (TrackTreeItem)bti;
+           selectedTandaTreeItem = selectedTrackTreeItem.getTanda();
+           selectedFlatPlayableIndex = selectedTrackTreeItem.getPlayableIndex();
+           break;
+       case "cortina":
+           selectedCortinaTreeItem = (CortinaTreeItem)bti;
+           selectedTandaTreeItem = selectedCortinaTreeItem.getTanda();
+           selectedFlatPlayableIndex = selectedCortinaTreeItem.getPlayableIndex();
+           break;
+       default:
+         System.out.println("Playlist - unsupported tree type: "+treeType);
+     }
+     
+     if (selectedTandaTreeItem!=null) selectedTandaIndex = selectedTandaTreeItem.getPlaylistIndex();
+     
+     playlistFocus.set(playlistFocus.get()+1);
+     treeView.getSelectionModel().select(bti);
+     
+     boolean debug=true;
+     if (debug)
+     {
+       System.out.println("Playlist - treeType: "+treeType);
+       System.out.println("Tanda index: "+selectedTandaIndex);
+       System.out.println("Flat track index: "+selectedFlatPlayableIndex);
+       System.out.println("playlist: "+playlistTreeItem);
+       System.out.println("tanda: "+selectedTandaTreeItem);
+       System.out.println("track: "+selectedTrackTreeItem);
+       System.out.println("cortina: "+selectedCortinaTreeItem);
+     }       
+   }
   
    private int getTandaNumber(int selectedPlaylistTrack)
    {
@@ -684,7 +779,9 @@ public class Playlist
 	         }
 	         if ("playlist".equals(bti.getTreeType())) 
 	         {  
+	           playlistContextMenu.setId("-1,-1");
 	           setContextMenu(playlistContextMenu);
+	           
 	         }
 	         else if ("tanda".equals(bti.getTreeType())) 
 	         {	   
@@ -692,7 +789,7 @@ public class Playlist
 	           if (playlistTreeItem.getTandaPosition((TandaTreeItem)bti)==playlistTreeItem.getTandaCount()-1) tandaContextMenu.getItems().get(1).setDisable(true); // disable move down
 		       
 	           
-	           //tandaContextMenu.setId(""+playlistTreeItem.getTandaPosition((TandaTreeItem)bti));
+	           tandaContextMenu.setId(((TandaTreeItem)bti).getTandaAndTrackPosition());
 		       
 		            // set disable checkmark in context menu
 		           CheckMenuItem cmi = (CheckMenuItem)tandaContextMenu.getItems().get(3);
@@ -700,10 +797,10 @@ public class Playlist
 		           
 		           setContextMenu(tandaContextMenu);
 	         }
-	         else if ("tango".equals(bti.getTreeType()))
+	         else if ("tango".equals(bti.getTreeType())|| ("cleanup".equals(bti.getTreeType() )))
 	         {
 	           TrackTreeItem trackTreeItem = (TrackTreeItem)bti;
-	           this.getStyleClass().add("cortinaPlaylistText");
+	           //this.getStyleClass().add("cortinaPlaylistText");
 	         
 	           int trackCount=((TandaTreeItem)trackTreeItem.getParent()).getTrackCount();
 	           int trackPosition=trackTreeItem.getTrackPosition(trackTreeItem);
@@ -712,8 +809,7 @@ public class Playlist
 	           if (trackPosition==trackCount-1) trackContextMenu.getItems().get(1).setDisable(true); // disable move down
 	          
 	           //Kludge alert
-	           //trackContextMenu.setId(trackTreeItem.getTandaAndTrackPosition(trackTreeItem));
-	          
+	           trackContextMenu.setId(trackTreeItem.getTandaAndTrackPosition());
 	           
 	           CheckMenuItem skipTrackMenuItem = (CheckMenuItem)trackContextMenu.getItems().get(4);
 	           MenuItem playNextMenuItem = (MenuItem)trackContextMenu.getItems().get(3);
@@ -725,15 +821,19 @@ public class Playlist
 	         else if ("cortina".equals(bti.getTreeType()))
            {
              CortinaTreeItem cortinaTreeItem = (CortinaTreeItem)bti;
+             cortinaContextMenu.setId(cortinaTreeItem.getTandaAndTrackPosition());
              setContextMenu(cortinaContextMenu);
            }
+	         /*
 	         else if ("cleanup".equals(bti.getTreeType()))
            {
              TrackTreeItem cleanupTreeItem = (TrackTreeItem)bti;
              CheckMenuItem cmi = (CheckMenuItem)trackContextMenu.getItems().get(4);
              cmi.setSelected(bti.isDisabled());
+             trackContextMenu.setId(cleanupTreeItem.getTandaAndTrackPosition());
              setContextMenu(trackContextMenu);
            }
+           */
 	         setGraphic(getTreeItem().getGraphic());
 	       }
 	     }
@@ -754,6 +854,16 @@ public class Playlist
 	     // don't change the positions of menu items. The cell factory gets them by index
 	     tandaContextMenu.getItems().addAll(moveUp, moveDown, delete, disableItem);
 	     
+	     
+	     tandaContextMenu.setOnShowing(new EventHandler() 
+       {
+         public void handle(Event t) 
+         {
+           //System.out.println("Playlist - Tanda Context Menu: "+tandaContextMenu.getId());
+           setSelectedTreeItems(tandaContextMenu.getId());
+         }
+       });
+       
 	     disableItem.setOnAction(new EventHandler() 
        {
          public void handle(Event t) 
@@ -766,19 +876,19 @@ public class Playlist
 	     {
 	       public void handle(Event t) 
 	       { 
-	         playlistTreeItem.moveTandaUp(selectedTanda);
+	         playlistTreeItem.moveTandaUp(selectedTandaIndex);
 	         generateFlatList(); 
 	       }
 	     });
 	     
 	     moveDown.setOnAction(new EventHandler() 
 	     {
-	       public void handle(Event t) { playlistTreeItem.moveTandaDown(selectedTanda); generateFlatList(); }
+	       public void handle(Event t) { playlistTreeItem.moveTandaDown(selectedTandaIndex); generateFlatList(); }
 	     });
 	     
 	     delete.setOnAction(new EventHandler() 
 	     {
-	       public void handle(Event t) { playlistTreeItem.deleteTanda(selectedTanda); generateFlatList();  }
+	       public void handle(Event t) { playlistTreeItem.deleteTanda(selectedTandaIndex); generateFlatList();  }
 	     });
 	   } 
 	   
@@ -787,6 +897,15 @@ public class Playlist
        MenuItem newTanda = new MenuItem("New Tanda"); 
      
        playlistContextMenu.getItems().add(newTanda);
+       
+      playlistContextMenu.setOnShowing(new EventHandler() 
+       {
+         public void handle(Event t) 
+         {
+           System.out.println("Playlist - Playlist Context Menu: "+playlistContextMenu.getId());
+           setSelectedTreeItems(playlistContextMenu.getId());
+         }
+       });
        newTanda.setOnAction(new EventHandler() 
        {
          public void handle(Event t) 
@@ -803,11 +922,21 @@ public class Playlist
 	       MenuItem playNext = new MenuItem("Play Next");
 	     
 	       cortinaContextMenu.getItems().addAll(playNext, removeCortina);
+	       
+	       cortinaContextMenu.setOnShowing(new EventHandler() 
+	       {
+	         public void handle(Event t) 
+	         {
+	           //System.out.println("Playlist - Tanda Context Menu: "+cortinaContextMenu.getId());
+	           setSelectedTreeItems(cortinaContextMenu.getId());
+	         }
+	       });
+	       
 	       removeCortina.setOnAction(new EventHandler() 
 	       {
 	         public void handle(Event t) 
 	         {
-	        	 playlistTreeItem.getTanda(selectedTanda).removeCortina();
+	        	 playlistTreeItem.getTanda(selectedTandaIndex).removeCortina();
 	  	       generateFlatList();
 	         }
 	       });
@@ -831,7 +960,17 @@ public class Playlist
 	     final CheckMenuItem disableItem = new CheckMenuItem("Skip Track"); 
 	     
 	     trackContextMenu.getItems().addAll(moveUp, moveDown, delete, playNext, disableItem);
-	   
+	     trackContextMenu.setConsumeAutoHidingEvents(true);
+	     
+	     trackContextMenu.setOnShowing(new EventHandler() 
+       {
+         public void handle(Event t) 
+         {
+           //System.out.println("Playlist - Track Context Menu: "+trackContextMenu.getId());
+           setSelectedTreeItems(trackContextMenu.getId());
+         }
+       });
+	     
 	     playNext.setOnAction(new EventHandler() 
        {
          public void handle(Event t) { setNextTrackToPlay(); }
@@ -846,14 +985,19 @@ public class Playlist
          }
        });
 	   
-	  // TODO
+// TODO  //?
 	     moveUp.setOnAction(new EventHandler() 
 	     {
 	       public void handle(Event t) 
 	       { 
+	        /*
 	         PlaylistTrack playlistTrack = getSelectedPlaylistTrack();
 	         TandaTreeItem tandaTreeItem = playlistTrack.tandaInfo.tandaTreeItem;
 	         tandaTreeItem.moveTrackUp(playlistTrack.trackInTanda-1); 
+	        */
+	         if (selectedTandaTreeItem==null) return;
+	         if (selectedTrackTreeItem==null) return;
+	         selectedTandaTreeItem.moveTrackUp(selectedTrackTreeItem);
 	         generateFlatList();
 	       }
 	         
@@ -1005,8 +1149,8 @@ public class Playlist
 
     public PlaylistTrack getSelectedPlaylistTrack()
     {
-      if (selectedPlaylistTrack==-1) return null;
-      return flatPlaylistTracks.get(selectedPlaylistTrack);
+      if (selectedFlatPlayableIndex==-1) return null;
+      return flatPlaylistTracks.get(selectedFlatPlayableIndex);
     }
     
     public void setPlayingTrack(int playingTrack)
