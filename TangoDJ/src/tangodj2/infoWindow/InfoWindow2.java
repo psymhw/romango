@@ -18,7 +18,9 @@ import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -26,6 +28,7 @@ import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -37,6 +40,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
@@ -133,6 +137,8 @@ public class InfoWindow2
          sizeToFitWidth(artistLastNameLabel, ((Number)newVal).doubleValue(), direction, 1); 
       }
     });
+    
+    makeDraggable(infoWindow, stackPane);
   }
   
   public void updateProgress(double currentTrackTime)
@@ -330,4 +336,46 @@ public class InfoWindow2
     return t;
   }
   
+  /** makes a stage draggable using a given node */
+  public static void makeDraggable(final Stage stage, final Node byNode) {
+    final Delta dragDelta = new Delta();
+    byNode.setOnMousePressed(new EventHandler<MouseEvent>() {
+      @Override public void handle(MouseEvent mouseEvent) {
+        // record a delta distance for the drag and drop operation.
+        dragDelta.x = stage.getX() - mouseEvent.getScreenX();
+        dragDelta.y = stage.getY() - mouseEvent.getScreenY();
+        byNode.setCursor(Cursor.MOVE);
+      }
+    });
+    byNode.setOnMouseReleased(new EventHandler<MouseEvent>() {
+      @Override public void handle(MouseEvent mouseEvent) {
+        byNode.setCursor(Cursor.HAND);
+      }
+    });
+    byNode.setOnMouseDragged(new EventHandler<MouseEvent>() {
+      @Override public void handle(MouseEvent mouseEvent) {
+        stage.setX(mouseEvent.getScreenX() + dragDelta.x);
+        stage.setY(mouseEvent.getScreenY() + dragDelta.y);
+      }
+    });
+    byNode.setOnMouseEntered(new EventHandler<MouseEvent>() {
+      @Override public void handle(MouseEvent mouseEvent) {
+        if (!mouseEvent.isPrimaryButtonDown()) {
+          byNode.setCursor(Cursor.HAND);
+        }
+      }
+    });
+    byNode.setOnMouseExited(new EventHandler<MouseEvent>() {
+      @Override public void handle(MouseEvent mouseEvent) {
+        if (!mouseEvent.isPrimaryButtonDown()) {
+          byNode.setCursor(Cursor.DEFAULT);
+        }
+      }
+    });
+  }
+
+  /** records relative x and y co-ordinates. */
+  private static class Delta {
+    double x, y;
+  }
 }
