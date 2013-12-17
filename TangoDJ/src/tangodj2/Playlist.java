@@ -637,7 +637,7 @@ public class Playlist
 		 //treeView.focusedProperty().addListener(treeViewChangeListener);
 		// treeView.
 		// treeView.setOnMouseClicked(treeViewChangeListener);
-		//treeView.getSelectionModel().selectedItemProperty().addListener(treeViewChangeListener);
+		treeView.getSelectionModel().selectedItemProperty().addListener(treeViewChangeListener);
 		/*
 		treeView.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 		  
@@ -730,7 +730,7 @@ public class Playlist
      playlistFocus.set(playlistFocus.get()+1);
      treeView.getSelectionModel().select(bti);
      
-     boolean debug=false;
+     boolean debug=true;
      if (debug)
      {
        System.out.println("Playlist - treeType: "+treeType);
@@ -738,6 +738,7 @@ public class Playlist
        System.out.println("Flat track index: "+selectedFlatPlayableIndex);
        System.out.println("playlist: "+playlistTreeItem);
        System.out.println("tanda: "+selectedTandaTreeItem);
+       System.out.println("tanda index: "+selectedTandaIndex);
        System.out.println("track: "+selectedTrackTreeItem);
        System.out.println("cortina: "+selectedCortinaTreeItem);
      }       

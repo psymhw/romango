@@ -112,8 +112,8 @@ public class TangoDJ2 extends Application
         System.setOut(ps);         
         System.setErr(ps);    
     } catch (Exception e) { e.printStackTrace(); }
-    
     */
+    
 	primaryStage=stage;
 	loadFonts();
 	//feedback.setPrefWidth(800);
@@ -215,9 +215,6 @@ public class TangoDJ2 extends Application
     //tabPane.getTabs().add(equalizerTab);
     tabPane.getTabs().add(cortinaTab);
     tabPane.getTabs().add(eventTab);
-    AdminTab adminTab = new AdminTab();
-    adminTab.setText("Admin");
-    tabPane.getTabs().add(adminTab);
    
     VBox mainPane = new VBox();
     //mainPane.setStyle("-fx-background-color: DAE6F3; -fx-border-color: RED; -fx-border-style: SOLID; -fx-border-width: 1px;");     

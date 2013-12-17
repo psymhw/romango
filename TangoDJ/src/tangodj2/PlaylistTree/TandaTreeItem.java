@@ -36,7 +36,7 @@ public class TandaTreeItem extends BaseTreeItem
   	 this.artist=artist;
   	 this.styleId=styleId;
   	 //if (flagsImage==null) flagsImage = new Image(getClass().getResourceAsStream("/resources/images/small_flags.png"));
-  	// setGraphic(new ImageView(flagsImage));
+  	 setGraphic(new ImageView(flagsImage));
   	 this.style=SharedValues.styles.get(styleId) ;
   	 this.setValue(artist + " - "+style);
    }
