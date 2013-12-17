@@ -54,16 +54,14 @@ import tangodj2.tango.TangoTable;
  * Spell check band leaders
  * Create playlists from tandas.
  * Handle bad directory address in preferences
- 
  * Feedback col could say playing from playlist or playing from library
- 
  * Automatiacally play next in library. Also allow skip fwd and back from library
  * Link to track folder from MP3 Editor
  * Feedback could show # of track stats on startup
  * Pop up a window with load errors?
  * Allow interactively new named playlist(text field). Would allow non tango playlists.
  * Remember equalizer values - for next tune and when program closed
- * Recognize funny characters in artist names, like Calo, when loading and switch to english for Leader
+ 
  * Index on tracks to make them load faster
  * put distribution version in state file
  * Lists tab where you can create various lists of tracks. Then be able to add them from the PlalistBuilder tab
