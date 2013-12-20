@@ -49,12 +49,12 @@ public class PlaylistTreeItem  extends BaseTreeItem
   public void addTanda(String artist, int styleId)
   {
     TandaTreeItem tandaTreeItem = new TandaTreeItem(artist, styleId);
+    tandaTreeItem.setExpanded(false);
 	  getChildren().add(tandaTreeItem); 
 	  try 
-	  {
-	    int tandaDbId = Db.insertTanda(artist, styleId, getTandaPosition(tandaTreeItem));
+	  {  int tandaDbId = Db.insertTanda(artist, styleId, getTandaPosition(tandaTreeItem));
 	    tandaTreeItem.setDbId(tandaDbId);
-	  } catch (ClassNotFoundException | SQLException e) {	e.printStackTrace(); }  
+	  } catch (Exception e) {	e.printStackTrace(); }  
   }
 
 

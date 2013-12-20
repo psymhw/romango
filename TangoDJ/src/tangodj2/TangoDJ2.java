@@ -42,7 +42,7 @@ import tangodj2.tango.TangoTable;
  * CDEX
  * Get rating from iTunes XML file?
  * Create a tangoGenre MP3tag and populate when making tandas?
-
+ * after each file load message at bottom done: added: ### duplicates: ###
  
  * Spare DB fields for updates
  * Show total time for each tanda. Maybe even real end time from system clock
@@ -101,18 +101,21 @@ public class TangoDJ2 extends Application
 	
   public void start(Stage stage) 
   {
-    /*
-    try
-    { 
-      File f = new File("tdj_error.txt");
-      if (f.exists()) f.delete();
-      PrintStream ps = new PrintStream(
-        new BufferedOutputStream(new FileOutputStream(
-        new File("tdj_error.txt"))), true);
-        System.setOut(ps);         
-        System.setErr(ps);    
-    } catch (Exception e) { e.printStackTrace(); }
-    */
+    boolean deploy = false;
+    
+    if (deploy) // Redirect system.out to tdj_error.txt file
+    {
+      try
+      { 
+        File f = new File("tdj_error.txt");
+        if (f.exists()) f.delete();
+        PrintStream ps = new PrintStream(
+          new BufferedOutputStream(new FileOutputStream(
+          new File("tdj_error.txt"))), true);
+          System.setOut(ps);         
+          System.setErr(ps);    
+      } catch (Exception e) { e.printStackTrace(); }
+    }
     
 	primaryStage=stage;
 	loadFonts();
@@ -290,7 +293,7 @@ public class TangoDJ2 extends Application
           prefs.tangoFolder=selectedDirectory.getParent().toString();  
           try
           {
-            trackLoader.process(selectedDirectory.toPath().toString(), SharedValues.DIRECTORY, SharedValues.TANGO);
+            trackLoader.process(selectedDirectory, SharedValues.DIRECTORY, SharedValues.TANGO);
             //tangoTable.reloadData();
           } catch (Exception ex) {ex.printStackTrace();}
         }
@@ -308,7 +311,7 @@ public class TangoDJ2 extends Application
     	  {
     	    try
           {
-            trackLoader.process(selectedDirectory.toPath().toString(), SharedValues.DIRECTORY, SharedValues.CLEANUP);
+            trackLoader.process(selectedDirectory, SharedValues.DIRECTORY, SharedValues.CLEANUP);
           } catch (Exception e) { e.printStackTrace();   }
     	  }
       }
@@ -326,7 +329,7 @@ public class TangoDJ2 extends Application
             {
               try
               {
-                trackLoader.process(selectedDirectory.toPath().toString(), SharedValues.DIRECTORY, SharedValues.CORTINA);
+                trackLoader.process(selectedDirectory, SharedValues.DIRECTORY, SharedValues.CORTINA);
               } catch (Exception e) { e.printStackTrace();   }
             }
           }
@@ -347,7 +350,7 @@ public class TangoDJ2 extends Application
         {
           try
           {
-            trackLoader.process(selectedFile.toPath().toString(), SharedValues.FILE, SharedValues.TANGO);
+            trackLoader.process(selectedFile, SharedValues.FILE, SharedValues.TANGO);
             //tangoTable.reloadData();
           } catch (Exception ex) {ex.printStackTrace();}
         }
@@ -369,7 +372,7 @@ public class TangoDJ2 extends Application
           prefs.cleanupFolder=selectedFile.getParent();  
           try
           {
-            trackLoader.process(selectedFile.toPath().toString(), SharedValues.FILE, SharedValues.CLEANUP);
+            trackLoader.process(selectedFile, SharedValues.FILE, SharedValues.CLEANUP);
            //cleanupTable.reloadData();
           } catch (Exception ex) {ex.printStackTrace();}
         }
@@ -391,7 +394,7 @@ public class TangoDJ2 extends Application
            try
            {
              prefs.cleanupFolder=selectedFile.getParent();  
-             trackLoader.process(selectedFile.toPath().toString(), SharedValues.FILE, SharedValues.CORTINA);
+             trackLoader.process(selectedFile, SharedValues.FILE, SharedValues.CORTINA);
              //cortinaTable.reloadData();
            } catch (Exception ex) {ex.printStackTrace();}
          }

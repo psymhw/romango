@@ -40,35 +40,23 @@ import tangodj2.tango.TangoTable;
 
 public class TrackLoader3 
 {
-//  String inPath="C:\\music\\tango\\Di Sarli, Carlos";
-  static int fileCounter=0;
   static int farngCounter=0;
   ArrayList<File> fileList;
- // ArrayList<ProblemFile> problemFileList;
   private static List<TrackDb> trackInfo = new ArrayList<TrackDb>();
   
- // private static List<TrackDb> finalTrackInfo = new ArrayList<TrackDb>();
   private static Hasher hasher = new Hasher();
-  int errors=0;
+ // int errors=0;
   BufferedWriter out;
-  private int trackCount=0;
-  private int trackSize=0;
+ // private int trackCount=0;
+ // private int trackSize=0;
+  private TrackLoaderStats stats;
  
-  //ArrayList<String> al;
-  //static int players=0;
-  //int trackInfoSizeInt=0;
- // Label trackInfoSize = new Label("0");
-  //int finalTrackInfoSizeInt=0;
-  //Label finalTrackInfoSize = new Label("0");
- // public static final String DRIVER2 ="org.apache.derby.jdbc.EmbeddedDriver";
- // public static final String JDBC_URL2 ="jdbc:derby:tango_db;create=false";
- // static Connection connection;
-//  private boolean isTango=true;
   private int type=SharedValues.TANGO;;
   
   TangoTable tangoTable;
   CleanupTable cleanupTable;
   public  ArrayList<ArtistX> artistsAll = new ArrayList<ArtistX>();
+  String lastDirectory="";
   
   public TrackLoader3() 
   { 
@@ -77,14 +65,21 @@ public class TrackLoader3
     artistsAll.addAll(SharedValues.artistsC);
   }
   
-  public void process(String inPath, int scope, int type) throws Exception
+  public void process(File file, int scope, int type) throws Exception
   {
-    // this.isTango=isTango;
-      this.type=type;
-      fileCounter=0;
-     File outFile = new File("out.txt");
+    stats=new TrackLoaderStats();
+    lastDirectory="";
+    stats.root=file.getName();
+   
+    stats.runType=type;
+    
+    String inPath = file.toPath().toString();
+    this.type=type;
+    //fileCounter=0;
+      
+     File outFile = new File("loader_error.txt");
      if (outFile.exists()) outFile.delete();
-     FileWriter fstream = new FileWriter("out.txt");
+     FileWriter fstream = new FileWriter("loader_error.txt");
      out = new BufferedWriter(fstream);
      fileList = new ArrayList<File>();
     // problemFileList = new ArrayList<ProblemFile>();
@@ -101,19 +96,20 @@ public class TrackLoader3
        Files.walkFileTree(Paths.get(inPath), fileProcessor);
      }   
      
+     //listFilesToProcess();
+     //System.out.println("FileCopunt: "+stats.fileCount+", Duplicates: "+stats.duplicateCount+", to process: "+fileList.size());
+     
      
      getFarngMP3Tags();
     
-   //  System.out.println("Problems list: "+problemFileList.size());
-   //  System.out.println("OK list: "+fileList.size());
      getDurations();
      
-    // Db.disconnect();
      
   }
 
   void processDirectory()
   {
+   
     FileVisitor<Path> fileProcessor = new ProcessFile();
   }
   
@@ -122,6 +118,7 @@ public class TrackLoader3
     String pathStr = path.toString().trim().toLowerCase();
     String pathStr2="";
     String pathHash;
+    String dir="";
     
     
     if (pathStr.endsWith(".mp3")) 
@@ -129,18 +126,31 @@ public class TrackLoader3
       if  (!pathStr.contains("._"))
       {
         File file = path.toFile();
+        //System.out.println("File: "+file.toString());
+        dir = file.getParent();
+        if (!dir.equals(lastDirectory))
+        {
+         // System.out.println("Directory: "+dir);
+          stats.dirCount++;
+          lastDirectory=dir;
+        }
         pathStr2=path.toString();
         pathHash = hasher.getMd5Hash(pathStr2.getBytes());
         if (Db.trackExists(pathHash)) 
         {
-          TangoDJ2.feedback.setText("ALREADY LOADED: "+pathStr2);
+          stats.duplicateCount++;
+          stats.fileCount++;
           return FileVisitResult.CONTINUE;
         }
-        TangoDJ2.feedback.setText("Preparing Files: "+fileCounter+" - "+pathStr2);
-        fileList.add(file);
+        else
+        {  
+          fileList.add(file);
+          stats.fileCount++;
+          return FileVisitResult.CONTINUE;
+        }
       }
     }
-    fileCounter++;
+    //stats.fileCount++;
     return FileVisitResult.CONTINUE;
   }
   
@@ -157,14 +167,14 @@ public class TrackLoader3
        
    public FileVisitResult preVisitDirectory(Path aDir, BasicFileAttributes aAttrs) throws IOException 
    {
-   System.out.println("Processing directory:" + aDir);
-   return FileVisitResult.CONTINUE;
+     //System.out.println("Processing directory:" + aDir);
+     stats.dirCount++;
+     return FileVisitResult.CONTINUE;
    }
   
   
   private void getDurations()
   {
-    trackCount=0;
     
     final int trackSize=trackInfo.size();
     
@@ -172,15 +182,15 @@ public class TrackLoader3
     timeline.setCycleCount(trackSize+1); // need extra cycle 
     KeyFrame keyFrame= new KeyFrame(Duration.seconds(.3), new EventHandler() 
     {
-       public void handle(Event event) 
-       {
-         if (trackCount<trackSize)
-         {  
-           final TrackDb trackDb = trackInfo.get(trackCount);
-           getMediaPlayerTags(trackDb, trackCount, trackSize);
-           
+      int trackCount=0;
+      public void handle(Event event) 
+      {
+        if (trackCount<trackSize)
+        {  
+          final TrackDb trackDb = trackInfo.get(trackCount);
+          getMediaPlayerTags(trackDb, trackCount, trackSize);
            trackCount++;
-         }
+        }
        }});
             
       timeline.getKeyFrames().add(keyFrame);
@@ -194,6 +204,12 @@ public class TrackLoader3
           if (type==SharedValues.TANGO)  tangoTable.reloadData();
           else if (type==SharedValues.CLEANUP) cleanupTable.reloadData();
           else if (type==SharedValues.CORTINA) CortinaTable.reloadData();
+          
+         // System.out.println(stats.toString());
+          String feedStr="Finished Loading: "+stats.root+", Folders: "+stats.dirCount+", Files: "+stats.successCount+", Duplicates: "+stats.duplicateCount;
+          if ((stats.farngErrors>0)||(stats.mediaPlayerErrorCount>0)) feedStr+=", Errors: "+stats.farngErrors+stats.mediaPlayerErrorCount;
+          else feedStr+=", No Errors";
+          TangoDJ2.feedback.setText(feedStr);
           
           try { out.close(); } catch (IOException e) { e.printStackTrace(); }
         }});
@@ -211,20 +227,27 @@ public class TrackLoader3
       media.setOnError(new Runnable() 
       {
         public void run() {
-        System.out.println("MEDIA ERROR: "+media.getError()); }});
-      } catch (Exception e) {  System.out.println("Problem with media, "+trackDb.path);  return; }
+        System.out.println("MEDIA ERROR: "+media.getError());
+        }});
+      } catch (Exception e) {  
+        stats.mediaPlayerErrorCount++;
+        System.out.println("Problem with media, "+trackDb.path);  return; 
+        }
     
-    if (media==null) { System.out.println("Media is null, "+trackDb.path);  return; }
+    if (media==null) { System.out.println("Media is null, "+trackDb.path);  stats.mediaPlayerErrorCount++; return; }
     
     final MediaPlayer mp = new MediaPlayer(media);
     //players++;
     mp.setOnError(new Runnable() 
     {
       public void run() {
+        stats.mediaPlayerErrorCount++;
       System.out.println("MEDIA PLAYER ERROR: "+mp.getError());
     }});
     
-    if (mp==null) { System.out.println("MediaPlayer is null, "+trackDb.path); return; }
+    if (mp==null) { 
+      stats.mediaPlayerErrorCount++;
+      System.out.println("MediaPlayer is null, "+trackDb.path); return; }
     mp.setOnReady(new Runnable() 
     {
       public void run() 
@@ -290,20 +313,16 @@ public class TrackLoader3
           if (trackDb.comment.startsWith("iTunPGAP")) trackDb.comment="";
         }
         
-        TangoDJ2.feedback.setText("Getting MP3 Tags: "+count+" of "+trackSize+", "+trackDb.title);
-        //finalTrackInfo.add(trackDb);
-        //finalTrackInfoSizeInt++;
-        // finalTrackInfoSize.setText(""+finalTrackInfoSizeInt);
         mp.dispose();
-        //players--;
         sqlReadyTrackInfo(trackDb);
         if (type!=SharedValues.CORTINA)
         {  
+          stats.successCount++;
           Db.insertTrack(trackDb, type);
         }
         else
         {
-          System.out.println("Trackloader3 - insert premade");
+         // System.out.println("Trackloader3 - insert premade");
           Db.insertPremadeCortina(trackDb);
         }
       }
@@ -313,7 +332,6 @@ public class TrackLoader3
   
   private void getFarngMP3Tags() throws Exception
   {
-    errors=0;
     farngCounter=0;
     out.write("GET FARNG MP3 TAGS =====================");
     out.newLine();
@@ -333,9 +351,12 @@ public class TrackLoader3
        // trackInfoSizeInt++;
         TangoDJ2.feedback.setText("Getting preliminary MP3 tags: "+farngCounter+") "+trackDb.artist+", "+trackDb.title);
       }
+      else System.out.println("Null trackDb: "+file.toPath().toString());
     }
    
   }
+  
+ 
   
   private TrackDb getSingleFarngMP3tag(Path path) throws Exception
   {
@@ -347,35 +368,38 @@ public class TrackLoader3
 
     File file = path.toFile();
     pathStr2=path.toString();
+    
+    //System.out.println("Farng track: "+pathStr2);
       
     TrackDb trackDb = new TrackDb();
     
-    try { mp3= new MP3File(file); } catch (Exception e) 
+    try { mp3 = new MP3File(file); } catch (java.io.IOException e) 
     { 
-      errors++; 
-      out.write("Could not create MP3File class: "+pathStr);
-      out.newLine();
-      farngCounter++; 
+      System.out.println("Could not create MP3File class: "+pathStr);
+      stats.farngErrors++;
       return null;  
     }
     
+   // System.out.println("made it this far: 1");
+    
     try { tag = mp3.getID3v2Tag();  } catch (Exception e2) 
     { 
-      errors++; 
-      out.write("Could not get ID3v2 tag: "+pathStr);
-      out.newLine();
-      farngCounter++; 
+      stats.farngErrors++;
+      System.out.println("Could not get ID3v2 tag: "+pathStr);
       return null;  
     }
      
+    //System.out.println("made it this far: 2");
+    
     if (tag==null)
     {
-      errors++; 
-      out.write("tag is null: "+pathStr);
-      out.newLine();
-      farngCounter++; 
+      stats.farngErrors++;
+      System.out.println("tag is null: "+pathStr);
       return null;  
     }
+    
+    //System.out.println("made it this far: 3");
+    
     
     pathStr2=path.toString();
       
@@ -386,12 +410,16 @@ public class TrackLoader3
     trackDb.genre=cleanString(tag.getSongGenre());
     trackDb.track_year=cleanString(tag.getYearReleased());
     
+   
+    
     // Track Number
     String strTrackNo="0";
     int track_no=0;
     strTrackNo=tag.getTrackNumberOnAlbum();
     try { track_no = Integer.parseInt(strTrackNo); } catch (Exception e3) {}
     trackDb.track_no=track_no;
+    
+    
     
     trackDb.pathHash = hasher.getMd5Hash(pathStr2.getBytes());
     trackDb.path = cleanString(pathStr2);
@@ -401,11 +429,31 @@ public class TrackLoader3
     if (trackDb.title==null) trackDb.title="NO TITLE";
     else if (trackDb.title.trim().length()==0)  trackDb.title="NO TITLE";
     
-    farngCounter++;
-    tag=null;
+   //System.out.println("made it this far: 4");
     
+    stats.farngCount++;
+    tag=null;
+   
     return trackDb;
   }
+  
+  private void listFilesToProcess() throws Exception
+  {
+   
+    Iterator<File> it = fileList.iterator();
+   
+    File file;
+    int counter=1;
+  
+    while(it.hasNext())
+    {
+      file = it.next();
+      System.out.println(counter+") "+file.getPath().toString());
+      counter++;
+    }
+   
+  }
+  
   
   public static String cleanString(String inStr)
   {

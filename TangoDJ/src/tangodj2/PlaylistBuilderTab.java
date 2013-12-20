@@ -126,7 +126,7 @@ public class PlaylistBuilderTab extends Tab
   
   private Button getSearchButton()
   {
-    Button button = new Button("Filter"); 
+    Button button = new Button("Find"); 
      
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() 
     {
@@ -148,7 +148,7 @@ public class PlaylistBuilderTab extends Tab
   
   private Button getClearButton()
   {
-    Button button = new Button("X"); 
+    Button button = new Button(" clear "); 
      
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() 
     {
@@ -205,7 +205,7 @@ public class PlaylistBuilderTab extends Tab
 	  HBox hbox = new HBox();
 	  hbox.setAlignment(Pos.BASELINE_CENTER);
 	
-	  hbox.getChildren().addAll(label,spacer,rb1,spacer3,rb2,spacer4,rb3,spacer2, searchField, getSearchButton(), getClearButton(), getTestButton());
+	  hbox.getChildren().addAll(label,spacer,rb1,spacer3,rb2,spacer4,rb3,spacer2, searchField, getSearchButton(), getClearButton());
 
 	  trackTypeGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
     public void changed(ObservableValue<? extends Toggle> ov,
@@ -305,7 +305,7 @@ public class PlaylistBuilderTab extends Tab
           String action=tangoTable.getAction().get();
           TangoTrack tangoTrack = tangoTable.getItems().get(row);
         
-        System.out.println("PlaylistBuilderTab - tangoTable Action: "+ action+" row: "+row+" "+tangoTrack.getTitle());
+       // System.out.println("PlaylistBuilderTab - tangoTable Action: "+ action+" row: "+row+" "+tangoTrack.getTitle());
         
         
         if ("addToTanda".equals(action))
@@ -321,6 +321,11 @@ public class PlaylistBuilderTab extends Tab
         if ("edit".equals(action))
         {
           new MP3EditorDialog(tangoTrack,  tangoTable);
+        }
+        
+        if ("delete".equals(action))
+        {
+          tangoTable.delete(row, tangoTrack.getPathHash());
         }
         
         tangoTable.getAction().set("nada");
