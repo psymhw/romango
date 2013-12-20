@@ -560,8 +560,8 @@ public class Playlist
 	
   public void addTanda(String artist, int styleId)
   {
-	playlistTreeItem.addTanda(artist, styleId);
-	generateFlatList();
+	  playlistTreeItem.addTanda(artist, styleId);
+	  generateFlatList();
   }
 	
   public int getTandaCount() { return playlistTreeItem.getTandaCount();	}

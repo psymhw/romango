@@ -142,7 +142,7 @@ public class TangoTable extends TableView<TangoTrack>
         }
       });
       
-      contextMenu.getItems().addAll(addToTanda, edit, play);
+      contextMenu.getItems().addAll(addToTanda, edit, delete);
       addToTanda.setOnAction(new EventHandler() 
         { public void handle(Event t) { action.set("addToTanda"); }});
       edit.setOnAction(new EventHandler() 
@@ -313,7 +313,11 @@ public class TangoTable extends TableView<TangoTrack>
 	}
 
   
-  
+  public void delete(int row, String pathHash)
+  {
+    tangoTracksData.remove(row);
+    Db.deleteTrack(pathHash);
+  }
   
 
 }

@@ -524,6 +524,14 @@ String sql;
     try { connection.createStatement().execute(sql); } catch (Exception e) { e.printStackTrace();}
   }
 	
+	public static void deleteTrack(String pathHash)
+  {
+   
+    String sql = "delete from tracks where pathHash = '"+pathHash+"'";
+   
+    try { connection.createStatement().execute(sql); } catch (Exception e) { e.printStackTrace();}
+  }
+	
 	public static TrackDb getTrackInfo(String pathHash)
 	{
 	  TrackDb trackDb=null;
@@ -858,6 +866,19 @@ String sql;
     
     disconnect();
   }
+  
+  public static void updateAllPlaylistItem(AllPlaylistsBaseItem selectedItem) throws Exception
+  {
+    String sql="update playlists set"
+              +" name = '"+selectedItem.getValue()
+              +"' location = '"+selectedItem.getLocation()
+              +"' where id = "+selectedItem.getId();
+    
+    connection.createStatement().execute(sql);
+    
+  }
+  
+  
   public static int insertCortina(Cortina cortina) throws SQLException, ClassNotFoundException
   {
     connect();
@@ -996,6 +1017,7 @@ private static AllPlaylistsBaseItem getPlaylistsRecursive(AllPlaylistsBaseItem p
  	  apfi.setLevel(resultSet.getInt("level"));
  	  apfi.setParentId(resultSet.getInt("parent"));
  	  apfi.setPosition(resultSet.getInt("position"));
+ 	  apfi.setLocation(resultSet.getString("location"));
  	  parent.getChildren().add(apfi);
  	  getPlaylistsRecursive(apfi);
  	}

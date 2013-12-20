@@ -12,6 +12,7 @@ public class AllPlaylistsBaseItem extends TreeItem<String>
   private int level;
   private int position;
   private int parentId;
+  private String location="";
   
   
   public AllPlaylistsBaseItem(String value)
@@ -59,6 +60,16 @@ public int getParentId() {
 
 public void setParentId(int parentId) {
 	this.parentId = parentId;
+}
+
+public String getLocation()
+{
+  return location;
+}
+
+public void setLocation(String location)
+{
+  this.location = location;
 }
 
 

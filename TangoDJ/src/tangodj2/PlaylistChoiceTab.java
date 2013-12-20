@@ -304,6 +304,15 @@ public class PlaylistChoiceTab extends Tab
         player.changePlaylist(selectedId);
       }
     });
+    
+    // EDIT PLAYLIST
+    edit.setOnAction(new EventHandler() 
+    {
+      public void handle(Event t) 
+      {
+        new EditPlaylistDialog("edit", PLAYLIST, selectedItem);  
+      }
+    });
   }
     
     private void setupFolderContextMenu(final ContextMenu playlistContextMenu)
@@ -322,7 +331,6 @@ public class PlaylistChoiceTab extends Tab
         {
         	System.out.println("PlaylistChoiceTab, selectedId: "+selectedId);
           new EditPlaylistDialog("new", PLAYLIST, selectedItem);  
-         
         }
       });
       newFolder.setOnAction(new EventHandler() 

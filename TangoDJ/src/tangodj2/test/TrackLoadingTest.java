@@ -23,7 +23,7 @@ import javafx.stage.Stage;
 
 public class TrackLoadingTest extends Application
 {
-  String inPath="C:\\music\\tango\\Biagi, Rodolfo\\Campo Afuera";
+  String inPath="C:\\music\\tango\\Biagi, Rodolfo";
   static int counter=0;
   ArrayList<File> fileList;
   

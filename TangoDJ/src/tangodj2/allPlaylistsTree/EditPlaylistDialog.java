@@ -20,14 +20,14 @@ public class EditPlaylistDialog extends Stage
 {
   String mode;
   int treeType;
-  AllPlaylistsBaseItem parentItem;
+  AllPlaylistsBaseItem selectedItem;
   
-  public EditPlaylistDialog(String mode, int treeType, AllPlaylistsBaseItem parentItem)
+  public EditPlaylistDialog(String mode, int treeType, AllPlaylistsBaseItem selectedItem)
   {
 	final int col[] = {0,1,2,3,4,5,6,7,8,9,10};
     final int row[] = {0,1,2,3,4,5,6,7,8,9,10};
     this.mode=mode;
-    this.parentItem=parentItem;
+    this.selectedItem=selectedItem;
     this.treeType=treeType;
     
     Scene myDialogScene = new Scene(getEntryBox(), 300, 200);
@@ -46,7 +46,7 @@ public class EditPlaylistDialog extends Stage
             + "-fx-border-width: 1;"
             + "-fx-border-color: black");
 	
-	final Label panelLabel    = new Label("New Playlist");
+	final Label panelLabel    = new Label("");
 	final Label nameLabel     = new Label(" Name: ");
 	final Label locationLabel = new Label(" Location: ");
 	
@@ -73,24 +73,56 @@ public class EditPlaylistDialog extends Stage
     GridPane.setHalignment(locationLabel, HPos.RIGHT);
  
     String buttonText="Save";
+    
+    // FOLDER OPTIONS
     if ("new".equals(mode)&&(treeType==PlaylistChoiceTab.FOLDER))
-     buttonText="Save New Folder";
+    {  
+      panelLabel.setText("New Folder");
+      buttonText="Save New Folder";
+    }
+    
+    // PLAYLIST OPTIONS
     if ("new".equals(mode)&&(treeType==PlaylistChoiceTab.PLAYLIST))
-        buttonText="Save New Playlist";
+    {
+      panelLabel.setText("New Playlist");
+      buttonText="Save New Playlist";
+    }
+    
+    if ("edit".equals(mode)&&(treeType==PlaylistChoiceTab.PLAYLIST))
+    {
+      panelLabel.setText("Edit Playlist");
+      nameField.setText(selectedItem.getValue());
+      locationField.setText(selectedItem.getLocation());
+      buttonText="Update Playlist";
+    }
+    
     final Button addButton = new Button(buttonText);
     addButton.setOnAction(new EventHandler<ActionEvent>() 
     {
+      
       public void handle(ActionEvent e) 
       {
-    	AllPlaylistsBaseItem apbi = Db.insertPlaylistsItem(nameField.getText(), 
-    			locationField.getText(), 
-    			parentItem.getId(), 
-    			parentItem.getLevel()+1, 
-    			parentItem.getChildren().size(), 
-    			treeType);
-    	parentItem.getChildren().add(apbi);
-    	close();
+        if ("new".equals(mode))
+        {
+      	  AllPlaylistsBaseItem apbi = Db.insertPlaylistsItem(nameField.getText(), 
+      		  locationField.getText(), 
+      		  selectedItem.getId(), 
+      			selectedItem.getLevel()+1, 
+      			selectedItem.getChildren().size(), 
+      			treeType);
+      	  selectedItem.getChildren().add(apbi);
+        }
+        if ("edit".equals(mode))
+        {
+          selectedItem.setValue(nameField.getText());
+          selectedItem.setLocation(locationField.getText());
+          Db.updateAllPlaylistItem(selectedItem);
+        }
+        
+        
+    	  close();
       }
+      
     });
     
     vbox.getChildren().addAll(panelLabel, gridPane, addButton);
