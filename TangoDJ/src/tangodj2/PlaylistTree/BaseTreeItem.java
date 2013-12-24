@@ -31,9 +31,9 @@ public class BaseTreeItem extends TreeItem<String>
 	{
 	  super();
 	  
-    if (green_light==null) green_light = new Image(getClass().getResourceAsStream("/resources/images/green_light.png"));
+    if (green_light==null) green_light = new Image(getClass().getResourceAsStream("/resources/images/playing.png"));
     if (gray_light==null) gray_light = new Image(getClass().getResourceAsStream("/resources/images/gray_light.png"));
-    if (selected_light==null) selected_light = new Image(getClass().getResourceAsStream("/resources/images/selected_arrow.png"));
+    if (selected_light==null) selected_light = new Image(getClass().getResourceAsStream("/resources/images/next.png"));
     if (disable==null) disable = new Image(getClass().getResourceAsStream("/resources/images/disable.png"));
     if (flagsImage==null) flagsImage = new Image(getClass().getResourceAsStream("/resources/images/small_flags.png"));
     

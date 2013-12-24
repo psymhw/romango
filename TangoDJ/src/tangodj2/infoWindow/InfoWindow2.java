@@ -70,6 +70,7 @@ public class InfoWindow2
   VBox vbox = new VBox();
   ProgressBar tandaProgressBar = new ProgressBar(0);
   PlaylistTrack playlistTrack;
+  public final  Image noteImage = new Image(getClass().getResourceAsStream("/resources/images/note.png"));
   
   
   public InfoWindow2(Playlist playlist, URL xxx)
@@ -82,7 +83,8 @@ public class InfoWindow2
 	  Label test = new Label("TEST");
 	  test.setFont(titleFont);
 	  borderPane.setPadding(new Insets(5,5,5,5));
-	  
+	  infoWindow.getIcons().add(noteImage);
+	  infoWindow.setTitle("Tango DJ *");
 	  infoWindow.setOnCloseRequest(new EventHandler<WindowEvent>() 
 	  {
 	    public void handle(WindowEvent e)

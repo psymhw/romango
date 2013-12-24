@@ -867,14 +867,21 @@ String sql;
     disconnect();
   }
   
-  public static void updateAllPlaylistItem(AllPlaylistsBaseItem selectedItem) throws Exception
+  public static void updateAllPlaylistItem(AllPlaylistsBaseItem selectedItem) 
   {
     String sql="update playlists set"
               +" name = '"+selectedItem.getValue()
-              +"' location = '"+selectedItem.getLocation()
+              +"', location = '"+selectedItem.getLocation()
               +"' where id = "+selectedItem.getId();
-    
-    connection.createStatement().execute(sql);
+    System.out.println("sql: "+sql);
+    try
+    {
+      connection.createStatement().execute(sql);
+    } catch (SQLException e)
+    {
+      
+      e.printStackTrace();
+    }
     
   }
   
