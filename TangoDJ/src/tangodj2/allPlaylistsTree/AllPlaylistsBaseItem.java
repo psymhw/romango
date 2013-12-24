@@ -18,7 +18,7 @@ public class AllPlaylistsBaseItem extends TreeItem<String>
   public AllPlaylistsBaseItem(String value)
   {
 	super(value);
-	if (folderImage==null) folderImage = new Image(getClass().getResourceAsStream("/resources/images/green_light.png"));
+	if (folderImage==null) folderImage = new Image(getClass().getResourceAsStream("/resources/images/folder.png"));
 	if (playlistImage==null) playlistImage = new Image(getClass().getResourceAsStream("/resources/images/gray_light.png"));
   }
 

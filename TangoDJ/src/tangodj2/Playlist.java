@@ -44,6 +44,7 @@ import tangodj2.PlaylistTree.PlaylistTreeItem;
 import tangodj2.PlaylistTree.TandaTreeItem;
 import tangodj2.PlaylistTree.TrackTreeItem;
 import tangodj2.cortina.CortinaTrack;
+import tangodj2.infoWindow.InfoWindow2;
 
 public class Playlist 
 {
@@ -162,7 +163,7 @@ public class Playlist
   public void delayTrack(boolean set)
   {
     TrackTreeItem trackTreeItem = (TrackTreeItem)selectedBaseTreeItem;
-    System.out.println("Playlist delay track: "+set);
+    //System.out.println("Playlist delay track: "+set);
   
     if (trackTreeItem.getStatus()!=BaseTreeItem.PLAYING)
     {  
@@ -575,7 +576,7 @@ public class Playlist
   public TandaTreeItem  getTanda(int index)
   {
     TandaTreeItem tandaTreeItem = (TandaTreeItem)playlistTreeItem.getChildren().get(index);
-	  System.out.println("Playlist tanda: "+tandaTreeItem.getArtist());
+	  //System.out.println("Playlist tanda: "+tandaTreeItem.getArtist());
 	  return tandaTreeItem;
 	}
   
@@ -730,7 +731,7 @@ public class Playlist
      playlistFocus.set(playlistFocus.get()+1);
      treeView.getSelectionModel().select(bti);
      
-     boolean debug=true;
+     boolean debug=false;
      if (debug)
      {
        System.out.println("Playlist - treeType: "+treeType);
@@ -788,7 +789,7 @@ public class Playlist
 	         if (isSelected()) 
 	         {
 	           TreeItem treeItem = (TreeItem)bti;
-	           System.out.println("selected tree cell: "+treeItem.getValue());
+	          // System.out.println("selected tree cell: "+treeItem.getValue());
 	         }
 	         if ("playlist".equals(bti.getTreeType())) 
 	         {  
@@ -1064,6 +1065,7 @@ public class Playlist
 	   private void newTandaDialog() 
 	   {
 	     final ComboBox comboBox = new ComboBox();
+	     
 	     final TextBuilder seperatorBuilder = TextBuilder.create()
 	            .fill(Color.BLACK)
 	            .font(Font.font("Serif", 18));
@@ -1071,6 +1073,7 @@ public class Playlist
 	     final Text alist = seperatorBuilder.text("A List").build();
 	     Text blist =  seperatorBuilder.text("B List").build();
 	     Text clist =  seperatorBuilder.text("C List").build();
+	     final TextField artistOverride = new TextField("");
 	    
 	     comboBox.getItems().add(alist);
 	     comboBox.getItems().addAll(SharedValues.artistsA);
@@ -1078,6 +1081,18 @@ public class Playlist
 	     comboBox.getItems().addAll(SharedValues.artistsB);
 	     comboBox.getItems().add(clist);
 	     comboBox.getItems().addAll(SharedValues.artistsC);
+	     
+	   
+	     comboBox.setOnAction(new EventHandler<ActionEvent>() 
+	     {
+	       public void handle(ActionEvent actionEvent) 
+	       {
+	         //System.out.println("Combobox action");
+	         ArtistX ax = (ArtistX)comboBox.getValue();
+	          artistOverride.setText(ax.getLeader()); 
+	       }
+	    });
+	    
 	    
 	     final RadioButton rb1 = new RadioButton("Tango");
 	     final RadioButton rb2 = new RadioButton("Vals");
@@ -1110,12 +1125,13 @@ public class Playlist
 	     
          final Stage myDialog = new Stage();
          myDialog.initModality(Modality.APPLICATION_MODAL);
+         
          Button okButton = new Button("SAVE");
          okButton.setOnAction(new EventHandler<ActionEvent>()
          {
            public void handle(ActionEvent arg0) 
            {
-	           String artist = comboBox.getSelectionModel().getSelectedItem().toString();
+	           //String artist = comboBox.getSelectionModel().getSelectedItem().toString();
 	           int styleId = 0;
 	           String selectedStr=styleGroup.getSelectedToggle().toString();
 	           int i = selectedStr.indexOf("id=");
@@ -1124,7 +1140,7 @@ public class Playlist
 	           {
 	             styleId= Integer.parseInt(numStr);
 	           } catch (Exception e) {}
-	           addTanda(artist, styleId);
+	           addTanda(artistOverride.getText(), styleId);
 	             myDialog.close();
            }});
        
@@ -1138,9 +1154,10 @@ public class Playlist
          gridPane.setHgap(5);
          gridPane.add(tandaLabel, 0, 0);
          gridPane.add(comboBox, 1, 0);
+         gridPane.add(artistOverride, 1, 1);
          //gridPane.add(new Text("Style"), 0, 1);
          gridPane.add(styleBox, 0, 1);
-         gridPane.add(okButton, 1, 2);
+         gridPane.add(okButton, 1, 3);
          
          Scene myDialogScene = new Scene(gridPane, 300, 200);
          myDialog.setScene(myDialogScene);
@@ -1236,7 +1253,7 @@ public class Playlist
    {
      PlaylistTrack playlistTrack = flatPlaylistTracks.get(playingTrack);
      String progress=playlistTrack.trackInTanda+" of "+playlistTrack.tandaInfo.numberOfTracksInTanda;
-     System.out.println("Playlist - progress: "+progress);
+     //System.out.println("Playlist - progress: "+progress);
      return  progress;
    }
    

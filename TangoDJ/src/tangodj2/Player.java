@@ -803,7 +803,7 @@ public class Player
     {
       String sourcePath=null;
       cortina=false;
-      
+      System.out.println("Player - playTrack()");
       if (currentTrackHash==null) return;
       TrackDb trackDb=Db.getTrackInfo(currentTrackHash);
       sourcePath=trackDb.path;
@@ -875,6 +875,7 @@ public class Player
       final PlaylistTrack playlistTrack=playlist.getTrack(trackToPlay);
       if (playlistTrack==null) return;
       playlist.setPlayingTrack(playlist.getNextTrack());
+      if (!playlistTrack.tandaInfo.tandaTreeItem.isExpanded()) playlistTrack.tandaInfo.tandaTreeItem.setExpanded(true);
       
      // playlistTrack.baseTreeItem.setPlayingImage(true);
      // playlistTrack.playing=true;

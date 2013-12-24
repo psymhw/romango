@@ -22,6 +22,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -40,12 +41,11 @@ import tangodj2.tango.TangoTable;
  * TODO export playlist?
  * MP3 Tagtools
  * CDEX
+ * Backup and Restore
  * Get rating from iTunes XML file?
- * Create a tangoGenre MP3tag and populate when making tandas?
  * after each file load message at bottom done: added: ### duplicates: ###
- 
+ * handle file not found when playing playlist.
  * Spare DB fields for updates
- * Show total time for each tanda. Maybe even real end time from system clock
  * When making cotinas, there should be a length counter
  *   from the time the set start position button is pressed
  * Tooltips on TreeItems (treeCell?) to show time, album, etc
@@ -55,17 +55,14 @@ import tangodj2.tango.TangoTable;
  * Create playlists from tandas.
  * Handle bad directory address in preferences
  * Feedback col could say playing from playlist or playing from library
- * Automatiacally play next in library. Also allow skip fwd and back from library
+ ***** Automatiacally play next in library. Also allow skip fwd and back from library
  * Link to track folder from MP3 Editor
  * Feedback could show # of track stats on startup
  * Pop up a window with load errors?
- * Allow interactively new named playlist(text field). Would allow non tango playlists.
  * Remember equalizer values - for next tune and when program closed
  
- * Index on tracks to make them load faster
  * put distribution version in state file
  * Lists tab where you can create various lists of tracks. Then be able to add them from the PlalistBuilder tab
- * App icon
  * * sunset screen for cleanup?
  */
 public class TangoDJ2 extends Application 
@@ -80,6 +77,7 @@ public class TangoDJ2 extends Application
   static VBox playerPane;
   int sceneHeight=600;
   int sceneWidth=1150;
+  public final  Image noteImage = new Image(getClass().getResourceAsStream("/resources/images/note.png"));
   
   MenuBar menuBar;
   Playlist playlist;
@@ -101,7 +99,7 @@ public class TangoDJ2 extends Application
 	
   public void start(Stage stage) 
   {
-    boolean deploy = false;
+    boolean deploy = true;
     
     if (deploy) // Redirect system.out to tdj_error.txt file
     {
@@ -118,6 +116,8 @@ public class TangoDJ2 extends Application
     }
     
 	primaryStage=stage;
+	primaryStage.getIcons().add(noteImage);
+	primaryStage.setTitle("Tango DJ");
 	loadFonts();
 	//feedback.setPrefWidth(800);
 	infoWindowButton.setDisable(true);
@@ -269,6 +269,8 @@ public class TangoDJ2 extends Application
     MenuItem menuAddCleanupFile = new MenuItem("Add Non-Tango Track");
     MenuItem menuAddCortinaFile = new MenuItem("Add Prepared Cortina Track");
     MenuItem menuAddCortinaDir = new MenuItem("Add Prepared Cortina Folder");
+    MenuItem backup = new MenuItem("Backup");
+    MenuItem restore = new MenuItem("Restore");
     MenuItem preferences = new MenuItem("Preferences");
     MenuItem about = new MenuItem("About");
     MenuItem manual = new MenuItem("TangoDJ Manual");
@@ -276,7 +278,7 @@ public class TangoDJ2 extends Application
     Menu menuEdit = new Menu("Edit");
     Menu menuView = new Menu("View");
     Menu menuHelp = new Menu("Help");
-    menuBar.getMenus().addAll(menuFile, menuEdit, menuView, menuHelp);
+    menuBar.getMenus().addAll(menuFile, menuEdit, menuHelp);
     
     menuAddTangoDir.setOnAction(new EventHandler<ActionEvent>() 
     {
@@ -411,7 +413,8 @@ public class TangoDJ2 extends Application
      manual.setOnAction(new EventHandler<ActionEvent>() 
      { public void handle(ActionEvent t) { new ManualDialog(); }});
     
-    menuFile.getItems().addAll(menuAddTangoDir, menuAddTangoFile,menuAddCleanupDir, menuAddCleanupFile,menuAddCortinaDir,menuAddCortinaFile);
+    menuFile.getItems().addAll(menuAddTangoDir, menuAddTangoFile,menuAddCleanupDir, 
+        menuAddCleanupFile,menuAddCortinaDir,menuAddCortinaFile, backup, restore);
     menuEdit.getItems().add(preferences);
     menuHelp.getItems().addAll(about, manual);
   }
