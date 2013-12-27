@@ -28,13 +28,13 @@ public class MediaTest extends Application
 	@Override
 	public void start(Stage arg0) throws Exception 
 	{
-		String path ="C:\\music\\tango\\ClaroDeLuna.mp3";
+		String path ="C:\\music\\tango\\temp\\Adiós Muchachos.mp3";
 		File file = new File(path);
 		Media media = new Media(file.toURI().toString());
 		
 		
 		  MediaPlayer mp = new MediaPlayer(media);
-		 // mp.play();
+		  mp.play();
 		  System.out.println("duration: "+media.getDuration().toMillis());
 		
 		
