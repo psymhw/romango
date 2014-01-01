@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?> 
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"
+       "http://struts.apache.org/dtds/tiles-config_1_1.dtd">
+
+<tiles-definitions>
+   <definition name="masterdef" page="/layout/layout.jsp">
+		<put name="title" value="Master Site Definition"/>
+		<put name="header" value="/dummy/dummy.jsp"/>
+		<put name="body" value="/dummy/dummy.jsp"/>
+	</definition>
+	
+	<definition name="maindef" extends="masterdef">
+		<put name="title" value="Dadobase"/>
+		<put name="header" value="/private/menu/headerMenu.jsp"/>
+		<put name="body" value="/dummy/body.jsp"/>
+	</definition>
+	
+	<definition name="image_support_def" page="/layout/image_layout.jsp">
+		<put name="title" value="Dadobase"/>
+		<put name="header" value="/private/menu/headerMenu.jsp"/>
+		<put name="body" value="/dummy/body.jsp"/>
+		<put name="images" value="/dummy/dummy.jsp"/>
+	</definition>
+	
+	<definition name="map_def" page="/layout/map_layout.jsp">
+		<put name="title" value="Dadobase"/>
+		<put name="map_script" value="/private/address/mapScript.jsp"/>
+		<put name="header" value="/private/menu/headerMenu.jsp"/>
+		<put name="body" value="/dummy/body.jsp"/>
+		<put name="images" value="/dummy/dummy.jsp"/>
+		<put name="map" value="/dummy/dummy.jsp"/>
+	</definition>
+	
+	<definition name="home_def" page="/layout/home_layout.jsp">
+		<put name="title" value="Dadobase"/>
+		<put name="header" value="/private/menu/headerMenu.jsp"/>
+		<put name="body" value="/dummy/body.jsp"/>
+		<put name="footer" value="/home/footer.jsp"/>
+	</definition>
+	
+	<definition name="single_col_master" page="/layout/single_col_layout.jsp">
+		<put name="title" value="Setareh Biotech"/>
+		<put name="menu" value="/jsp/common/dummy.jsp"/>
+		<put name="body" value="/jsp/common/dummy.jsp"/>
+	</definition>
+	
+	<definition name="double_col_master" page="/layout/double_column_layout.jsp">
+		<put name="title" value="Eugene Argentine Tango"/>
+		<put name="menu" value="/struts/dummy.jsp"/>
+		<put name="left_body" value="/struts/dummy.jsp"/>
+		<put name="right_body" value="/struts/dummy.jsp"/>
+	</definition>
+	
+	<definition name="doubleColDef" extends="double_col_master">
+	<put name="title" value="/jsp/common/title.jsp"/>
+	<put name="menu" value="/jsp/common/menu.jsp" />
+	</definition>
+	
+	<definition name="singleColDef" extends="single_col_master">
+	<put name="title" value="/jsp/common/title.jsp"/>
+	<put name="menu" value="/jsp/common/menu.jsp" />
+	</definition>
+	
+	<definition name="mapDef" page="/layout/map_layout.jsp">
+		<put name="title" value="/struts/common/title.jsp"/>
+		<put name="menu" value="/jsp/common/menu.jsp" />
+		<put name="body" value="/struts/dummy.jsp"/>
+	</definition>
+	
+	
+	
+</tiles-definitions>
