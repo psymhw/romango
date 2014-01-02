@@ -939,13 +939,13 @@ String sql;
     +trackDb.album+"', '"
     +trackDb.artist+"', "
     +1+")";
-    System.out.println("sql: "+sql);
+    //System.out.println("sql: "+sql);
     try {
     connection.createStatement().execute(sql);
     
    
     sql="select max(id) maxid from cortinas";
-    System.out.println("sql: "+sql);
+    //System.out.println("sql: "+sql);
     Statement statement = connection.createStatement();
     ResultSet resultSet = statement.executeQuery(sql);
     if(resultSet.next())
