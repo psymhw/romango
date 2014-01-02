@@ -68,7 +68,12 @@ public class CreateDatabase
 	    		"position integer, " +
 	    		"incept TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP" +
 	    		")");	
-		connection.createStatement().execute("insert into playlists (name, location, level, parent, folder, position) values('PLAYLISTS', '', 0, 0, 1, 0)");
+		connection.createStatement().execute("insert into playlists (name, location, level, parent, folder, position) values('Playlists', '', 0, 0, 1, 0)");
+		connection.createStatement().execute("insert into playlists (name, location, level, parent, folder, position) values('Milongas', '',  1, 1, 1, 0)");
+		connection.createStatement().execute("insert into playlists (name, location, level, parent, folder, position) values('My 1st Playlist', '',  2, 2, 0, 0)");
+
+		connection.createStatement().execute("insert into playlists (name, location, level, parent, folder, position) values('Practicas', '', 1, 1, 1, 1)");
+
 		System.out.println("Playlists table created");
 	}
 	
@@ -101,7 +106,7 @@ public class CreateDatabase
 	    		")");	
 		connection.createStatement().execute("insert into state (name) values('TangoFolder')");
 		connection.createStatement().execute("insert into state (name) values('CleanupFolder')");
-		connection.createStatement().execute("insert into state (name, value) values('CurrentPlaylist', '1')");
+		connection.createStatement().execute("insert into state (name, value) values('CurrentPlaylist', '3')");
 
 		System.out.println("State table created");
 	}

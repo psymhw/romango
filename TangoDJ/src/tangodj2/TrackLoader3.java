@@ -313,6 +313,10 @@ public class TrackLoader3
           if (trackDb.comment.startsWith("iTunPGAP")) trackDb.comment="";
         }
         
+        if (trackDb.title.startsWith("CORTINA - ")) trackDb.title=trackDb.title.replace("CORTINA - ", "");
+        if (trackDb.artist.startsWith("CORTINA - ")) trackDb.artist= trackDb.artist.replace("CORTINA - ", "");
+        if (trackDb.album.startsWith("CORTINA - ")) trackDb.album=trackDb.album.replace("CORTINA - ", "");
+        
         mp.dispose();
         sqlReadyTrackInfo(trackDb);
         if (type!=SharedValues.CORTINA)
