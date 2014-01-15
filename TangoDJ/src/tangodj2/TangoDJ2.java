@@ -99,7 +99,7 @@ public class TangoDJ2 extends Application
 	
   public void start(Stage stage) 
   {
-    boolean deploy = false;
+    boolean deploy = true;
     
     if (deploy) // Redirect system.out to tdj_error.txt file
     {

@@ -155,7 +155,7 @@ public class Artist
     if (inStr.toLowerCase().contains("angelise"))    return new Artist("Alfredo",   "De Angelise");
     if (inStr.toLowerCase().contains("di sarli"))    return new Artist("Carlos",    "Di Sarli");
     if (inStr.toLowerCase().contains("firpo"))       return new Artist("Roberto",   "Firpo");
-    if (inStr.toLowerCase().contains("tipica"))      return new Artist("",          "Orquesta Tipica Victor");
+    if (inStr.toLowerCase().contains("tipica"))      return new Artist("",          "OTV");
     if (inStr.toLowerCase().contains("ortiz"))       return new Artist("Ciriaco",   "Ortiz");
     if (inStr.toLowerCase().contains("caro"))        return new Artist("Julio",     "De Caro");    
     if (inStr.toLowerCase().contains("donato"))      return new Artist("Edgardo",   "Donato");
@@ -166,7 +166,7 @@ public class Artist
     if (inStr.toLowerCase().contains("pugliese"))    return new Artist("Osvaldo",    "Pugliese");
     if (inStr.toLowerCase().contains("troilo"))      return new Artist("Anibal",      "Troilo");
     if (inStr.toLowerCase().contains("quinteto pirincho"))    return new Artist("",  "Quinteto Pirincho");
-    
+    if (inStr.toLowerCase().contains("malerba"))      return new Artist("Ricardo",      "Malerba");
     return new Artist("", inStr);
   }
 }
