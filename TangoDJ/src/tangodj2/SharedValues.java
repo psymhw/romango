@@ -75,6 +75,7 @@ public class SharedValues
 		  new ArtistX("Alfredo",   "De Angelise",18),
 		  new ArtistX("Julio",     "De Caro",19),
 		  new ArtistX("Roberto",   "Firpo",20),
+		  new ArtistX("Ricardo",   "Malerba",24),  // 24
 		  new ArtistX("Ciriaco",   "Ortiz",21),
 		  new ArtistX("Astor",     "Piazzolla",22),
 		  new ArtistX("",           "Other",23)
