@@ -1,0 +1,7 @@
+http://www.thejavageek.com/2013/10/22/creating-new-dynamic-web-project-eclipse/
+
+Struts2
+http://www.dzone.com/tutorials/java/struts-2/struts-2-example/struts-2-tiles-example-1.html
+
+openJPA
+http://blog.changecong.com/2012/11/eclipse-openjpa-mysql-configuration/
