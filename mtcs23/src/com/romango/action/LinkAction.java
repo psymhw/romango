@@ -19,7 +19,7 @@ public class LinkAction extends ActionSupport {
 	
 	public String friends()
 	{
-	  System.out.println("a change");
+	  System.out.println("a change to test");
 	  
 	  /*
 	  EntityManagerFactory entityManagerFactory =  Persistence.createEntityManagerFactory("testjpa");
