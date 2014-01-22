@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  This is the Spring configuration file.  This file declares all of the Spring beans that
+			will be used by the Struts 2 Portfolio, starting with Chapter Nine.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+   <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+   
+   
+   <!--  Change the value of the fileSystemHome to a point to the images directory in this web application
+         that is a top level directory in your deployed web application.  In the document root, along side
+         the JSP directories.  
+    -->
+   <bean id="portfolioService" class="manning.utils.PortfolioServiceJPAImpl">
+      <property name="fileSystemHome" value="/home/chadmichael/workspace/manningSampleApp/images/"/>
+   </bean>
+ 
+   <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+                <property name="database" value="MYSQL" />
+                <property name="showSql" value="true" />
+            </bean>
+        </property>
+    </bean>
+    
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="org.gjt.mm.mysql.Driver" />
+        <property name="url" value="jdbc:mysql://127.0.0.1:3306/manning" />
+        <property name="username" value="manning" />
+        <property name="password" value="action" />
+    </bean>
+    
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory" />
+    </bean>
+
+    <tx:annotation-driven transaction-manager="transactionManager" />
+   
+</beans>
+

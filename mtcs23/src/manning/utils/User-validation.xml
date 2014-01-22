@@ -1,0 +1,34 @@
+<!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
+       "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+<validators>
+  <field name="password">
+      <field-validator type="stringlength">
+         <param name="maxLength">10</param>
+         <param name="minLength">6</param>
+         <message>Your password should be 6-10 characters.</message>
+      </field-validator>
+      <field-validator type="passwordintegrity">
+          <param name="specialCharacters">$!@#?</param>
+          <message>Your password must contain one letter, one number, and one of the following "${specialCharacters}".</message>
+      </field-validator>
+  </field>
+  <field name="username">
+      <field-validator type="stringlength">
+         <param name="maxLength">8</param>
+         <param name="minLength">5</param>
+         <message>While ${username} is a nice name, a valid username must be between ${minLength} and ${maxLength} characters long. </message>
+     </field-validator>
+  </field>
+  <field name="email">
+      <field-validator type="requiredstring">
+          <message>You must enter a value for email.</message>
+      </field-validator>
+       <field-validator type="email">
+         <message key="email.invalid"/>
+      </field-validator>
+   </field>
+  <validator type="expression">
+      <param name="expression">username != password</param>
+      <message>Username and password can't be the same.</message>
+  </validator>
+</validators>
