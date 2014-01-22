@@ -1,9 +1,7 @@
 package com.romango.db;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.naming.Context;
@@ -59,8 +57,8 @@ public class Db
     
     Connection connection=getConnection();
     
-    DbString testStr = new DbString("hello world's", 20);
-    System.out.println("DbString: "+testStr.getSqlStr());
+   //// DbString testStr = new DbString("hello world's", 20);
+   // System.out.println("DbString: "+testStr.getSqlStr());
     
     try
     {
