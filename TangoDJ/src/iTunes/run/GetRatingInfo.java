@@ -36,7 +36,7 @@ public class GetRatingInfo extends JFrame
     iTunesData data = new iTunesData();
     iTunesParser parser = new iTunesParser(data);
     parser.parseFile();
-    String pathHash;
+    String pathHash="";
     String artistTitleHash;
     String artistTitle;
     String outLine="";
@@ -73,11 +73,12 @@ public class GetRatingInfo extends JFrame
         pathHash = hasher.getMd5Hash(file.getPath().toString().getBytes());
         if (td.rating>0)
         {  
-          outLine=	artistTitleHash+"'"+pathHash+","+td.rating;
+          outLine=	i+", "+artistTitleHash+"'"+pathHash+","+td.rating+"'"+td.name;
           out.write(outLine);
           out.newLine();
+          System.out.println(outLine);
         }
-        System.out.println(outLine);
+       
         //if (i>200) break;
       }
       
