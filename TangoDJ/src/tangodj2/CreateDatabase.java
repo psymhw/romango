@@ -37,6 +37,7 @@ public class CreateDatabase
 	  createCortinasTable();
 	  createListsTable();
 	  createListMembersTable();
+	  createiTunesRatingsTable();
 	  disconnect();
 	   //Db.disconnect();
 	  System.out.println("database initiallized");	
@@ -95,6 +96,20 @@ public class CreateDatabase
 	          "track_id integer " +
 	          ")"); 
 	    System.out.println("List Members table created");
+	  }
+	 
+	 private void createiTunesRatingsTable() throws SQLException
+	  {
+	    connection.createStatement().execute("create table iTunesRatings(" +
+	          "id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
+	          "artistTitleHash varchar(32), " +
+	          "pathHash varchar(32), " +
+	          "rating varchar(5) " +
+	          ")"); 
+	    connection.createStatement().execute("CREATE INDEX idx1 ON iTunesRatings(pathHash)");
+	    connection.createStatement().execute("CREATE INDEX idx2 ON iTunesRatings(artistTitleHash)");
+
+	    System.out.println("iTunes ratings table created");
 	  }
 	
 	private void createStateTable() throws SQLException

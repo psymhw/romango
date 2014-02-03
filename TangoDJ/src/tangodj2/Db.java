@@ -1064,6 +1064,13 @@ public static AllPlaylistsBaseItem insertPlaylistsItem(String name, String locat
   return apbi;
 }
 
+public static void insertiTunesRating(String artistTitleHash, String pathHash, String rating) throws Exception
+{
+  String sql = "insert into iTunesRatings(artistTitleHash, pathHash, rating) values ('"+artistTitleHash
+		  +"', '"+pathHash+"', '"+rating+"')";
+  Db.connection.createStatement().execute(sql);
+}
+
 public static void insertTrack(TrackDb trackDb, int type) 
 {
  int cleanup=0; 
