@@ -20,6 +20,7 @@ public class ReadRatings
       StringBuilder sb = new StringBuilder();
       String line;
       String pathHash;
+      String artistTitleHash;
       String strRating;
       String[] tokens;
        
@@ -30,8 +31,9 @@ public class ReadRatings
         line = br.readLine();
         if (line==null) break;
         tokens = line.split(delims);
-        pathHash=tokens[0];
-        strRating=tokens[1];
+        artistTitleHash=tokens[0];
+        pathHash=tokens[1];
+        strRating=tokens[2];
         String stars="";
         switch (strRating)
         {
@@ -63,7 +65,8 @@ public class ReadRatings
           
         }
         //System.out.println(pathHash+"-"+stars);
-        Db.applyRating(pathHash, stars);
+        Db.insertiTunesRating(artistTitleHash, pathHash, stars);
+       // Db.applyRating(pathHash, stars);
       }
       br.close();
       Db.databaseDisconnect();
