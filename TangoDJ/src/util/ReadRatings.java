@@ -1,0 +1,79 @@
+package util;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+
+import tangodj2.Db;
+
+public class ReadRatings
+{
+   public ReadRatings()
+   {
+     BufferedReader br=null;
+     String delims = "[,]";
+    
+     
+    try
+    {
+      br = new BufferedReader(new FileReader("ratings.txt"));
+      StringBuilder sb = new StringBuilder();
+      String line;
+      String pathHash;
+      String strRating;
+      String[] tokens;
+       
+      Db.databaseConnect(true);
+      
+      while (true) 
+      {
+        line = br.readLine();
+        if (line==null) break;
+        tokens = line.split(delims);
+        pathHash=tokens[0];
+        strRating=tokens[1];
+        String stars="";
+        switch (strRating)
+        {
+          case "20":
+          {
+            stars="*";
+            break;
+          }
+          case "40":
+          {
+            stars="**";
+            break;
+          }
+          case "60":
+          {
+            stars="***";
+            break;
+          }
+          case "80":
+          {
+            stars="****";
+            break;
+          }
+          case "100":
+          {
+            stars="*****";
+            break;
+          }
+          
+        }
+        //System.out.println(pathHash+"-"+stars);
+        Db.applyRating(pathHash, stars);
+      }
+      br.close();
+      Db.databaseDisconnect();
+      
+    } catch (Exception e) { e.printStackTrace();  }
+  }
+  
+
+  public static void main(String args[])
+  {
+    new ReadRatings();
+  }
+}
