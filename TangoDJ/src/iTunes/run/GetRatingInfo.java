@@ -37,6 +37,10 @@ public class GetRatingInfo extends JFrame
     iTunesParser parser = new iTunesParser(data);
     parser.parseFile();
     String pathHash;
+    String artistTitleHash;
+    String artistTitle;
+    String outLine="";
+    
     BufferedWriter out=null;
     File outFile = new File("loader_error.txt");
     if (outFile.exists()) outFile.delete();
@@ -59,7 +63,8 @@ public class GetRatingInfo extends JFrame
       for(int i=0; i<data.tracks.length; i++)
       { 
         td =  data.tracks[i];
-        
+        artistTitle=td.artist+td.name;
+        artistTitleHash=hasher.getMd5Hash(artistTitle.getBytes());
         
         file = new File(ucd.decode(td.path.substring(17)));
        // if (file.exists()) System.out.println("exists");
@@ -68,10 +73,11 @@ public class GetRatingInfo extends JFrame
         pathHash = hasher.getMd5Hash(file.getPath().toString().getBytes());
         if (td.rating>0)
         {  
-          out.write(pathHash+","+td.rating);
+          outLine=	artistTitleHash+"'"+pathHash+","+td.rating;
+          out.write(outLine);
           out.newLine();
         }
-        System.out.println(pathHash+","+td.rating);
+        System.out.println(outLine);
         //if (i>200) break;
       }
       
