@@ -73,7 +73,7 @@ public class GetRatingInfo extends JFrame
         pathHash = hasher.getMd5Hash(file.getPath().toString().getBytes());
         if (td.rating>0)
         {  
-          outLine=	i+", "+artistTitleHash+"'"+pathHash+","+td.rating+"'"+td.name;
+          outLine = artistTitleHash+","+pathHash+","+td.rating;
           out.write(outLine);
           out.newLine();
           System.out.println(outLine);
