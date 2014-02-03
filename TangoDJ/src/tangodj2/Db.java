@@ -551,6 +551,15 @@ String sql;
 	  return trackDb;
 	}
 	
+	public static void applyRating(String pathHash, String stars)
+  {
+    TrackDb trackDb=null;
+    try
+    {
+      connection.createStatement().execute("update tracks set rating = '"+stars+"' where pathHash = '"+pathHash+"'");;
+    } catch (Exception e) { e.printStackTrace();}
+  }
+	
 	private static TrackDb getTrackDb(ResultSet resultSet) throws Exception
 	{
 	  TrackDb trackDb = new TrackDb(resultSet.getString("title"),
