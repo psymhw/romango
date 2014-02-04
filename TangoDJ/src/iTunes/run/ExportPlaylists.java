@@ -52,12 +52,12 @@ public class ExportPlaylists
     URLCodec ucd = new URLCodec();
     
     String pathHash="";
-    String artistTitleHash;
-    String artistTitle;
+    String albumTitleHash;
+    String albumTitle;
     String outLine="";
     
     BufferedWriter out=null;
-    File outFile = new File("loader_error.txt");
+    File outFile = new File("favorites.txt");
     if (outFile.exists()) outFile.delete();
     FileWriter fstream;
     try
@@ -88,8 +88,8 @@ public class ExportPlaylists
           File file = new File(path);
           if (file.exists())
           {  
-            artistTitle=td.artist+td.name;
-            artistTitleHash=hasher.getMd5Hash(artistTitle.getBytes());
+            albumTitle=td.album+td.name;
+            albumTitleHash=hasher.getMd5Hash(albumTitle.getBytes());
             pathHash = hasher.getMd5Hash(file.getPath().toString().getBytes());
             
             try
@@ -97,7 +97,7 @@ public class ExportPlaylists
               out.write(outLine);
               out.newLine();
             } catch(Exception e) { e.printStackTrace(); }
-            outLine=playlist.replace('-', ',')+","+artistTitleHash+","+pathHash;
+            outLine=playlist.replace('-', ',')+","+albumTitleHash+","+pathHash;
             
             System.out.println(outLine);
           }
