@@ -19,7 +19,7 @@ public class ImportRatings
       br = new BufferedReader(new FileReader("ratings.txt"));
       String line;
       String pathHash;
-      String artistTitleHash;
+      String albumTitleHash;
       String strRating;
       String[] tokens;
        
@@ -30,7 +30,7 @@ public class ImportRatings
         line = br.readLine();
         if (line==null) break;
         tokens = line.split(delims);
-        artistTitleHash=tokens[0];
+        albumTitleHash=tokens[0];
         pathHash=tokens[1];
         strRating=tokens[2];
         String stars="";
@@ -64,7 +64,7 @@ public class ImportRatings
           
         }
         System.out.println(pathHash+"-"+stars);
-        Db.insertiTunesRating(artistTitleHash, pathHash, stars);
+        Db.insertiTunesRating(albumTitleHash, pathHash, stars);
        // Db.applyRating(pathHash, stars);
       }
       br.close();
