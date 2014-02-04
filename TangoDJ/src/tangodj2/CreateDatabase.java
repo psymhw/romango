@@ -105,12 +105,12 @@ public class CreateDatabase
 	  {
 	    connection.createStatement().execute("create table iTunesRatings(" +
 	          "id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
-	          "artistTitleHash varchar(32), " +
+	          "albumTitleHash varchar(32), " +
 	          "pathHash varchar(32), " +
 	          "rating varchar(5) " +
 	          ")"); 
 	    connection.createStatement().execute("CREATE INDEX idx1 ON iTunesRatings(pathHash)");
-	    connection.createStatement().execute("CREATE INDEX idx2 ON iTunesRatings(artistTitleHash)");
+	    connection.createStatement().execute("CREATE INDEX idx2 ON iTunesRatings(albumTitleHash)");
 
 	    System.out.println("iTunes ratings table created");
 	  }
@@ -120,11 +120,11 @@ public class CreateDatabase
      connection.createStatement().execute("create table iTunesFavorites(" +
            "id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
            "listName varchar(50), " +
-           "artistTitleHash varchar(32), " +
+           "albumTitleHash varchar(32), " +
            "pathHash varchar(32) " +
            ")"); 
      connection.createStatement().execute("CREATE INDEX idx3 ON iTunesFavorites(pathHash)");
-     connection.createStatement().execute("CREATE INDEX idx4 ON iTunesFavorites(artistTitleHash)");
+     connection.createStatement().execute("CREATE INDEX idx4 ON iTunesFavorites(albumTitleHash)");
 
      System.out.println("iTunes Favorites table created");
    }

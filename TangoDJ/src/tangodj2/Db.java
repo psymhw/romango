@@ -36,7 +36,8 @@ public class Db
 	public static final String DRIVER ="org.apache.derby.jdbc.EmbeddedDriver";
 	public static final String JDBC_URL ="jdbc:derby:tango_db;create=true";
 	public static final String JDBC_URL2 ="jdbc:derby:tango_db;create=false";
-
+	private static Hasher hasher = new Hasher();
+	
 	public Db()throws SQLException, ClassNotFoundException
 	{
 		//connect();
@@ -188,21 +189,10 @@ public class Db
   
   public static void loadFavoritesTracks(int list_id)
   {
-    String title;
-    String artist;
-    String album;
-    String genre;
-    String comment;
-    String pathHash;
-    String path;
-    String track_year;
-    int cleanup;
-    int duration=0;
-      
     FavoritesTable.favoritesTracksData.clear();
     
     String sql= "select * from tracks where id in (select track_id from listmembers where list_id="
-                +list_id+") order title";
+                +list_id+") order by title";
       
     try
     {
@@ -211,19 +201,21 @@ public class Db
       ResultSet resultSet = statement.executeQuery(sql);
       while(resultSet.next())
       {
-        title=resultSet.getString("title");
-        artist = resultSet.getString("artist");
-        album = resultSet.getString("album");
-        genre = resultSet.getString("genre");
-        comment = resultSet.getString("comment");
-        track_year = resultSet.getString("track_year");
-        //System.out.println("track_year: "+track_year);
-        pathHash = resultSet.getString("pathHash");
-        path = resultSet.getString("path");
-        duration=resultSet.getInt("duration");
-        cleanup=resultSet.getInt("cleanup");
-        FavoritesTable.favoritesTracksData.add(new FavoritesTrack(title, artist, album, genre, comment, pathHash, path, duration, cleanup, track_year));
-        //System.out.println("added: "+title);
+        FavoritesTable.favoritesTracksData.add(
+          new FavoritesTrack(
+            resultSet.getString("title"),
+            resultSet.getString("artist"), 
+            resultSet.getString("album"), 
+            resultSet.getString("genre"), 
+            resultSet.getString("comment"), 
+            resultSet.getString("pathHash"), 
+            resultSet.getString("path"), 
+            resultSet.getInt("duration"), 
+            resultSet.getInt("cleanup"), 
+            resultSet.getString("track_year"),
+            resultSet.getString("rating"),
+            resultSet.getString("style")));
+            //System.out.println("added: "+resultSet.getString("rating"));
       }
       if (resultSet!=null) resultSet.close();
       if (statement!=null) statement.close();
@@ -330,9 +322,110 @@ public class Db
       {
         exists = true;
       }
-           
+      if (resultSet!=null) resultSet.close();
+      if (statement!=null) statement.close();   
     } catch (Exception e) { e.printStackTrace(); }
     return exists;
+  }
+  
+  public static String findRating(String pathHash, String albumTitleHash)
+  {
+    String rating="";
+    boolean found=false;
+    try 
+    {
+      Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery("select * from iTunesRatings where pathHash = '"+pathHash+"'");
+      if (resultSet.next())
+      {
+        rating=resultSet.getString("rating");
+        found=true;
+        //System.out.println("Db-findRating: "+rating+" found by pathHash "+pathHash);
+      }
+      if (resultSet!=null) resultSet.close();
+      if (statement!=null) statement.close(); 
+      
+      if (!found)
+      {
+       statement = connection.createStatement();
+       resultSet = statement.executeQuery("select * from iTunesRatings where albumTitleHash = '"+albumTitleHash+"'");
+        if (resultSet.next())
+        {
+          rating=resultSet.getString("rating");
+          //System.out.println("Db-findRating: "+rating+" found by artistTitleHash "+artistTitleHash);
+          found=true;
+        }
+        if (resultSet!=null) resultSet.close();
+        if (statement!=null) statement.close(); 
+      }
+      
+    } catch (Exception e) { e.printStackTrace(); }
+    return rating;
+  }
+  
+  public static void addToFavorites(String pathHash)
+  {
+    TrackDb trackDb = getTrackInfo(pathHash);
+    String albumTitle = trackDb.album+trackDb.title;
+    String albumTitleHash=hasher.getMd5Hash(albumTitle.getBytes());
+    String listName="";
+    int listId;
+    boolean found=false;
+    try 
+    {
+      Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery("select * from iTunesFavorites where pathHash = '"+pathHash+"'");
+      if (resultSet.next())
+      {
+        listName=resultSet.getString("listName");
+        found=true;
+        listId=getListHeaderId(listName);
+        insertFavorite(listId, trackDb.id, trackDb.pathHash);
+        System.out.println("Db-addToFavorites: found by pathHash listName: "+listName+" title: "+trackDb.title);
+      }
+      if (resultSet!=null) resultSet.close();
+      if (statement!=null) statement.close(); 
+      
+      if (!found)
+      {
+       statement = connection.createStatement();
+       resultSet = statement.executeQuery("select * from iTunesFavorites where albumTitleHash = '"+albumTitleHash+"'");
+        if (resultSet.next())
+        {
+          listName=resultSet.getString("listName");
+          listId=getListHeaderId(listName);
+          insertFavorite(listId, trackDb.id, trackDb.pathHash);
+          System.out.println("Db-addToFavorites: found by albumTitleHash listName: "+listName+" title: "+trackDb.title);
+          found=true;
+        }
+        if (resultSet!=null) resultSet.close();
+        if (statement!=null) statement.close(); 
+      }
+      
+    } catch (Exception e) { e.printStackTrace(); }
+    
+  }
+  
+  private static void insertFavorite(int list_id, int track_id, String pathHash)
+  {
+    try
+    {
+      String sql = "insert into listmembers(list_id, track_id, pathHash) values ("+list_id+", "+track_id+", '"+pathHash+"')";
+      Db.connection.createStatement().execute(sql);
+    }
+    catch(Exception e) { e.printStackTrace(); }
+  }
+
+  public static int getListHeaderId(String listName)
+  {
+    ListHeaderDb lhdb;
+    for(int i=0; i<TangoDJ2.favoritesList.size(); i++)
+    {
+      lhdb=TangoDJ2.favoritesList.get(i);
+      if (lhdb.getName().equals(listName)) return lhdb.getId();
+    }
+    
+    return -1;
   }
   
   public static void updateTangoTableColumnWidth(String colName, double width)
@@ -1137,17 +1230,17 @@ public static AllPlaylistsBaseItem insertPlaylistsItem(String name, String locat
   return apbi;
 }
 
-public static void insertiTunesRating(String artistTitleHash, String pathHash, String rating) throws Exception
+public static void insertiTunesRating(String albumTitleHash, String pathHash, String rating) throws Exception
 {
-  String sql = "insert into iTunesRatings(artistTitleHash, pathHash, rating) values ('"+artistTitleHash
+  String sql = "insert into iTunesRatings(albumTitleHash, pathHash, rating) values ('"+albumTitleHash
 		  +"', '"+pathHash+"', '"+rating+"')";
   Db.connection.createStatement().execute(sql);
 }
 
-public static void insertiTunesFavorites(String name, String artistTitleHash, String pathHash) throws Exception
+public static void insertiTunesFavorites(String name, String albumTitleHash, String pathHash) throws Exception
 {
-  String sql = "insert into iTunesFavorites(listName, artistTitleHash, pathHash) values ('"+name
-           +"', '"+artistTitleHash
+  String sql = "insert into iTunesFavorites(listName, albumTitleHash, pathHash) values ('"+name
+           +"', '"+albumTitleHash
            +"', '"+pathHash+"')";
   Db.connection.createStatement().execute(sql);
 }
@@ -1165,9 +1258,10 @@ public static void insertTrack(TrackDb trackDb, int type)
  int cleanup=0; 
  if (type==SharedValues.CLEANUP) cleanup=1;
     
- String sql="insert into tracks(cleanup, path, pathHash, title, leader, artist, album, duration, track_no, genre, comment, style, track_year) "
+ String sql="insert into tracks(cleanup, path, pathHash, rating, title, leader, artist, album, duration, track_no, genre, comment, style, track_year) "
      +"values ("+cleanup+", '"+trackDb.path
              +"', '"+trackDb.pathHash
+             +"', '"+trackDb.rating
              +"', '"+trackDb.title
              +"', '"+trackDb.leader
              +"', '"+trackDb.artist

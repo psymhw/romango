@@ -38,6 +38,7 @@ import javafx.stage.WindowEvent;
 import tangodj2.cleanup.CleanupTable;
 import tangodj2.cortina.CortinaTable;
 import tangodj2.favorites.FavoritesTab;
+import tangodj2.favorites.FavoritesTable;
 import tangodj2.favorites.ListHeaderDb;
 import tangodj2.infoWindow.InfoWindow2;
 import tangodj2.tango.TangoTable;
@@ -97,6 +98,8 @@ public class TangoDJ2 extends Application
   TangoTable tangoTable;
   CleanupTable cleanupTable;
   CortinaTable cortinaTable;
+  FavoritesTable favoritesTable;
+  
   TrackLoader3 trackLoader = new TrackLoader3();
   private Button infoWindowButton = new Button("Info Window");
   final URL stylesheet = getClass().getResource("style.css");
@@ -174,6 +177,8 @@ public class TangoDJ2 extends Application
     tangoTable = new TangoTable();
     cleanupTable = new CleanupTable();
     cortinaTable = new CortinaTable();
+    favoritesTable = new FavoritesTable();
+    
     trackLoader.setTangoTable(tangoTable);
     trackLoader.setCleanupTable(cleanupTable);
     
@@ -229,7 +234,7 @@ public class TangoDJ2 extends Application
     //tabPane.getTabs().add(equalizerTab);
     tabPane.getTabs().add(cortinaTab);
     
-    favoritesTab=new FavoritesTab();
+    favoritesTab=new FavoritesTab(favoritesTable);
     tabPane.getTabs().add(favoritesTab);
     
     tabPane.getTabs().add(eventTab);

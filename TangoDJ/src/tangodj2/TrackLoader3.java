@@ -221,6 +221,8 @@ public class TrackLoader3
     File file;
     final Media media;
     file = new File(trackDb.path);
+    
+    
     try 
     {
       media = new Media(file.toURI().toString());
@@ -319,10 +321,19 @@ public class TrackLoader3
         
         mp.dispose();
         sqlReadyTrackInfo(trackDb);
+        
+        
+        
         if (type!=SharedValues.CORTINA)
         {  
+          String albumTitle = trackDb.album+trackDb.title;
+          String albumTitleHash=hasher.getMd5Hash(albumTitle.getBytes());
+          trackDb.rating=Db.findRating(trackDb.pathHash, albumTitleHash);
           stats.successCount++;
           Db.insertTrack(trackDb, type);
+          
+          Db.addToFavorites(trackDb.pathHash);
+          
         }
         else
         {
