@@ -19,7 +19,7 @@ public class ImportFavorites
       br = new BufferedReader(new FileReader("favorites.txt"));
       String line;
       String pathHash;
-      String artistTitleHash;
+      String albumTitleHash;
       String[] tokens;
       String name1;
       String name2;
@@ -34,13 +34,13 @@ public class ImportFavorites
         name1=tokens[0];
         name1=name1.replace("'","''");
         name2=tokens[1];
-        artistTitleHash=tokens[2];
+        albumTitleHash=tokens[2];
         pathHash=tokens[3];
        
           
        
-        System.out.println(name1+"-"+name2+", "+artistTitleHash+", "+pathHash);
-        Db.insertiTunesFavorites(name1+"-"+name2, artistTitleHash, pathHash);
+        System.out.println(name1+"-"+name2+", "+albumTitleHash+", "+pathHash);
+        Db.insertiTunesFavorites(name1+"-"+name2, albumTitleHash, pathHash);
        // Db.applyRating(pathHash, stars);
       }
       br.close();
