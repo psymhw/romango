@@ -26,13 +26,12 @@ public class FavoritesTab extends Tab
     ObservableList<String> items =FXCollections.observableArrayList ();
     list.setItems(items);
     list.setPrefWidth(200);
-    list.setMaxWidth(200);
+    //list.setMaxWidth(200);
     list.setMinWidth(200);
     list.setPrefHeight(300);
     
+    /*
     final ComboBox listsComboBox = new ComboBox();
-    
-    
     listsComboBox.getSelectionModel().selectedItemProperty().addListener
     (
       new ChangeListener<String>() 
@@ -44,27 +43,24 @@ public class FavoritesTab extends Tab
       });
 
    // listsComboBox.setValue(trackDb.style);
-    
+    */
     
     
     SplitPane sp = new SplitPane();
     sp.setStyle("-fx-background-color: plum;");
     
     
-    sp.getItems().addAll(listsComboBox, list);
+    sp.getItems().addAll(list, new Text("RIGHT"));
     sp.setDividerPositions(0.5f);
     
     setContent(sp);
-
-    
-    
     
     ListHeaderDb lhdb;
     Iterator<ListHeaderDb> it = TangoDJ2.favoritesList.iterator();
     while(it.hasNext())
     {
       lhdb=it.next();
-      listsComboBox.getItems().add(lhdb.getName());
+   //   listsComboBox.getItems().add(lhdb.getName());
       items.add(lhdb.getName());
      // System.out.println(lhdb.getName());
     }
