@@ -5,7 +5,10 @@ import java.util.Iterator;
 import tangodj2.TangoDJ2;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.HBox;
@@ -18,6 +21,14 @@ public class FavoritesTab extends Tab
   public FavoritesTab()
   {
     this.setText("Favorites");
+    
+    ListView<String> list = new ListView<String>();
+    ObservableList<String> items =FXCollections.observableArrayList ();
+    list.setItems(items);
+    list.setPrefWidth(200);
+    list.setMaxWidth(200);
+    list.setMinWidth(200);
+    list.setPrefHeight(300);
     
     final ComboBox listsComboBox = new ComboBox();
     
@@ -34,15 +45,13 @@ public class FavoritesTab extends Tab
 
    // listsComboBox.setValue(trackDb.style);
     
-    VBox vbox = new VBox();
-    vbox.getChildren().add(listsComboBox);
-    vbox.getChildren().add(new Text("BOTTOM"));
+    
     
     SplitPane sp = new SplitPane();
     sp.setStyle("-fx-background-color: plum;");
     
     
-    sp.getItems().addAll(listsComboBox, new Text("RIGHT"));
+    sp.getItems().addAll(listsComboBox, list);
     sp.setDividerPositions(0.5f);
     
     setContent(sp);
@@ -56,6 +65,7 @@ public class FavoritesTab extends Tab
     {
       lhdb=it.next();
       listsComboBox.getItems().add(lhdb.getName());
+      items.add(lhdb.getName());
      // System.out.println(lhdb.getName());
     }
     
