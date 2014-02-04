@@ -38,6 +38,7 @@ public class CreateDatabase
 	  createListsTable();
 	  createListMembersTable();
 	  createiTunesRatingsTable();
+	  createiTunesFavoritesTable();
 	  disconnect();
 	   //Db.disconnect();
 	  System.out.println("database initiallized");	
@@ -111,6 +112,20 @@ public class CreateDatabase
 
 	    System.out.println("iTunes ratings table created");
 	  }
+	 
+	 private void createiTunesFavoritesTable() throws SQLException
+   {
+     connection.createStatement().execute("create table iTunesFavorites(" +
+           "id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
+           "listName varchar(50), " +
+           "artistTitleHash varchar(32), " +
+           "pathHash varchar(32) " +
+           ")"); 
+     connection.createStatement().execute("CREATE INDEX idx3 ON iTunesFavorites(pathHash)");
+     connection.createStatement().execute("CREATE INDEX idx4 ON iTunesFavorites(artistTitleHash)");
+
+     System.out.println("iTunes Favorites table created");
+   }
 	
 	private void createStateTable() throws SQLException
 	{

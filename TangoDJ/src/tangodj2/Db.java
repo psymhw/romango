@@ -9,6 +9,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,6 +24,7 @@ import tangodj2.cleanup.CleanupTable;
 import tangodj2.cleanup.CleanupTrack;
 import tangodj2.cortina.Cortina;
 import tangodj2.cortina.CortinaTrack;
+import tangodj2.favorites.ListHeaderDb;
 import tangodj2.tango.TangoTable;
 import tangodj2.tango.TangoTrack;
 
@@ -693,6 +695,28 @@ String sql;
     }
 	}
 	
+	public static ArrayList<ListHeaderDb> loadListsHeaders()
+	{
+	  ArrayList<ListHeaderDb> favoritesList = new ArrayList<ListHeaderDb>();
+	  String sql = "select * from lists order by name";
+	  ListHeaderDb lhdb;
+	  
+	  try 
+	  {
+	    Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery(sql);
+      
+      while(resultSet.next())
+      {
+        lhdb = new ListHeaderDb(resultSet.getInt("id"), resultSet.getString("name"));
+       // System.out.println(lhdb.getName());
+        favoritesList.add(lhdb);
+      }
+      
+	  } catch (Exception e) {e.printStackTrace(); }
+	  return favoritesList;
+	}
+	
 	public static void disableTanda(boolean set, int id)
 	{
 	  int value=0;
@@ -1070,6 +1094,22 @@ public static void insertiTunesRating(String artistTitleHash, String pathHash, S
 		  +"', '"+pathHash+"', '"+rating+"')";
   Db.connection.createStatement().execute(sql);
 }
+
+public static void insertiTunesFavorites(String name, String artistTitleHash, String pathHash) throws Exception
+{
+  String sql = "insert into iTunesFavorites(listName, artistTitleHash, pathHash) values ('"+name
+           +"', '"+artistTitleHash
+           +"', '"+pathHash+"')";
+  Db.connection.createStatement().execute(sql);
+}
+
+public static void insertListHeader(String name) throws Exception
+{
+  String sql = "insert into lists(name) values ('"+name+"')";
+  Db.connection.createStatement().execute(sql);
+}
+
+
 
 public static void insertTrack(TrackDb trackDb, int type) 
 {
