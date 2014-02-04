@@ -39,6 +39,7 @@ public class iTunesParser extends DefaultHandler
 	private boolean isTime = false;
 	private boolean isPath = false;
 	private boolean isArtist = false;
+	private boolean isAlbum = false;
 	private boolean isRating = false;
 	//parsing ints
 	private int numDicts = 0;
@@ -254,7 +255,7 @@ public class iTunesParser extends DefaultHandler
 	public void characters( char[] data, int start, int length)
 	{
 		// only process text from elements we're interested in
-        if(isKey || isID || isName || isTime || isPath || isArtist || isRating)
+        if(isKey || isID || isName || isTime || isPath || isArtist || isRating || isAlbum)
 		{
 			buffer.append(data, start, length);
         }
@@ -283,6 +284,8 @@ public class iTunesParser extends DefaultHandler
 					isName = true;
 				else if(keyName.equals("Artist"))
 					isArtist = true;
+				else if(keyName.equals("Album"))
+          isAlbum = true;
 				else if(keyName.equals("Location"))
 					isPath = true;
 				else if(keyName.equals("Total Time"))
@@ -390,6 +393,13 @@ public class iTunesParser extends DefaultHandler
 			buffer.delete(0, buffer.length());
 			isArtist = false;
 		}
+		else if(isAlbum)
+    {
+      track.album = buffer.toString();
+
+      buffer.delete(0, buffer.length());
+      isAlbum = false;
+    }
 	}
 	
 	//{{{ class TrackMap

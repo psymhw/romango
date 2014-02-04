@@ -17,6 +17,7 @@ public class TrackData
 	 * Artist of the song
 	 */
 	public String artist;
+	public String album;
 	
 	/**
 	 * File path of the song

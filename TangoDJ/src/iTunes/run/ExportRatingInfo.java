@@ -37,8 +37,8 @@ public class ExportRatingInfo extends JFrame
     iTunesParser parser = new iTunesParser(data);
     parser.parseFile();
     String pathHash="";
-    String artistTitleHash;
-    String artistTitle;
+    String albumTitleHash;
+    String albumTitle;
     String outLine="";
     
     BufferedWriter out=null;
@@ -63,8 +63,8 @@ public class ExportRatingInfo extends JFrame
       for(int i=0; i<data.tracks.length; i++)
       { 
         td =  data.tracks[i];
-        artistTitle=td.artist+td.name;
-        artistTitleHash=hasher.getMd5Hash(artistTitle.getBytes());
+        albumTitle=td.album+td.name;
+        albumTitleHash=hasher.getMd5Hash(albumTitle.getBytes());
         
         file = new File(ucd.decode(td.path.substring(17)));
        // if (file.exists()) System.out.println("exists");
@@ -73,7 +73,7 @@ public class ExportRatingInfo extends JFrame
         pathHash = hasher.getMd5Hash(file.getPath().toString().getBytes());
         if (td.rating>0)
         {  
-          outLine = artistTitleHash+","+pathHash+","+td.rating;
+          outLine = albumTitleHash+","+pathHash+","+td.rating;
           out.write(outLine);
           out.newLine();
           System.out.println(outLine);
@@ -90,10 +90,6 @@ public class ExportRatingInfo extends JFrame
   public static void main(String args[])
   {
     
-    
-    System.out.println();
-       
-     
     new ExportRatingInfo();
   }
 
