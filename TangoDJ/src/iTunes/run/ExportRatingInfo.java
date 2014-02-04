@@ -15,7 +15,7 @@ import javax.swing.JFrame;
 import org.apache.commons.codec.net.URLCodec;
 
 
-public class GetRatingInfo extends JFrame
+public class ExportRatingInfo extends JFrame
 {
   /*
    * by Rick Roman
@@ -23,7 +23,7 @@ public class GetRatingInfo extends JFrame
    * and Paul Grebenc http://jid3.blinkenlights.org/
    */
   private static Hasher hasher = new Hasher();
-  public GetRatingInfo()
+  public ExportRatingInfo()
   {
     
     PlaylistData pd=null;
@@ -94,7 +94,7 @@ public class GetRatingInfo extends JFrame
     System.out.println();
        
      
-    new GetRatingInfo();
+    new ExportRatingInfo();
   }
 
 }

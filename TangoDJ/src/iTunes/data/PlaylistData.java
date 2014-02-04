@@ -16,5 +16,7 @@ public class PlaylistData
 	/**
 	 * Indexes of songs in playlist
 	 */
+	
+	public int playlistId;
 	public int tracks[];
 }
