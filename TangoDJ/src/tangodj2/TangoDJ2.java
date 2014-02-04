@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -35,6 +37,8 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import tangodj2.cleanup.CleanupTable;
 import tangodj2.cortina.CortinaTable;
+import tangodj2.favorites.FavoritesTab;
+import tangodj2.favorites.ListHeaderDb;
 import tangodj2.infoWindow.InfoWindow2;
 import tangodj2.tango.TangoTable;
 /*
@@ -73,7 +77,12 @@ public class TangoDJ2 extends Application
   static PlaylistChoiceTab playlistChoiceTab;
   static CortinaTab cortinaTab;
   static EventTab eventTab;
+  static FavoritesTab favoritesTab;
+  
   public static Preferences prefs = new Preferences();
+  public static Label feedback = new Label("");
+  public static ArrayList<ListHeaderDb> favoritesList = new ArrayList<ListHeaderDb>();
+  
   static VBox playerPane;
   int sceneHeight=600;
   int sceneWidth=1150;
@@ -84,7 +93,7 @@ public class TangoDJ2 extends Application
    
   Rectangle r = new Rectangle(10,10,10,10);
   Player player;
-  public static Label feedback = new Label("");
+  
   TangoTable tangoTable;
   CleanupTable cleanupTable;
   CortinaTable cortinaTable;
@@ -160,6 +169,8 @@ public class TangoDJ2 extends Application
     try { loadPreferences(); } 
     catch (Exception se) { System.out.println("PROGRAM ALREADY RUNNING"); System.exit(0); } 
     
+    favoritesList=Db.loadListsHeaders();
+    
     tangoTable = new TangoTable();
     cleanupTable = new CleanupTable();
     cortinaTable = new CortinaTable();
@@ -217,6 +228,10 @@ public class TangoDJ2 extends Application
       
     //tabPane.getTabs().add(equalizerTab);
     tabPane.getTabs().add(cortinaTab);
+    
+    favoritesTab=new FavoritesTab();
+    tabPane.getTabs().add(favoritesTab);
+    
     tabPane.getTabs().add(eventTab);
    
     VBox mainPane = new VBox();
