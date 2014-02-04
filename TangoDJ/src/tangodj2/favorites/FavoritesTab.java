@@ -2,6 +2,7 @@ package tangodj2.favorites;
 
 import java.util.Iterator;
 
+import tangodj2.Db;
 import tangodj2.TangoDJ2;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -9,6 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.HBox;
@@ -18,7 +20,7 @@ import javafx.scene.text.Text;
 public class FavoritesTab extends Tab
 {
 
-  public FavoritesTab()
+  public FavoritesTab(final FavoritesTable favoritesTable)
   {
     this.setText("Favorites");
     
@@ -49,8 +51,26 @@ public class FavoritesTab extends Tab
     SplitPane sp = new SplitPane();
     sp.setStyle("-fx-background-color: plum;");
     
+    list.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     
-    sp.getItems().addAll(list, new Text("RIGHT"));
+    ChangeListener cl = new ChangeListener<String>() 
+    {
+       public void changed(ObservableValue<? extends String> observable,
+      String oldValue, String newValue) 
+      {
+        System.out.println("New Value: "+newValue); 
+        int list_id = Db.getListHeaderId(newValue);
+        favoritesTable.reloadData(list_id);
+      }
+    };
+    
+    list.getSelectionModel().selectedItemProperty().addListener(cl);
+    
+    
+    
+    
+    
+    sp.getItems().addAll(list, favoritesTable);
     sp.setDividerPositions(0.5f);
     
     setContent(sp);
