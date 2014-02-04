@@ -6,9 +6,9 @@ import java.io.FileReader;
 
 import tangodj2.Db;
 
-public class ReadRatings
+public class ImportRatings
 {
-   public ReadRatings()
+   public ImportRatings()
    {
      BufferedReader br=null;
      String delims = "[,]";
@@ -17,7 +17,6 @@ public class ReadRatings
     try
     {
       br = new BufferedReader(new FileReader("ratings.txt"));
-      StringBuilder sb = new StringBuilder();
       String line;
       String pathHash;
       String artistTitleHash;
@@ -64,7 +63,7 @@ public class ReadRatings
           }
           
         }
-        //System.out.println(pathHash+"-"+stars);
+        System.out.println(pathHash+"-"+stars);
         Db.insertiTunesRating(artistTitleHash, pathHash, stars);
        // Db.applyRating(pathHash, stars);
       }
@@ -77,6 +76,6 @@ public class ReadRatings
 
   public static void main(String args[])
   {
-    new ReadRatings();
+    new ImportRatings();
   }
 }
