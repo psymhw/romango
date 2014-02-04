@@ -71,7 +71,7 @@ public class FavoritesTab extends Tab
     
     
     sp.getItems().addAll(list, favoritesTable);
-    sp.setDividerPositions(0.5f);
+    sp.setDividerPositions(0.2f);
     
     setContent(sp);
     
