@@ -94,8 +94,10 @@ public class CreateDatabase
 	    connection.createStatement().execute("create table listmembers(" +
 	          "id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
 	          "pathHash varchar(32), " +
+	          "list_id integer, " +
 	          "track_id integer " +
 	          ")"); 
+	    connection.createStatement().execute("CREATE INDEX listmembers_idx1 ON listmembers(list_id)");
 	    System.out.println("List Members table created");
 	  }
 	 

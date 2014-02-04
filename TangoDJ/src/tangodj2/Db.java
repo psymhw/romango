@@ -24,6 +24,8 @@ import tangodj2.cleanup.CleanupTable;
 import tangodj2.cleanup.CleanupTrack;
 import tangodj2.cortina.Cortina;
 import tangodj2.cortina.CortinaTrack;
+import tangodj2.favorites.FavoritesTable;
+import tangodj2.favorites.FavoritesTrack;
 import tangodj2.favorites.ListHeaderDb;
 import tangodj2.tango.TangoTable;
 import tangodj2.tango.TangoTrack;
@@ -131,7 +133,8 @@ public class Db
   }
 	
 	
-	public static void loadCleanupTracks(String search)
+	
+  public static void loadCleanupTracks(String search)
   {
     String title;
     String artist;
@@ -146,7 +149,7 @@ public class Db
       
     CleanupTable.cleanupTracksData.clear();
     
-String sql;
+    String sql;
     
     if (search==null)
       sql= "select * from tracks where cleanup = 1 order by artist, album, track_no";
@@ -182,6 +185,52 @@ String sql;
       disconnect();
     } catch (Exception e) { e.printStackTrace();}
   }
+  
+  public static void loadFavoritesTracks(int list_id)
+  {
+    String title;
+    String artist;
+    String album;
+    String genre;
+    String comment;
+    String pathHash;
+    String path;
+    String track_year;
+    int cleanup;
+    int duration=0;
+      
+    FavoritesTable.favoritesTracksData.clear();
+    
+    String sql= "select * from tracks where id in (select track_id from listmembers where list_id="
+                +list_id+") order title";
+      
+    try
+    {
+      connect();
+      Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery(sql);
+      while(resultSet.next())
+      {
+        title=resultSet.getString("title");
+        artist = resultSet.getString("artist");
+        album = resultSet.getString("album");
+        genre = resultSet.getString("genre");
+        comment = resultSet.getString("comment");
+        track_year = resultSet.getString("track_year");
+        //System.out.println("track_year: "+track_year);
+        pathHash = resultSet.getString("pathHash");
+        path = resultSet.getString("path");
+        duration=resultSet.getInt("duration");
+        cleanup=resultSet.getInt("cleanup");
+        FavoritesTable.favoritesTracksData.add(new FavoritesTrack(title, artist, album, genre, comment, pathHash, path, duration, cleanup, track_year));
+        //System.out.println("added: "+title);
+      }
+      if (resultSet!=null) resultSet.close();
+      if (statement!=null) statement.close();
+      disconnect();
+    } catch (Exception e) { e.printStackTrace();}
+  }
+  
   
 	
   public static void loadCortinaTracks(ObservableList<CortinaTrack> cortinaTracksData)
