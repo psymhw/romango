@@ -9,7 +9,9 @@ import javafx.beans.property.SimpleStringProperty;
 public class FavoritesTrack
 {
 	private final SimpleStringProperty title;
-    private final SimpleStringProperty artist;
+  private final SimpleStringProperty artist;
+  private final SimpleStringProperty rating;
+  private final SimpleStringProperty style;
     private final SimpleStringProperty album;
     private final SimpleStringProperty genre;
     private final SimpleStringProperty comment;
@@ -21,7 +23,7 @@ public class FavoritesTrack
     
     
 	public FavoritesTrack(String titleStr, String artistStr, String albumStr, String genreStr, 
-	    String commentStr, String pathHashStr, String path, int duration, int cortina, String track_yearStr)
+	    String commentStr, String pathHashStr, String path, int duration, int cortina, String track_yearStr, String ratingStr, String styleStr)
     {
       this.title = new SimpleStringProperty(titleStr);
       this.artist = new SimpleStringProperty(artistStr);
@@ -32,6 +34,8 @@ public class FavoritesTrack
       this.pathHash = new SimpleStringProperty(pathHashStr);
       this.path = new SimpleStringProperty(path);
       this.duration = new SimpleIntegerProperty(duration);
+      this.rating = new SimpleStringProperty(ratingStr);
+      this.style = new SimpleStringProperty(styleStr);
       this.cortina=cortina;
     }
     
@@ -115,6 +119,21 @@ public class FavoritesTrack
     public SimpleStringProperty getPath()
     {
       return path;
+    }
+
+    public String getRating()
+    {
+      return rating.get();
+    }
+
+    public String getStyle()
+    {
+      return style.get();
+    }
+    
+    public void setRating(String ratingStr)
+    {
+      rating.set(ratingStr);
     }
 
 }

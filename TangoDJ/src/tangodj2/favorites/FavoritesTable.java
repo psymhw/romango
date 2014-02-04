@@ -20,6 +20,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 import tangodj2.Db;
+import tangodj2.tango.TangoTrack;
 
 public class FavoritesTable extends TableView<FavoritesTrack>
 {
@@ -38,6 +39,7 @@ public class FavoritesTable extends TableView<FavoritesTrack>
       public void changed(ObservableValue observable, Object oldValue, Object newValue) 
       {
         tableIndex=(int)newValue;
+        System.out.println("FavoritesTable-new Value: "+tableIndex);
       }
     });
 	  setupTable();
@@ -142,6 +144,12 @@ public class FavoritesTable extends TableView<FavoritesTrack>
 		   titleCol.setPrefWidth(150);
 		   titleCol.setCellValueFactory(new PropertyValueFactory<FavoritesTrack, String>("title"));
 		   titleCol.setCellFactory(new MyCellFactory());
+		   
+		// STYLE COLUMN
+	     TableColumn styleCol = new TableColumn("Style");
+	     styleCol.setMinWidth(60);
+	     styleCol.setCellValueFactory(new PropertyValueFactory<FavoritesTrack, String>("style"));
+	     styleCol.setCellFactory(new MyCellFactory());
 		       
 		  TableColumn artistCol = new TableColumn("Artist");
 		  artistCol.setMinWidth(50);
@@ -154,6 +162,12 @@ public class FavoritesTable extends TableView<FavoritesTrack>
 		  albumCol.setPrefWidth(150);
 		  albumCol.setCellValueFactory(new PropertyValueFactory<FavoritesTrack, String>("album"));
 		  albumCol.setCellFactory(new MyCellFactory());
+		  
+		  // RATING COLUMN
+	    TableColumn ratingCol = new TableColumn("Rating");
+	    ratingCol.setMinWidth(60);
+	    ratingCol.setCellValueFactory(new PropertyValueFactory<FavoritesTrack, String>("rating"));
+	    ratingCol.setCellFactory(new MyCellFactory());
 		      
 		  TableColumn genreCol = new TableColumn("Genre");
 		  genreCol.setMinWidth(30);
@@ -179,7 +193,7 @@ public class FavoritesTable extends TableView<FavoritesTrack>
 		  yearCol.setCellValueFactory(new PropertyValueFactory<FavoritesTrack, String>("track_year"));
 		  yearCol.setCellFactory(new MyCellFactory());
 		     
-		  this.getColumns().addAll(titleCol, durationCol, yearCol, artistCol, albumCol, genreCol, commentCol);
+		  this.getColumns().addAll(titleCol, styleCol, ratingCol, durationCol, yearCol, artistCol, albumCol, genreCol, commentCol);
 		      
 	  }
 		
