@@ -3,7 +3,10 @@ package tangodj2.favorites;
 import java.util.Iterator;
 
 import tangodj2.Db;
+import tangodj2.Player;
 import tangodj2.TangoDJ2;
+import tangodj2.cleanup.CleanupTrack;
+import tangodj2.tango.TangoTrack;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -19,10 +22,11 @@ import javafx.scene.text.Text;
 
 public class FavoritesTab extends Tab
 {
-
-  public FavoritesTab(final FavoritesTable favoritesTable)
+  private final Player player;
+  public FavoritesTab(final FavoritesTable favoritesTable, final Player player)
   {
     this.setText("Favorites");
+    this.player=player;
     
     ListView<String> list = new ListView<String>();
     ObservableList<String> items =FXCollections.observableArrayList ();
@@ -66,8 +70,20 @@ public class FavoritesTab extends Tab
     
     list.getSelectionModel().selectedItemProperty().addListener(cl);
     
-    
-    
+    favoritesTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+        TangoTrack tangoTrack = (TangoTrack)newValue;
+        if (tangoTrack!=null)
+        {
+          player.setPlayMode(Player.PLAYMODE_SINGLE_TRACK);
+          player.setCurrentTrackHash(tangoTrack.getPathHash());
+          player.setCurrentTrackTitle(tangoTrack.getTitle());
+          //player.setTrack(cleanupTrack.getPathHash(), Player.PLAYLIST_BUILD_CLEANUP_TABLE);
+        }
+      }
+    });
     
     
     sp.getItems().addAll(list, favoritesTable);

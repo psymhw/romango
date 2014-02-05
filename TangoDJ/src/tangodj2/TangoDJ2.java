@@ -234,7 +234,7 @@ public class TangoDJ2 extends Application
     //tabPane.getTabs().add(equalizerTab);
     tabPane.getTabs().add(cortinaTab);
     
-    favoritesTab=new FavoritesTab(favoritesTable);
+    favoritesTab=new FavoritesTab(favoritesTable, player);
     tabPane.getTabs().add(favoritesTab);
     
     tabPane.getTabs().add(eventTab);
