@@ -5,6 +5,7 @@ import java.util.Iterator;
 import tangodj2.Db;
 import tangodj2.Player;
 import tangodj2.TangoDJ2;
+import tangodj2.TrackDb;
 import tangodj2.cleanup.CleanupTrack;
 import tangodj2.tango.TangoTrack;
 import javafx.beans.value.ChangeListener;
@@ -74,13 +75,14 @@ public class FavoritesTab extends Tab
     {
       public void changed(ObservableValue observable, Object oldValue, Object newValue) 
       {
-        TangoTrack tangoTrack = (TangoTrack)newValue;
-        if (tangoTrack!=null)
+        FavoritesTrack favoritesTrack = (FavoritesTrack)newValue;
+        if (favoritesTrack!=null)
         {
           player.setPlayMode(Player.PLAYMODE_SINGLE_TRACK);
-          player.setCurrentTrackHash(tangoTrack.getPathHash());
-          player.setCurrentTrackTitle(tangoTrack.getTitle());
-          //player.setTrack(cleanupTrack.getPathHash(), Player.PLAYLIST_BUILD_CLEANUP_TABLE);
+          player.setCurrentTrackHash(favoritesTrack.getPathHash());
+          TrackDb trackDb = Db.getTrackInfo(favoritesTrack.getPathHash());
+          player.setCurrentTrackTitle(trackDb.title);
+          System.out.println("FavoriteTab-currentHash: "+favoritesTrack.getPathHash());
         }
       }
     });
