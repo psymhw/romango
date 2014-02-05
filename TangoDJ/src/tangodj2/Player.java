@@ -123,7 +123,7 @@ public class Player
    // private Duration cortinaLength;
     private boolean cortina=false;
     
-    final static int PLAYMODE_SINGLE_TRACK = 20;
+    public final static int PLAYMODE_SINGLE_TRACK = 20;
     final static int PLAYMODE_PLAYLIST = 21;
     final static int PLAYMODE_CORTINA_SINGLE_TRACK = 22;
     final static int PLAYMODE_CLEANUP_TO_CORTINA_TRACK = 23;
