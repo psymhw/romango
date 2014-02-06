@@ -78,7 +78,7 @@ public class TangoDJ2 extends Application
   static PlaylistChoiceTab playlistChoiceTab;
   static CortinaTab cortinaTab;
   static EventTab eventTab;
-  static FavoritesTab favoritesTab;
+  public static FavoritesTab favoritesTab;
   
   public static Preferences prefs = new Preferences();
   public static Label feedback = new Label("");
@@ -199,7 +199,7 @@ public class TangoDJ2 extends Application
     eventTab.setPlayer(player);
     
     favoritesTab=new FavoritesTab (player);
-    playlistBuilderTab = new PlaylistBuilderTab(playlist,  player, tangoTable, cleanupTable, cortinaTable, favoritesTab);
+    playlistBuilderTab = new PlaylistBuilderTab(playlist,  player, tangoTable, cleanupTable, cortinaTable);
     tabPane.getTabs().add(playlistBuilderTab);
     
     playlistChoiceTab = new PlaylistChoiceTab(this, player, playlistBuilderTab, eventTab);
