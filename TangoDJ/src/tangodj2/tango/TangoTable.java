@@ -42,7 +42,7 @@ public class TangoTable extends TableView<TangoTrack>
   static TableView<TangoTrack> tangoTable;
   private int tableIndex=-1;
   
-  public final static ObservableList<TangoTrack> tangoTracksData = FXCollections.observableArrayList();
+  private final static ObservableList<TangoTrack> tangoTracksData = FXCollections.observableArrayList();
 	 
   public TangoTable()
   {
@@ -57,7 +57,8 @@ public class TangoTable extends TableView<TangoTrack>
     {
       public void run() 
       {
-        Db.loadTangoTracks(search);
+        tangoTracksData.clear();
+        tangoTracksData.addAll(Db.loadTangoTracks(search));
         // reestablish the sort order.
        ArrayList<TableColumn<TangoTrack, ?>> sortOrder = new ArrayList<>(tangoTable.getSortOrder());
        tangoTable.getSortOrder().clear();

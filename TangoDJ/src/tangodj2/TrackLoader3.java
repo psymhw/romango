@@ -63,6 +63,8 @@ public class TrackLoader3
     artistsAll.addAll(SharedValues.artistsA);
     artistsAll.addAll(SharedValues.artistsB);
     artistsAll.addAll(SharedValues.artistsC);
+    tangoTable=TangoDJ2.playlistBuilderTab.getTangoTable();
+    cleanupTable=TangoDJ2.playlistBuilderTab.getCleanupTable();
   }
   
   public void process(File file, int scope, int type) throws Exception

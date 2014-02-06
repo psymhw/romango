@@ -26,11 +26,11 @@ public class CleanupTable extends TableView<CleanupTrack>
   private static TableView<CleanupTrack> cleanupTable;
   private int tableIndex=-1;
   
-  public final static ObservableList<CleanupTrack> cleanupTracksData = FXCollections.observableArrayList();
+  private final static ObservableList<CleanupTrack> cleanupTracksData = FXCollections.observableArrayList();
 	 
   public CleanupTable()
   {
-	  this.cleanupTable=this;
+	  cleanupTable=this;
 	  
 	  cleanupTable.selectionModelProperty().get().selectedIndexProperty().addListener(new ChangeListener() 
     {
@@ -46,7 +46,8 @@ public class CleanupTable extends TableView<CleanupTrack>
   public static void reloadData()
   {
     cleanupTable.getSortOrder().clear();
-    Db.loadCleanupTracks(null);
+    cleanupTracksData.clear();
+    cleanupTracksData.addAll(Db.loadCleanupTracks(null));
   }
   
   public static void reloadData(final String search)
@@ -55,7 +56,8 @@ public class CleanupTable extends TableView<CleanupTrack>
     {
       public void run() 
       {
-        Db.loadCleanupTracks(search);
+        cleanupTracksData.clear();
+        cleanupTracksData.addAll(Db.loadCleanupTracks(search));
         ArrayList<TableColumn<CleanupTrack, ?>> sortOrder = new ArrayList<>(cleanupTable.getSortOrder());
         cleanupTable.getSortOrder().clear();
         cleanupTable.getSortOrder().addAll(sortOrder);
