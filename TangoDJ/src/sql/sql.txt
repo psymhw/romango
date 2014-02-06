@@ -1,1 +1,0 @@
-connect 'jdbc:derby://localhost:1527/tangoDj;create=true;user=rick;password=smegma';

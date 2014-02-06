@@ -7,6 +7,9 @@ import org.farng.mp3.MP3File;
 import org.farng.mp3.id3.AbstractID3v1;
 import org.farng.mp3.id3.AbstractID3v2;
 
+import tangodj2.favorites.FavoritesTab;
+import tangodj2.favorites.FavoritesTable;
+import tangodj2.favorites.FavoritesTrack;
 import tangodj2.tango.TangoTable;
 import tangodj2.tango.TangoTrack;
 
@@ -49,6 +52,17 @@ public class MP3EditorDialog extends Stage
   TangoTrack ttrack;
   TangoTable ttable;
   
+  FavoritesTrack ftrack;
+  FavoritesTable ftable;
+  FavoritesTab favoritesTab;
+  
+  public static final int PLAYLIST_BUILDER_FAVORITES_TABLE = 0;
+  public static final int TANGO_TABLE = 1;
+  public static final int FAVORITES_TAB_FAVORITES_TABLE = 2;  // TODO not yet implemented
+  private int type;
+  
+  Button okButton;
+  
   Label pathLabel = new Label();
  // int idx=0;
   final ComboBox styleComboBox = new ComboBox();
@@ -58,9 +72,40 @@ public class MP3EditorDialog extends Stage
   {
     this.ttrack=tangoTrack;
     this.ttable=tangoTable;
-   // this.idx=index;
     
-	  final int col[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+    type = TANGO_TABLE;
+    
+    trackDb=Db.getTrackInfo(tangoTrack.getPathHash());
+    GridPane gridPane = getEditor();
+    
+    double width=300;
+    double height=400;
+    Scene myDialogScene = new Scene(gridPane, width, height);
+    setScene(myDialogScene);
+    show();
+  } 
+  
+  public MP3EditorDialog(FavoritesTrack favoritesTrack,  FavoritesTable favoritesTable, FavoritesTab favoritesTab)
+  {
+    this.ftrack=favoritesTrack;
+    this.ftable=favoritesTable;
+    this.favoritesTab=favoritesTab;
+    
+    type = PLAYLIST_BUILDER_FAVORITES_TABLE;
+    
+    trackDb=Db.getTrackInfo(favoritesTrack.getPathHash());
+    GridPane gridPane = getEditor();
+    
+    double width=300;
+    double height=400;
+    Scene myDialogScene = new Scene(gridPane, width, height);
+    setScene(myDialogScene);
+    show();
+  } 
+  
+  private GridPane getEditor()
+  {
+    final int col[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
     final int row[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
     this.initModality(Modality.APPLICATION_MODAL); 
     
@@ -83,7 +128,7 @@ public class MP3EditorDialog extends Stage
     
     
     
-    trackDb=Db.getTrackInfo(tangoTrack.getPathHash());
+    
     title.setText(trackDb.title);
     leader.setText(trackDb.leader);
     artist.setText(trackDb.artist);
@@ -135,8 +180,8 @@ public class MP3EditorDialog extends Stage
     ratingComboBox.setValue(trackDb.rating);
     
     System.out.println("MP3Editor: "+trackDb.title);
-    Button okButton = new Button("OK");
-	  GridPane gridPane = new GridPane();
+    okButton = new Button("OK");
+    GridPane gridPane = new GridPane();
     gridPane.setPadding(new Insets(10, 10, 10, 10));
     gridPane.setVgap(5);
     gridPane.setHgap(5);
@@ -178,30 +223,27 @@ public class MP3EditorDialog extends Stage
     col0.setMinWidth(60);
     col1.setMinWidth(200);
     gridPane.getColumnConstraints().addAll(col0, col1);
-    //gridPane.add(okButton, col[0], row[2]);
     
     okButton.setOnAction(new EventHandler<ActionEvent>()
-    {
-      public void handle(ActionEvent arg0) 
-      {
-       
-        updateTrackDb();
-        updateTangoTableView();
-        Db.updateTrack(trackDb);
-        Platform.runLater(new Runnable() 
         {
-          public void run() 
+          public void handle(ActionEvent arg0) 
           {
-            updateMP3tag();
+            updateTrackDb();
+            if (type==TANGO_TABLE) updateTangoTableView();
+            if (type==PLAYLIST_BUILDER_FAVORITES_TABLE) updateFavoritesTableView();
+            Db.updateTrack(trackDb);
+            Platform.runLater(new Runnable() 
+            {
+              public void run() 
+              {
+                updateMP3tag();
+              }});
+            close();  
           }});
-        close();	
-      }});
-    double width=300;
-    double height=400;
-    Scene myDialogScene = new Scene(gridPane, width, height);
-    setScene(myDialogScene);
-    show();
-  } 
+    
+    return gridPane;
+    //gridPane.add(okButton, col[0], row[2]);
+  }
   
   private void updateTangoTableView()
   {
@@ -228,6 +270,36 @@ public class MP3EditorDialog extends Stage
         ttable.getColumns().get(i).setVisible(true);
       }
     }
+  }
+  
+  private void updateFavoritesTableView()
+  {
+    ftrack.setTitle(trackDb.title);
+    ftrack.setArtist(trackDb.artist);
+    ftrack.setAlbum(trackDb.album);
+    ftrack.setTrack_year(trackDb.track_year);
+    ftrack.setGenre(trackDb.genre);
+    ftrack.setComment(trackDb.comment);
+    ftrack.setStyle(trackDb.style);
+    ftrack.setSinger(trackDb.singer);
+    ftrack.setBpm(trackDb.bpm);
+    ftrack.setLeader(trackDb.leader);
+    ftrack.setRating(trackDb.rating);
+    
+    // this forces the table to update the row
+    int numberOfColumns=ftable.getColumns().size();
+    for(int i=0; i<numberOfColumns; i++)
+    {
+      if (ftable.getColumns().get(i).isVisible())
+      {
+        ftable.getColumns().get(i).setVisible(false);
+        ftable.getColumns().get(i).setVisible(true);
+      }
+    }
+    
+    TangoTable.updateRow(trackDb);
+    favoritesTab.updateTableRow(trackDb);
+    
   }
   
   private void updateTrackDb()

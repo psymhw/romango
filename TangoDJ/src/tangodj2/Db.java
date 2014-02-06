@@ -187,9 +187,9 @@ public class Db
     } catch (Exception e) { e.printStackTrace();}
   }
   
-  public static void loadFavoritesTracks(int list_id)
+  public static ObservableList<FavoritesTrack> loadFavoritesTracks(int list_id)
   {
-    FavoritesTable.favoritesTracksData.clear();
+    ObservableList<FavoritesTrack> favoritesTracksData = FXCollections.observableArrayList();
     
     String sql= "select * from tracks where id in (select track_id from listmembers where list_id="
                 +list_id+") order by title";
@@ -201,7 +201,7 @@ public class Db
       ResultSet resultSet = statement.executeQuery(sql);
       while(resultSet.next())
       {
-        FavoritesTable.favoritesTracksData.add(
+        favoritesTracksData.add(
           new FavoritesTrack(
             resultSet.getString("title"),
             resultSet.getString("artist"), 
@@ -214,13 +214,20 @@ public class Db
             resultSet.getInt("cleanup"), 
             resultSet.getString("track_year"),
             resultSet.getString("rating"),
-            resultSet.getString("style")));
+            resultSet.getString("style"),
+            resultSet.getString("singer"),
+            resultSet.getString("leader"),
+            resultSet.getString("bpm")
+              
+              ));
             //System.out.println("added: "+resultSet.getString("rating"));
       }
       if (resultSet!=null) resultSet.close();
       if (statement!=null) statement.close();
       disconnect();
+      
     } catch (Exception e) { e.printStackTrace();}
+    return favoritesTracksData;
   }
   
   

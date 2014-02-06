@@ -1,6 +1,7 @@
 package tangodj2;
 
 import java.net.URL;
+import java.util.Iterator;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -8,6 +9,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.SplitPane;
@@ -21,11 +23,16 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import tangodj2.PlaylistTree.TandaTreeItem;
 import tangodj2.cleanup.CleanupTable;
 import tangodj2.cleanup.CleanupTrack;
 import tangodj2.cortina.CortinaTable;
 import tangodj2.cortina.CortinaTrack;
+import tangodj2.favorites.FavoritesTab;
+import tangodj2.favorites.FavoritesTable;
+import tangodj2.favorites.FavoritesTrack;
+import tangodj2.favorites.ListHeaderDb;
 import tangodj2.tango.TangoTable;
 import tangodj2.tango.TangoTrack;
 
@@ -37,6 +44,7 @@ public class PlaylistBuilderTab extends Tab
   TangoTable tangoTable;
   CleanupTable cleanupTable;
   CortinaTable cortinaTable;
+  private FavoritesTable favoritesTable;
   public static Playlist playlist;
   private PlaylistBuilderTab playlistBuilderTab;
   final VBox vbox = new VBox();
@@ -48,18 +56,38 @@ public class PlaylistBuilderTab extends Tab
   String currentTable = "tango";
   TreeView treeView;
   final URL tree_stylesheet = getClass().getResource("PlaylistTree/tree.css");
+  FavoritesTab favoritesTab;
   
   
-  public PlaylistBuilderTab(Playlist playlist, Player player, TangoTable tangoTable, CleanupTable cleanupTable, CortinaTable cortinaTable)
+  public PlaylistBuilderTab(Playlist playlist, final Player player, TangoTable tangoTable, CleanupTable cleanupTable, CortinaTable cortinaTable, FavoritesTab favoritesTab)
   {
     this.playlist=playlist;
     this.player=player;
     playlistBuilderTab=this;
+    this.favoritesTab=favoritesTab;
     //this.cleanupTable=cleanupTable;
    
     this.tangoTable = tangoTable;
     this.cleanupTable = cleanupTable;
     this.cortinaTable = cortinaTable;
+    favoritesTable = new FavoritesTable(FavoritesTable.PLAYLIST_BUILDER_TAB_STYLE);
+    
+    favoritesTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+        FavoritesTrack favoritesTrack = (FavoritesTrack)newValue;
+        if (favoritesTrack!=null)
+        {
+          player.setPlayMode(Player.PLAYMODE_SINGLE_TRACK);
+          player.setCurrentTrackHash(favoritesTrack.getPathHash());
+          TrackDb trackDb = Db.getTrackInfo(favoritesTrack.getPathHash());
+          player.setCurrentTrackTitle(trackDb.title);
+         // System.out.println("FavoriteTab-currentHash: "+favoritesTrack.getPathHash());
+        }
+      }
+    });
+    
     
     //trackLoader.setTangoTable(tangoTable);
     //trackLoader.setCleanupTable(cleanupTable);
@@ -174,19 +202,23 @@ public class PlaylistBuilderTab extends Tab
 	  final RadioButton rb1 = new RadioButton("Tango");
 	  final RadioButton rb2 = new RadioButton("Cortina");
 	  final RadioButton rb3 = new RadioButton("Non-Tango");
+	  final RadioButton rb4 = new RadioButton("Favorites");
 	  
 	  rb1.setId("tango");
 	  rb2.setId("cortina");
 	  rb3.setId("cleanup");
+	  rb4.setId("favorites");
 	  
     final ToggleGroup trackTypeGroup = new ToggleGroup();
     
     rb1.setToggleGroup(trackTypeGroup);
     rb2.setToggleGroup(trackTypeGroup);
     rb3.setToggleGroup(trackTypeGroup);
+    rb4.setToggleGroup(trackTypeGroup);
     rb1.setFont(new Font("Arial", 14));
     rb2.setFont(new Font("Arial", 14));
     rb3.setFont(new Font("Arial", 14));
+    rb4.setFont(new Font("Arial", 14));
     
     rb1.setSelected(true);
     
@@ -198,14 +230,19 @@ public class PlaylistBuilderTab extends Tab
 	  spacer3.setFont(new Font("Arial", 16));
 	  final Label spacer4 = new Label("  ");
     spacer4.setFont(new Font("Arial", 16));
+    final Label spacer5 = new Label("  ");
+    spacer5.setFont(new Font("Arial", 16));
 	
-	 
-	  
+	  final ComboBox favoritesComboBox = getFavoritesComboBox();
+	  final HBox favotitesListBox = new HBox();
+	  Text listLabel = new Text("Favorites List: ");
+	  listLabel.setFont(new Font("Arial", 16));
+	  favotitesListBox.getChildren().addAll(listLabel,favoritesComboBox);
 	  
 	  HBox hbox = new HBox();
 	  hbox.setAlignment(Pos.BASELINE_CENTER);
 	
-	  hbox.getChildren().addAll(label,spacer,rb1,spacer3,rb2,spacer4,rb3,spacer2, searchField, getSearchButton(), getClearButton());
+	  hbox.getChildren().addAll(label,spacer,rb1,spacer3,rb4,spacer5,rb2,spacer4,rb3,spacer2, searchField, getSearchButton(), getClearButton());
 
 	  trackTypeGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
     public void changed(ObservableValue<? extends Toggle> ov,
@@ -218,6 +255,8 @@ public class PlaylistBuilderTab extends Tab
           {
             vbox.getChildren().remove(cleanupTable);
             vbox.getChildren().remove(cortinaTable);
+            vbox.getChildren().remove(favoritesTable);
+            vbox.getChildren().remove(favotitesListBox);
             vbox.getChildren().add(tangoTable);
             currentTable="tango";
            // savedType=0;
@@ -226,6 +265,8 @@ public class PlaylistBuilderTab extends Tab
           {
             vbox.getChildren().remove(tangoTable);
             vbox.getChildren().remove(cortinaTable);
+            vbox.getChildren().remove(favoritesTable);
+            vbox.getChildren().remove(favotitesListBox);
             vbox.getChildren().add(cleanupTable);
             currentTable="cleanup";
             //savedType=1;
@@ -234,7 +275,19 @@ public class PlaylistBuilderTab extends Tab
           {
             vbox.getChildren().remove(tangoTable);
             vbox.getChildren().remove(cleanupTable);
+            vbox.getChildren().remove(favoritesTable);
+            vbox.getChildren().remove(favotitesListBox);
             vbox.getChildren().add(cortinaTable);
+            currentTable="cortina";
+           // savedType=2;
+          }
+          else if (selectedStr.contains("favorites")) 
+          {
+            vbox.getChildren().remove(tangoTable);
+            vbox.getChildren().remove(cleanupTable);
+            vbox.getChildren().remove(cortinaTable);
+            vbox.getChildren().add(favotitesListBox);
+            vbox.getChildren().add(favoritesTable);
             currentTable="cortina";
            // savedType=2;
           }
@@ -333,6 +386,46 @@ public class PlaylistBuilderTab extends Tab
       }
     };   
     tangoTable.getAction().addListener(tangoTableListener);
+    
+ // FAVORITES TABLE LISTENER
+    ChangeListener favoritesTableListener = new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+        if (!"nada".equals(newValue))
+        {
+          int row = favoritesTable.getTableIndex();
+          String action=favoritesTable.getAction().get();
+          FavoritesTrack favoritesTrack = favoritesTable.getItems().get(row);
+        
+         System.out.println("PlaylistBuilderTab - favoritesTable Action: "+ action+" row: "+row+" "+favoritesTrack.getTitle());
+        
+        
+        if ("addToTanda".equals(action))
+        {
+          if (playlist.getTandaCount()>0)
+          {  
+            TandaTreeItem tandaTreeItem = playlist.getSelectedTanda();
+            tandaTreeItem.addTrack(favoritesTrack.getPathHash());
+            playlist.generateFlatList();
+          }
+        }
+        
+        if ("edit".equals(action))
+        {
+          new MP3EditorDialog(favoritesTrack,  favoritesTable, favoritesTab);
+       }
+        
+      //  if ("delete".equals(action))
+       // {
+       //   tangoTable.delete(row, tangoTrack.getPathHash());
+       // }
+        
+        favoritesTable.getAction().set("nada");
+        }
+      }
+    };   
+    favoritesTable.getAction().addListener(favoritesTableListener);
     
     // CLEANUP TABLE LISTENER
     ChangeListener cleanupTableListener = new ChangeListener() 
@@ -434,6 +527,33 @@ public void changePlaylist(int playlistId)
 	  rightBox.getChildren().remove(1);
 	  rightBox.getChildren().add(playlist.getTreeView());
 	  } catch (Exception e) {e.printStackTrace();};
+}
+
+private final ComboBox getFavoritesComboBox()
+{
+  final ComboBox comboBox = new ComboBox();
+  comboBox.getSelectionModel().selectedItemProperty().addListener
+  (
+    new ChangeListener<String>() 
+    {
+      public void changed(ObservableValue<? extends String> ov, String old_val, String new_val) 
+      { 
+        //System.out.println("favorites list changed");
+        int list_id = Db.getListHeaderId(new_val);
+        favoritesTable.reloadData(list_id);
+      } 
+    });
+  
+  ListHeaderDb lhdb;
+  Iterator<ListHeaderDb> it = TangoDJ2.favoritesList.iterator();
+  while(it.hasNext())
+  {
+    lhdb=it.next();
+    comboBox.getItems().add(lhdb.getName());
+   // System.out.println(lhdb.getName());
+  }
+  comboBox.getSelectionModel().selectFirst();
+  return comboBox;
 }
   
 }

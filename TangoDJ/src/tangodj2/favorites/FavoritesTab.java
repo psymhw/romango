@@ -24,7 +24,9 @@ import javafx.scene.text.Text;
 public class FavoritesTab extends Tab
 {
   private final Player player;
-  public FavoritesTab(final FavoritesTable favoritesTable, final Player player)
+  final FavoritesTable favoritesTable2 = new FavoritesTable(FavoritesTable.FAVORITES_TAB_STYLE);
+  
+  public FavoritesTab(final Player player)
   {
     this.setText("Favorites");
     this.player=player;
@@ -36,6 +38,8 @@ public class FavoritesTab extends Tab
     //list.setMaxWidth(200);
     list.setMinWidth(200);
     list.setPrefHeight(300);
+    
+    
     
     /*
     final ComboBox listsComboBox = new ComboBox();
@@ -60,18 +64,18 @@ public class FavoritesTab extends Tab
     
     ChangeListener cl = new ChangeListener<String>() 
     {
-       public void changed(ObservableValue<? extends String> observable,
+      public void changed(ObservableValue<? extends String> observable,
       String oldValue, String newValue) 
       {
-        System.out.println("New Value: "+newValue); 
+        //System.out.println("New Value: "+newValue); 
         int list_id = Db.getListHeaderId(newValue);
-        favoritesTable.reloadData(list_id);
+        favoritesTable2.reloadData(list_id);
       }
     };
     
     list.getSelectionModel().selectedItemProperty().addListener(cl);
     
-    favoritesTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
+    favoritesTable2.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
     {
       public void changed(ObservableValue observable, Object oldValue, Object newValue) 
       {
@@ -82,13 +86,13 @@ public class FavoritesTab extends Tab
           player.setCurrentTrackHash(favoritesTrack.getPathHash());
           TrackDb trackDb = Db.getTrackInfo(favoritesTrack.getPathHash());
           player.setCurrentTrackTitle(trackDb.title);
-          System.out.println("FavoriteTab-currentHash: "+favoritesTrack.getPathHash());
+         // System.out.println("FavoriteTab-currentHash: "+favoritesTrack.getPathHash());
         }
       }
     });
     
     
-    sp.getItems().addAll(list, favoritesTable);
+    sp.getItems().addAll(list, favoritesTable2);
     sp.setDividerPositions(0.2f);
     
     setContent(sp);
@@ -104,5 +108,11 @@ public class FavoritesTab extends Tab
     }
     
   }
+  
+  public void updateTableRow(TrackDb trackDb)
+  {
+    favoritesTable2.updateRow(trackDb);
+  }
+  
   
 }

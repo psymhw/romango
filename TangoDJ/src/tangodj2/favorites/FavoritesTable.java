@@ -20,6 +20,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 import tangodj2.Db;
+import tangodj2.TrackDb;
 import tangodj2.tango.TangoTrack;
 
 public class FavoritesTable extends TableView<FavoritesTrack>
@@ -28,37 +29,45 @@ public class FavoritesTable extends TableView<FavoritesTrack>
   private static TableView<FavoritesTrack> favoritesTable;
   private int tableIndex=-1;
   
-  public final static ObservableList<FavoritesTrack> favoritesTracksData = FXCollections.observableArrayList();
+  public static final int FAVORITES_TAB_STYLE = 0;
+  public static final int PLAYLIST_BUILDER_TAB_STYLE = 1;
+  
+  private int style;
+  
+  private final ObservableList<FavoritesTrack> favoritesTracksData = FXCollections.observableArrayList();
 	 
-  public FavoritesTable()
+  public FavoritesTable(int style)
   {
 	  this.favoritesTable=this;
+	  this.style=style;
 	  
 	  favoritesTable.selectionModelProperty().get().selectedIndexProperty().addListener(new ChangeListener() 
     {
       public void changed(ObservableValue observable, Object oldValue, Object newValue) 
       {
         tableIndex=(int)newValue;
-        System.out.println("FavoritesTable-new Value: "+tableIndex);
+       // System.out.println("FavoritesTable-new Value: "+tableIndex);
       }
     });
 	  setupTable();
 	  reloadData();
   }
   
-  public static void reloadData()
+  public  void reloadData()
   {
     favoritesTable.getSortOrder().clear();
-    Db.loadFavoritesTracks(1);
+    favoritesTracksData.clear();
+    favoritesTracksData.addAll(Db.loadFavoritesTracks(1));
   }
   
-  public static void reloadData(final int list_id)
+  public  void reloadData(final int list_id)
   {
     Platform.runLater(new Runnable() 
     {
       public void run() 
       {
-        Db.loadFavoritesTracks(list_id);
+        favoritesTracksData.clear();
+        favoritesTracksData.addAll(Db.loadFavoritesTracks(list_id));
         ArrayList<TableColumn<FavoritesTrack, ?>> sortOrder = new ArrayList<>(favoritesTable.getSortOrder());
         favoritesTable.getSortOrder().clear();
         favoritesTable.getSortOrder().addAll(sortOrder);
@@ -124,7 +133,8 @@ public class FavoritesTable extends TableView<FavoritesTrack>
       });
       
       
-      contextMenu.getItems().addAll(addToTanda, edit, play);
+      if (style==this.PLAYLIST_BUILDER_TAB_STYLE) contextMenu.getItems().addAll(addToTanda, edit, play, delete);
+      if (style==this.FAVORITES_TAB_STYLE) contextMenu.getItems().addAll(edit, play, delete);
       addToTanda.setOnAction(new EventHandler() 
         { public void handle(Event t) { action.set("addToTanda"); }});
       edit.setOnAction(new EventHandler() 
@@ -207,6 +217,43 @@ public class FavoritesTable extends TableView<FavoritesTrack>
     public int getTableIndex()
     {
       return tableIndex;
+    }
+    
+    public void updateRow(TrackDb trackDb)
+    {
+      FavoritesTrack ftrack;
+      for(int i=0; i<favoritesTracksData.size(); i++)
+      {
+        if (trackDb.pathHash.equals(favoritesTracksData.get(i).getPathHash()))
+        {
+          ftrack=favoritesTracksData.get(i);
+          ftrack.setTitle(trackDb.title);
+          ftrack.setArtist(trackDb.artist);
+          ftrack.setAlbum(trackDb.album);
+          ftrack.setTrack_year(trackDb.track_year);
+          ftrack.setGenre(trackDb.genre);
+          ftrack.setComment(trackDb.comment);
+          ftrack.setStyle(trackDb.style);
+          ftrack.setSinger(trackDb.singer);
+          ftrack.setBpm(trackDb.bpm);
+          ftrack.setLeader(trackDb.leader);
+          ftrack.setRating(trackDb.rating);
+          
+          // this forces the table to update the row
+          int numberOfColumns=getColumns().size();
+          for(int j=0; j<numberOfColumns; j++)
+          {
+            if (getColumns().get(j).isVisible())
+            {
+              getColumns().get(j).setVisible(false);
+              getColumns().get(j).setVisible(true);
+            }
+          }
+          
+          //System.out.println("FavoritesTable: row found");
+          return;
+        }
+      }
     }
 
 
