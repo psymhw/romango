@@ -56,15 +56,13 @@ public class PlaylistBuilderTab extends Tab
   String currentTable = "tango";
   TreeView treeView;
   final URL tree_stylesheet = getClass().getResource("PlaylistTree/tree.css");
-  FavoritesTab favoritesTab;
   
   
-  public PlaylistBuilderTab(Playlist playlist, final Player player, TangoTable tangoTable, CleanupTable cleanupTable, CortinaTable cortinaTable, FavoritesTab favoritesTab)
+  public PlaylistBuilderTab(Playlist playlist, final Player player, TangoTable tangoTable, CleanupTable cleanupTable, CortinaTable cortinaTable)
   {
     this.playlist=playlist;
     this.player=player;
     playlistBuilderTab=this;
-    this.favoritesTab=favoritesTab;
     //this.cleanupTable=cleanupTable;
    
     this.tangoTable = tangoTable;
@@ -413,7 +411,7 @@ public class PlaylistBuilderTab extends Tab
         
         if ("edit".equals(action))
         {
-          new MP3EditorDialog(favoritesTrack,  favoritesTable, favoritesTab);
+          new MP3EditorDialog(favoritesTrack,  favoritesTable);
        }
         
       //  if ("delete".equals(action))

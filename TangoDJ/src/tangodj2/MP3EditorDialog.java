@@ -85,7 +85,7 @@ public class MP3EditorDialog extends Stage
     show();
   } 
   
-  public MP3EditorDialog(FavoritesTrack favoritesTrack,  FavoritesTable favoritesTable, FavoritesTab favoritesTab)
+  public MP3EditorDialog(FavoritesTrack favoritesTrack,  FavoritesTable favoritesTable)
   {
     this.ftrack=favoritesTrack;
     this.ftable=favoritesTable;
@@ -298,7 +298,7 @@ public class MP3EditorDialog extends Stage
     }
     
     TangoTable.updateRow(trackDb);
-    favoritesTab.updateTableRow(trackDb);
+    TangoDJ2.favoritesTab.updateTableRow(trackDb);
     
   }
   
