@@ -41,9 +41,9 @@ public class PlaylistBuilderTab extends Tab
   //Tab tab;
   //SharedValues sharedValues = new SharedValues();
   //AllTracksTable allTracksTable;
-  TangoTable tangoTable;
-  CleanupTable cleanupTable;
-  CortinaTable cortinaTable;
+  private TangoTable tangoTable;
+  private CleanupTable cleanupTable;
+  private CortinaTable cortinaTable;
   private FavoritesTable favoritesTable;
   public static Playlist playlist;
   private PlaylistBuilderTab playlistBuilderTab;
@@ -58,16 +58,16 @@ public class PlaylistBuilderTab extends Tab
   final URL tree_stylesheet = getClass().getResource("PlaylistTree/tree.css");
   
   
-  public PlaylistBuilderTab(Playlist playlist, final Player player, TangoTable tangoTable, CleanupTable cleanupTable, CortinaTable cortinaTable)
+  public PlaylistBuilderTab(Playlist playlist, final Player player)
   {
     this.playlist=playlist;
     this.player=player;
     playlistBuilderTab=this;
     //this.cleanupTable=cleanupTable;
    
-    this.tangoTable = tangoTable;
-    this.cleanupTable = cleanupTable;
-    this.cortinaTable = cortinaTable;
+    tangoTable = new TangoTable();;
+    cleanupTable = new CleanupTable();
+    cortinaTable = new CortinaTable();
     favoritesTable = new FavoritesTable(FavoritesTable.PLAYLIST_BUILDER_TAB_STYLE);
     
     favoritesTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
@@ -516,6 +516,11 @@ public class PlaylistBuilderTab extends Tab
 public TangoTable getTangoTable() 
 {
 	return tangoTable;
+}
+
+public CleanupTable getCleanupTable() 
+{
+  return cleanupTable;
 }
 
 public void changePlaylist(int playlistId)

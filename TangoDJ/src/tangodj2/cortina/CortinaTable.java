@@ -22,22 +22,22 @@ import javafx.util.Callback;
 
 public class CortinaTable extends TableView<CortinaTrack>
 {
-  public final static ObservableList<CortinaTrack> cortinaTracksData = FXCollections.observableArrayList();
+  private final static ObservableList<CortinaTrack> cortinaTracksData = FXCollections.observableArrayList();
+  
   private SimpleStringProperty action = new SimpleStringProperty("nada");
   private int tableIndex=-1;
   private CortinaTable cortinaTable=this;
   
   public CortinaTable()
   {
-    Db.loadCortinaTracks(cortinaTracksData);
-   
+    reloadData();
 	  setupTable();
   }
 	 
   public static void reloadData()
   {
     cortinaTracksData.clear();
-    Db.loadCortinaTracks(cortinaTracksData);
+    cortinaTracksData.addAll(Db.loadCortinaTracks());
   }
   
   public static void addTrack(int id)

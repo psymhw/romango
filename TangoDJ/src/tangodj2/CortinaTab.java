@@ -34,9 +34,6 @@ public class CortinaTab extends Tab
     cortinaTable = new CortinaTable();
     cleanupTable = new CleanupTable();
     
-   // gridPane.setGridLinesVisible(true);
-    
-      
     gridPane.setPadding(new Insets(10, 10, 10, 10));
     gridPane.setHgap(30);
    

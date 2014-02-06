@@ -91,10 +91,10 @@ public class Db
   {
 	  loadTangoTracks(null);
   }
-	public static void loadTangoTracks(String search)
+	public static ArrayList<TangoTrack> loadTangoTracks(String search)
   {
-	  
-    TangoTable.tangoTracksData.clear();
+	  ArrayList<TangoTrack> tangoTracks = new ArrayList<TangoTrack>();
+    //TangoTable.tangoTracksData.clear();
     
     
     String sql;
@@ -116,7 +116,8 @@ public class Db
       while(resultSet.next())
       {
         trackDb = getTrackDb(resultSet);
-        TangoTable.tangoTracksData.add(new TangoTrack(trackDb));
+        //tangoTable.tangoTracksData.add(new TangoTrack(trackDb));
+        tangoTracks.add(new TangoTrack(trackDb));
       }
       if (resultSet!=null) resultSet.close();
       if (statement!=null) statement.close();
@@ -125,6 +126,8 @@ public class Db
       System.out.println("Db - loadSql: "+sql);
       e.printStackTrace();
     }
+    
+    return tangoTracks;
   }
 	
 	
@@ -135,20 +138,9 @@ public class Db
 	
 	
 	
-  public static void loadCleanupTracks(String search)
+  public static ArrayList<CleanupTrack> loadCleanupTracks(String search)
   {
-    String title;
-    String artist;
-    String album;
-    String genre;
-    String comment;
-    String pathHash;
-    String path;
-    String track_year;
-    int cleanup;
-    int duration=0;
-      
-    CleanupTable.cleanupTracksData.clear();
+    ArrayList<CleanupTrack> cleanupTracks = new ArrayList<CleanupTrack>();
     
     String sql;
     
@@ -167,29 +159,31 @@ public class Db
       ResultSet resultSet = statement.executeQuery(sql);
       while(resultSet.next())
       {
-        title=resultSet.getString("title");
-        artist = resultSet.getString("artist");
-        album = resultSet.getString("album");
-        genre = resultSet.getString("genre");
-        comment = resultSet.getString("comment");
-        track_year = resultSet.getString("track_year");
-        //System.out.println("track_year: "+track_year);
-        pathHash = resultSet.getString("pathHash");
-        path = resultSet.getString("path");
-        duration=resultSet.getInt("duration");
-        cleanup=resultSet.getInt("cleanup");
-        CleanupTable.cleanupTracksData.add(new CleanupTrack(title, artist, album, genre, comment, pathHash, path, duration, cleanup, track_year));
+        cleanupTracks.add(new CleanupTrack
+               (resultSet.getString("title"), 
+                resultSet.getString("artist"), 
+                resultSet.getString("album"), 
+                resultSet.getString("genre"), 
+                resultSet.getString("comment"), 
+                resultSet.getString("pathHash"), 
+                resultSet.getString("path"), 
+                resultSet.getInt("duration"), 
+                resultSet.getInt("cleanup"), 
+                resultSet.getString("track_year")
+             ));
         //System.out.println("added: "+title);
       }
       if (resultSet!=null) resultSet.close();
       if (statement!=null) statement.close();
       disconnect();
     } catch (Exception e) { e.printStackTrace();}
+    
+    return cleanupTracks;
   }
   
-  public static ObservableList<FavoritesTrack> loadFavoritesTracks(int list_id)
+  public static ArrayList<FavoritesTrack> loadFavoritesTracks(int list_id)
   {
-    ObservableList<FavoritesTrack> favoritesTracksData = FXCollections.observableArrayList();
+    ArrayList<FavoritesTrack> favoritesTracksData = new ArrayList<FavoritesTrack>();
     
     String sql= "select * from tracks where id in (select track_id from listmembers where list_id="
                 +list_id+") order by title";
@@ -232,9 +226,9 @@ public class Db
   
   
 	
-  public static void loadCortinaTracks(ObservableList<CortinaTrack> cortinaTracksData)
+  public static  ArrayList<CortinaTrack> loadCortinaTracks()
   {
-      cortinaTracksData.clear();
+    ArrayList<CortinaTrack> cortinaTracks = new ArrayList<CortinaTrack>();
       try
       {
       connect();
@@ -258,7 +252,7 @@ public class Db
                                        resultSet.getString("artist"),
                                        resultSet.getInt("premade"));
            
-        cortinaTracksData.add(cortinaTrack);
+        cortinaTracks.add(cortinaTrack);
         
       }
       if (resultSet!=null) resultSet.close();
@@ -266,6 +260,7 @@ public class Db
       disconnect();
       //System.out.println("Cortina Data: "+cortinaTracksData.size());
       } catch (Exception e) { e.printStackTrace();}
+      return cortinaTracks;
     }
 	
   public static Preferences getPreferences() throws Exception

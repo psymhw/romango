@@ -156,6 +156,12 @@
   
 }
 
+.favoritesTableText {
+  -fx-text-fill: rgba(248, 19, 0,1);
+  -fx-font-size: 12pt;
+  
+}
+
 .tandaTitleText {
   -fx-text-fill: rgba(107, 0, 255,1);
   -fx-font-size: 18pt;
