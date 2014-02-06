@@ -19,11 +19,16 @@ public class FavoritesTrack
     private final SimpleStringProperty pathHash;
     private final SimpleStringProperty path;
     private final SimpleIntegerProperty duration;
+    private final SimpleStringProperty singer;
+    private final SimpleStringProperty leader;
+    private final SimpleStringProperty bpm;
+    
     private int cortina=0;
     
     
 	public FavoritesTrack(String titleStr, String artistStr, String albumStr, String genreStr, 
-	    String commentStr, String pathHashStr, String path, int duration, int cortina, String track_yearStr, String ratingStr, String styleStr)
+	    String commentStr, String pathHashStr, String path, int duration, int cortina, String track_yearStr
+	    , String ratingStr, String styleStr, String singerStr, String leaderStr, String bpmStr)
     {
       this.title = new SimpleStringProperty(titleStr);
       this.artist = new SimpleStringProperty(artistStr);
@@ -36,6 +41,9 @@ public class FavoritesTrack
       this.duration = new SimpleIntegerProperty(duration);
       this.rating = new SimpleStringProperty(ratingStr);
       this.style = new SimpleStringProperty(styleStr);
+      this.singer = new SimpleStringProperty(singerStr);
+      this.leader = new SimpleStringProperty(leaderStr);
+      this.bpm = new SimpleStringProperty(bpmStr);
       this.cortina=cortina;
     }
     
@@ -125,15 +133,49 @@ public class FavoritesTrack
     {
       return rating.get();
     }
-
-    public String getStyle()
-    {
-      return style.get();
-    }
     
     public void setRating(String ratingStr)
     {
       rating.set(ratingStr);
     }
+
+    public String getStyle()
+    {
+      return style.get();
+    }
+    public void setStyle(String styleStr)
+    {
+      style.set(styleStr);
+    }
+    
+    public String getSinger()
+    {
+      return singer.get();
+    }
+    public void setSinger(String singerStr)
+    {
+      singer.set(singerStr);
+    }
+    
+    public String getLeader()
+    {
+      return leader.get();
+    }
+    public void setLeader(String leaderStr)
+    {
+      leader.set(leaderStr);
+    }
+    
+    public String getBpm()
+    {
+      return bpm.get();
+    }
+    public void setBpm(String bpmStr)
+    {
+      bpm.set(bpmStr);
+    }
+    
+    
+    
 
 }

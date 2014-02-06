@@ -319,5 +319,41 @@ public class TangoTable extends TableView<TangoTrack>
     Db.deleteTrack(pathHash);
   }
   
+  public static void updateRow(TrackDb trackDb)
+  {
+    TangoTrack tangoTrack;
+    for(int i=0; i<tangoTracksData.size(); i++)
+    {
+      if (trackDb.pathHash.equals(tangoTracksData.get(i).getPathHash()))
+      {
+        tangoTrack = tangoTracksData.get(i);
+        tangoTrack.setTitle(trackDb.title);
+        tangoTrack.setArtist(trackDb.artist);
+        tangoTrack.setAlbum(trackDb.album);
+        tangoTrack.setTrack_year(trackDb.track_year);
+        tangoTrack.setGenre(trackDb.genre);
+        tangoTrack.setComment(trackDb.comment);
+        tangoTrack.setStyle(trackDb.style);
+        tangoTrack.setSinger(trackDb.singer);
+        tangoTrack.setBpm(trackDb.bpm);
+        tangoTrack.setLeader(trackDb.leader);
+        tangoTrack.setRating(trackDb.rating);
+        
+        // this forces the table to update the row
+        int numberOfColumns=tangoTable.getColumns().size();
+        for(int j=0; j<numberOfColumns; j++)
+        {
+          if (tangoTable.getColumns().get(j).isVisible())
+          {
+            tangoTable.getColumns().get(j).setVisible(false);
+            tangoTable.getColumns().get(j).setVisible(true);
+          }
+        }
+        
+        return;
+      }
+    }
+  }
+  
 
 }

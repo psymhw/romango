@@ -98,7 +98,7 @@ public class TangoDJ2 extends Application
   TangoTable tangoTable;
   CleanupTable cleanupTable;
   CortinaTable cortinaTable;
-  FavoritesTable favoritesTable;
+ // FavoritesTable favoritesTable;
   
   TrackLoader3 trackLoader = new TrackLoader3();
   private Button infoWindowButton = new Button("Info Window");
@@ -177,7 +177,7 @@ public class TangoDJ2 extends Application
     tangoTable = new TangoTable();
     cleanupTable = new CleanupTable();
     cortinaTable = new CortinaTable();
-    favoritesTable = new FavoritesTable();
+   // favoritesTable = new FavoritesTable();
     
     trackLoader.setTangoTable(tangoTable);
     trackLoader.setCleanupTable(cleanupTable);
@@ -198,8 +198,8 @@ public class TangoDJ2 extends Application
     player.setPlaylist(playlist);
     eventTab.setPlayer(player);
     
-   
-    playlistBuilderTab = new PlaylistBuilderTab(playlist,  player, tangoTable, cleanupTable, cortinaTable);
+    favoritesTab=new FavoritesTab (player);
+    playlistBuilderTab = new PlaylistBuilderTab(playlist,  player, tangoTable, cleanupTable, cortinaTable, favoritesTab);
     tabPane.getTabs().add(playlistBuilderTab);
     
     playlistChoiceTab = new PlaylistChoiceTab(this, player, playlistBuilderTab, eventTab);
@@ -234,7 +234,7 @@ public class TangoDJ2 extends Application
     //tabPane.getTabs().add(equalizerTab);
     tabPane.getTabs().add(cortinaTab);
     
-    favoritesTab=new FavoritesTab(favoritesTable, player);
+    
     tabPane.getTabs().add(favoritesTab);
     
     tabPane.getTabs().add(eventTab);
