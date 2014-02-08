@@ -75,11 +75,32 @@ public class MP3EditorDialog extends Stage
     
     type = TANGO_TABLE;
     
+   /*
+    title.setStyle(""
+            + "-fx-font-size: 30px;"
+            + "-fx-font-style: italic;"
+            + "-fx-font-weight: bold;"
+            + "-fx-font-family: fantasy;"
+            + "-fx-text-fill: blue;"
+            + "-fx-background-color: aqua");
+    */
+    title.setStyle("-fx-font-size: 20px;");
+    artist.setStyle("-fx-font-size: 20px;");
+    leader.setStyle("-fx-font-size: 20px;"); 
+    album.setStyle("-fx-font-size: 20px;");
+    track_no.setStyle("-fx-font-size: 20px;");
+    year.setStyle("-fx-font-size: 20px;");
+    genre.setStyle("-fx-font-size: 20px;");
+    bpm.setStyle("-fx-font-size: 20px;");
+    singer.setStyle("-fx-font-size: 20px;");
+    comment.setStyle("-fx-font-size: 20px;");
+    year.setMinWidth(75);
+    
     trackDb=Db.getTrackInfo(tangoTrack.getPathHash());
     GridPane gridPane = getEditor();
     
-    double width=300;
-    double height=400;
+    double width=400;
+    double height=500;
     Scene myDialogScene = new Scene(gridPane, width, height);
     setScene(myDialogScene);
     show();
@@ -125,9 +146,6 @@ public class MP3EditorDialog extends Stage
     track_no.setMaxWidth(35);
     
     comment.setPrefRowCount(2);
-    
-    
-    
     
     title.setText(trackDb.title);
     leader.setText(trackDb.leader);

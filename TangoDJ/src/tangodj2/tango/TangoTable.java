@@ -109,7 +109,9 @@ public class TangoTable extends TableView<TangoTrack>
       protected void updateItem(Object item, boolean empty) 
       {
         super.updateItem(item, empty);
-        if(item != null) { setText(item.toString()); }
+        if(item != null) { 
+        	 this.getStyleClass().add("tangoTableText");
+        	setText(item.toString()); }
       }};
           
       cell.setContextMenu(contextMenu);
