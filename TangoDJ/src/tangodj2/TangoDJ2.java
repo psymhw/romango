@@ -80,8 +80,8 @@ public class TangoDJ2 extends Application
   public static ArrayList<ListHeaderDb> favoritesList = new ArrayList<ListHeaderDb>();
   
   static VBox playerPane;
-  int sceneHeight=850;
-  int sceneWidth=1350;
+  int sceneHeight=810;
+  int sceneWidth=1500;
   public final  Image noteImage = new Image(getClass().getResourceAsStream("/resources/images/note.png"));
   
   MenuBar menuBar;
