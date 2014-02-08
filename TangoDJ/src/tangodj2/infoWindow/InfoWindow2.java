@@ -332,7 +332,7 @@ public class InfoWindow2
 
     final Label t = new Label();
     t.setText(inStr);
-    t.setTextFill(Color.RED);
+    t.setTextFill(Color.YELLOW);
     t.setFont(f);
     t.setEffect(l);
     return t;

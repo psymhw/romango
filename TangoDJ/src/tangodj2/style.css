@@ -129,13 +129,7 @@
 
 */
 
-.cortinaTableText {
-  -fx-text-fill: rgba(219, 42, 199,1);
-  -fx-font-size: 12pt;
- 
-  -fx-highlight-fill: black;
-  
-}
+
 /*
 * see: http://stackoverflow.com/questions/12746459/how-to-change-the-colors-of-the-tableviews-rows
 */
@@ -146,30 +140,32 @@
     -fx-text-fill: -fx-selection-bar-text;
 }
 
-
-
-
-
 .cleanupTableText {
   -fx-text-fill: rgba(42, 54, 246,1);
-  -fx-font-size: 12pt;
-  
+  -fx-font-size: 15pt;
 }
 
 .favoritesTableText {
   -fx-text-fill: rgba(248, 19, 0,1);
-  -fx-font-size: 12pt;
-  
+  -fx-font-size: 15pt;
+}
+
+.cortinaTableText {
+  -fx-text-fill: rgba(219, 42, 199,1);
+  -fx-font-size: 15pt;
+  -fx-highlight-fill: black;
+}
+
+.tangoTableText {
+  -fx-text-fill: black;
+  -fx-font-size: 15pt;
 }
 
 .tandaTitleText {
   -fx-text-fill: rgba(107, 0, 255,1);
   -fx-font-size: 18pt;
   -fx-font-weight: bold;
-  
 }
-
-
 
 .eqLabel {
   -fx-padding: 2;

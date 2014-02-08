@@ -477,7 +477,7 @@ public class TrackLoader3
   public static String cleanString(String inStr)
   {
     // String returnStr = inStr.replace("'","''");
-    String returnStr = inStr.replace("ÿþ","");
+    String returnStr = inStr.trim().replace("ÿþ","");
     // returnStr = returnStr.replace("\\","\\\\");
      
      char tChar=0;
