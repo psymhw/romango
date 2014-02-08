@@ -172,5 +172,12 @@ public class TangoTrack
   {
     track_no.set(track_no_int);
   }
+
+
+
+  public SimpleStringProperty getPath()
+  {
+    return path;
+  }
   
 }

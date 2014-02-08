@@ -87,10 +87,11 @@ public class Db
 	  }
 	*/
 	
-	public static void loadTangoTracks()
-  {
-	  loadTangoTracks(null);
-  }
+	//public static void loadTangoTracks()
+ // {
+	//  loadTangoTracks(null);
+ //}
+	
 	public static ArrayList<TangoTrack> loadTangoTracks(String search)
   {
 	  ArrayList<TangoTrack> tangoTracks = new ArrayList<TangoTrack>();

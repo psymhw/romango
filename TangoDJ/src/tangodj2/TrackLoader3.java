@@ -272,7 +272,8 @@ public class TrackLoader3
           trackDb.title=(String)media.getMetadata().get("title");
           trackDb.comment=(String)media.getMetadata().get("comment-0");
           trackDb.genre=(String)media.getMetadata().get("genre");
-          trackDb.track_year = (String)media.getMetadata().get("year");
+        //  trackDb.track_year = (String)media.getMetadata().get("year");
+         // System.out.println("Media Player year: "+trackDb.track_year);
           Object obj = media.getMetadata().get("track number");
           if (obj!=null) trackDb.track_no = (int)obj;
         }
@@ -425,8 +426,9 @@ public class TrackLoader3
     trackDb.album=cleanString(tag.getAlbumTitle());
     trackDb.comment=cleanString(tag.getSongComment());
     trackDb.genre=cleanString(tag.getSongGenre());
-    trackDb.track_year=cleanString(tag.getYearReleased());
+    trackDb.track_year=tag.getYearReleased();;
     
+    // System.out.println("Farng year: "+tag.getYearReleased());
    
     
     // Track Number
