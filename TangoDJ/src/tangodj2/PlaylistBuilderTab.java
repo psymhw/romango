@@ -53,6 +53,7 @@ public class PlaylistBuilderTab extends Tab
   //TrackLoader3 trackLoader = new TrackLoader3();
   HBox rightBox =  new HBox();
   TextField searchField = new TextField();
+  public static Label trackCount = new Label("");
   String currentTable = "tango";
   TreeView treeView;
   final URL tree_stylesheet = getClass().getResource("PlaylistTree/tree.css");
@@ -66,6 +67,8 @@ public class PlaylistBuilderTab extends Tab
     //this.cleanupTable=cleanupTable;
    
     tangoTable = new TangoTable();;
+    
+    
     cleanupTable = new CleanupTable();
     cortinaTable = new CortinaTable();
     favoritesTable = new FavoritesTable(FavoritesTable.PLAYLIST_BUILDER_TAB_STYLE);
@@ -123,6 +126,7 @@ public class PlaylistBuilderTab extends Tab
     sp.setDividerPositions( 0.75f, .9f);
     sp.setStyle("-fx-background-color: plum;");
     
+    //trackCount.setText(""+ tangoTable.getRowCount());
     this.setContent(sp);
   }
   
@@ -230,6 +234,8 @@ public class PlaylistBuilderTab extends Tab
     spacer4.setFont(new Font("Arial", 16));
     final Label spacer5 = new Label("  ");
     spacer5.setFont(new Font("Arial", 16));
+    final Label spacer6 = new Label("  ");
+    spacer6.setFont(new Font("Arial", 16));
 	
 	  final ComboBox favoritesComboBox = getFavoritesComboBox();
 	  final HBox favotitesListBox = new HBox();
@@ -240,7 +246,15 @@ public class PlaylistBuilderTab extends Tab
 	  HBox hbox = new HBox();
 	  hbox.setAlignment(Pos.BASELINE_CENTER);
 	
-	  hbox.getChildren().addAll(label,spacer,rb1,spacer3,rb4,spacer5,rb2,spacer4,rb3,spacer2, searchField, getSearchButton(), getClearButton());
+	  hbox.getChildren().addAll(label,
+			                    spacer,rb1,
+			                    spacer3,rb4,
+			                    spacer5,rb2,
+			                    spacer4,rb3,
+			                    spacer2, searchField, 
+			                    getSearchButton(), 
+			                    getClearButton(), 
+			                    spacer6,trackCount);
 
 	  trackTypeGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
     public void changed(ObservableValue<? extends Toggle> ov,

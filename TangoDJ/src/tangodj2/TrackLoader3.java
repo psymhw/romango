@@ -546,7 +546,7 @@ public class TrackLoader3
  public static String sqlReadyString(String inStr, int maxLength)
  {
    String retStr = sqlReadyString(inStr);
-   if (retStr.length()>=maxLength) retStr=retStr.substring(0, maxLength-1);
+   if (retStr.length()>maxLength) retStr=retStr.substring(0, maxLength-1);
    return retStr;
  }
  

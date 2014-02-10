@@ -4,13 +4,13 @@
  /*  -fx-padding: 0.8em 0em 0.8em 0.3em; */
    -fx-text-fill: #212121;
    -fx-background-color: plum;
-   -fx-font: 15px "Segoe UI"; 
+   -fx-font: 18px "Segoe UI"; 
 }
 
 .playlistTree
 {
   -fx-background-color: plum;
-  -fx-font-size: 15pt;
+  -fx-font-size: 18pt;
 }
 
 .tree-view {

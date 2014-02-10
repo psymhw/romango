@@ -29,6 +29,7 @@ import tangodj2.favorites.FavoritesTrack;
 import tangodj2.favorites.ListHeaderDb;
 import tangodj2.tango.TangoTable;
 import tangodj2.tango.TangoTrack;
+import util.jsoup.TDJDb;
 
 public class Db 
 {
@@ -127,7 +128,7 @@ public class Db
       System.out.println("Db - loadSql: "+sql);
       e.printStackTrace();
     }
-    
+    PlaylistBuilderTab.trackCount.setText(""+tangoTracks.size());
     return tangoTracks;
   }
 	
@@ -796,7 +797,6 @@ public class Db
 	
 	static void sqlReadyTrackInfo(TrackDb trackDb)
 	 {
-	   
 	   trackDb.title    = sqlReadyString(trackDb.title, 100);
 	   trackDb.artist   = sqlReadyString(trackDb.artist, 40);
 	   trackDb.album    = sqlReadyString(trackDb.album, 100);
@@ -806,26 +806,24 @@ public class Db
 	   trackDb.leader    = sqlReadyString(trackDb.leader);
 	   //trackDb.path = new File(trackDb.path).toURI().toString();
 	   trackDb.track_year     = sqlReadyString(trackDb.track_year, 4);
-	  
 	 }
 	 
 	 public static String sqlReadyString(String inStr, int maxLength)
 	 {
 	   String retStr = sqlReadyString(inStr);
-	   if (retStr.length()>=maxLength) retStr=retStr.substring(0, maxLength-1);
+	   if (retStr.length()>maxLength) retStr=retStr.substring(0, maxLength-1);
 	   return retStr;
 	 }
 	 
 	 public static String sqlReadyString(String inStr)
 	 {
 	    if (inStr==null) return "";
+	  
 	    String returnStr = inStr.replace("'","''");
 	    returnStr = returnStr.replace("ÿþ","");
 	   // returnStr = returnStr.replace("\\","\\\\");
-	    //System.out.println(inStr);
 	    char tChar=0;
 	    returnStr = removeChar(returnStr, tChar);
-	    
 	    return returnStr;
 	 }
 	
@@ -1301,5 +1299,120 @@ private static boolean isSet(String inStr)
    if (inStr.length()==0) return false;
    return true;
 }
+
+public static void insertTdjRecord(TDJDb t) throws Exception
+{
+	if (t.title==null) return;
+	if ("".equals(t.title)) return;
 	
+	String sql = "insert into tdj (tdj_id, " +
+			"track, title, artist, str_date, genre, str_length, rating, album, publisher, comment)" +
+			" values ("+t.tdj_id+", '"+
+		                  t.track  +"', '" +
+			              t.title  +"', '" +
+		                  t.artist +"', '" +
+			              t.date   +"', '" +
+		                  t.genre  +"', '" +
+			              t.length +"', '" +
+		                  t.rating +"', '" +
+			              t.album  +"', '" +
+		                  t.publisher+"', '" +
+			              t.comment+"')";
+	System.out.println(sql);
+	
+	  try {
+		Db.connection.createStatement().execute(sql);
+	} catch (SQLException e) {
+		e.printStackTrace(); 
+	}
+}
+
+public static void createTDJTable() throws SQLException
+{
+	String sql ="create table tdj(" +
+	        "id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
+	  	    "tdj_id integer, " +
+	        "track varchar(10)," +
+	        "title varchar(100), " +
+	        "artist varchar(100), " +
+	        "str_date varchar(12), " +
+	        "genre varchar(20), " +
+	        "str_length varchar(8), " +
+	        "rating varchar(5), " +
+	        "album varchar(150), " +
+	        "publisher varchar(100), " +
+	        "comment varchar(200) " +
+	        ")";
+	System.out.println(sql);
+  connection.createStatement().execute(sql); 
+  connection.createStatement().execute("CREATE UNIQUE INDEX tdj_idx1 ON tdj(tdj_id)");
+  connection.createStatement().execute("CREATE UNIQUE INDEX tdj_idx2 ON tdj(artist,album,title)");
+	 
+  System.out.println("TDJ table created");
+}
+
+  public static TDJDb getTdjRecord(int tdj_id)
+  {
+	 String sql="select * from tdj where tdj_id="+tdj_id;
+	 TDJDb t= new TDJDb();
+	 try 
+	 {
+	   Statement statement = connection.createStatement();
+	   ResultSet resultSet = statement.executeQuery(sql);
+	   
+	   if (resultSet.next())
+	   {
+		 t.id=resultSet.getInt("id");
+		 t.tdj_id=tdj_id;
+		 t.track=resultSet.getString("track");
+		 t.title=resultSet.getString("title");
+		 t.artist=resultSet.getString("artist");
+		 t.date=resultSet.getString("str_date");
+		 t.genre=resultSet.getString("genre");
+		 t.length=resultSet.getString("str_length");
+		 t.rating=resultSet.getString("rating");
+		 t.album=resultSet.getString("album");
+		 t.publisher=resultSet.getString("publisher");
+		 t.comment=resultSet.getString("comment");
+		 
+		 return t;
+		 
+	   }
+	   
+	 } catch (Exception e) { e.printStackTrace(); }
+	 return null;
+  }
+  public static ArrayList<TDJDb> getTdjRecords()
+  {
+	 String sql="select * from tdj order by tdj_id";
+	 ArrayList<TDJDb> rows = new ArrayList<>();
+	 TDJDb t;
+	 try 
+	 {
+	   Statement statement = connection.createStatement();
+	   ResultSet resultSet = statement.executeQuery(sql);
+	  
+	   while (resultSet.next())
+	   {
+		 t= new TDJDb();
+		 t.id=resultSet.getInt("id");
+		 t.tdj_id=resultSet.getInt("tdj_id");
+		 t.track=resultSet.getString("track");
+		 t.title=resultSet.getString("title");
+		 t.artist=resultSet.getString("artist");
+		 t.date=resultSet.getString("str_date");
+		 t.genre=resultSet.getString("genre");
+		 t.length=resultSet.getString("str_length");
+		 t.rating=resultSet.getString("rating");
+		 t.album=resultSet.getString("album");
+		 t.publisher=resultSet.getString("publisher");
+		 t.comment=resultSet.getString("comment");
+		 
+		 rows.add(t);
+		 
+	   }
+	   
+	 } catch (Exception e) { e.printStackTrace(); }
+	 return rows;
+  }
 }

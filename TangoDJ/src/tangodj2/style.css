@@ -1,10 +1,4 @@
-/* 
-.tangoBkg{-fx-border: 2px solid; -fx-border-color: gray; -fx-background-color: aliceblue;}
-.valsBkg{-fx-border: 2px solid; -fx-border-color: gray; -fx-background-color: palegoldenrod;}
-.milongaBkg{-fx-border: 2px solid; -fx-border-color: gray; -fx-background-color: pink;}
-.cortinaBkg{-fx-border: 2px solid; -fx-border-color: gray; -fx-background-color: royalblue;}
-.paddingBkg{-fx-border: 2px solid; -fx-border-color: gray; -fx-background-color: silver;}
-*/
+
 .tangoBkg{-fx-background-color: aliceblue;}
 .valsBkg{-fx-background-color: palegoldenrod;}
 .milongaBkg{-fx-background-color: pink;}
@@ -42,17 +36,7 @@
   -fx-padding: 1;
 }
 
-/*
-.eqSlider .thumb {
-  -fx-background-image: url("resources/thumb.png");
-  -fx-padding: 6;
-}
 
-
-.eqSlider:vertical .track{
-  -fx-padding: 5;
-}
-*/
 .spectrumBar {
   -fx-background-radius: 2;
   -fx-background-color: rgba(255, 255, 255,.05);
@@ -88,46 +72,6 @@
   -fx-font-size: 14pt;
 }
 
-/*
-.playlistTree
-{
-  -fx-background-color: rgba(34, 35, 256,.16);
-  -fx-font-size: 15pt;
-}
-
-
-.playlistPlaylistTreeItem 
-{
-  -fx-background-color: rgba(32, 47, 255,.82);
-  -fx-padding: 3,3,3,3;
-}
-
-.tandaPlaylistTreeItem 
-{
-  -fx-background-color: null;
-  -fx-padding: 3,3,3,3; 
-}
-
-.cortinaPlaylistTreeItem 
-{
-  
-   -fx-background-color: null;
-  -fx-padding: 3,3,3,3; 
-  
-}
-
-.cleanupPlaylistTreeItem {
-   -fx-background-color: rgba(0, 102, 227,.90);
-}
-
-.tangoPlaylistTreeItem {
-	-fx-background-color: null;
-   -fx-text-fill: black;
-  -fx-font-size: 16pt; 
-  
-}
-
-*/
 
 
 /*
