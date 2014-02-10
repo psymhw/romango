@@ -39,6 +39,7 @@ public class CreateDatabase
 	  createListMembersTable();
 	  createiTunesRatingsTable();
 	  createiTunesFavoritesTable();
+	  createTDJTable();
 	  disconnect();
 	   //Db.disconnect();
 	  System.out.println("database initiallized");	
@@ -88,6 +89,28 @@ public class CreateDatabase
           ")"); 
     System.out.println("Lists table created");
   }
+	
+	public static void createTDJTable() throws SQLException
+	  {
+	    connection.createStatement().execute("create table tdj(" +
+	          "id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
+	    	  "tdj_id integer, " +
+	          "track varchar(10)," +
+	          "title varchar(100), " +
+	          "artist varchar(100), " +
+	          "str_date varchar(12), " +
+	          "genre varchar(20), " +
+	          "str_length varchar(8), " +
+	          "rating varchar(5), " +
+	          "album varchar(150), " +
+	          "publisher varchar(100), " +
+	          "comment varchar(200) " +
+	          ")"); 
+	    connection.createStatement().execute("CREATE UNIQUE INDEX tdj_idx1 ON tdj(tdj_id)");
+	    connection.createStatement().execute("CREATE UNIQUE INDEX tdj_idx2 ON tdj(artist,album,title)");
+		 
+	    System.out.println("TDJ table created");
+	  }
   
 	 private void createListMembersTable() throws SQLException
 	  {

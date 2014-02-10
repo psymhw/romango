@@ -1,17 +1,6 @@
 package tangodj2;
 
 import java.io.File;
-import java.nio.file.Path;
-
-import org.farng.mp3.MP3File;
-import org.farng.mp3.id3.AbstractID3v1;
-import org.farng.mp3.id3.AbstractID3v2;
-
-import tangodj2.favorites.FavoritesTab;
-import tangodj2.favorites.FavoritesTable;
-import tangodj2.favorites.FavoritesTrack;
-import tangodj2.tango.TangoTable;
-import tangodj2.tango.TangoTrack;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -28,10 +17,17 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import org.farng.mp3.MP3File;
+import org.farng.mp3.id3.AbstractID3v2;
+
+import tangodj2.favorites.FavoritesTab;
+import tangodj2.favorites.FavoritesTable;
+import tangodj2.favorites.FavoritesTrack;
+import tangodj2.tango.TangoTable;
+import tangodj2.tango.TangoTrack;
 
 public class MP3EditorDialog extends Stage
 {
@@ -40,15 +36,12 @@ public class MP3EditorDialog extends Stage
   TextField artist  = new TextField("");
   TextField leader  = new TextField("");
   TextField album   = new TextField("");
- // TextField track_no= new TextField("");
   RestrictiveTextField track_no   =   new RestrictiveTextField();
-  //TextField year    = new TextField("");
   RestrictiveTextField year   =   new RestrictiveTextField();
   TextField genre   = new TextField("");
   RestrictiveTextField bpm   =   new RestrictiveTextField();
   TextField singer  = new TextField("");
   TextArea comment = new TextArea("");
- // TextField rating  = new TextField("");
   TangoTrack ttrack;
   TangoTable ttable;
   
@@ -64,9 +57,10 @@ public class MP3EditorDialog extends Stage
   Button okButton;
   
   Label pathLabel = new Label();
- // int idx=0;
   final ComboBox styleComboBox = new ComboBox();
- // String style = "Tango";
+  
+  double width=500;
+  double height=500;
   
   public MP3EditorDialog(TangoTrack tangoTrack,  TangoTable tangoTable)
   {
@@ -75,7 +69,41 @@ public class MP3EditorDialog extends Stage
     
     type = TANGO_TABLE;
     
-   /*
+   
+    
+    trackDb=Db.getTrackInfo(tangoTrack.getPathHash());
+    GridPane gridPane = getEditor();
+    
+   
+    Scene myDialogScene = new Scene(gridPane, width, height);
+    setScene(myDialogScene);
+    show();
+  } 
+  
+  public MP3EditorDialog(FavoritesTrack favoritesTrack,  FavoritesTable favoritesTable)
+  {
+	  
+    this.ftrack=favoritesTrack;
+    this.ftable=favoritesTable;
+    this.favoritesTab=favoritesTab;
+    
+    type = PLAYLIST_BUILDER_FAVORITES_TABLE;
+    
+    trackDb=Db.getTrackInfo(favoritesTrack.getPathHash());
+    GridPane gridPane = getEditor();
+    
+    Scene myDialogScene = new Scene(gridPane, width, height);
+    setScene(myDialogScene);
+    show();
+  } 
+  
+  private GridPane getEditor()
+  {
+    final int col[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+    final int row[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+    this.initModality(Modality.APPLICATION_MODAL); 
+    
+    /*
     title.setStyle(""
             + "-fx-font-size: 30px;"
             + "-fx-font-style: italic;"
@@ -94,56 +122,24 @@ public class MP3EditorDialog extends Stage
     bpm.setStyle("-fx-font-size: 20px;");
     singer.setStyle("-fx-font-size: 20px;");
     comment.setStyle("-fx-font-size: 20px;");
-    year.setMinWidth(75);
     
-    trackDb=Db.getTrackInfo(tangoTrack.getPathHash());
-    GridPane gridPane = getEditor();
     
-    double width=400;
-    double height=500;
-    Scene myDialogScene = new Scene(gridPane, width, height);
-    setScene(myDialogScene);
-    show();
-  } 
-  
-  public MP3EditorDialog(FavoritesTrack favoritesTrack,  FavoritesTable favoritesTable)
-  {
-    this.ftrack=favoritesTrack;
-    this.ftable=favoritesTable;
-    this.favoritesTab=favoritesTab;
-    
-    type = PLAYLIST_BUILDER_FAVORITES_TABLE;
-    
-    trackDb=Db.getTrackInfo(favoritesTrack.getPathHash());
-    GridPane gridPane = getEditor();
-    
-    double width=300;
-    double height=400;
-    Scene myDialogScene = new Scene(gridPane, width, height);
-    setScene(myDialogScene);
-    show();
-  } 
-  
-  private GridPane getEditor()
-  {
-    final int col[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
-    final int row[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
-    this.initModality(Modality.APPLICATION_MODAL); 
-    
-    track_no.setPrefWidth(50);
-    track_no.setMaxWidth(50);
     
     bpm.setMaxLength(3);
     bpm.setRestrict("[0-9]");
-    bpm.setMaxWidth(35);
+    bpm.setMinWidth(50);
+    bpm.setMaxWidth(50);
     
     year.setMaxLength(4);
     year.setRestrict("[0-9]");
-    year.setMaxWidth(45);
+    year.setMaxWidth(75);
+    year.setMinWidth(75);  
     
     track_no.setMaxLength(3);
     track_no.setRestrict("[0-9]");
-    track_no.setMaxWidth(35);
+    track_no.setMinWidth(50);
+    track_no.setPrefWidth(50);
+    track_no.setMaxWidth(50);
     
     comment.setPrefRowCount(2);
     
@@ -159,9 +155,6 @@ public class MP3EditorDialog extends Stage
     singer.setText(trackDb.singer);
     pathLabel.setText(trackDb.path);
     
-    
-    
-    // TODO implement style, singer, adjectives, rating (tango/vals etc)
     
     final ComboBox styleComboBox = new ComboBox();
     styleComboBox.getItems().addAll(

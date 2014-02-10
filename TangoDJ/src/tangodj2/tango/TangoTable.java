@@ -358,5 +358,9 @@ public class TangoTable extends TableView<TangoTrack>
     }
   }
   
-
+  public int getRowCount()
+  {
+	 return tangoTracksData.size();
+	 
+  }
 }

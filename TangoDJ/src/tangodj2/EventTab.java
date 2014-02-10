@@ -57,7 +57,7 @@ public class EventTab extends Tab
   Label selectedComment = new Label("");
   */
   
-  final URL tree_stylesheet = getClass().getResource("PlaylistTree/tree.css");
+   final URL tree_stylesheet = getClass().getResource("PlaylistTree/tree.css");
   PlaylistTrack playlistTrack;
 
 	
