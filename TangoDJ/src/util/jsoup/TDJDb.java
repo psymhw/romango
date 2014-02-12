@@ -4,6 +4,8 @@ public class TDJDb
 {
   public int id;
   public int tdj_id;
+  public String search_type;
+  public String search_string;
   public String track;
   public String title;
   public String artist;
@@ -17,8 +19,10 @@ public class TDJDb
   
   public void print()
   {
-	  System.out.println("id:\t\t"+id);
+	System.out.println("id:\t\t"+id);
 	System.out.println("tdj_id:\t\t"+tdj_id);
+	System.out.println("type:\t\t"+search_type);
+	System.out.println("search:\t\t"+search_string);
 	System.out.println("title:\t\t"+title);
 	System.out.println("track:\t\t"+track);
 	System.out.println("artist:\t\t"+artist);

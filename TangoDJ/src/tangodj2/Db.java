@@ -1305,9 +1305,11 @@ public static void insertTdjRecord(TDJDb t) throws Exception
 	if (t.title==null) return;
 	if ("".equals(t.title)) return;
 	
-	String sql = "insert into tdj (tdj_id, " +
+	String sql = "insert into tdj (tdj_id, search_type, search_string," +
 			"track, title, artist, str_date, genre, str_length, rating, album, publisher, comment)" +
 			" values ("+t.tdj_id+", '"+
+						  t.search_type  +"', '" +
+						  t.search_string  +"', '" +
 		                  t.track  +"', '" +
 			              t.title  +"', '" +
 		                  t.artist +"', '" +
@@ -1332,6 +1334,8 @@ public static void createTDJTable() throws SQLException
 	String sql ="create table tdj(" +
 	        "id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
 	  	    "tdj_id integer, " +
+	        "search_type varchar(20),"+
+	        "search_string varchar(70),"+
 	        "track varchar(10)," +
 	        "title varchar(100), " +
 	        "artist varchar(100), " +
@@ -1364,6 +1368,8 @@ public static void createTDJTable() throws SQLException
 	   {
 		 t.id=resultSet.getInt("id");
 		 t.tdj_id=tdj_id;
+		 t.search_type=resultSet.getString("search_type");
+		 t.search_string=resultSet.getString("search_string");
 		 t.track=resultSet.getString("track");
 		 t.title=resultSet.getString("title");
 		 t.artist=resultSet.getString("artist");
@@ -1397,6 +1403,8 @@ public static void createTDJTable() throws SQLException
 		 t= new TDJDb();
 		 t.id=resultSet.getInt("id");
 		 t.tdj_id=resultSet.getInt("tdj_id");
+		 t.search_type=resultSet.getString("search_type");
+		 t.search_string=resultSet.getString("search_string");
 		 t.track=resultSet.getString("track");
 		 t.title=resultSet.getString("title");
 		 t.artist=resultSet.getString("artist");

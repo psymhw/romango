@@ -10,6 +10,8 @@ public class TestEntry
 	{
 		TDJDb t = new TDJDb();
 		t.tdj_id=315485;
+		t.search_type="album";
+		t.search_string="Sentimiento Gaucho";
 		t.track="2";
 		t.title="Canción desesperada";
 		t.artist="Orquesta Francisco Canaro con Nelly Omar";

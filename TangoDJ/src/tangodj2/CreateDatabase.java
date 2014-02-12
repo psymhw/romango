@@ -95,6 +95,8 @@ public class CreateDatabase
 	    connection.createStatement().execute("create table tdj(" +
 	          "id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
 	    	  "tdj_id integer, " +
+		      "search_type varchar(20),"+
+		      "search_string varchar(70),"+
 	          "track varchar(10)," +
 	          "title varchar(100), " +
 	          "artist varchar(100), " +
