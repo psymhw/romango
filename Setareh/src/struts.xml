@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<constant name="struts.devMode" value="true" /> <!-- set to false for prod -->
+
+   
+	
+	<package name="users" namespace="/users" extends="struts-default">
+	  <result-types>
+	    <result-type name="tiles" class="org.apache.struts2.views.tiles.TilesResult" />
+	  </result-types>
+		  
+	  <interceptors>
+	    <interceptor name="authenticationInterceptor" class="services.AuthenticationInterceptor" />
+		<interceptor-stack name="myStack">
+		  <interceptor-ref name="authenticationInterceptor" />
+		  <interceptor-ref name="defaultStack" />
+		</interceptor-stack>
+	  </interceptors>
+		
+	  <default-interceptor-ref name="myStack" />
+		
+	  <action name="UserAction" class="actions.users.UserAction">
+	    <result name="success" type="tiles">usertest</result>
+		<result name="userList" type="tiles">userList</result>
+		<result name="userEdit" type="tiles">userEdit</result>
+		<result name="newUser" type="tiles">newUser</result>
+		<result name="redirect" type="redirect">${redirectUrl}</result>
+		<result name="notLoggedIn" type="redirect">/login/loginForm</result>
+		<result name="login" type="redirect">/login/loginForm</result>
+	  </action>
+	</package>
+	
+	
+	
+	<package name="home" namespace="/home" extends="struts-default">
+	
+	  <result-types>
+	    <result-type name="tiles" class="org.apache.struts2.views.tiles.TilesResult" />
+	  </result-types>
+	  <!-- 
+	<interceptors>
+	    <interceptor name="authenticationInterceptor" class="services.AuthenticationInterceptor" />
+		<interceptor-stack name="myStack">
+		  <interceptor-ref name="authenticationInterceptor" />
+		  <interceptor-ref name="defaultStack" />
+		</interceptor-stack>
+	  </interceptors>
+		
+	  <default-interceptor-ref name="myStack" />
+	 -->
+	  <action name="home" class="actions.home.Home">
+	    <result name="home" type="tiles">home</result>
+	    <result name="success" >/views/login/loginSuccess.jsp</result>
+	    <result name="login" type="redirect">/login/loginForm</result>
+	  </action>
+	</package>
+	
+	<!-- 
+	Need this to get back to http after https login
+	 -->
+	<package name="loginSuccess" namespace="/login" extends="ssl-default">
+	  <result-types>
+	    <result-type name="tiles" class="org.apache.struts2.views.tiles.TilesResult" />
+	  </result-types>
+	  
+	 <interceptors>
+	    <interceptor name="authenticationInterceptor" class="services.AuthenticationInterceptor" />
+		<interceptor-stack name="myStack">
+		  <interceptor-ref name="authenticationInterceptor" />
+		  <interceptor-ref name="defaultStack" />
+		</interceptor-stack>
+	  </interceptors>
+	
+	  <action name="loginSuccess" class="actions.login.LoginSuccess">
+	    <result name="success" type="redirect">/home/home</result>
+	    <!--  <result name="success" >/views/login/loginSuccess.jsp</result> -->
+	    <result name="login" type="redirect">/login/loginForm</result>
+	  </action>
+	</package>
+		
+		
+	<package name="login" namespace="/login" extends="ssl-default">
+	  <result-types>
+		<result-type name="tiles" class="org.apache.struts2.views.tiles.TilesResult" />
+	  </result-types>
+	
+	  <interceptors>
+        <interceptor-stack name="secureStack">
+          <interceptor-ref name="secure">
+            <param name="useAnnotations">false</param>
+          </interceptor-ref>
+          <interceptor-ref name="defaultStack"/>
+        </interceptor-stack>
+      </interceptors>
+	
+	  <action name="loginAction" class="actions.login.LoginAction">
+	    <result name="input" >/views/login/login.jsp</result>
+	    <result name="success" type="redirect">/login/loginSuccess</result>
+	  </action>
+	  
+	 
+	
+	  <action name="loginForm" class="actions.login.LoginForm">
+	    <result name="input" >/views/login/login.jsp</result>
+	    <result name="home" type="redirect">/home/home</result>
+	  </action>
+	
+	  <action name="logOut" class="actions.login.LogOut">
+	    <result name="input" type="redirect">/login/loginForm</result>
+	  </action>
+		
+	</package>
+
+	<package name="root-redirect" namespace="/" extends="struts-default">
+		<action name="">
+			<result type="redirect">login/loginForm</result>
+		</action>
+	</package>
+
+</struts>
