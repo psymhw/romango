@@ -14,6 +14,7 @@ public class CreateTdjTable {
 	{
 		try {
 			Db.databaseConnect(true);
+			Db.execute("drop table tdj");
 			Db.createTDJTable();
 			Db.databaseDisconnect();
 		} catch (Exception e) {
