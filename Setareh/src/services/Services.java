@@ -29,6 +29,14 @@ public class Services {
     return (User) sess().load(User.class, id);
   }
 	
+	public Inventory getProduct(int item) 
+	{
+	  List<Inventory> list = (List<Inventory>) sess().createQuery("from Inventory where item="+item).list();
+	  if (list.size()>0)
+	  return list.get(0);
+	  else return null;
+	}
+	
 	public User getUserByName(String name) 
 	{
 	  List<User> list = (List<User>) sess().createQuery("from User where name='"+name+"'").list();

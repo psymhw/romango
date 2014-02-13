@@ -35,6 +35,40 @@
 	</package>
 	
 	
+	<package name="inventory" namespace="/inventory" extends="struts-default">
+	  <result-types>
+	    <result-type name="tiles" class="org.apache.struts2.views.tiles.TilesResult" />
+	  </result-types>
+		  
+	  <interceptors>
+	    <interceptor name="authenticationInterceptor" class="services.AuthenticationInterceptor" />
+		<interceptor-stack name="myStack">
+		  <interceptor-ref name="authenticationInterceptor" />
+		  <interceptor-ref name="defaultStack" />
+		</interceptor-stack>
+	  </interceptors>
+		
+	  <default-interceptor-ref name="myStack" />
+		
+	  <action name="inventory" class="actions.inventory.InventoryAction">
+	    <result name="inventoryHome" type="tiles">inventoryHome</result>
+	    <result name="inventoryShow" type="tiles">inventoryShow</result>
+	    <result name="redirect" type="redirect">${redirectUrl}</result>
+		<result name="notLoggedIn" type="redirect">/login/loginForm</result>
+		<result name="login" type="redirect">/login/loginForm</result>
+	<!-- 	<result name="userList" type="tiles">userList</result>
+		<result name="userEdit" type="tiles">userEdit</result>
+		<result name="newUser" type="tiles">newUser</result>
+		<result name="redirect" type="redirect">${redirectUrl}</result>
+		<result name="notLoggedIn" type="redirect">/login/loginForm</result>
+		<result name="login" type="redirect">/login/loginForm</result>  -->
+	  </action>
+	</package>
+	
+	
+	
+	
+	
 	
 	<package name="home" namespace="/home" extends="struts-default">
 	
