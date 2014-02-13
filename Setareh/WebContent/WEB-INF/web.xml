@@ -35,6 +35,22 @@
 	  <url-pattern>/*</url-pattern> 
 	</filter-mapping>
     
+    
+    <security-constraint>
+      <display-name>General</display-name>
+      <web-resource-collection>
+			<web-resource-name>Genera</web-resource-name>
+			<!-- Define the context-relative URL(s) to be protected -->		
+		    <url-pattern>/*</url-pattern> 
+		    <!-- If you list http methods, only those methods are protected -->
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+      </web-resource-collection>
+       	  <user-data-constraint> 
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee> 
+      </user-data-constraint> 
+	  
+  </security-constraint>
 	
 	<!--  Sitemesh (needs to be before struts) 
 	<filter>

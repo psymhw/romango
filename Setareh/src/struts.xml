@@ -62,7 +62,7 @@
 	<!-- 
 	Need this to get back to http after https login
 	 -->
-	<package name="loginSuccess" namespace="/login" extends="ssl-default">
+	<package name="loginSuccess" namespace="/login" extends="struts-default">
 	  <result-types>
 	    <result-type name="tiles" class="org.apache.struts2.views.tiles.TilesResult" />
 	  </result-types>
@@ -83,11 +83,12 @@
 	</package>
 		
 		
-	<package name="login" namespace="/login" extends="ssl-default">
+	<package name="login" namespace="/login" extends="struts-default">
 	  <result-types>
 		<result-type name="tiles" class="org.apache.struts2.views.tiles.TilesResult" />
 	  </result-types>
 	
+	<!--  
 	  <interceptors>
         <interceptor-stack name="secureStack">
           <interceptor-ref name="secure">
@@ -96,7 +97,7 @@
           <interceptor-ref name="defaultStack"/>
         </interceptor-stack>
       </interceptors>
-	
+	-->
 	  <action name="loginAction" class="actions.login.LoginAction">
 	    <result name="input" >/views/login/login.jsp</result>
 	    <result name="success" type="redirect">/login/loginSuccess</result>
