@@ -16,7 +16,7 @@
     <body style="height: 100%;">
         <table  id="mytable" border="1" cellpadding="2" cellspacing="2" align="center" height="100%" width="100%">
             <tr>
-                <td height="30" colspan="2">
+                <td height="98" colspan="2" bgcolor="black">
                     <tiles:insertAttribute name="header" />
                 </td>
             </tr>

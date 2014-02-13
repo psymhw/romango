@@ -1,13 +1,14 @@
-package actions.inventory;
+package actions.product;
 
-import data.Inventory;
+
+import data.Product;
 import actions.base.BaseAction;
 
-public class InventoryAction  extends BaseAction
+public class ProductAction  extends BaseAction
 {
   private String mode="home";
   private int item;
-  private Inventory product;
+  private Product product;
 
   public String execute() 
   {
@@ -16,10 +17,10 @@ public class InventoryAction  extends BaseAction
       case "show":
         product = services.getProduct(item);
         System.out.println("Item: "+product.getProduct_name());
-        return "inventoryShow";
+        return "productShow";
       case "home":
         //user=services.getUserById(id);
-        return "inventoryHome";
+        return "productHome";
       default:
         return "unsupportedForward";
     }
@@ -52,13 +53,13 @@ public class InventoryAction  extends BaseAction
   }
 
 
-  public Inventory getProduct()
+  public Product getProduct()
   {
     return product;
   }
 
 
-  public void setProduct(Inventory product)
+  public void setProduct(Product product)
   {
     this.product = product;
   }

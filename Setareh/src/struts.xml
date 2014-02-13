@@ -35,7 +35,7 @@
 	</package>
 	
 	
-	<package name="inventory" namespace="/inventory" extends="struts-default">
+	<package name="product" namespace="/product" extends="struts-default">
 	  <result-types>
 	    <result-type name="tiles" class="org.apache.struts2.views.tiles.TilesResult" />
 	  </result-types>
@@ -50,9 +50,9 @@
 		
 	  <default-interceptor-ref name="myStack" />
 		
-	  <action name="inventory" class="actions.inventory.InventoryAction">
-	    <result name="inventoryHome" type="tiles">inventoryHome</result>
-	    <result name="inventoryShow" type="tiles">inventoryShow</result>
+	  <action name="product" class="actions.product.ProductAction">
+	    <result name="productHome" type="tiles">productHome</result>
+	    <result name="productShow" type="tiles">productShow</result>
 	    <result name="redirect" type="redirect">${redirectUrl}</result>
 		<result name="notLoggedIn" type="redirect">/login/loginForm</result>
 		<result name="login" type="redirect">/login/loginForm</result>
@@ -75,7 +75,7 @@
 	  <result-types>
 	    <result-type name="tiles" class="org.apache.struts2.views.tiles.TilesResult" />
 	  </result-types>
-	  <!-- 
+	   
 	<interceptors>
 	    <interceptor name="authenticationInterceptor" class="services.AuthenticationInterceptor" />
 		<interceptor-stack name="myStack">
@@ -85,7 +85,7 @@
 	  </interceptors>
 		
 	  <default-interceptor-ref name="myStack" />
-	 -->
+	 
 	  <action name="home" class="actions.home.Home">
 	    <result name="home" type="tiles">home</result>
 	    <result name="success" >/views/login/loginSuccess.jsp</result>

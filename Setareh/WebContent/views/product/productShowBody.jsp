@@ -1,8 +1,6 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 
-<h2>Inventory</h2>
-
-PRODUCT
+<h2>Products</h2>
 
 <table id="mytable">
 

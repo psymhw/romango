@@ -3,8 +3,8 @@ package data;
 import javax.persistence.*;
 
 @Entity
-@Table(name="inventory")
-public class Inventory
+@Table(name="product")
+public class Product
 {
   @Id @GeneratedValue
   Long id;

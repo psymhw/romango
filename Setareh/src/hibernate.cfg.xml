@@ -29,6 +29,6 @@
 		<!-- All the entity classes for hibernate to check for annotations here-->
 		
 		<mapping class="data.User" />
-		<mapping class="data.Inventory" />
+		<mapping class="data.Product" />
 	</session-factory>
 </hibernate-configuration>
