@@ -54,14 +54,14 @@
   </definition>
   
   
-  <definition name="inventoryHome" extends="baseLayout">
+  <definition name="productHome" extends="baseLayout">
       <put-attribute name="title"  value="Inventory"/>
-      <put-attribute name="body"   value="/views/inventory/inventoryHomeBody.jsp"/>      
+      <put-attribute name="body"   value="/views/product/productHomeBody.jsp"/>      
   </definition>
   
-  <definition name="inventoryShow" extends="baseLayout">
+  <definition name="productShow" extends="baseLayout">
       <put-attribute name="title"  value="Inventory"/>
-      <put-attribute name="body"   value="/views/inventory/inventoryShowBody.jsp"/>      
+      <put-attribute name="body"   value="/views/product/productShowBody.jsp"/>      
   </definition>
   
   

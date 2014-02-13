@@ -12,7 +12,7 @@
 <h1>Login</h1>
 <s:form action="loginAction" method="post">
   <s:textfield label="Name" name="userName" />
-  <s:textfield label="Password" name="userPassword"/>
+  <s:password label="Password" name="userPassword"/>
   <s:submit value="Login" />
 </s:form>
 

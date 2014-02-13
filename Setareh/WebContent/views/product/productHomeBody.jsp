@@ -1,6 +1,6 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 
-<h2>Inventory</h2>
+<h2>Product</h2>
 
 <s:form> 
 <s:hidden name="mode" value="show" />
