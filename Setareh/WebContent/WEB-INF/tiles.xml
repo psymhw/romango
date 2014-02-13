@@ -53,4 +53,16 @@
       <put-attribute name="title"  value="Home"/>
   </definition>
   
+  
+  <definition name="inventoryHome" extends="baseLayout">
+      <put-attribute name="title"  value="Inventory"/>
+      <put-attribute name="body"   value="/views/inventory/inventoryHomeBody.jsp"/>      
+  </definition>
+  
+  <definition name="inventoryShow" extends="baseLayout">
+      <put-attribute name="title"  value="Inventory"/>
+      <put-attribute name="body"   value="/views/inventory/inventoryShowBody.jsp"/>      
+  </definition>
+  
+  
 </tiles-definitions>
