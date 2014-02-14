@@ -64,5 +64,10 @@
       <put-attribute name="body"   value="/views/product/productShowBody.jsp"/>      
   </definition>
   
+   <definition name="productList" extends="baseLayout">
+      <put-attribute name="title"  value="Inventory"/>
+      <put-attribute name="body"   value="/views/product/productListBody.jsp"/>      
+  </definition>
+  
   
 </tiles-definitions>

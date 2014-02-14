@@ -1,23 +1,59 @@
 package actions.product;
 
 
+import java.util.List;
+
 import data.Product;
 import actions.base.BaseAction;
 
 public class ProductAction  extends BaseAction
 {
+  private static final long serialVersionUID = 1L;
   private String mode="home";
-  private int item;
-  private Product product;
+  private String searchStr;
+  private int item=0;
+  public String getSearchStr() {
+  return searchStr;
+}
 
-  public String execute() 
+
+public void setSearchStr(String searchStr) {
+	this.searchStr = searchStr;
+}
+
+
+private Product product;
+private List<Product> productList;
+
+  public List<Product> getProductList() {
+	return productList;
+}
+
+
+public void setProductList(List<Product> productList) {
+	this.productList = productList;
+}
+
+
+public String execute() 
   {
+	try {item = Integer.parseInt(searchStr);} catch (NumberFormatException e) {}
+	
+	  
     switch(mode)
     {
       case "show":
-        product = services.getProduct(item);
-        System.out.println("Item: "+product.getProduct_name());
-        return "productShow";
+    	if (item>0)  
+    	{
+          product = services.getProduct(item);
+          System.out.println("Item: "+product.getProduct_name());
+          return "productShow";
+    	}
+    	else
+    	{
+    	  productList = services.getProductList(searchStr);
+    	  return "productList";
+    	}
       case "home":
         //user=services.getUserById(id);
         return "productHome";
@@ -39,18 +75,7 @@ public class ProductAction  extends BaseAction
   }
 
 
-  public int getItem()
-  {
-    return item;
-    
-  }
-
-
-  public void setItem(int item)
-  {
-    this.item = item;
-    System.out.println("item: "+item);
-  }
+ 
 
 
   public Product getProduct()

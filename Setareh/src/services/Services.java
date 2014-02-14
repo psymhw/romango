@@ -37,6 +37,13 @@ public class Services {
 	  else return null;
 	}
 	
+	public List<Product> getProductList(String searchStr) 
+	{
+	  List<Product> list = (List<Product>) sess().createQuery("from Product where lower(product_name) like '%"
+	+searchStr.toLowerCase()+"%'").list();
+	  return list;
+	}
+	
 	public User getUserByName(String name) 
 	{
 	  List<User> list = (List<User>) sess().createQuery("from User where name='"+name+"'").list();

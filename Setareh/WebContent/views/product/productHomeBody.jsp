@@ -4,5 +4,5 @@
 
 <s:form> 
 <s:hidden name="mode" value="show" />
-   <s:textfield label="Product Number" name="item" />  <s:submit value="Find" />
+   <s:textfield label="Product" name="searchStr" />  <s:submit value="Find" />
 </s:form>
