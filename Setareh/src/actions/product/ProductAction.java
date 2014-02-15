@@ -63,6 +63,22 @@ public String execute()
     
   }
   
+/*
+ * validate always wants to go back to result "input" if there is a validation problem
+   This may be a reason to split up action classes. So I could specify a different "input"
+   to return to on say update vs new record.
+ */
+  public void validate()
+  {
+	  if ("show".equals(mode))
+	  {
+		  if (getSearchStr()==null)
+			  addFieldError("searchStr", "Enter Item Number or part of product name");
+		  else if (getSearchStr().length()==0)
+			  addFieldError("searchStr", "Enter Item Number or part of product name");
+	  }
+	  
+  }
   
   public String getMode()
   {

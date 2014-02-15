@@ -9,7 +9,7 @@
 <html style="height: 100%;">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link href="<%=request.getContextPath()%>/table_style.css" rel="stylesheet" type="text/css" />
+        <link href="<%=request.getContextPath()%>/style/table_style.css" rel="stylesheet" type="text/css" />
        
             <title><tiles:insertAttribute name="title" ignore="true" /></title>
     </head>
@@ -21,7 +21,7 @@
                 </td>
             </tr>
             <tr>
-                <td width="150" align="center" valign="top">
+                <td width="120" align="center" valign="top">
                     <tiles:insertAttribute name="menu" />
                 </td>
                 <td valign="top">

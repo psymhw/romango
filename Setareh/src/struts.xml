@@ -52,6 +52,7 @@
 		
 	  <action name="product" class="actions.product.ProductAction">
 	    <result name="productHome" type="tiles">productHome</result>
+	    <result name="input" type="tiles">productHome</result>
 	    <result name="productShow" type="tiles">productShow</result>
 	    <result name="productList" type="tiles">productList</result>
 	    <result name="redirect" type="redirect">${redirectUrl}</result>

@@ -5,13 +5,8 @@
 <div class="ProductListTable" >
 <table>
 
-	<th scope="col" abbr="Id" class="nobg">Id</th>
+  <th scope="col" abbr="Id" >Id</th>
   <th scope="col" abbr="Name">Name</th>	
-
-
-
-
-
 <s:iterator value="productList">
   <tr>
     <td>
@@ -20,7 +15,6 @@
     <td>
       <s:property value="product_name" />
     </td>
-   
   </tr>
   
 </s:iterator>
