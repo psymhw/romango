@@ -1,6 +1,6 @@
 .ProductListTable {
 	margin:0px;padding:0px;
-	width:100%;
+	width:98%;
 	box-shadow: 10px 10px 5px #888888;
 	border:1px solid #000000;
 	
@@ -22,8 +22,8 @@
 }.ProductListTable table{
     border-collapse: collapse;
         border-spacing: 0;
-	width:100%;
-	height:100%;
+	width: 100%;
+	height: 100%;
 	margin:0px;padding:0px;
 }.ProductListTable tr:last-child td:last-child {
 	-moz-border-radius-bottomright:0px;
@@ -55,7 +55,7 @@
 	border-width:0px 1px 1px 0px;
 	text-align:left;
 	padding:7px;
-	font-size:10px;
+	font-size:14px;
 	font-family:Arial;
 	font-weight:normal;
 	color:#000000;

@@ -1,18 +1,48 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
-
-<h2>Products</h2>
-
-<table id="mytable">
-
-	<th scope="col" abbr="Id" class="nobg">Id</th>
-  <th scope="col" abbr="Name">Name</th>	
+<div class="ProductListTable" >
+<table>
   
   <tr>
-    <td>
-      <s:property value="product.item" />
-    </td>
-    <td>
-      <s:property value="product.product_name" />
-    </td>
-    </tr>
+    <td><b>Item: </b></td> <td><s:property value="product.item" /></td>
+  </tr>
+    
+  <tr>
+    <td><b>Stock: </b></td> <td> <s:property value="product.qty" /> x <s:property value="product.unit_size" /></td>
+  </tr>
+  
+  <tr>
+    <td><b>Price: </b></td> <td> $<s:property value="product.unit_price" /> / <s:property value="product.unit_size" /></td>
+  </tr>
+ 
+  
+  <tr>
+    <td><b>Name: </b></td><td><s:property value="product.product_name" /></td>  
+  </tr>
+  
+   <tr>
+    <td><b>Formula/Mwt: </b></td> <td> <s:property value="product.formula" />  <s:property value="product.mwt" /></td>
+  </tr>
+  
+  <tr>
+    <td><b>Storage: </b></td><td><s:property value="product.storage" /></td>  
+  </tr>
+  <tr>
+    <td><b>Appearance: </b></td><td><s:property value="product.appearance" /></td>  
+  </tr>
+  
+  <tr>
+    <td><b>Cost to Make: </b></td><td><s:property value="product.cost_to_make" /></td>  
+  </tr>
+  
+  <tr>
+    <td><b>Inventory Cost: </b></td><td><s:property value="product.cost_invt" /></td>  
+  </tr>
+  
+  <tr>
+    <td><b>PDT: </b></td><td><s:property value="product.pdt_line" /></td>  
+  </tr>
+   <tr>
+    <td><b>Analytical: </b></td><td><s:property value="product.analytical" /></td>  
+  </tr>
     </table>
+    </div>
