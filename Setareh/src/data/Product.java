@@ -198,5 +198,22 @@ public class Product
   {
     this.mwt = mwt;
   }
+  
+  public  String getFormatFormula()
+  {
+    if (mol_formula.equals(""))  //Check for empty string.
+      return mol_formula;
+    if (!Character.isLetterOrDigit(mol_formula.charAt(0)))//For those stupid approximate weights stuck in mol_formulas!
+      return mol_formula;
+    StringBuffer formBuf = new StringBuffer();
+    for (int i=0; i<mol_formula.length(); i++)
+    {
+      if (Character.isDigit(mol_formula.charAt(i)))
+      formBuf.append("<sub>"+mol_formula.charAt(i)+"</sub>");
+      else
+      formBuf.append(mol_formula.charAt(i));
+    }
+   return formBuf.toString();
+  }
 
 }
