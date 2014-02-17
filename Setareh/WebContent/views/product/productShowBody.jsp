@@ -25,7 +25,8 @@
   </tr>
   
    <tr>
-    <td><b>Formula/Mwt: </b></td> <td> <s:property value="product.formatFormula" escape="false" />  &nbsp;<s:property value= "getText('{0,number,#,##0.00}',{product.mwt})" /></td>
+    <td><b>Formula/Mwt: </b></td> <td> <s:property value="product.formatFormula" escape="false" />  
+    &nbsp;<s:property value= "getText('{0,number,#,##0.00}',{product.mwt})" /></td>
    
     
   </tr>

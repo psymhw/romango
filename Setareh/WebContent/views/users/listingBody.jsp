@@ -1,19 +1,17 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 
 <h1>Authorized Users</h1>
-<table id="mytable">
 
-	<th scope="col" abbr="Id" class="nobg">Id</th>
-  <th scope="col" abbr="Name">Name</th>	
-   <th scope="col" abbr="Password">Password</th>			
+<div class="listTableStyle" >
+<table>
 
-<!--  
+ 
 <tr>
   <td><b>ID</b></td>
   <td><b>Name</b></td>
   <td><b>Password</b></td>
 </tr>
--->
+
 
 <a href='UserAction.action?mode=new'>New User</a><br/><br/>
 
@@ -32,4 +30,5 @@
   
 </s:iterator>
 </table>
+</div>
 

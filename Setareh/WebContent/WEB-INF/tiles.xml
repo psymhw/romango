@@ -50,12 +50,12 @@
   </definition>
   
   <definition name="home" extends="baseLayout">
-      <put-attribute name="title"  value="Home"/>
+      <put-attribute name="title"  value="Setareh Biotech"/>
   </definition>
   
   
   <definition name="productHome" extends="baseLayout">
-      <put-attribute name="title"  value="Inventory"/>
+      <put-attribute name="title"  value="Products"/>
       <put-attribute name="body"   value="/views/product/productHomeBody.jsp"/>      
   </definition>
   
