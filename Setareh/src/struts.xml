@@ -8,6 +8,8 @@
     <constant name="struts.ui.theme" value="simple" />
    
 	
+	
+	
 	<package name="users" namespace="/users" extends="struts-default">
 	  <result-types>
 	    <result-type name="tiles" class="org.apache.struts2.views.tiles.TilesResult" />
@@ -39,6 +41,8 @@
 	  <result-types>
 	    <result-type name="tiles" class="org.apache.struts2.views.tiles.TilesResult" />
 	  </result-types>
+	  
+	  
 		  
 	  <interceptors>
 	    <interceptor name="authenticationInterceptor" class="services.AuthenticationInterceptor" />
@@ -52,6 +56,7 @@
 		
 	  <action name="pis" class="actions.product.PisAction">
 	    <result name="success" >/hello.pdf?mode=PIS</result>
+	    <result name="login" type="redirect">/login/loginForm</result>
 	  </action>
 		
 	  <action name="product" class="actions.product.ProductAction">
