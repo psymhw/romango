@@ -1,1 +1,1 @@
-<div align="center">&copy; Views.Common.Footer</div>
+<div align="center">&copy; 2014 Romango Information Technology</div>
