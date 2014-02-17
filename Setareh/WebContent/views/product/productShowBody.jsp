@@ -1,5 +1,13 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
-<div class="ProductListTable" >
+
+<s:set name="item" value="product.item"/>
+
+<s:form action="pis" method="get" namespace="/product">
+ <s:hidden name="item"/>
+ <s:submit value="PIS"/>
+</s:form><br/>
+
+<div class="mainTableStyle" >
 <table>
   
   <tr>

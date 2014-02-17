@@ -2,7 +2,7 @@
 
 <h1>Matching Products</h1>
 
-<div class="ProductListTable" >
+<div class="listTableStyle" >
 <table>
 
   <th scope="col" abbr="Id" >Id</th>
