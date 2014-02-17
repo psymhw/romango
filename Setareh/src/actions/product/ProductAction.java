@@ -3,6 +3,10 @@ package actions.product;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts2.ServletActionContext;
+
 import data.Product;
 import actions.base.BaseAction;
 

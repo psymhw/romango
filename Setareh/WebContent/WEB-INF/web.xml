@@ -39,11 +39,12 @@
       <display-name>General</display-name>
       <web-resource-collection>
 			<web-resource-name>General</web-resource-name>
-			<!-- Define the context-relative URL(s) to be protected -->		
+			<!-- Define the context-relative URL(s) to be protected 		
 		    <url-pattern>/home/*</url-pattern> 
 		    <url-pattern>/product/*</url-pattern> 
 		    <url-pattern>/users/*</url-pattern> 
-		    <url-pattern>/login/*</url-pattern> 
+		    <url-pattern>/login/*</url-pattern> -->
+		    <url-pattern>/*</url-pattern>
 		    <!-- If you list http methods, only those methods are protected 
 			<http-method>GET</http-method>
 			<http-method>POST</http-method> -->

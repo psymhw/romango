@@ -50,6 +50,10 @@
 		
 	  <default-interceptor-ref name="myStack" />
 		
+	  <action name="pis" class="actions.product.PisAction">
+	    <result name="success" >/hello.pdf?mode=PIS</result>
+	  </action>
+		
 	  <action name="product" class="actions.product.ProductAction">
 	    <result name="productHome" type="tiles">productHome</result>
 	    <result name="input" type="tiles">productHome</result>
