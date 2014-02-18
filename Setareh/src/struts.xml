@@ -6,9 +6,6 @@
 <struts>
 	<constant name="struts.devMode" value="true" /> <!-- set to false for prod -->
     <constant name="struts.ui.theme" value="simple" />
-   
-	
-	
 	
 	<package name="users" namespace="/users" extends="struts-default">
 	  <result-types>
@@ -41,8 +38,6 @@
 	  <result-types>
 	    <result-type name="tiles" class="org.apache.struts2.views.tiles.TilesResult" />
 	  </result-types>
-	  
-	  
 		  
 	  <interceptors>
 	    <interceptor name="authenticationInterceptor" class="services.AuthenticationInterceptor" />
@@ -61,6 +56,11 @@
 	  
 	  <action name="edit" class ="actions.product.EditProductAction">
 	    <result name="showEditForm" type="tiles">productEditForm</result> 
+	     <result name="login" type="redirect">/login/loginForm</result>
+	  </action>
+	  
+	  <action name="update" class ="actions.product.UpdateProductAction">
+	    <result name="success" type="redirect">${redirectUrl}</result>
 	     <result name="login" type="redirect">/login/loginForm</result>
 	  </action>
 		
