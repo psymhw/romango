@@ -1,11 +1,26 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 
 <s:set name="item" value="product.item"/>
+<s:set name="id" value="product.id"/>
 
-<s:form action="pis" method="get" namespace="/product">
- <s:hidden name="item"/>
- <s:submit value="PIS"/>
-</s:form><br/>
+<table border="0">
+  <tr>
+    <td>
+      <s:form action="edit" method="get" namespace="/product">
+        <s:hidden name="item"/>
+        <s:hidden name="id"/>
+        <s:submit value="Edit"/>
+      </s:form>
+    </td>
+    <td>
+      <s:form action="pis" method="get" namespace="/product">
+        <s:hidden name="item"/>
+        <s:hidden name="id"/>
+        <s:submit value="PIS"/>
+      </s:form>
+    </td>
+  </tr>
+</table>
 
 <div class="mainTableStyle" >
 <table>
@@ -30,7 +45,10 @@
    
     
   </tr>
-  
+  <tr>
+    <td><b>CAS: </b></td><td><s:property value="product.cas" /></td>  
+  </tr>
+  <tr>
   <tr>
     <td><b>Storage: </b></td><td><s:property value="product.storage_prod" /></td>  
   </tr>

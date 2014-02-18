@@ -37,6 +37,11 @@ public class Services {
 	  else return null;
 	}
 	
+	public Product getProductById(long id)
+	{
+	  return (Product) sess().load(Product.class, id);
+	}
+	
 	public List<Product> getProductList(String searchStr) 
 	{
 	  List<Product> list = (List<Product>) sess().createQuery("from Product where lower(product_name) like '%"
