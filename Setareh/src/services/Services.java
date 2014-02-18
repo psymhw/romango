@@ -49,6 +49,11 @@ public class Services {
 	  return list;
 	}
 	
+	public void updateProduct(Product p)
+	{
+	  sess().update(p);
+	}
+	
 	public User getUserByName(String name) 
 	{
 	  List<User> list = (List<User>) sess().createQuery("from User where name='"+name+"'").list();
