@@ -60,9 +60,15 @@
 	  </action>
 	  
 	  <action name="update" class ="actions.product.UpdateProductAction">
-	    <result name="success" type="redirect">${redirectUrl}</result>
+	    <result name="show" type="tiles">productShow</result>
 	     <result name="login" type="redirect">/login/loginForm</result>
 	  </action>
+	  
+	   <action name="list" class="actions.product.ProductAction">
+	    <result name="list" type="tiles">productHome</result>
+	    <result name="login" type="redirect">/login/loginForm</result>
+	   </action> 
+	  
 		
 	  <action name="product" class="actions.product.ProductAction">
 	    <result name="productHome" type="tiles">productHome</result>

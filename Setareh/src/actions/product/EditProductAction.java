@@ -13,10 +13,10 @@ public class EditProductAction extends BaseAction
   
   public String execute() 
   {
-    System.out.println("item: "+item);
-    System.out.println("id: "+id);
+    //System.out.println("item: "+item);
+   // System.out.println("id: "+id);
     product = services.getProductById(id);
-    System.out.println("name: "+product.getProduct_name());
+   // System.out.println("name: "+product.getProduct_name());
     return "showEditForm";
   }
 
