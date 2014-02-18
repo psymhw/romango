@@ -16,6 +16,9 @@ public class ProductAction  extends BaseAction
   private String mode="home";
   private String searchStr;
   private int item=0;
+  private Product product;
+  private List<Product> productList;
+  
   public String getSearchStr() {
   return searchStr;
 }
@@ -26,8 +29,7 @@ public void setSearchStr(String searchStr) {
 }
 
 
-private Product product;
-private List<Product> productList;
+
 
   public List<Product> getProductList() {
 	return productList;
@@ -50,7 +52,7 @@ public String execute()
     	if (item>0)  
     	{
           product = services.getProduct(item);
-          System.out.println("Item: "+product.getProduct_name());
+          //System.out.println("Item: "+product.getProduct_name());
           return "productShow";
     	}
     	else

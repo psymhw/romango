@@ -58,6 +58,11 @@
 	    <result name="success" >/hello.pdf?mode=PIS</result>
 	    <result name="login" type="redirect">/login/loginForm</result>
 	  </action>
+	  
+	  <action name="edit" class ="actions.product.EditProductAction">
+	    <result name="showEditForm" type="tiles">productEditForm</result> 
+	     <result name="login" type="redirect">/login/loginForm</result>
+	  </action>
 		
 	  <action name="product" class="actions.product.ProductAction">
 	    <result name="productHome" type="tiles">productHome</result>
