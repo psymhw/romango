@@ -12,15 +12,18 @@ public class InsertProductAction extends BaseAction
 {
   private Product product;
   private String item;
-  HttpServletRequest request = ServletActionContext.getRequest();
-  HttpSession session = request.getSession();
+ // HttpServletRequest request = ServletActionContext.getRequest();
+ // HttpSession session = request.getSession();
   
-   public String execute()
+ 
+public String execute()
    {
-     System.out.println("Insert");
+    
      item=product.getItem();
-     session.setAttribute("item", item);
-     return redirect("show");
+     services.insertProduct(product);
+     System.out.println("Insert: "+item);
+  //   session.setAttribute("item", item);
+     return "show";
    }
 
   public Product getProduct()

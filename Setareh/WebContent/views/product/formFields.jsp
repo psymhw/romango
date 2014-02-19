@@ -1,7 +1,6 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
  
- <s:hidden    name="product.id"/>
-  <s:hidden    name="product.item"/>
+ 
   <s:hidden    name="mode"/>
   
   <s:textarea  name="product.product_name" label="Name"             maxlength="700" rows="4" cols="90" wrap="true"/>

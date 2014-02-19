@@ -12,23 +12,30 @@ public class ShowProductAction extends BaseAction
 {
   private String item;
   private Product product;
- // private String searchStr;
   
   public String execute() 
   {
-   // try {item = Integer.parseInt(product.getItem());} catch (NumberFormatException e) {}
-    
- //   System.out.println("ShowProductAction searchStr: "+searchStr);
-    
-  //  product = services.getProduct(item);
-    HttpServletRequest request = ServletActionContext.getRequest();
-    HttpSession session = request.getSession();
-    item=(String)session.getAttribute("item");
    System.out.println("Show Product action Item: "+item);
+   product=services.getProduct(Integer.parseInt(item));
     return "productShow";
   }
 
  
+  
+  public String getItem() {
+	return item;
+}
+
+
+
+public void setItem(String item) {
+	this.item = item;
+}
+
+
+ // private String searchStr;
+  
+  
 
   public Product getProduct()
   {

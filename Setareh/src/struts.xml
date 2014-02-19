@@ -70,7 +70,11 @@
 	  </action>
 	  
 	  <action name="insert" class ="actions.product.InsertProductAction">
-	    <result name="redirect" type="redirect">${redirectUrl}</result>
+	    <result name="show" type="redirectAction">
+	    <param name="actionName">show</param>
+	    <param name="namespace">/product</param>
+	    <param name="item">${item}</param>
+	    </result>
 	     <result name="login" type="redirect">/login/loginForm</result>
 	  </action>
 	  

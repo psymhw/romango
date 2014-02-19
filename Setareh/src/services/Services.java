@@ -49,10 +49,8 @@ public class Services {
 	  return list;
 	}
 	
-	public void updateProduct(Product p)
-	{
-	  sess().update(p);
-	}
+	public void updateProduct(Product p) { sess().update(p); }
+	public void insertProduct(Product p) { sess().save(p);   }
 	
 	public User getUserByName(String name) 
 	{
