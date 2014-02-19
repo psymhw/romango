@@ -26,7 +26,10 @@
 <table>
   
   <tr>
-    <td><b>Item: </b></td> <td><s:property value="product.item" /></td>
+    <td width='100px'><b>Item: </b></td> <td><s:property value="product.item" /></td>
+  </tr>
+   <tr>
+    <td><b>Name: </b></td><td><s:property value="product.product_name" /></td>  
   </tr>
   <tr>
     <td><b>Stock: </b></td> <td> <s:property value="product.qty" /> x <s:property value="product.unit_size" /></td>
@@ -35,9 +38,7 @@
   <tr>
     <td><b>Price: </b></td> <td> $<s:property value="product.unit_price" /> / <s:property value="product.unit_size" /></td>
   </tr>
-  <tr>
-    <td><b>Name: </b></td><td><s:property value="product.product_name" /></td>  
-  </tr>
+ 
   
    <tr>
     <td><b>Formula/Mwt: </b></td> <td> <s:property value="product.formatFormula" escape="false" />  
