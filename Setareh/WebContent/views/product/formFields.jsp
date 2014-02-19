@@ -3,7 +3,7 @@
  <s:hidden    name="product.id"/>
   <s:hidden    name="product.item"/>
   <s:hidden    name="mode"/>
-  <s:label     name="product.item"         label="Item Key"/>
+  
   <s:textarea  name="product.product_name" label="Name"             maxlength="700" rows="4" cols="90" wrap="true"/>
   <s:textfield name="product.unit_size"    label="Unit Size"        maxlength="45" size="10"/>
   <s:textfield name="product.qty"          label="Stock"            maxlength="20" size="10"/>

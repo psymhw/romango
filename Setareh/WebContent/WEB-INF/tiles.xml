@@ -74,5 +74,10 @@
       <put-attribute name="body"   value="/views/product/productEditBody.jsp"/>      
   </definition>
   
+  <definition name="productNewForm" extends="baseLayout">
+      <put-attribute name="title"  value="New Product"/>
+      <put-attribute name="body"   value="/views/product/productNewBody.jsp"/>      
+  </definition>
+  
   
 </tiles-definitions>
