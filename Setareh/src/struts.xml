@@ -60,8 +60,12 @@
 	  </action>
 	  
 	  <action name="update" class ="actions.product.UpdateProductAction">
-	    <result name="show" type="tiles">productShow</result>
-	     <result name="login" type="redirect">/login/loginForm</result>
+	    <result name="show" type="redirectAction">
+	      <param name="actionName">show</param>
+	      <param name="namespace">/product</param>
+	      <param name="item">${item}</param>
+	    </result>
+	    <result name="login" type="redirect">/login/loginForm</result>
 	  </action>
 	  
 	  <action name="new" class ="actions.product.NewProductAction">
@@ -71,11 +75,11 @@
 	  
 	  <action name="insert" class ="actions.product.InsertProductAction">
 	    <result name="show" type="redirectAction">
-	    <param name="actionName">show</param>
-	    <param name="namespace">/product</param>
-	    <param name="item">${item}</param>
+	      <param name="actionName">show</param>
+	      <param name="namespace">/product</param>
+	      <param name="item">${item}</param>
 	    </result>
-	     <result name="login" type="redirect">/login/loginForm</result>
+	    <result name="login" type="redirect">/login/loginForm</result>
 	  </action>
 	  
 	   <action name="list" class="actions.product.ProductAction">

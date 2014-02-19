@@ -15,7 +15,7 @@ public class ShowProductAction extends BaseAction
   
   public String execute() 
   {
-   System.out.println("Show Product action Item: "+item);
+   //System.out.println("Show Product action Item: "+item);
    product=services.getProduct(Integer.parseInt(item));
     return "productShow";
   }

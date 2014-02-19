@@ -21,7 +21,7 @@ public String execute()
     
      item=product.getItem();
      services.insertProduct(product);
-     System.out.println("Insert: "+item);
+   //  System.out.println("Insert: "+item);
   //   session.setAttribute("item", item);
      return "show";
    }
