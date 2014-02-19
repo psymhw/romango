@@ -1,19 +1,13 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 
-<s:if test="mode.equals('edit')">
-   <h2>Product Edit</h2>
-</s:if>
-<s:else>
-  <h2> New Product</h2>
-</s:else>
+<h2>Product Edit</h2>
 
 <div class="mainTableStyle">
 
 <s:form action="update" method="post" namespace="/product">
-
+<s:label     name="product.item"         label="Item Key"/>
 <%@include file="formFields.jsp" %>
-
-   <s:submit    value="UPDATE"/>
+<s:submit    value="UPDATE"/>
 </s:form>
 
  </div>

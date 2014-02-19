@@ -64,10 +64,25 @@
 	     <result name="login" type="redirect">/login/loginForm</result>
 	  </action>
 	  
+	  <action name="new" class ="actions.product.NewProductAction">
+	    <result name="showNewForm" type="tiles">productNewForm</result>
+	     <result name="login" type="redirect">/login/loginForm</result>
+	  </action>
+	  
+	  <action name="insert" class ="actions.product.InsertProductAction">
+	    <result name="redirect" type="redirect">${redirectUrl}</result>
+	     <result name="login" type="redirect">/login/loginForm</result>
+	  </action>
+	  
 	   <action name="list" class="actions.product.ProductAction">
 	    <result name="list" type="tiles">productHome</result>
 	    <result name="login" type="redirect">/login/loginForm</result>
 	   </action> 
+	  
+	  <action name="show" class ="actions.product.ShowProductAction">
+	    <result name="productShow" type="tiles">productShow</result>
+	     <result name="login" type="redirect">/login/loginForm</result>
+	  </action>
 	  
 		
 	  <action name="product" class="actions.product.ProductAction">
