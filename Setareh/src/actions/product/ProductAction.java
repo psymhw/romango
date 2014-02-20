@@ -93,7 +93,7 @@ public String execute()
   public void setMode(String mode)
   {
     this.mode = mode;
-    System.out.println("mode: "+mode);
+    //System.out.println("mode: "+mode);
   }
 
 

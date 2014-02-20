@@ -69,7 +69,7 @@ public class PdfServlet extends HttpServlet
      // pdfWriter.close();
       
    // setting some response headers
-      response.setHeader("Content-Disposition", "inline; filename=hello.pdf");
+      response.setHeader("Content-Disposition", "inline; filename=Setareh_"+p.getItem()+".pdf");
       response.setHeader("Expires", "0");
       response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
       response.setContentType("application/pdf");

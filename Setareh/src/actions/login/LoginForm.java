@@ -4,10 +4,9 @@ import java.util.Map;
 
 import actions.base.BaseAction;
 
-import com.googlecode.sslplugin.annotation.Secured;
 import com.opensymphony.xwork2.ActionContext;
 
-@Secured
+
 public class LoginForm extends BaseAction
 {
   public String execute() 
