@@ -5,14 +5,12 @@ package actions.login;
 import java.util.Map;
 
 import actions.base.BaseAction;
-
-import com.googlecode.sslplugin.annotation.Secured;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 import data.User;
 
-@Secured
+
 public class LoginAction extends BaseAction
 {
   private String mode;
@@ -21,7 +19,7 @@ public class LoginAction extends BaseAction
   
   public String execute() 
   {
-    System.out.println("authenticating "+userName);
+    //System.out.println("authenticating "+userName);
     Map session = ActionContext.getContext().getSession();
     session.put("logged-in", userName);
    

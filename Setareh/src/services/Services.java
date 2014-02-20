@@ -31,7 +31,7 @@ public class Services {
 	
 	public Product getProduct(int item) 
 	{
-	  List<Product> list = (List<Product>) sess().createQuery("from Product where item="+item).list();
+	  List<Product> list = (List<Product>) sess().createQuery("from Product where item="+item+" order by item").list();
 	  if (list.size()>0)
 	  return list.get(0);
 	  else return null;
