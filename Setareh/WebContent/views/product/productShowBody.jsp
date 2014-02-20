@@ -16,7 +16,7 @@
       <s:form action="pis" method="get" namespace="/product">
         <s:hidden name="item"/>
         <s:hidden name="id"/>
-        <s:submit value="PIS"/>
+        <s:submit value="PDF Test"/>
       </s:form>
     </td>
   </tr>
