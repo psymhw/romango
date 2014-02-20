@@ -22,7 +22,10 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import data.Product;
@@ -33,6 +36,13 @@ public class PdfServlet extends HttpServlet
   Font font = null;
   Font titlePageRegFont;
   Font bold;
+  
+  Font regularFont;
+  Font boldRegularFont;
+  Font smallFont;
+  Font logoFont;
+  Font titleFont;
+  
   protected Services services = new Services();
   HttpServletRequest request;
  
@@ -65,6 +75,8 @@ public class PdfServlet extends HttpServlet
         document.add(new Paragraph("Hello Bruno", titlePageRegFont));
         document.add(new Paragraph(new Date().toString(), font));
       }
+      
+      document.add(getTestTable());
       document.close();
      // pdfWriter.close();
       
@@ -95,29 +107,45 @@ public class PdfServlet extends HttpServlet
   
   private void writePIS(Product product,  Document document) throws Exception
   {
+	document.add(new Paragraph("Setareh Biotech, LLC", titlePageRegFont));
     document.add(new Paragraph("Product Information Sheet", titlePageRegFont));
     document.add(new Paragraph("For Product: "+product.item, font));
     document.add(new Paragraph(product.product_name, font));
     
   }
 
+  
+  PdfPTable getTestTable()
+  {
+	PdfPTable table = new PdfPTable(3);
+    PdfPCell cell= new PdfPCell(new Phrase("Cell w colspan 3"));
+	cell.setColspan(3);
+	table.addCell(cell);
+	  
+	cell= new PdfPCell(new Phrase("Cell w colspan 2"));
+	cell.setColspan(2);
+	table.addCell(cell);
+	
+	table.addCell("row 1, col 1");
+	table.addCell("row 1, col 2");
+	table.addCell("row 2, col 1");
+	table.addCell("row 2, col 2");
+	return table;
+  }
+  
   private void setFonts() throws Exception 
   {
-    bf = BaseFont.createFont(
-         BaseFont.TIMES_ROMAN,
-         BaseFont.CP1252,
-         BaseFont.EMBEDDED);
-        // System.out.println(bf.getClass().getName());
-        // bf.setColor(new Color(0xFF, 0xFF, 0xFF));
-   // if (debug) System.out.println("PDFServlet: basefont created");
+    bf = BaseFont.createFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, BaseFont.EMBEDDED);
+    // bf.setColor(new Color(0xFF, 0xFF, 0xFF));
     font = new Font(bf, 10, Font.NORMAL);
     
+    regularFont=new Font(bf);
+    regularFont.setSize(12);
+    
     titlePageRegFont = new Font(font);
-    titlePageRegFont.setSize(15);
+    titlePageRegFont.setSize(25);
       bold = new Font(titlePageRegFont);
     bold.setStyle(Font.BOLD);
 }
-  
-  
   
 }
