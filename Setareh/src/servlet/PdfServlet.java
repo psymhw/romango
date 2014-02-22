@@ -1,5 +1,6 @@
 package servlet;
 
+import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -18,6 +19,8 @@ import org.hibernate.cfg.Configuration;
 
 import services.Services;
 
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.PageSize;
@@ -33,15 +36,15 @@ import data.Product;
 public class PdfServlet extends HttpServlet
 {
   BaseFont bf =null;
-  Font font = null;
-  Font titlePageRegFont;
-  Font bold;
+ 
   
   Font regularFont;
-  Font boldRegularFont;
+  Font regularBoldFont;
   Font smallFont;
   Font logoFont;
   Font titleFont;
+  Font largeFont;
+  Font tinyFont;
   
   protected Services services = new Services();
   HttpServletRequest request;
@@ -56,7 +59,7 @@ public class PdfServlet extends HttpServlet
     
     if (p==null) System.out.println("product is null");
     
-    System.out.println("mode: "+mode);
+   // System.out.println("mode: "+mode);
 	try
 	{
 	  setFonts();
@@ -64,6 +67,7 @@ public class PdfServlet extends HttpServlet
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       PdfWriter pdfWriter = PdfWriter.getInstance(document, baos);
       pdfWriter.setPdfVersion(PdfWriter.VERSION_1_7);
+      pdfWriter.setInitialLeading(16);
       
       document.open();
       if ("PIS".equals(mode))
@@ -72,11 +76,11 @@ public class PdfServlet extends HttpServlet
       }
       else
       {
-        document.add(new Paragraph("Hello Bruno", titlePageRegFont));
-        document.add(new Paragraph(new Date().toString(), font));
+        document.add(new Paragraph("Hello Bruno", titleFont));
+        document.add(new Paragraph(new Date().toString(), regularFont));
       }
       
-      document.add(getTestTable());
+      
       document.close();
      // pdfWriter.close();
       
@@ -95,7 +99,7 @@ public class PdfServlet extends HttpServlet
       os.flush();
       os.close();
       
-      System.out.println("Pdf Servlet");
+     // System.out.println("Pdf Servlet");
 	} catch(Exception de) {
 		de.printStackTrace();
 		//throw new IOException(de.getMessage()); 
@@ -107,11 +111,34 @@ public class PdfServlet extends HttpServlet
   
   private void writePIS(Product product,  Document document) throws Exception
   {
-	document.add(new Paragraph("Setareh Biotech, LLC", titlePageRegFont));
-    document.add(new Paragraph("Product Information Sheet", titlePageRegFont));
-    document.add(new Paragraph("For Product: "+product.item, font));
-    document.add(new Paragraph(product.product_name, font));
+	  document.add(new Paragraph("Setareh Biotech, LLC", titleFont));
+	  document.add(new Paragraph("Tel : 866-883-6992 / 541-515-6560, Fax : 541-844-1835 orders@setarehbiotech.com", tinyFont));
+	
+    document.add(new Paragraph("Product Information Sheet", largeFont));
+    document.add(Chunk.NEWLINE);
     
+    PdfPTable table = new PdfPTable(2);
+    table.setLockedWidth(true);
+    table.setTotalWidth(550);
+    table.setWidths(new int[]{2,8});
+    Paragraph p = new Paragraph("Product#: "+product.item, regularFont);
+    table.addCell(p);
+    p = new Paragraph(product.product_name, smallFont);
+    table.addCell(p);
+    
+    PdfPTable table2 = new PdfPTable(2);
+    table2.setLockedWidth(true);
+    table2.setTotalWidth(300);
+    table2.setWidths(new int[]{2,8});
+    Paragraph p2 = new Paragraph("Product#: "+product.item, regularFont);
+    table2.addCell(p2);
+    p2 = new Paragraph(product.product_name, smallFont);
+    table2.addCell(p2);
+   // document.add(new Paragraph("For Product: "+product.item, regularFont));
+  //  document.add(new Paragraph(product.product_name, smallFont));
+    document.add(table);
+    document.add(table2);
+    document.add(getTestTable());
   }
 
   
@@ -120,6 +147,7 @@ public class PdfServlet extends HttpServlet
 	PdfPTable table = new PdfPTable(3);
     PdfPCell cell= new PdfPCell(new Phrase("Cell w colspan 3"));
 	cell.setColspan(3);
+	
 	table.addCell(cell);
 	  
 	cell= new PdfPCell(new Phrase("Cell w colspan 2"));
@@ -137,15 +165,24 @@ public class PdfServlet extends HttpServlet
   {
     bf = BaseFont.createFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, BaseFont.EMBEDDED);
     // bf.setColor(new Color(0xFF, 0xFF, 0xFF));
-    font = new Font(bf, 10, Font.NORMAL);
     
+    titleFont=new Font(bf);
+    largeFont=new Font(bf);
     regularFont=new Font(bf);
-    regularFont.setSize(12);
+    regularBoldFont=new Font(bf);
+    smallFont=new Font(bf);
+    tinyFont=new Font(bf);
     
-    titlePageRegFont = new Font(font);
-    titlePageRegFont.setSize(25);
-      bold = new Font(titlePageRegFont);
-    bold.setStyle(Font.BOLD);
-}
+    titleFont.setSize(25);
+    largeFont.setSize(18);
+    regularFont.setSize(12);
+    regularBoldFont.setSize(12);
+    smallFont.setSize(8);
+    tinyFont.setSize(5);
+    
+    regularBoldFont.setStyle(Font.BOLD);
+    
+    largeFont.setColor(BaseColor.BLUE);
+ }
   
 }
