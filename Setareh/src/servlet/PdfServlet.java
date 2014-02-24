@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.Date;
 import java.util.List;
 
@@ -26,10 +28,13 @@ import com.itextpdf.text.Font;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.html.simpleparser.HTMLWorker;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.tool.xml.XMLWorker;
+import com.itextpdf.tool.xml.XMLWorkerHelper;
 
 import data.Product;
 
@@ -56,7 +61,8 @@ public class PdfServlet extends HttpServlet
     String item=request.getParameter("item");
     this.request=request;
     Product p = (Product)request.getAttribute("Product");
-    
+   // XMLWorkerHelper worker = XMLWorkerHelper.getInstance();
+   // XMLWorker werw;
     if (p==null) System.out.println("product is null");
     
    // System.out.println("mode: "+mode);
@@ -69,6 +75,8 @@ public class PdfServlet extends HttpServlet
       pdfWriter.setPdfVersion(PdfWriter.VERSION_1_7);
       pdfWriter.setInitialLeading(16);
       
+      
+      
       document.open();
       if ("PIS".equals(mode))
       {
@@ -80,6 +88,8 @@ public class PdfServlet extends HttpServlet
         document.add(new Paragraph(new Date().toString(), regularFont));
       }
       
+      Reader reader = new StringReader("<table border=\"1\"><tr><td>Hello</td><td> C<sub>1</sub><sub>6</sub>H<sub>1</sub><sub>4</sub>N<sub>2</sub>O<sub>4</sub></td></tr></table>");
+      XMLWorkerHelper.getInstance().parseXHtml(pdfWriter, document, reader);
       
       document.close();
      // pdfWriter.close();
