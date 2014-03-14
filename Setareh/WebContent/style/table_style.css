@@ -83,6 +83,7 @@
 	font-size:18px;
 	font-family:Arial;
 	font-weight:bold;
+	white-space:nowrap;
 	color:#ffffff;
 }
 .mainTableStyle tr:first-child:hover td{
@@ -179,6 +180,7 @@
 	font-size:18px;
 	font-family:Arial;
 	font-weight:bold;
+	white-space:nowrap;
 	color:#ffffff;
 }
 .listTableStyle tr:first-child:hover td{

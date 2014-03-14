@@ -29,6 +29,8 @@ public class Product
   public String application;
   public String refs;
   public String sort_name;
+  public double pkgd;
+  public double unpkgd;
   
   public Long getId()
   {
@@ -214,6 +216,22 @@ public class Product
       formBuf.append(mol_formula.charAt(i));
     }
    return formBuf.toString();
+  }
+  public double getPkgd()
+  {
+    return pkgd;
+  }
+  public void setPkgd(double pkgd)
+  {
+    this.pkgd = pkgd;
+  }
+  public double getUnpkgd()
+  {
+    return unpkgd;
+  }
+  public void setUnpkgd(double unpkgd)
+  {
+    this.unpkgd = unpkgd;
   }
 
 }

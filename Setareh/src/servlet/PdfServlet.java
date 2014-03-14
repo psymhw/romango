@@ -1,5 +1,7 @@
 package servlet;
 
+import iText.PdfFormula;
+
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -88,8 +90,45 @@ public class PdfServlet extends HttpServlet
         document.add(new Paragraph(new Date().toString(), regularFont));
       }
       
-      Reader reader = new StringReader("<table border=\"1\"><tr><td>Hello</td><td> C<sub>1</sub><sub>6</sub>H<sub>1</sub><sub>4</sub>N<sub>2</sub>O<sub>4</sub></td></tr></table>");
-      XMLWorkerHelper.getInstance().parseXHtml(pdfWriter, document, reader);
+      document.add(Chunk.NEWLINE);
+      Phrase formulaTest = new Phrase();
+      float rise=-4;
+      
+      Chunk carbon = new Chunk("C");
+      Chunk carbonCount = new Chunk("6");
+      carbonCount.setTextRise(rise);
+      carbonCount.setFont(smallFont);
+      
+      Chunk hydrogen = new Chunk("H");
+      Chunk hydrogenCount = new Chunk("12");
+      hydrogenCount.setTextRise(rise);
+      hydrogenCount.setFont(smallFont);
+      
+      Chunk oxygen = new Chunk("O");
+      Chunk oxygenCount = new Chunk("2");
+      oxygenCount.setTextRise(rise);
+      oxygenCount.setFont(smallFont);
+      
+      
+      
+      formulaTest.add(carbon);
+      formulaTest.add(carbonCount);
+      
+      formulaTest.add(hydrogen);
+      formulaTest.add(hydrogenCount);
+      
+      formulaTest.add(oxygen);
+      formulaTest.add(oxygenCount);
+      
+      document.add(formulaTest);
+      
+      document.add(Chunk.NEWLINE);
+      document.add(new PdfFormula("C5H7O3S", regularFont, smallFont));
+      
+      
+      
+     // Reader reader = new StringReader("<table border=\"1\"><tr><td>Hello</td><td> C<sub>1</sub><sub>6</sub>H<sub>1</sub><sub>4</sub>N<sub>2</sub>O<sub>4</sub></td></tr></table>");
+     // XMLWorkerHelper.getInstance().parseXHtml(pdfWriter, document, reader);
       
       document.close();
      // pdfWriter.close();

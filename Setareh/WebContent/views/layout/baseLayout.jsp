@@ -13,6 +13,10 @@
       <link href="<%=request.getContextPath()%>/style/style.css" rel="stylesheet" type="text/css" />
       
             <title><tiles:insertAttribute name="title" ignore="true" /></title>
+            
+       <script type="text/javascript" language="javascript"
+         src="/js/jquery-2.1.0.min.js">
+       </script>
     </head>
     <body style="height: 100%;">
         <table  id="mytable" border="1" cellpadding="2" cellspacing="2" align="center" height="100%" width="100%">

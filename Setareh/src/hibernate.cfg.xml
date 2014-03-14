@@ -3,32 +3,41 @@
         "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
         "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
+<!-- 
+    <session-factory>
+        <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.connection.datasource">java:comp/env/jdbc/JSNDB</property>
+        <property name="hibernate.hbm2ddl.auto">validate</property>
+        <property name="show_sql">true</property>
+        
+        
+        <mapping class="data.User" />
+		<mapping class="data.Product" />
+    </session-factory>
+-->
+ 
 	<session-factory>
-		<!-- Database connection settings -->
+		
 		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
 		<property name="connection.url">jdbc:mysql://localhost:3306/setareh_com</property>
 		<property name="connection.username">kmalekzadeh</property>
 		<property name="connection.password">stbt2014</property>
 		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
-
-
-		<!--
-			Enable c3p0 connection pooling, because hibernate pooling is not
-			prod-ready. Apparently connection.provider_class is needed in
-			hibernate 3+
-		-->
+			
 		
 		<property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
 		<property name="c3p0.max_size">100</property>
 		<property name="c3p0.min_size">1</property>
 		<property name="c3p0.idle_test_period">30</property>
 
-		<!-- Echo all executed SQL to stdout for debugging -->
+		
 		<property name="show_sql">false</property>
 
-		<!-- All the entity classes for hibernate to check for annotations here-->
+		
 		
 		<mapping class="data.User" />
 		<mapping class="data.Product" />
 	</session-factory>
+	
+	
 </hibernate-configuration>
