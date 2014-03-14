@@ -34,6 +34,12 @@
   <tr>
     <td><b>Stock: </b></td> <td> <s:property value="product.qty" /> x <s:property value="product.unit_size" /></td>
   </tr>
+  <tr>
+    <td><b>Pkgd Stock: </b></td> <td> <s:property value="product.pkgd" /> x <s:property value="product.unit_size" /></td>
+  </tr>
+  <tr>
+    <td><b>Unpkgd Stock: </b></td> <td> <s:property value="product.unpkgd" /> x <s:property value="product.unit_size" /></td>
+  </tr>
   
   <tr>
     <td><b>Price: </b></td> <td> $<s:property value="product.unit_price" /> / <s:property value="product.unit_size" /></td>

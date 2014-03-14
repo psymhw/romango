@@ -6,6 +6,8 @@
   <s:textarea  name="product.product_name" label="Name"             maxlength="700" rows="4" cols="90" wrap="true"/>
   <s:textfield name="product.unit_size"    label="Unit Size"        maxlength="45" size="10"/>
   <s:textfield name="product.qty"          label="Stock"            maxlength="20" size="10"/>
+  <s:textfield name="product.pkgd"         label="Pkgd Stock"       maxlength="20" size="10"/>
+  <s:textfield name="product.unpkgd"       label="Unpkgd Stock"     maxlength="20" size="10"/>
   <s:textfield name="product.unit_price"   label="Unit Price $"     maxlength="20" size="10"/>
   <s:textfield name="product.storage_prod" label="Storage"          maxlength="45" size="10"/>
   <s:textfield name="product.cas"          label="CAS#"             maxlength="45" size="10"/>
