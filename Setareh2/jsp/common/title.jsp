@@ -1,1 +1,0 @@
-Setareh Biotech
