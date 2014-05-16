@@ -1,6 +1,0 @@
-<!--  
-<Context>
-	<ResourceLink global="jdbc/JSNDB" name="jdbc/JSNDB" type="javax.sql.DataSource"/>
-</Context>
-
--->
