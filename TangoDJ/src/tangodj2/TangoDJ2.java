@@ -81,7 +81,7 @@ public class TangoDJ2 extends Application
   
   static VBox playerPane;
   int sceneHeight=810;
-  int sceneWidth=1500;
+  int sceneWidth=1520;
   public final  Image noteImage = new Image(getClass().getResourceAsStream("/resources/images/note.png"));
   
   MenuBar menuBar;

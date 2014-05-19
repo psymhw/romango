@@ -66,7 +66,7 @@ public class PlaylistBuilderTab extends Tab
     playlistBuilderTab=this;
     //this.cleanupTable=cleanupTable;
    
-    tangoTable = new TangoTable();;
+    tangoTable = new TangoTable();
     
     
     cleanupTable = new CleanupTable();
