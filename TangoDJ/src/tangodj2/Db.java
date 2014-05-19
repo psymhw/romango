@@ -223,6 +223,7 @@ public class Db
       disconnect();
       
     } catch (Exception e) { e.printStackTrace();}
+    System.out.println("Db - loading favorites: "+favoritesTracksData.size());
     return favoritesTracksData;
   }
   

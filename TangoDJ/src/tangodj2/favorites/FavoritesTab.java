@@ -34,9 +34,9 @@ public class FavoritesTab extends Tab
     ListView<String> list = new ListView<String>();
     ObservableList<String> items =FXCollections.observableArrayList ();
     list.setItems(items);
-    list.setPrefWidth(200);
+    list.setPrefWidth(150);
     //list.setMaxWidth(200);
-    list.setMinWidth(200);
+    list.setMinWidth(150);
     list.setPrefHeight(300);
     
     
