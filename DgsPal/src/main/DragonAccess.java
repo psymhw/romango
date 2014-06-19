@@ -260,7 +260,7 @@ public DragonAccess(String userId, String password)
 	 comments=new ArrayList();
 	 int count=0;
 	// String lastMoveColor="B";
-	 
+	 InputStream is;
 	 try
 	 {
 	   URL url;
@@ -268,7 +268,14 @@ public DragonAccess(String userId, String password)
 	           
 	   URLConnection con = url.openConnection();
 	   con = url.openConnection();
-	   InputStream is = con.getInputStream();
+	   try
+	   {
+	      is = con.getInputStream();
+	   } catch (Exception e) 
+	   { 
+	     System.out.println("connection timed out");
+	     
+	     return false; }
 	   InputStreamReader isr = new InputStreamReader(is);
 	   BufferedReader br = new BufferedReader(isr);
 	   String line = null;
@@ -336,7 +343,14 @@ public DragonAccess(String userId, String password)
 	           
 	   URLConnection con = url.openConnection();
 	   con = url.openConnection();
-	   InputStream is = con.getInputStream();
+	   InputStream is;
+	   try {
+	   is = con.getInputStream(); }
+	   catch (Exception e) {
+	     System.out.println("connection timed out");
+	     return 0;
+	     
+	   }
 	   InputStreamReader isr = new InputStreamReader(is);
 	   BufferedReader br = new BufferedReader(isr);
 	   String line = null;
