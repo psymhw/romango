@@ -1475,6 +1475,7 @@ private GridPane getRightPane()
      commitButton.setOnMouseClicked(bHandler);
      commitButton.setTooltip(new Tooltip("Commit Move"));
      commitButton.setPrefHeight(28);
+     commitButton.setMinWidth(35);
   }
   
   private void setupFileButton() 
@@ -1663,6 +1664,7 @@ private GridPane getRightPane()
   private void setupUserButton() 
   {
     userButton = new Button("");
+    userButton.setMinWidth(35);
     Image userImage  = new Image(GoClient.class.getResourceAsStream("/resources/images/user.png"));
     EventHandler <MouseEvent>bHandler = new EventHandler<MouseEvent>() {
     	public void handle(MouseEvent event) {
