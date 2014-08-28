@@ -1,7 +1,6 @@
 package main;
 
 import java.applet.Applet;
-import java.applet.AudioClip;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -53,6 +52,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -336,10 +336,10 @@ public class GoClient extends Application
     //volumeSlider.setValue(50);
     volumeSlider.setValue(.7);
     
-    stoneSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/stone.wav"));
-    errorSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/error.wav"));
-    cuckooSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/cuckoo.wav"));
-    chirp = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/chirp.wav"));
+    stoneSound = new AudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/stone.wav").toURI().toASCIIString());
+    errorSound = new AudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/error.wav").toURI().toASCIIString());
+    cuckooSound =new AudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/cuckoo.wav").toURI().toASCIIString());
+    chirp = new AudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/chirp.wav").toURI().toASCIIString());
 
         
     turnImageView = new ImageView(blackStoneImage);
@@ -1841,7 +1841,11 @@ private GridPane getRightPane()
     
       placeStone(move);
 	    localMoves++;
-	    if (sound==ON) stoneSound.play(volumeSlider.getValue());
+	    if (sound==ON) 
+	    {  
+	     
+	      stoneSound.play(volumeSlider.getValue());
+	    }
 	    markLocalMove();
 	    updateControls();
        return true;
