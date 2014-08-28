@@ -1,6 +1,5 @@
 package main;
 
-import java.applet.Applet;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -61,6 +60,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 //import com.leapmotion.leap.Controller;
@@ -322,24 +322,28 @@ public class GoClient extends Application
 	this.stage=stage;  
     setQuit();
     importImages();
-    getResources();
-    
-    
-    
-    Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-   // System.out.println("screen: "+primaryScreenBounds.getHeight()+" x "+primaryScreenBounds.getWidth());
     
     volumeSlider = new Slider(0, 1, 0);
     volumeSlider.setPrefWidth(140);
     volumeSlider.setMaxWidth(Region.USE_PREF_SIZE);
     volumeSlider.setMinWidth(30);
-    //volumeSlider.setValue(50);
     volumeSlider.setValue(.7);
     
-    stoneSound = new AudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/stone.wav").toURI().toASCIIString());
-    errorSound = new AudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/error.wav").toURI().toASCIIString());
-    cuckooSound =new AudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/cuckoo.wav").toURI().toASCIIString());
-    chirp = new AudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/chirp.wav").toURI().toASCIIString());
+    getResources();
+    
+    stage.setOnCloseRequest(new EventHandler<WindowEvent>() 
+    { public void handle(WindowEvent e) { writeResources(); }});
+    
+    
+    Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+   // System.out.println("screen: "+primaryScreenBounds.getHeight()+" x "+primaryScreenBounds.getWidth());
+    
+    
+    
+    stoneSound = new AudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/stone.mp3").toURI().toASCIIString());
+    errorSound = new AudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/error.mp3").toURI().toASCIIString());
+    cuckooSound =new AudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/cuckoo.mp3").toURI().toASCIIString());
+    chirp = new AudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/chirp.mp3").toURI().toASCIIString());
 
         
     turnImageView = new ImageView(blackStoneImage);
@@ -612,7 +616,7 @@ public class GoClient extends Application
 	    });
 		 
 		timeline.getKeyFrames().add(keyFrame);
-	    timeline.play();
+	    timeline.play(volumeSlider.getValue());
 	 */
 	
   }
@@ -740,7 +744,7 @@ public void stop()
       //System.out.println("timed refresh: currentMessage "+dragonAccess.currentMessage);
       if (dragonAccess.currentMessage) 
       {  
-    	  if (sound==ON) cuckooSound.play();
+    	  if (sound==ON) cuckooSound.play(volumeSlider.getValue());
     	  minFeedbackText.setFill(Color.RED);
     	  feedbackArea.insertText(0, "*"+lastSgfMove.getBoardPosition()+"\t"+dragonAccess.message);
       }
@@ -820,7 +824,7 @@ public void stop()
 	//System.out.println("startup refresh: currentMessage "+dragonAccess.currentMessage);
 	if (dragonAccess.currentMessage)
 	{	
-		if (sound==ON) cuckooSound.play();
+		if (sound==ON) cuckooSound.play(volumeSlider.getValue());
 	  minFeedbackText.setFill(Color.RED);
 	}
 	else minFeedbackText.setFill(Color.BLACK);
@@ -1023,6 +1027,7 @@ private void getResources()
 	    InputStreamReader isr = new InputStreamReader(in);
 	    BufferedReader br = new BufferedReader(isr);
 	    String line;
+	    double vol=.7;
 		    
 	    userId="noset";
 	    password="noset";
@@ -1031,6 +1036,13 @@ private void getResources()
 	    { 
 	      if (line.startsWith("username: ")) userId = line.substring(10);
 	      if (line.startsWith("password: ")) password = line.substring(10);
+	      if (line.startsWith("volume: "))
+	      {
+	    	 String strVol = line.substring(8);
+	    	 try { vol = Double.parseDouble(strVol); } catch(Exception e) {}
+	      }
+	      volumeSlider.setValue(vol);
+	    	  
 	    //  if (line.startsWith("gamenumb: ")) currentGameNo = line.substring(10);
 	    }
 	    
@@ -1060,6 +1072,7 @@ private void writeResources()
 	  out.write("username: "+userId+"\n");
 	  out.write("password: "+password+"\n");
 	  out.write("gamenumb: "+currentGameNo+"\n");
+	  out.write("volume: "+""+volumeSlider.getValue()+"\n");
 	  out.close();
 	} catch (IOException e) { e.printStackTrace();}
 }
@@ -1179,7 +1192,7 @@ private GridPane getRightPane()
 		             if (selectedStr.contains("off")) sound=OFF;
 		             
 		             if (sound==ON) {
-		             System.out.println("sound: on");    chirp.play(); }
+		             System.out.println("sound: on");    chirp.play(volumeSlider.getValue()); }
 		             if (sound==OFF)
 			             System.out.println("sound: off");  
 		                
@@ -1818,7 +1831,7 @@ private GridPane getRightPane()
   	    if (stoneGroup.liberties==0) 
   	    { 
   		  // System.out.println("liberties 0");  
-  	      if (sound==ON) errorSound.play(); 
+  	      if (sound==ON) errorSound.play(volumeSlider.getValue()); 
   	      restoreMoveMap(savedBoardMap.get());
   	      feedbackArea.insertText(0, "illegal move\n");
   	      return false;  // can't move here... no liberties and nothing captured.
@@ -1828,7 +1841,7 @@ private GridPane getRightPane()
         {  
           if (checkForKo()) 
           {
-          	if (sound==ON) errorSound.play(); 
+          	if (sound==ON) errorSound.play(volumeSlider.getValue()); 
             restoreMoveMap(savedBoardMap.get());
   	      feedbackArea.insertText(0, "ko. can't move here.\n");
   	      return false;  // can't move here... ko fight. 
@@ -2358,7 +2371,7 @@ void restoreMoveMap(int[][] savedMoveMap)
      handicapVal.setText(""+handicap);
      moveNoVal.setText(""+lastSgfMoveNumber);
      markLastStone();
-     if (stoneSoundActive)  { if (sound==ON) stoneSound.play(); else chirp.play() ;}
+     if (stoneSoundActive)  { if (sound==ON) stoneSound.play(volumeSlider.getValue()); else chirp.play(volumeSlider.getValue()) ;}
      stoneSoundActive=true;
      lastSgfMove = dragonAccess.getLastSgfMove();
      
@@ -2725,7 +2738,7 @@ private void setQuit()
   quit.setX(970);
   quit.setY(15);
 	
-  quit.setOnMouseClicked(new EventHandler<MouseEvent>() {public void handle(MouseEvent t) { System.exit(0);}});
+  quit.setOnMouseClicked(new EventHandler<MouseEvent>() {public void handle(MouseEvent t) { writeResources(); System.exit(0);}});
 }  
 
 
