@@ -36,6 +36,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextAreaBuilder;
 import javafx.scene.control.TextField;
@@ -50,6 +51,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -293,6 +295,7 @@ public class GoClient extends Application
   final RadioButton rb1 = new RadioButton("On");
   final RadioButton rb2 = new RadioButton("Off");
   final ToggleGroup soundGroup = new ToggleGroup();
+  private Slider volumeSlider;
   int sound=ON;
   
 //  static LeapListener listener;
@@ -326,12 +329,19 @@ public class GoClient extends Application
     Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
    // System.out.println("screen: "+primaryScreenBounds.getHeight()+" x "+primaryScreenBounds.getWidth());
     
+    volumeSlider = new Slider(0, 1, 0);
+    volumeSlider.setPrefWidth(140);
+    volumeSlider.setMaxWidth(Region.USE_PREF_SIZE);
+    volumeSlider.setMinWidth(30);
+    //volumeSlider.setValue(50);
+    volumeSlider.setValue(.7);
     
     stoneSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/stone.wav"));
     errorSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/error.wav"));
     cuckooSound = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/cuckoo.wav"));
     chirp = Applet.newAudioClip(GoClient.class.getClassLoader().getResource("resources/sounds/chirp.wav"));
 
+        
     turnImageView = new ImageView(blackStoneImage);
     
    
@@ -1129,7 +1139,7 @@ private GridPane getRightPane()
 */
   void setupFeedbackLabel()
   {
-	  
+	  VBox vb = new VBox();
 	  Rectangle bx = new Rectangle();
 	    bx.setWidth(300);
 	    bx.setHeight(30);
@@ -1182,7 +1192,11 @@ private GridPane getRightPane()
 	    hb.getChildren().add(soundText);
 	    hb.getChildren().add(rb1);
 	    hb.getChildren().add(rb2);
-	    feedbackLabelGroup.getChildren().add(hb);
+	    vb.getChildren().add(hb);
+	    vb.getChildren().add(volumeSlider);
+	    vb.getChildren().add(new Text("  Volume"));
+	    feedbackLabelGroup.getChildren().add(vb);
+	    
 	    
   }
   
@@ -1827,7 +1841,7 @@ private GridPane getRightPane()
     
       placeStone(move);
 	    localMoves++;
-	    if (sound==ON) stoneSound.play();
+	    if (sound==ON) stoneSound.play(volumeSlider.getValue());
 	    markLocalMove();
 	    updateControls();
        return true;
