@@ -36,7 +36,6 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextAreaBuilder;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
@@ -1028,6 +1027,7 @@ private void getResources()
 	    BufferedReader br = new BufferedReader(isr);
 	    String line;
 	    double vol=.7;
+	    int snd=1;
 		    
 	    userId="noset";
 	    password="noset";
@@ -1041,10 +1041,29 @@ private void getResources()
 	    	 String strVol = line.substring(8);
 	    	 try { vol = Double.parseDouble(strVol); } catch(Exception e) {}
 	      }
-	      volumeSlider.setValue(vol);
+	      
+	      if (line.startsWith("sound: "))
+	      {
+	    	  String strSound = line.substring(7);
+		    	 try { snd = Integer.parseInt(strSound); } catch(Exception e) {}
+	      }
 	    	  
 	    //  if (line.startsWith("gamenumb: ")) currentGameNo = line.substring(10);
 	    }
+	    
+	    volumeSlider.setValue(vol);
+	    sound=snd;
+	    System.out.println("Sound: "+sound);
+	    if (sound==1) 
+	    {
+	      rb1.setSelected(true); 
+	   	  rb2.setSelected(false);
+	      }
+	      else 
+	      {
+		    rb1.setSelected(false); 
+		    rb2.setSelected(true);
+		  }
 	    
 	    //System.out.println("username: "+userId);
 	   // System.out.println("password: "+password);
@@ -1073,6 +1092,7 @@ private void writeResources()
 	  out.write("password: "+password+"\n");
 	  out.write("gamenumb: "+currentGameNo+"\n");
 	  out.write("volume: "+""+volumeSlider.getValue()+"\n");
+	  out.write("sound: "+""+sound+"\n");
 	  out.close();
 	} catch (IOException e) { e.printStackTrace();}
 }
@@ -1096,7 +1116,6 @@ private void setupRightPane()
   rightPane.getChildren().add(feedbackLabelGroup);
   rightPane.getChildren().add(feedbackArea);
   rightPane.getChildren().add(messageLabelGroup);
- // rightPane.getChildren().add(getReceiveMessageBox());
   rightPane.getChildren().add(sendMessageArea);
   
 }
@@ -1144,7 +1163,6 @@ private GridPane getRightPane()
     gridPane.add(getFeedbackBox(), 0, 5);
     
     gridPane.add(getMessageLabel(), 0, 6);
-    gridPane.add(getReceiveMessageBox(), 0, 7);
     gridPane.add(getSendMessageBox(), 0, 8);
     
 	return gridPane;
@@ -1172,13 +1190,12 @@ private GridPane getRightPane()
 	    feedbackLabelGroup.getChildren().add(bx);
 	   // hb.getChildren().add(dragonInfoLabel);
 	    Text soundText = new Text("  Sound:  ");
-	    soundText.setFont(Font.font("Serif", 20));
+	    soundText.setFont(Font.font("Serif", 12));
 	    rb1.setToggleGroup(soundGroup);
 		rb1.setId("on");
 		rb2.setId("off");
 		rb2.setToggleGroup(soundGroup);
-		rb1.setSelected(true);
-		
+		//rb1.setSelected(true);
 		rb1.setPrefWidth(75);
 		
 		soundGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
@@ -1186,28 +1203,29 @@ private GridPane getRightPane()
 		        Toggle old_toggle, Toggle new_toggle) {
 		            if (soundGroup.getSelectedToggle() != null) 
 		            {
-		             //	System.out.println(modeGroup.getSelectedToggle().getUserData().toString()); 
 		             String selectedStr=soundGroup.getSelectedToggle().toString();
 		             if (selectedStr.contains("on")) sound=ON;
 		             if (selectedStr.contains("off")) sound=OFF;
 		             
-		             if (sound==ON) {
-		             System.out.println("sound: on");    chirp.play(volumeSlider.getValue()); }
-		             if (sound==OFF)
-			             System.out.println("sound: off");  
-		                
+		             if (sound==ON) 
+		             {
+		               chirp.play(volumeSlider.getValue()); 
+		             }
+		            		                
 		            }                
 		        }
 		});
 		
-	    rb1.setFont(Font.font("Serif", 18));
-	    rb2.setFont(Font.font("Serif", 18));
+		HBox volBox = new HBox();
+		volBox.getChildren().add(new Text("  Volume: "));
+		volBox.getChildren().add(volumeSlider);
+	    rb1.setFont(Font.font("Serif", 12));
+	    rb2.setFont(Font.font("Serif", 12));
 	    hb.getChildren().add(soundText);
 	    hb.getChildren().add(rb1);
 	    hb.getChildren().add(rb2);
 	    vb.getChildren().add(hb);
-	    vb.getChildren().add(volumeSlider);
-	    vb.getChildren().add(new Text("  Volume"));
+	    vb.getChildren().add(volBox);
 	    feedbackLabelGroup.getChildren().add(vb);
 	    
 	    
@@ -2313,36 +2331,19 @@ void restoreMoveMap(int[][] savedMoveMap)
    
    private void setupFeedbackArea()
    {
-	   feedbackArea = TextAreaBuilder.create()
-               .prefWidth(200)
-               .prefHeight(145)
-               .wrapText(true)
-               .build();
-       
+	   feedbackArea = new TextArea();
+	   feedbackArea.setPrefWidth(200);	   
+	   feedbackArea.setPrefHeight(125);	
+	   feedbackArea.setWrapText(true);       
+	   feedbackArea.setEditable(false);
    }
    
    private void setupSendMessageArea()
    {
-	   sendMessageArea = TextAreaBuilder.create()
-               .prefWidth(200)
-               .prefHeight(70)
-               .wrapText(true)
-               .build();
-       
-   }
-   
-   private TextArea getReceiveMessageBox()
-   {
-	   receiveMessageArea = TextAreaBuilder.create()
-               .prefWidth(200)
-               .prefHeight(70)
-               .wrapText(true)
-               .build();
-	   
-	   Color c =  Color.web("DAE6F3");
-	   receiveMessageArea.setStyle("-fx-background-color: lightgoldenrodyellow;");
-	   receiveMessageArea.setEditable(false);
-	   return receiveMessageArea;
+	   sendMessageArea = new TextArea();
+	   sendMessageArea.setPrefWidth(200);
+	   sendMessageArea.setPrefHeight(70);
+	   sendMessageArea.setWrapText(true);
    }
    
    private void playAllSgfMoves()
