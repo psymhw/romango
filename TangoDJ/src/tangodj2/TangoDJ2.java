@@ -37,6 +37,8 @@ import javafx.stage.WindowEvent;
 import tangodj2.favorites.FavoritesTab;
 import tangodj2.favorites.ListHeaderDb;
 import tangodj2.infoWindow.InfoWindow2;
+import tangodj2.util.FileDbCompare;
+import tangodj2.util.FileViewer;
 /*
  * TODO export playlist?
  * MP3 Tagtools
@@ -293,6 +295,7 @@ public class TangoDJ2 extends Application
     MenuItem preferences = new MenuItem("Preferences");
     MenuItem about = new MenuItem("About");
     MenuItem manual = new MenuItem("TangoDJ Manual");
+    MenuItem compare = new MenuItem("Compare Files to Db");
     
     Menu menuEdit = new Menu("Edit");
     Menu menuView = new Menu("View");
@@ -431,11 +434,14 @@ public class TangoDJ2 extends Application
     
      manual.setOnAction(new EventHandler<ActionEvent>() 
      { public void handle(ActionEvent t) { new ManualDialog(); }});
+     
+     compare.setOnAction(new EventHandler<ActionEvent>() 
+    	     { public void handle(ActionEvent t) { new FileViewer(prefs); }});
     
     menuFile.getItems().addAll(menuAddTangoDir, menuAddTangoFile,menuAddCleanupDir, 
         menuAddCleanupFile,menuAddCortinaDir,menuAddCortinaFile, backup, restore);
     menuEdit.getItems().add(preferences);
-    menuHelp.getItems().addAll(about, manual);
+    menuHelp.getItems().addAll(about, manual, compare);
   }
   
   private void loadFonts()
