@@ -2,10 +2,14 @@ package tangodj2.util;
 
 import tangodj2.EventTab;
 import tangodj2.Preferences;
+import tangodj2.TrackDb;
 import tangodj2.infoWindow.InfoWindow2;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -20,6 +24,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class FileViewer  extends Stage
 {
@@ -106,5 +111,21 @@ public class FileViewer  extends Stage
     show();
   }
   
+  private void timerStart()
+  {
+	  Timeline timeline = new Timeline();
+	    timeline.setCycleCount(Timeline.INDEFINITE); 
+	    KeyFrame keyFrame= new KeyFrame(Duration.seconds(.1), new EventHandler() 
+	    {
+	      int trackCount=0;
+	      public void handle(Event event) 
+	      {
+	      
+	       }});
+	            
+	      timeline.getKeyFrames().add(keyFrame);
+	      timeline.playFromStart();
+
+  }
   
 }
