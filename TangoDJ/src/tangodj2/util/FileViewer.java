@@ -1,5 +1,7 @@
 package tangodj2.util;
 
+import java.util.List;
+
 import tangodj2.EventTab;
 import tangodj2.Preferences;
 import tangodj2.TrackDb;
@@ -36,6 +38,7 @@ public class FileViewer  extends Stage
   final RadioButton rb1 = new RadioButton("tango");
   final RadioButton rb2 = new RadioButton("non-tango");
   final ToggleGroup toggleGroup = new ToggleGroup();
+  private int lastListSize=0;
   
   public FileViewer(Preferences prefs)
   {
@@ -76,6 +79,7 @@ public class FileViewer  extends Stage
 	{
 	  public void handle(ActionEvent actionEvent) 
 	  {
+		timerStart();
 		fileDbCompare.start();   	  
 	  }
 	});  
@@ -113,18 +117,24 @@ public class FileViewer  extends Stage
   
   private void timerStart()
   {
-	  Timeline timeline = new Timeline();
-	    timeline.setCycleCount(Timeline.INDEFINITE); 
-	    KeyFrame keyFrame= new KeyFrame(Duration.seconds(.1), new EventHandler() 
-	    {
-	      int trackCount=0;
-	      public void handle(Event event) 
+	Timeline timeline = new Timeline();
+	timeline.setCycleCount(Timeline.INDEFINITE); 
+	KeyFrame keyFrame= new KeyFrame(Duration.seconds(.1), new EventHandler() 
+	{
+	  public void handle(Event event) 
+	 {
+		if (fileDbCompare.running)
+		{
+	      List<String> tList = fileDbCompare.getTrackList(); 
+	      int listSize=tList.size();
+	      for(int i=lastListSize; i<listSize; i++)
 	      {
-	      
-	       }});
-	            
-	      timeline.getKeyFrames().add(keyFrame);
-	      timeline.playFromStart();
+	        textArea.appendText(tList.get(i));
+	      }
+		}
+	 }});
+     timeline.getKeyFrames().add(keyFrame);
+     timeline.playFromStart();
 
   }
   
