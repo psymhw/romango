@@ -91,7 +91,7 @@ public class FileDbCompare
 	    {
 	      String pathStr2=aFile.toString();
 	      String pathHash = hasher.getMd5Hash(pathStr2.getBytes());
-	      
+	      //sb.append(aFile+"\n");
 	      counter++;
 	      if (!Db.trackExists(pathHash)) 
 	      {
