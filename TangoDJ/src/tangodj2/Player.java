@@ -663,7 +663,11 @@ public class Player
       if (active_tab==CORTINA_CREATE_TAB) showAdvancedControls(true);
       else showAdvancedControls(false);
     }
-
+    
+    public int getActiveTab()
+    {
+	 return active_tab;
+    }
     
     
     public VBox get()

@@ -519,7 +519,7 @@ public class PlaylistBuilderTab extends Tab
     {
       public void changed(ObservableValue observable, Object oldValue, Object newValue) 
       {
-        playlistBuilderTab.setDisable(Player.playing.get());
+        if (player.getActiveTab()!=Player.PLAYLIST_BUILDER_TAB) playlistBuilderTab.setDisable(Player.playing.get());
       }
     };   
    Player.playing.addListener(playingListener);
