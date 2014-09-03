@@ -39,6 +39,7 @@ public class FileViewer  extends Stage
   final RadioButton rb2 = new RadioButton("non-tango");
   final ToggleGroup toggleGroup = new ToggleGroup();
   private int lastListSize=0;
+  private static boolean started=false;
   
   public FileViewer(Preferences prefs)
   {
@@ -79,16 +80,17 @@ public class FileViewer  extends Stage
 	{
 	  public void handle(ActionEvent actionEvent) 
 	  {
-		timerStart();
+		//timerStart();
+		textArea.setText("Processing...");
 		fileDbCompare.start();   	  
 	  }
 	});  
 	  
 	Pane pane = new Pane();
 	VBox vbox = new VBox();
-	Text feedbackLabel = new Text("All Files");
+	Text feedbackLabel = new Text("Progress");
 	feedbackLabel.setFont(Font.font("Serif", 16));
-	Text resultsLabel = new Text("Files not found in database");
+	Text resultsLabel = new Text("Results");
 	resultsLabel.setFont(Font.font("Serif", 16));
 	
 	
@@ -117,20 +119,27 @@ public class FileViewer  extends Stage
   
   private void timerStart()
   {
+	
 	Timeline timeline = new Timeline();
 	timeline.setCycleCount(Timeline.INDEFINITE); 
-	KeyFrame keyFrame= new KeyFrame(Duration.seconds(.1), new EventHandler() 
+	KeyFrame keyFrame= new KeyFrame(Duration.seconds(1), new EventHandler() 
 	{
 	  public void handle(Event event) 
 	 {
+		System.out.println("timer cycle");  
 		if (fileDbCompare.running)
 		{
 	      List<String> tList = fileDbCompare.getTrackList(); 
 	      int listSize=tList.size();
-	      for(int i=lastListSize; i<listSize; i++)
-	      {
-	        textArea.appendText(tList.get(i));
+	      if (listSize>lastListSize)
+	      {	  
+	        for(int i=lastListSize; i<listSize; i++)
+	        {
+	          textArea.appendText(tList.get(i)+"\n");
+	        }
 	      }
+	      lastListSize=listSize;
+	     
 		}
 	 }});
      timeline.getKeyFrames().add(keyFrame);
