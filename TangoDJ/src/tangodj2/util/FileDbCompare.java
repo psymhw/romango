@@ -28,14 +28,21 @@ public class FileDbCompare
   boolean tangoSelected=true;
   private static int notFoundCount=0;
   private static String currentDirectory=null;
+  private static int currentDirTotal=0;
+  private static int currentDirNotFound=0;
   private static List<DirectoryInfo> dirList = new ArrayList<DirectoryInfo>();
   private static List<String> trackList = new ArrayList<String>();
   public boolean running=false;
   
+  public static List<DirectoryInfo> getDirList() 
+  {
+	return dirList;
+  }
   
-  public static List<String> getTrackList() {
+  public static List<String> getTrackList() 
+  {
 	return trackList;
-}
+  }
 
   public FileDbCompare(Preferences preferences, TextArea textArea, TextArea resultArea)
   {
@@ -71,25 +78,23 @@ public class FileDbCompare
     } catch (IOException e) { e.printStackTrace();	}
 	
 	// catches the last one
-	DirectoryInfo directoryInfo = new DirectoryInfo();
-	  directoryInfo.path=currentDirectory;
-	  directoryInfo.totalFileCount=counter;
-	  directoryInfo.notFoundCount=notFoundCount;
-	  dirList.add(directoryInfo);
+	dirList.add(new DirectoryInfo(currentDirectory, currentDirTotal, currentDirNotFound));
 	  
-	  running=false;
-	
-	  /*
+	  //running=false;
+	resultArea.appendText("\nTotal Count: " +counter+"\n");
+	resultArea.appendText("Not Found Count: " +notFoundCount+"\n\n");
+	 
+	textArea.setText("Done");
 	for (DirectoryInfo di : dirList)
 	{
-	  textArea.appendText(directoryInfo.path+"\n");
-	  textArea.appendText("Total Files: "+di.totalFileCount+"\n");
-	  textArea.appendText("Not Found in Db: "+di.notFoundCount+"\n");
+	  if (di.notFound>0)
+	  {	  
+	    resultArea.appendText("Directory"+di.path+"\n");
+	    resultArea.appendText(" Files: "+di.total+" ");
+	    resultArea.appendText(" Not Found in Db: "+di.notFound+"\n");
+	  }
 	}
-	*/
 	
-	textArea.appendText("\nTotal Count: " +counter+"\n");
-	resultArea.appendText("\nNot Found Count: " +notFoundCount+"\n");
   }
   
   private static final class ProcessFile extends SimpleFileVisitor<Path> 
@@ -105,9 +110,11 @@ public class FileDbCompare
 	      String pathHash = hasher.getMd5Hash(pathStr2.getBytes());
 	      trackList.add(aFile.toString());
 	      counter++;
+	      currentDirTotal++;
 	      if (!Db.trackExists(pathHash)) 
 	      {
 	    	notFoundCount++;  
+	    	currentDirNotFound++;
 	      }
 	    }
 	  }
@@ -121,14 +128,10 @@ public class FileDbCompare
 	{
       if (currentDirectory!=null)
       {
-    	  DirectoryInfo directoryInfo = new DirectoryInfo();
-    	  directoryInfo.path=currentDirectory;
-    	  directoryInfo.totalFileCount=counter;
-    	  directoryInfo.notFoundCount=notFoundCount;
-    	  dirList.add(directoryInfo);
-    	  notFoundCount=0;
-    	  counter=0;
-    	  currentDirectory=aDir.toString();
+    	dirList.add(new DirectoryInfo(currentDirectory, currentDirTotal, currentDirNotFound));
+    	currentDirNotFound=0;
+    	currentDirTotal=0;
+    	currentDirectory=aDir.toString();
       }
       else currentDirectory=aDir.toString();
     	  
