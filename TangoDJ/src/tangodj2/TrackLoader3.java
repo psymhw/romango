@@ -416,7 +416,6 @@ public class TrackLoader3
       return null;  
     }
     
-    //System.out.println("made it this far: 3");
     
     
     pathStr2=path.toString();

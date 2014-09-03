@@ -129,10 +129,11 @@ public class Player
     final static int PLAYMODE_CLEANUP_TO_CORTINA_TRACK = 23;
     final static int PLAYMODE_PREMADE_CORTINA_SINGLE_TRACK = 24;
     
-    final static int PLAYLIST_BUILDER_TAB = 0;
-    final static int EVENT_TAB = 1;
-    final static int PLAYLIST_CHOICE_TAB = 2;
-    final static int CORTINA_CREATE_TAB = 3;
+    public final static int PLAYLIST_BUILDER_TAB = 0;
+    public final static int EVENT_TAB = 1;
+    public final static int PLAYLIST_CHOICE_TAB = 2;
+    public final static int CORTINA_CREATE_TAB = 3;
+    public final static int FAVORITES_TAB = 4;
     
     
     private int playMode=0;

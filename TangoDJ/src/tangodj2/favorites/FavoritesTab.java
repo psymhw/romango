@@ -25,11 +25,13 @@ public class FavoritesTab extends Tab
 {
   private final Player player;
   final FavoritesTable favoritesTable2 = new FavoritesTable(FavoritesTable.FAVORITES_TAB_STYLE);
+  private FavoritesTab favoritesTab;
   
   public FavoritesTab(final Player player)
   {
     this.setText("Favorites");
     this.player=player;
+    favoritesTab=this;
     
     ListView<String> list = new ListView<String>();
     ObservableList<String> items =FXCollections.observableArrayList ();
@@ -106,6 +108,15 @@ public class FavoritesTab extends Tab
       items.add(lhdb.getName());
      // System.out.println(lhdb.getName());
     }
+    
+    ChangeListener playingListener = new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+      	if (player.getActiveTab()!=Player.FAVORITES_TAB)  favoritesTab.setDisable(Player.playing.get());
+      }
+    };   
+    Player.playing.addListener(playingListener);
     
   }
   

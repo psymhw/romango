@@ -1076,8 +1076,8 @@ public class Db
     +sqlReadyString(cortina.title)+"', '"
     +cortina.hash+"', '"
     +cortina.path+"', '"
-    +cortina.album+"', '"
-    +cortina.artist+"', "
+    +sqlReadyString(cortina.album)+"', '"
+    +sqlReadyString(cortina.artist)+"', "
     +cortina.premade+")";
     System.out.println("sql: "+sql);
     connection.createStatement().execute(sql);
