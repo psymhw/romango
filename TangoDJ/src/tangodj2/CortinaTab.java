@@ -4,7 +4,6 @@ import tangodj2.cleanup.CleanupTable;
 import tangodj2.cleanup.CleanupTrack;
 import tangodj2.cortina.CortinaTable;
 import tangodj2.cortina.CortinaTrack;
-
 import tangodj2.tango.TangoTable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -111,7 +110,7 @@ public class CortinaTab extends Tab
     {
       public void changed(ObservableValue observable, Object oldValue, Object newValue) 
       {
-        cortinaTab.setDisable(Player.playing.get());
+    	  if (player.getActiveTab()!=Player.CORTINA_CREATE_TAB) cortinaTab.setDisable(Player.playing.get());
       }
     };   
    Player.playing.addListener(playingListener);

@@ -217,7 +217,7 @@ public class EventTab extends Tab
   {
     public void changed(ObservableValue observable, Object oldValue, Object newValue) 
     {
-      eventTab.setDisable(Player.playing.get());
+    	if (player.getActiveTab()!=Player.EVENT_TAB)  eventTab.setDisable(Player.playing.get());
     }
   };   
   Player.playing.addListener(playingListener);
