@@ -228,7 +228,8 @@ public class CreateDatabase
 	    		"disable_t7 INTEGER NOT NULL DEFAULT 0, "+
 	    		"disable_t8 INTEGER NOT NULL DEFAULT 0, "+
 	    		"disable_t9 INTEGER NOT NULL DEFAULT 0, "+
-	    		"disable_cortina INTEGER NOT NULL DEFAULT 0"+
+	    		"disable_cortina INTEGER NOT NULL DEFAULT 0,"+
+	    		"comment varchar(60) " +
 	    		")";
 		//System.out.println(sql);
 		connection.createStatement().execute(sql);	

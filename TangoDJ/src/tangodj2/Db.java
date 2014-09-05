@@ -746,10 +746,11 @@ public class Db
     connection=null;
   }
 
-	public static int insertTanda(String artist, int styleId, int position) throws SQLException, ClassNotFoundException
+	public static int insertTanda(String artist, int styleId, int position, String comment) throws SQLException, ClassNotFoundException
 	{
 		 connect();
-		 String sql="insert into tandas (artist, styleId, playlistId, position, cortinaId) values('"+sqlReadyString(artist)+"', "+styleId+","+TangoDJ2.prefs.currentPlaylist+", "+position+", -1)";
+		 String sql="insert into tandas (artist, styleId, playlistId, position, cortinaId, comment) values('"+sqlReadyString(artist)+"', "
+		 +styleId+","+TangoDJ2.prefs.currentPlaylist+", "+position+", -1, '"+sqlReadyString(comment)+"')";
 		// System.out.println("Db insertTanda sql: "+sql);
 		 connection.createStatement().execute(sql);
 		 
@@ -906,10 +907,13 @@ public class Db
       Statement statement = connection.createStatement();
       ResultSet resultSet = statement.executeQuery(sql);
       
+     
+      
       TandaTreeItem tandaTreeItem;
       while (resultSet.next())
       {
-    	  tandaTreeItem = new TandaTreeItem(resultSet.getString("artist"), resultSet.getInt("styleId"));
+    	  System.out.println("Db - getTandaTreeItems "+resultSet.getString("artist")+" comment: "+resultSet.getString("comment"));
+    	  tandaTreeItem = new TandaTreeItem(resultSet.getString("artist"), resultSet.getInt("styleId"), resultSet.getString("comment"));
     	  tandaTreeItem.setDbId(resultSet.getInt("id"));
     	  tandaTreeItem.setCortinaId(resultSet.getInt("cortinaId"));
     	  int tanda_disable=resultSet.getInt("tanda_disable");
@@ -926,7 +930,6 @@ public class Db
     		  
     		  // LOAD THE TRACKS INTO THE TANDA
     		  if (trackHash!=null) tandaTreeItem.loadTrack(trackHash, track_disable);
-    	  		  
     	  }
     	  
     	  
@@ -1075,11 +1078,11 @@ public class Db
     +cortina.original_duration+", '"
     +sqlReadyString(cortina.title)+"', '"
     +cortina.hash+"', '"
-    +cortina.path+"', '"
+    +sqlReadyString(cortina.path)+"', '"
     +sqlReadyString(cortina.album)+"', '"
     +sqlReadyString(cortina.artist)+"', "
     +cortina.premade+")";
-    System.out.println("sql: "+sql);
+   // System.out.println("sql: "+sql);
     connection.createStatement().execute(sql);
     
     int maxid=0;
