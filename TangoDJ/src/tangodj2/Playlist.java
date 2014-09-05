@@ -19,6 +19,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.SelectionMode;
@@ -559,9 +560,9 @@ public class Playlist
   
   public TreeView<String> getTreeView() { return treeView; }
 	
-  public void addTanda(String artist, int styleId)
+  public void addTanda(String artist, int styleId, String comment)
   {
-	  playlistTreeItem.addTanda(artist, styleId);
+	  playlistTreeItem.addTanda(artist, styleId, comment);
 	  generateFlatList();
   }
 	
@@ -1066,13 +1067,18 @@ public class Playlist
 	   {
 	     final ComboBox comboBox = new ComboBox();
 	     
-	     final TextBuilder seperatorBuilder = TextBuilder.create()
-	            .fill(Color.BLACK)
-	            .font(Font.font("Serif", 18));
 	     
-	     final Text alist = seperatorBuilder.text("A List").build();
-	     Text blist =  seperatorBuilder.text("B List").build();
-	     Text clist =  seperatorBuilder.text("C List").build();
+	     final Text alist = new Text("A List");
+	     Text blist =   new Text("B List");
+	     Text clist =   new Text("C List");
+	     
+	     alist.setFill(Color.BLACK);
+	     alist.setFont(Font.font("Serif", 18));
+	     blist.setFill(Color.BLACK);
+	     blist.setFont(Font.font("Serif", 18));
+	     clist.setFill(Color.BLACK);
+	     clist.setFont(Font.font("Serif", 18));
+	     
 	     final TextField artistOverride = new TextField("");
 	    
 	     comboBox.getItems().add(alist);
@@ -1121,7 +1127,7 @@ public class Playlist
 
 	     final VBox styleBox = new VBox();
 	     styleBox.getChildren().addAll(rb1,rb2,rb3,rb4,rb5,rb6);
-	     final TextField tandaName = new TextField();
+	     final TextField comment = new TextField();
 	     
          final Stage myDialog = new Stage();
          myDialog.initModality(Modality.APPLICATION_MODAL);
@@ -1140,7 +1146,7 @@ public class Playlist
 	           {
 	             styleId= Integer.parseInt(numStr);
 	           } catch (Exception e) {}
-	           addTanda(artistOverride.getText(), styleId);
+	           addTanda(artistOverride.getText(), styleId, comment.getText());
 	             myDialog.close();
            }});
        
@@ -1149,6 +1155,7 @@ public class Playlist
          
          
          GridPane gridPane = new GridPane();
+         //gridPane.setGridLinesVisible(true);
          gridPane.setPadding(new Insets(10, 10, 10, 10));
          gridPane.setVgap(2);
          gridPane.setHgap(5);
@@ -1157,7 +1164,9 @@ public class Playlist
          gridPane.add(artistOverride, 1, 1);
          //gridPane.add(new Text("Style"), 0, 1);
          gridPane.add(styleBox, 0, 1);
-         gridPane.add(okButton, 1, 3);
+         gridPane.add(new Label("Comment: "), 0, 3);
+         gridPane.add(comment, 1, 3);
+         gridPane.add(okButton, 1, 4);
          
          Scene myDialogScene = new Scene(gridPane, 300, 200);
          myDialog.setScene(myDialogScene);

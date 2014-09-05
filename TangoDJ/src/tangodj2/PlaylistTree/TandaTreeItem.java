@@ -29,7 +29,7 @@ public class TandaTreeItem extends BaseTreeItem
    private int playlistIndex=0; // irregardless of disabled or not
   // private static Image flagsImage;
       
-   public TandaTreeItem(String artist, int styleId)
+   public TandaTreeItem(String artist, int styleId, String comment)
    {
   	 super();
   	 this.setTreeType("tanda");
@@ -38,7 +38,9 @@ public class TandaTreeItem extends BaseTreeItem
   	 //if (flagsImage==null) flagsImage = new Image(getClass().getResourceAsStream("/resources/images/small_flags.png"));
   	 setGraphic(new ImageView(flagsImage));
   	 this.style=SharedValues.styles.get(styleId) ;
-  	 this.setValue(artist + " - "+style);
+  	 String name = artist + " - "+style;
+  	 if (comment!=null) if (comment.length()>0) name=name+" ("+comment+")";
+  	 this.setValue(name);
    }
    
    /*
