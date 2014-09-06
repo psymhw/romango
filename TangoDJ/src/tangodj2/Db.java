@@ -1027,6 +1027,17 @@ public class Db
 	   disconnect();
 	}
 	
+	public static void updateTanda(long tandaId, String artist, int styleId, String comment) throws SQLException, ClassNotFoundException
+	{
+	   StringBuffer sql = new StringBuffer("update tandas set artist='"+artist+"', styleId="+styleId+", comment='"+comment+"'");
+	   sql.append(" where id = "+tandaId);
+	 //  System.out.println(sql);
+	   
+	   connect();
+	   connection.createStatement().execute(sql.toString());
+	   disconnect();
+	}
+	
 	public static void deleteTanda(TandaTreeItem tandaTreeItem) throws SQLException, ClassNotFoundException
 	{
 	   StringBuffer sql = new StringBuffer("delete from tandas");

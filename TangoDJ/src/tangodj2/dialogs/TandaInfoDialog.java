@@ -24,6 +24,8 @@ import tangodj2.Db;
 import tangodj2.Playlist;
 import tangodj2.SharedValues;
 import tangodj2.TandaDb;
+import tangodj2.PlaylistTree.PlaylistTreeItem;
+import tangodj2.PlaylistTree.TandaTreeItem;
 
 public class TandaInfoDialog 
 {
@@ -39,6 +41,7 @@ public class TandaInfoDialog
 	 final RadioButton rb4 = new RadioButton("Alternative");
 	 final RadioButton rb5 = new RadioButton("Mixed");
 	 final RadioButton rb6 = new RadioButton("Cleanup");
+ private TandaTreeItem tandaTreeItem;
   
   
   public TandaInfoDialog(Playlist playlist)
@@ -48,11 +51,11 @@ public class TandaInfoDialog
 	show();
   }
   
-  public TandaInfoDialog(Playlist playlist, long tandaId, long selectedTandaIndex)
+  public TandaInfoDialog(Playlist playlist, long tandaId, TandaTreeItem tandaTreeItem)
   {
 	this.playlist=playlist;
 	this.tandaId=tandaId;
-	System.out.println("TandaInfoDialog - selectedTandaIndex: "+selectedTandaIndex);
+	this.tandaTreeItem=tandaTreeItem;
 	try 
 	{
 	  tandaDb = Db.getTanda(tandaId);
@@ -142,7 +145,7 @@ public class TandaInfoDialog
 	           }
 	           else
 	           {
-	        	 playlist.updateTanda(tandaId, artistOverride.getText(), styleId, comment.getText());
+	        	 playlist.updateTanda(tandaId, artistOverride.getText(), styleId, comment.getText(),tandaTreeItem);
 	           }
 	             myDialog.close();
         }});

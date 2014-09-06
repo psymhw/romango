@@ -567,9 +567,9 @@ public class Playlist
 	  generateFlatList();
   }
   
-  public void updateTanda(long tandaId, String artist, int styleId, String comment)
+  public void updateTanda(long tandaId, String artist, int styleId,  String comment, TandaTreeItem tandaTreeItem)
   {
-	  playlistTreeItem.updateTanda(tandaId, artist, styleId, comment);
+	  playlistTreeItem.updateTanda(tandaId, artist, styleId,  comment, tandaTreeItem);
 	  generateFlatList();
   }
 	
@@ -914,7 +914,7 @@ public class Playlist
 	       public void handle(Event t) 
 	       { 
 	    	// System.out.println("selectedTandaTreeItem: "+selectedTandaTreeItem.getDbId()); 
-	         new TandaInfoDialog(playlist, selectedTandaTreeItem.getDbId(), selectedTandaIndex);
+	         new TandaInfoDialog(playlist, selectedTandaTreeItem.getDbId(), selectedTandaTreeItem);
 	         generateFlatList(); 
 	       }
 	     });
