@@ -56,6 +56,19 @@ public class PlaylistTreeItem  extends BaseTreeItem
 	    tandaTreeItem.setDbId(tandaDbId);
 	  } catch (Exception e) {	e.printStackTrace(); }  
   }
+  
+  public void updateTanda(long tandaId, String artist, int styleId, String comment)
+  {
+   // TandaTreeItem tandaTreeItem = new TandaTreeItem(artist, styleId, comment);
+   // tandaTreeItem.setExpanded(false);
+   //   getChildren().
+	//  getChildren().add(tandaTreeItem); 
+	//  try 
+	//  {  int tandaDbId = Db.insertTanda(artist, styleId, getTandaPosition(tandaTreeItem), comment);
+	//    tandaTreeItem.setDbId(tandaDbId);
+	//  } catch (Exception e) {	e.printStackTrace(); }  
+  }
+
 
 
     

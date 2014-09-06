@@ -13,7 +13,6 @@ import java.util.List;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import tangodj2.PlaylistTree.PlaylistTreeItem;
 import tangodj2.PlaylistTree.TandaTreeItem;
 import tangodj2.PlaylistTree.TrackTreeItem;
@@ -29,6 +28,7 @@ import tangodj2.favorites.FavoritesTrack;
 import tangodj2.favorites.ListHeaderDb;
 import tangodj2.tango.TangoTable;
 import tangodj2.tango.TangoTrack;
+import tangodj2.TandaDb;
 import util.jsoup.TDJDb;
 
 public class Db 
@@ -896,6 +896,26 @@ public class Db
 	    } catch (Exception e) {e.printStackTrace(); }
 	}
 	
+	public static TandaDb getTanda(long tandaId)  throws SQLException, ClassNotFoundException
+	{
+	  String sql="select * from tandas where id="+tandaId;
+	  connect();
+	  Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery(sql);
+      if (resultSet.next())
+      {
+    	TandaDb tandaDb = new TandaDb();
+        tandaDb.setId(resultSet.getLong("id")); 
+        tandaDb.setArtist(resultSet.getString("artist"));
+    	tandaDb.setPlaylistId(resultSet.getInt("playlistId"));
+    	tandaDb.setStyleId(resultSet.getInt("styleId"));
+    	tandaDb.setComment(resultSet.getString("comment"));
+    	tandaDb.setStyle(SharedValues.styles.get(tandaDb.getStyleId()));
+    	return tandaDb;
+      }
+      else return null;
+	}
+	
 	public static ArrayList<TandaTreeItem> getTandaTreeItems(int playlistId)  throws SQLException, ClassNotFoundException
 	{
 	  ArrayList<TandaTreeItem> tandaTreeItems = new ArrayList<TandaTreeItem>();
@@ -912,7 +932,7 @@ public class Db
       TandaTreeItem tandaTreeItem;
       while (resultSet.next())
       {
-    	  System.out.println("Db - getTandaTreeItems "+resultSet.getString("artist")+" comment: "+resultSet.getString("comment"));
+    	 // System.out.println("Db - getTandaTreeItems "+resultSet.getString("artist")+" comment: "+resultSet.getString("comment"));
     	  tandaTreeItem = new TandaTreeItem(resultSet.getString("artist"), resultSet.getInt("styleId"), resultSet.getString("comment"));
     	  tandaTreeItem.setDbId(resultSet.getInt("id"));
     	  tandaTreeItem.setCortinaId(resultSet.getInt("cortinaId"));
