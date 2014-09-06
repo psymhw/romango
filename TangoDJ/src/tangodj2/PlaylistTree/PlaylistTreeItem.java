@@ -57,16 +57,17 @@ public class PlaylistTreeItem  extends BaseTreeItem
 	  } catch (Exception e) {	e.printStackTrace(); }  
   }
   
-  public void updateTanda(long tandaId, String artist, int styleId, String comment)
+  public void updateTanda(long tandaId, String artist, int styleId,  String comment, TandaTreeItem tandaTreeItem)
   {
-   // TandaTreeItem tandaTreeItem = new TandaTreeItem(artist, styleId, comment);
-   // tandaTreeItem.setExpanded(false);
-   //   getChildren().
-	//  getChildren().add(tandaTreeItem); 
-	//  try 
-	//  {  int tandaDbId = Db.insertTanda(artist, styleId, getTandaPosition(tandaTreeItem), comment);
-	//    tandaTreeItem.setDbId(tandaDbId);
-	//  } catch (Exception e) {	e.printStackTrace(); }  
+    tandaTreeItem.setArtist(artist);
+    tandaTreeItem.setStyleId(styleId);
+    tandaTreeItem.setStyle(SharedValues.styles.get(styleId));
+    String value = artist;
+    if (comment!=null) if (comment.length()>0) value+=" ("+comment+")";
+    tandaTreeItem.setValue(artist);
+	  try 
+	  {  Db.updateTanda(tandaId, artist, styleId, comment);
+	  } catch (Exception e) {	e.printStackTrace(); }  
   }
 
 
@@ -88,34 +89,6 @@ public class PlaylistTreeItem  extends BaseTreeItem
      return (TandaTreeItem)getChildren().get(0);  
    }
 
-   /*
-  public void moveTandaUp(int index)
-  {
-	//System.out.println(" SharedValues.selectedTanda: "+SharedValues.selectedTanda);
-	TandaTreeItem tti =  (TandaTreeItem)getChildren().get(index);
-	getChildren().remove(index);
-	getChildren().add(index-1, tti);
-	System.out.println("number of tandas: "+getChildren().size());
-	try 
-    {
-	  Db.updateTandaPositions(this);
-	} catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
-  }
-
-  public void moveTandaDown(int index)
-  {
-	TandaTreeItem tti =  (TandaTreeItem)getChildren().get(index);
-	getChildren().remove(index);
-	if (getTandaCount()<index) 
-		getChildren().add( tti);
-	else
-	getChildren().add(index+1, tti);
-	try 
-    {
-	  Db.updateTandaPositions(this);
-	} catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
-  }
-*/
   public void moveTandaUp(TandaTreeItem tti)
   {
     int index = tti.getPlaylistIndex();
