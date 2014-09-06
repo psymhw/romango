@@ -45,6 +45,7 @@ import tangodj2.PlaylistTree.PlaylistTreeItem;
 import tangodj2.PlaylistTree.TandaTreeItem;
 import tangodj2.PlaylistTree.TrackTreeItem;
 import tangodj2.cortina.CortinaTrack;
+import tangodj2.dialogs.TandaInfoDialog;
 import tangodj2.infoWindow.InfoWindow2;
 
 public class Playlist 
@@ -58,6 +59,7 @@ public class Playlist
   private TreeView<String> treeView;
   private PlaylistTrack previouslyPlayingTrack=null;
   private PlaylistTrack previouslySelectedTrack=null;
+  private Playlist playlist;
   private int selectedFlatPlayableIndex=-1;
   
   private int nextTrack=0; 
@@ -72,10 +74,9 @@ public class Playlist
    
   public Playlist(int playlistId) 
   {
+	  this.playlist=this;
 	  setupTreeView(playlistId);	
 	  setNextTrackToPlay();  
-	 
-	  
   }
 	
   public void printTracks()
@@ -565,6 +566,12 @@ public class Playlist
 	  playlistTreeItem.addTanda(artist, styleId, comment);
 	  generateFlatList();
   }
+  
+  public void updateTanda(long tandaId, String artist, int styleId, String comment)
+  {
+	  playlistTreeItem.updateTanda(tandaId, artist, styleId, comment);
+	  generateFlatList();
+  }
 	
   public int getTandaCount() { return playlistTreeItem.getTandaCount();	}
 	
@@ -705,6 +712,7 @@ public class Playlist
             break;
        case "tanda":
             selectedTandaTreeItem = (TandaTreeItem)bti;
+            
             selectedTrackTreeItem = selectedTandaTreeItem.getFirstTrack();
             if (selectedTrackTreeItem!=null) selectedFlatPlayableIndex = selectedTrackTreeItem.getPlayableIndex();
             break;
@@ -867,11 +875,12 @@ public class Playlist
 	   {
 	     MenuItem moveUp = new MenuItem("Move Tanda Up"); 
 	     MenuItem moveDown = new MenuItem("Move Tanda Down");
+	     MenuItem edit = new MenuItem("Edit Tanda Title" );
 	     MenuItem delete = new MenuItem("Delete Tanda" );
 	     final CheckMenuItem disableItem = new CheckMenuItem("Skip Tanda"); 
 	     
 	     // don't change the positions of menu items. The cell factory gets them by index
-	     tandaContextMenu.getItems().addAll(moveUp, moveDown, delete, disableItem);
+	     tandaContextMenu.getItems().addAll(moveUp, moveDown,  delete, disableItem, edit);
 	     
 	     
 	     tandaContextMenu.setOnShowing(new EventHandler() 
@@ -896,6 +905,16 @@ public class Playlist
 	       public void handle(Event t) 
 	       { 
 	         playlistTreeItem.moveTandaUp(selectedTandaTreeItem);
+	         generateFlatList(); 
+	       }
+	     });
+	     
+	     edit.setOnAction(new EventHandler() 
+	     {
+	       public void handle(Event t) 
+	       { 
+	    	// System.out.println("selectedTandaTreeItem: "+selectedTandaTreeItem.getDbId()); 
+	         new TandaInfoDialog(playlist, selectedTandaTreeItem.getDbId(), selectedTandaIndex);
 	         generateFlatList(); 
 	       }
 	     });
@@ -929,7 +948,8 @@ public class Playlist
        {
          public void handle(Event t) 
          {
-           newTandaDialog();   
+          // newTandaDialog();   
+           new TandaInfoDialog(playlist);	 
          }
        });
       
