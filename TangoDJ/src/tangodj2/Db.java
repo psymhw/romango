@@ -146,10 +146,8 @@ public class Db
 	    ResultSet resultSet = statement.executeQuery(sql);
 	    while(resultSet.next())
 	    {
-	    	
-	        tandaDb = getTandaDb(resultSet);
-	        System.out.println("Db loadTandaTrack: "+tandaDb.getArtist());
-	        tandaTracks.add(new TandaTrack(tandaDb));
+	      tandaDb = getTandaDb(resultSet);
+	      tandaTracks.add(new TandaTrack(tandaDb));
 	    }
 	      if (resultSet!=null) resultSet.close();
 	      if (statement!=null) statement.close();
@@ -755,7 +753,7 @@ public class Db
 	
 	public static String getTrackTitle(String pathHash)
 	{
-	  String title="not found";
+	  String title="  ---";
 	  try
 	  {
 	 	  Statement statement = connection.createStatement();
@@ -964,15 +962,16 @@ public class Db
 	    } catch (Exception e) {e.printStackTrace(); }
 	}
 	
-	public static TandaDb getTanda(long tandaId)  throws Exception
+	public static TandaDb getTanda(long tandaId) 
 	{
+	  try {	
 	  String sql="select * from tandas where id="+tandaId;
-	  connect();
 	  Statement statement = connection.createStatement();
       ResultSet resultSet = statement.executeQuery(sql);
       if (resultSet.next())
     	return getTandaDb(resultSet);
       else return null;
+	  } catch (Exception e) {e.printStackTrace(); return null; }
 	}
 	
 	public static TandaDb getTandaDb(ResultSet resultSet) throws Exception
@@ -1074,7 +1073,7 @@ public class Db
 	   sql.append(", cortinaId = "+tandaTreeItem.getCortinaId());
 	   
 	   sql.append(" where id = "+tandaTreeItem.getDbId());
-	 // System.out.println(sql);
+	   //System.out.println("Db: "+sql);
 	   
 	   connect();
 	   connection.createStatement().execute(sql.toString());

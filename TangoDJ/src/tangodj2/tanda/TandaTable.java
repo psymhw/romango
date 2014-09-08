@@ -3,6 +3,7 @@ package tangodj2.tanda;
 import java.util.ArrayList;
 
 import tangodj2.Db;
+import tangodj2.TandaDb;
 import tangodj2.tango.TangoTrack;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -48,7 +49,23 @@ public class TandaTable  extends TableView<TandaTrack>
     });
   }
 
- 
+  public void update(long tandaDbId)
+  {
+	int counter=0;  
+	for(TandaTrack tandaTrack : tandaTracksData )
+	{
+	  if (tandaTrack.getDbId()==tandaDbId)
+	  {
+		TandaDb tandaDb = Db.getTanda(tandaDbId);
+		// need to remove and re-add because observable list doesn't fire a change on a cell
+		tandaTracksData.remove(counter);
+		tandaTracksData.add(counter, new TandaTrack(tandaDb));
+		tandaTrack.update(tandaDb);
+		break;
+	  }
+	  counter++;
+	}
+  }
 
   private void setupTable() 
   {
