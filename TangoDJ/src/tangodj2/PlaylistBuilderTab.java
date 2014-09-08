@@ -404,6 +404,7 @@ public class PlaylistBuilderTab extends Tab
           {  
             TandaTreeItem tandaTreeItem = playlist.getSelectedTanda();
             tandaTreeItem.addTrack(tangoTrack.getPathHash());
+            tandaTable.update(tandaTreeItem.getDbId());
             playlist.generateFlatList();
           }
         }

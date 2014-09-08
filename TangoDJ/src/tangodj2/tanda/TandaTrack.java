@@ -15,19 +15,39 @@ public class TandaTrack
   private final SimpleStringProperty track_2_title;
   private final SimpleStringProperty track_3_title;
   private final SimpleStringProperty cortina_title;
+  private long dbId;
   
-  public TandaTrack(TandaDb tandaDb)
+  
+public TandaTrack(TandaDb tandaDb)
   {
-	this.artist = new SimpleStringProperty(tandaDb.getArtist());
-	this.style = new SimpleStringProperty(tandaDb.getStyle());
-	this.comment = new SimpleStringProperty(tandaDb.getComment());
-	this.playlistName = new SimpleStringProperty(Db.getPlaylistName(tandaDb.getPlaylistId()));
-	this.track_0_title = new SimpleStringProperty(Db.getTrackTitle(tandaDb.getTrackHash_0()));
-	this.track_1_title = new SimpleStringProperty(Db.getTrackTitle(tandaDb.getTrackHash_1()));
-	this.track_2_title = new SimpleStringProperty(Db.getTrackTitle(tandaDb.getTrackHash_2()));
-	this.track_3_title = new SimpleStringProperty(Db.getTrackTitle(tandaDb.getTrackHash_3()));
-	this.cortina_title = new SimpleStringProperty(Db.getCortinaTitle(tandaDb.getCortinaId()));
+	artist = new SimpleStringProperty(tandaDb.getArtist());
+	style = new SimpleStringProperty(tandaDb.getStyle());
+	comment = new SimpleStringProperty(tandaDb.getComment());
+	playlistName = new SimpleStringProperty(Db.getPlaylistName(tandaDb.getPlaylistId()));
+	track_0_title = new SimpleStringProperty(Db.getTrackTitle(tandaDb.getTrackHash_0()));
+	track_1_title = new SimpleStringProperty(Db.getTrackTitle(tandaDb.getTrackHash_1()));
+	track_2_title = new SimpleStringProperty(Db.getTrackTitle(tandaDb.getTrackHash_2()));
+	track_3_title = new SimpleStringProperty(Db.getTrackTitle(tandaDb.getTrackHash_3()));
+	cortina_title = new SimpleStringProperty(Db.getCortinaTitle(tandaDb.getCortinaId()));
+	dbId=tandaDb.getId();
   }
+
+public void update(TandaDb tandaDb)
+{
+  artist.set(tandaDb.getArtist());
+  style.set(tandaDb.getStyle());
+  comment.set(tandaDb.getComment());
+  playlistName.set(Db.getPlaylistName(tandaDb.getPlaylistId()));
+  track_0_title.set(Db.getTrackTitle(tandaDb.getTrackHash_0()));
+  track_1_title.set(Db.getTrackTitle(tandaDb.getTrackHash_1()));
+  track_2_title.set(Db.getTrackTitle(tandaDb.getTrackHash_2()));
+  track_3_title.set(Db.getTrackTitle(tandaDb.getTrackHash_3()));
+  cortina_title.set(Db.getCortinaTitle(tandaDb.getCortinaId()));
+}
+
+public long getDbId() {
+	return dbId;
+}
 
 public String getArtist() {
 	return artist.get();
