@@ -33,6 +33,7 @@ import tangodj2.favorites.FavoritesTab;
 import tangodj2.favorites.FavoritesTable;
 import tangodj2.favorites.FavoritesTrack;
 import tangodj2.favorites.ListHeaderDb;
+import tangodj2.tanda.TandaTable;
 import tangodj2.tango.TangoTable;
 import tangodj2.tango.TangoTrack;
 
@@ -45,6 +46,7 @@ public class PlaylistBuilderTab extends Tab
   private CleanupTable cleanupTable;
   private CortinaTable cortinaTable;
   private FavoritesTable favoritesTable;
+  private TandaTable tandaTable;
   public static Playlist playlist;
   private PlaylistBuilderTab playlistBuilderTab;
   final VBox vbox = new VBox();
@@ -67,6 +69,7 @@ public class PlaylistBuilderTab extends Tab
     //this.cleanupTable=cleanupTable;
    
     tangoTable = new TangoTable();
+    tandaTable = new TandaTable();
     
     
     cleanupTable = new CleanupTable();
@@ -205,11 +208,13 @@ public class PlaylistBuilderTab extends Tab
 	  final RadioButton rb2 = new RadioButton("Cortina");
 	  final RadioButton rb3 = new RadioButton("Non-Tango");
 	  final RadioButton rb4 = new RadioButton("Favorites");
+	  final RadioButton rb5 = new RadioButton("Tandas");
 	  
 	  rb1.setId("tango");
 	  rb2.setId("cortina");
 	  rb3.setId("cleanup");
 	  rb4.setId("favorites");
+	  rb5.setId("tandas");
 	  
     final ToggleGroup trackTypeGroup = new ToggleGroup();
     
@@ -217,10 +222,12 @@ public class PlaylistBuilderTab extends Tab
     rb2.setToggleGroup(trackTypeGroup);
     rb3.setToggleGroup(trackTypeGroup);
     rb4.setToggleGroup(trackTypeGroup);
+    rb5.setToggleGroup(trackTypeGroup);
     rb1.setFont(new Font("Arial", 14));
     rb2.setFont(new Font("Arial", 14));
     rb3.setFont(new Font("Arial", 14));
     rb4.setFont(new Font("Arial", 14));
+    rb5.setFont(new Font("Arial", 14));
     
     rb1.setSelected(true);
     
@@ -236,6 +243,8 @@ public class PlaylistBuilderTab extends Tab
     spacer5.setFont(new Font("Arial", 16));
     final Label spacer6 = new Label("  ");
     spacer6.setFont(new Font("Arial", 16));
+    final Label spacer7 = new Label("  ");
+    spacer7.setFont(new Font("Arial", 16));
 	
 	  final ComboBox favoritesComboBox = getFavoritesComboBox();
 	  final HBox favotitesListBox = new HBox();
@@ -251,6 +260,7 @@ public class PlaylistBuilderTab extends Tab
 			                    spacer3,rb4,
 			                    spacer5,rb2,
 			                    spacer4,rb3,
+			                    spacer7,rb5,
 			                    spacer2, searchField, 
 			                    getSearchButton(), 
 			                    getClearButton(), 
@@ -267,6 +277,7 @@ public class PlaylistBuilderTab extends Tab
           {
             vbox.getChildren().remove(cleanupTable);
             vbox.getChildren().remove(cortinaTable);
+            vbox.getChildren().remove(tandaTable); 
             vbox.getChildren().remove(favoritesTable);
             vbox.getChildren().remove(favotitesListBox);
             vbox.getChildren().add(tangoTable);
@@ -277,6 +288,7 @@ public class PlaylistBuilderTab extends Tab
           {
             vbox.getChildren().remove(tangoTable);
             vbox.getChildren().remove(cortinaTable);
+            vbox.getChildren().remove(tandaTable);
             vbox.getChildren().remove(favoritesTable);
             vbox.getChildren().remove(favotitesListBox);
             vbox.getChildren().add(cleanupTable);
@@ -287,6 +299,7 @@ public class PlaylistBuilderTab extends Tab
           {
             vbox.getChildren().remove(tangoTable);
             vbox.getChildren().remove(cleanupTable);
+            vbox.getChildren().remove(tandaTable);
             vbox.getChildren().remove(favoritesTable);
             vbox.getChildren().remove(favotitesListBox);
             vbox.getChildren().add(cortinaTable);
@@ -298,8 +311,20 @@ public class PlaylistBuilderTab extends Tab
             vbox.getChildren().remove(tangoTable);
             vbox.getChildren().remove(cleanupTable);
             vbox.getChildren().remove(cortinaTable);
+            vbox.getChildren().remove(tandaTable);
             vbox.getChildren().add(favotitesListBox);
             vbox.getChildren().add(favoritesTable);
+            currentTable="cortina";
+           // savedType=2;
+          }
+          else if (selectedStr.contains("tandas")) 
+          {
+            vbox.getChildren().remove(tangoTable);
+            vbox.getChildren().remove(cleanupTable);
+            vbox.getChildren().remove(cortinaTable);
+            vbox.getChildren().remove(favoritesTable);
+            vbox.getChildren().remove(favotitesListBox);
+            vbox.getChildren().add(tandaTable);
             currentTable="cortina";
            // savedType=2;
           }

@@ -569,6 +569,7 @@ public class Playlist
   
   public void updateTanda(long tandaId, String artist, int styleId,  String comment, TandaTreeItem tandaTreeItem)
   {
+	  System.out.println("Playlist - updateTanda: tandaId="+tandaId+", artist="+artist+", styleId="+styleId+", comment="+comment);
 	  playlistTreeItem.updateTanda(tandaId, artist, styleId,  comment, tandaTreeItem);
 	  generateFlatList();
   }

@@ -26,6 +26,7 @@ import tangodj2.cortina.CortinaTrack;
 import tangodj2.favorites.FavoritesTable;
 import tangodj2.favorites.FavoritesTrack;
 import tangodj2.favorites.ListHeaderDb;
+import tangodj2.tanda.TandaTrack;
 import tangodj2.tango.TangoTable;
 import tangodj2.tango.TangoTrack;
 import tangodj2.TandaDb;
@@ -131,6 +132,30 @@ public class Db
     PlaylistBuilderTab.trackCount.setText(""+tangoTracks.size());
     return tangoTracks;
   }
+	
+	public static ArrayList<TandaTrack> loadTandaTracks()
+	{
+	  ArrayList<TandaTrack> tandaTracks = new ArrayList<TandaTrack>();
+      String sql;
+      sql= "select * from tandas order by artist, styleId, playlistId";
+      TandaDb tandaDb;
+	      
+	  try
+	  {
+	    Statement statement = connection.createStatement();
+	    ResultSet resultSet = statement.executeQuery(sql);
+	    while(resultSet.next())
+	    {
+	    	
+	        tandaDb = getTandaDb(resultSet);
+	        System.out.println("Db loadTandaTrack: "+tandaDb.getArtist());
+	        tandaTracks.add(new TandaTrack(tandaDb));
+	    }
+	      if (resultSet!=null) resultSet.close();
+	      if (statement!=null) statement.close();
+	    } catch (Exception e) { e.printStackTrace();}
+	    return tandaTracks;
+	  }
 	
 	
 	public static void loadCleanupTracks()
@@ -539,10 +564,9 @@ public class Db
       {
       connect();
       Statement statement = connection.createStatement();
-      ResultSet resultSet = statement.executeQuery("select * from cortinas where id = "+id+ 
-          " order by title, start");
+      ResultSet resultSet = statement.executeQuery("select * from cortinas where id = "+id);
       
-      while(resultSet.next())
+      if(resultSet.next())
       {
         cortinaTrack= new CortinaTrack(resultSet.getInt("id"), 
                                        resultSet.getInt("start"),
@@ -576,6 +600,19 @@ public class Db
       return cortinaTrack;
     }
   
+  public static String getCortinaTitle(long id)
+  {
+	  String title="not found";
+      try
+      {
+      Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery("select * from cortinas where id = "+id); 
+      if(resultSet.next()) title=resultSet.getString("title");
+      if (resultSet!=null) resultSet.close();
+      if (statement!=null) statement.close();
+      } catch (Exception e) { e.printStackTrace(); }
+      return title;
+    }
 	
 	private static void connect()  throws SQLException, ClassNotFoundException
 	{
@@ -625,6 +662,22 @@ public class Db
 	 //System.out.println("DB - "+playlistTreeItem.toString());
 	  
 	  return playlistTreeItem;
+	}
+	
+	public static String getPlaylistName(long id) 
+	{
+	  String name="not found";	
+	  
+	  try {
+	 	Statement statement = connection.createStatement();
+	 	ResultSet resultSet = statement.executeQuery("select * from playlists where id = "+id);
+	 	if(resultSet.next())
+	 	  name=resultSet.getString("name");
+	 	if (resultSet!=null) resultSet.close();
+	 	if (statement!=null) statement.close();
+	  } catch (Exception e) { e.printStackTrace(); }
+	 	
+	  return name;
 	}
 	
 	
@@ -698,6 +751,21 @@ public class Db
 	 	  disconnect();
 	  } catch (Exception e) { e.printStackTrace();}
 	  return trackDb;
+	}
+	
+	public static String getTrackTitle(String pathHash)
+	{
+	  String title="not found";
+	  try
+	  {
+	 	  Statement statement = connection.createStatement();
+	 	  ResultSet resultSet = statement.executeQuery("select * from tracks where pathHash = '"+pathHash+"'");
+	 	  if(resultSet.next())
+	 	    title=resultSet.getString("title");
+	 	  if (resultSet!=null) resultSet.close();
+	 	  if (statement!=null) statement.close();
+	  } catch (Exception e) { e.printStackTrace();}
+	  return title;
 	}
 	
 	public static void applyRating(String pathHash, String stars)
@@ -896,25 +964,36 @@ public class Db
 	    } catch (Exception e) {e.printStackTrace(); }
 	}
 	
-	public static TandaDb getTanda(long tandaId)  throws SQLException, ClassNotFoundException
+	public static TandaDb getTanda(long tandaId)  throws Exception
 	{
 	  String sql="select * from tandas where id="+tandaId;
 	  connect();
 	  Statement statement = connection.createStatement();
       ResultSet resultSet = statement.executeQuery(sql);
       if (resultSet.next())
-      {
-    	TandaDb tandaDb = new TandaDb();
-        tandaDb.setId(resultSet.getLong("id")); 
+    	return getTandaDb(resultSet);
+      else return null;
+	}
+	
+	public static TandaDb getTandaDb(ResultSet resultSet) throws Exception
+	{
+		TandaDb tandaDb = new TandaDb();
+		tandaDb.setId(resultSet.getLong("id")); 
         tandaDb.setArtist(resultSet.getString("artist"));
     	tandaDb.setPlaylistId(resultSet.getInt("playlistId"));
     	tandaDb.setStyleId(resultSet.getInt("styleId"));
     	tandaDb.setComment(resultSet.getString("comment"));
     	tandaDb.setStyle(SharedValues.styles.get(tandaDb.getStyleId()));
-    	return tandaDb;
-      }
-      else return null;
+    	tandaDb.setTrackHash_0(resultSet.getString("trackHash_0"));
+    	tandaDb.setTrackHash_1(resultSet.getString("trackHash_1"));
+    	tandaDb.setTrackHash_2(resultSet.getString("trackHash_2"));
+    	tandaDb.setTrackHash_3(resultSet.getString("trackHash_3"));
+    	tandaDb.setCortinaId(resultSet.getLong("cortinaId"));
+		return tandaDb;
 	}
+	
+	
+	
 	
 	public static ArrayList<TandaTreeItem> getTandaTreeItems(int playlistId)  throws SQLException, ClassNotFoundException
 	{
