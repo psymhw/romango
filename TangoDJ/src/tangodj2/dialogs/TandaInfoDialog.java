@@ -168,7 +168,7 @@ public class TandaInfoDialog
       gridPane.add(comment, 1, 3);
       gridPane.add(okButton, 1, 4);
       
-      Scene myDialogScene = new Scene(gridPane, 300, 200);
+      Scene myDialogScene = new Scene(gridPane, 300, 300);
       myDialog.setScene(myDialogScene);
       
       Object ax;

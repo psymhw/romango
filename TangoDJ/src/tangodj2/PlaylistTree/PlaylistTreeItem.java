@@ -59,12 +59,14 @@ public class PlaylistTreeItem  extends BaseTreeItem
   
   public void updateTanda(long tandaId, String artist, int styleId,  String comment, TandaTreeItem tandaTreeItem)
   {
+	//System.out.println("PlaylistTreeItem - updateTanda: tandaId="+tandaId+", artist="+artist+", styleId="+styleId+", comment="+comment);
+		  
     tandaTreeItem.setArtist(artist);
     tandaTreeItem.setStyleId(styleId);
     tandaTreeItem.setStyle(SharedValues.styles.get(styleId));
-    String value = artist;
+    String value = artist+" - "+SharedValues.styles.get(styleId);
     if (comment!=null) if (comment.length()>0) value+=" ("+comment+")";
-    tandaTreeItem.setValue(artist);
+    tandaTreeItem.setValue(value);
 	  try 
 	  {  Db.updateTanda(tandaId, artist, styleId, comment);
 	  } catch (Exception e) {	e.printStackTrace(); }  

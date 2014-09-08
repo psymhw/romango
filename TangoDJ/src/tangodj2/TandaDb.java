@@ -9,7 +9,42 @@ public class TandaDb
   private int styleId;
   private String comment;
   private String style;
+  private String trackHash_0;
+  private String trackHash_1;
+  private String trackHash_2;
+  private String trackHash_3;
+  private long cortinaId;
   
+public String getTrackHash_0() {
+	return trackHash_0;
+}
+public void setTrackHash_0(String trackHash_0) {
+	this.trackHash_0 = trackHash_0;
+}
+public String getTrackHash_1() {
+	return trackHash_1;
+}
+public void setTrackHash_1(String trackHash_1) {
+	this.trackHash_1 = trackHash_1;
+}
+public String getTrackHash_2() {
+	return trackHash_2;
+}
+public void setTrackHash_2(String trackHash_2) {
+	this.trackHash_2 = trackHash_2;
+}
+public String getTrackHash_3() {
+	return trackHash_3;
+}
+public void setTrackHash_3(String trackHash_3) {
+	this.trackHash_3 = trackHash_3;
+}
+public long getCortinaId() {
+	return cortinaId;
+}
+public void setCortinaId(long cortinaId) {
+	this.cortinaId = cortinaId;
+}
 public long getId() {
 	return id;
 }
