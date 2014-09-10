@@ -68,6 +68,23 @@ public class TandaTable  extends TableView<TandaTrack>
 	}
   }
   
+  public void deleteTandaRow(long tandaDbId)
+  {
+	int counter=0;  
+	System.out.println("TandaTable  -  tandaDbId: "+tandaDbId);
+	for(TandaTrack tandaTrack : tandaTracksData )
+	{
+	  if (tandaTrack.getDbId()==tandaDbId)
+	  {
+		TandaDb tandaDb = Db.getTanda(tandaDbId);
+		System.out.println("TandaTable  -  toRemove: "+tandaDb.getArtist());
+		tandaTracksData.remove(counter);
+		break;
+	  }
+	  counter++;
+	}
+  }
+  
   public void addTanda(int tandaDbId)
   {
 	tandaTracksData.add(new TandaTrack(Db.getTanda(tandaDbId)));
