@@ -563,7 +563,8 @@ public class Playlist
 	
   public void addTanda(String artist, int styleId, String comment)
   {
-	  playlistTreeItem.addTanda(artist, styleId, comment);
+	  int tandaDbId=playlistTreeItem.addTanda(artist, styleId, comment);
+	  PlaylistBuilderTab.getTandaTable().addTanda(tandaDbId);
 	  generateFlatList();
   }
   
@@ -1051,6 +1052,7 @@ public class Playlist
 	         if (selectedTandaTreeItem==null) return;
 	         if (selectedTrackTreeItem==null) return;
 	         selectedTandaTreeItem.moveTrackUp(selectedTrackTreeItem);
+	         PlaylistBuilderTab.getTandaTable().update(selectedTandaTreeItem.getDbId());
 	         generateFlatList();
 	       }
 	         
@@ -1066,6 +1068,7 @@ public class Playlist
            tandaTreeItem.moveTrackDown(playlistTrack.trackInTanda-1); 
            */
            selectedTandaTreeItem.moveTrackDown(selectedTrackTreeItem);
+           PlaylistBuilderTab.getTandaTable().update(selectedTandaTreeItem.getDbId());
            generateFlatList();
 	       }
 	     });
@@ -1080,6 +1083,7 @@ public class Playlist
            tandaTreeItem.deleteTrack(playlistTrack.trackInTanda-1); 
            */
 	         selectedTandaTreeItem.deleteTrack(selectedTrackTreeItem);
+	         PlaylistBuilderTab.getTandaTable().update(selectedTandaTreeItem.getDbId());
            generateFlatList(); }
 	     });
 	   } 

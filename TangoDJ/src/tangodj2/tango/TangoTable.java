@@ -4,7 +4,6 @@ package tangodj2.tango;
 import java.util.ArrayList;
 
 import javafx.scene.input.MouseEvent;
-
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -25,7 +24,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-
 import javafx.util.Callback;
 import tangodj2.Db;
 import tangodj2.Playlist;
@@ -49,6 +47,13 @@ public class TangoTable extends TableView<TangoTrack>
 	  tangoTable=this;
 	  setupTable();
 	  reloadData();
+  }
+  
+  public void replaceRow(TangoTrack tangoTrack)
+  {
+	  System.out.println("TangoTable - tableIndex: "+tableIndex);
+	  tangoTracksData.remove(tableIndex);
+	  tangoTracksData.add(tableIndex, tangoTrack);
   }
   
   public static void reloadData(final String search)
