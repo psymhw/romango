@@ -16,6 +16,7 @@ public class TandaTrack
   private final SimpleStringProperty track_3_title;
   private final SimpleStringProperty cortina_title;
   private long dbId;
+  private TandaDb tandaDb;
   
   
 public TandaTrack(TandaDb tandaDb)
@@ -30,7 +31,12 @@ public TandaTrack(TandaDb tandaDb)
 	track_3_title = new SimpleStringProperty(Db.getTrackTitle(tandaDb.getTrackHash_3()));
 	cortina_title = new SimpleStringProperty(Db.getCortinaTitle(tandaDb.getCortinaId()));
 	dbId=tandaDb.getId();
+	this.tandaDb=tandaDb;
   }
+
+public TandaDb getTandaDb() {
+	return tandaDb;
+}
 
 public void update(TandaDb tandaDb)
 {

@@ -1,6 +1,7 @@
 package tangodj2.tanda;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import tangodj2.Db;
 import tangodj2.TandaDb;
@@ -65,6 +66,13 @@ public class TandaTable  extends TableView<TandaTrack>
 	  }
 	  counter++;
 	}
+  }
+  
+  public void addTanda(int tandaDbId)
+  {
+	tandaTracksData.add(new TandaTrack(Db.getTanda(tandaDbId)));
+	//FXCollections.sort(tandaTracksData);
+	this.sort();
   }
 
   private void setupTable() 

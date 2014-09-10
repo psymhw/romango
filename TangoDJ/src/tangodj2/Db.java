@@ -600,7 +600,7 @@ public class Db
   
   public static String getCortinaTitle(long id)
   {
-	  String title="not found";
+	  String title="  ---";
       try
       {
       Statement statement = connection.createStatement();
@@ -707,10 +707,8 @@ public class Db
 	               +" where pathHash =  '"+trackDb.pathHash+"'";
      try 
      {
-       connect();
-       System.out.println("Db update track sql: "+sql);
+       //System.out.println("Db update track sql: "+sql);
        connection.createStatement().execute(sql);
-       disconnect();
      } catch (Exception e) { e.printStackTrace();}
    }
 	

@@ -46,15 +46,17 @@ public class PlaylistTreeItem  extends BaseTreeItem
   }
 
 
-  public void addTanda(String artist, int styleId, String comment)
+  public int addTanda(String artist, int styleId, String comment)
   {
     TandaTreeItem tandaTreeItem = new TandaTreeItem(artist, styleId, comment);
     tandaTreeItem.setExpanded(false);
+    int tandaDbId =0;
 	  getChildren().add(tandaTreeItem); 
 	  try 
-	  {  int tandaDbId = Db.insertTanda(artist, styleId, getTandaPosition(tandaTreeItem), comment);
+	  {  tandaDbId = Db.insertTanda(artist, styleId, getTandaPosition(tandaTreeItem), comment);
 	    tandaTreeItem.setDbId(tandaDbId);
 	  } catch (Exception e) {	e.printStackTrace(); }  
+	  return tandaDbId;
   }
   
   public void updateTanda(long tandaId, String artist, int styleId,  String comment, TandaTreeItem tandaTreeItem)

@@ -46,8 +46,14 @@ public class PlaylistBuilderTab extends Tab
   private CleanupTable cleanupTable;
   private CortinaTable cortinaTable;
   private FavoritesTable favoritesTable;
-  private TandaTable tandaTable;
-  public static Playlist playlist;
+  private static TandaTable tandaTable;
+  
+  public static TandaTable getTandaTable() 
+  {
+	return tandaTable;
+  }
+
+public static Playlist playlist;
   private PlaylistBuilderTab playlistBuilderTab;
   final VBox vbox = new VBox();
  // int savedType=0;
@@ -445,6 +451,7 @@ public class PlaylistBuilderTab extends Tab
           {  
             TandaTreeItem tandaTreeItem = playlist.getSelectedTanda();
             tandaTreeItem.addTrack(favoritesTrack.getPathHash());
+            tandaTable.update(tandaTreeItem.getDbId());
             playlist.generateFlatList();
           }
         }
@@ -485,6 +492,7 @@ public class PlaylistBuilderTab extends Tab
               {  
                 TandaTreeItem tandaTreeItem = playlist.getSelectedTanda();
                 tandaTreeItem.addTrack(cleanupTrack.getPathHash());
+                tandaTable.update(tandaTreeItem.getDbId());
                 playlist.generateFlatList();
               }
             }
@@ -517,6 +525,7 @@ public class PlaylistBuilderTab extends Tab
           {  
             TandaTreeItem tandaTreeItem = playlist.getSelectedTanda();
             tandaTreeItem.addCortina(cortinaTrack);
+            tandaTable.update(tandaTreeItem.getDbId());
             playlist.generateFlatList();
           }
         }
