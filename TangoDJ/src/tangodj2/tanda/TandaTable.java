@@ -225,4 +225,19 @@ public class TandaTable  extends TableView<TandaTrack>
     
     return contextMenu;
   } 
+  
+  public int getTableIndex()
+  {
+    return tableIndex;
+  }
+  
+  public TandaDb getSelectedTandaDb()
+  {
+	return tandaTracksData.get(tableIndex).getTandaDb();
+  }
+  
+  public SimpleStringProperty getAction()
+  {
+    return action;
+  }
 }

@@ -60,8 +60,9 @@ public class PlaylistTreeItem  extends BaseTreeItem
 	  return tandaDbId;
   }
   
-  public int addTandaCopy(long tandaId)
+  public int addTanda(TandaDb tandaDb)
   {
+	int tandaDbId=Db.insertTanda(tandaDb.getArtist(), tandaDb.getStyle(), position, comment)  
     TandaDb tandaDb = Db.getTanda(tandaId);
     TandaTreeItem tandaTreeItem = new TandaTreeItem(tandaDb);	
     		
