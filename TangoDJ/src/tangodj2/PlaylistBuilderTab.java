@@ -494,6 +494,43 @@ public static Playlist playlist;
       }
     };   
     favoritesTable.getAction().addListener(favoritesTableListener);
+
+ // TANDA TABLE LISTENER
+    ChangeListener tandaTableListener = new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+        if (!"nada".equals(newValue))
+        {
+          int row = tandaTable.getTableIndex();
+          String action=tandaTable.getAction().get();
+          TandaTrack tandaTrack = tandaTable.getItems().get(row);
+        
+         //System.out.println("PlaylistBuilderTab - favoritesTable Action: "+ action+" row: "+row+" "+favoritesTrack.getTitle());
+        
+        
+        if ("copyToTanda".equals(action))
+        {
+        	playlist.a
+            playlist.generateFlatList();
+        }
+        
+        if ("edit".equals(action))
+        {
+          new MP3EditorDialog(favoritesTrack,  favoritesTable);
+       }
+        
+      //  if ("delete".equals(action))
+       // {
+       //   tangoTable.delete(row, tangoTrack.getPathHash());
+       // }
+        
+        favoritesTable.getAction().set("nada");
+        }
+      }
+    };   
+    favoritesTable.getAction().addListener(favoritesTableListener);
+
     
     // CLEANUP TABLE LISTENER
     ChangeListener cleanupTableListener = new ChangeListener() 

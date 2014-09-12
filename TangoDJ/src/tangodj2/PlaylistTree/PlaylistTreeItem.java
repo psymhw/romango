@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 import tangodj2.Db;
 import tangodj2.SharedValues;
+import tangodj2.TandaDb;
 
 
 public class PlaylistTreeItem  extends BaseTreeItem
@@ -54,6 +55,21 @@ public class PlaylistTreeItem  extends BaseTreeItem
 	  getChildren().add(tandaTreeItem); 
 	  try 
 	  {  tandaDbId = Db.insertTanda(artist, styleId, getTandaPosition(tandaTreeItem), comment);
+	    tandaTreeItem.setDbId(tandaDbId);
+	  } catch (Exception e) {	e.printStackTrace(); }  
+	  return tandaDbId;
+  }
+  
+  public int addTandaCopy(long tandaId)
+  {
+    TandaDb tandaDb = Db.getTanda(tandaId);
+    TandaTreeItem tandaTreeItem = new TandaTreeItem(tandaDb);	
+    		
+    tandaTreeItem.setExpanded(false);
+    int tandaDbId =0;
+	  getChildren().add(tandaTreeItem); 
+	  try 
+	  {  tandaDbId = Db.insertTanda(tandaDb.getArtist(), tandaDb.getStyleId(), getTandaPosition(tandaTreeItem), tandaDb.getComment());
 	    tandaTreeItem.setDbId(tandaDbId);
 	  } catch (Exception e) {	e.printStackTrace(); }  
 	  return tandaDbId;

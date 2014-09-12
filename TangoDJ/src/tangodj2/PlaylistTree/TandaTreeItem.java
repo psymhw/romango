@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-
 import tangodj2.Db;
 import tangodj2.SharedValues;
+import tangodj2.TandaDb;
 import tangodj2.cortina.CortinaTrack;
 
 public class TandaTreeItem extends BaseTreeItem
@@ -40,6 +40,19 @@ public class TandaTreeItem extends BaseTreeItem
   	 this.style=SharedValues.styles.get(styleId) ;
   	 String name = artist + " - "+style;
   	 if (comment!=null) if (comment.length()>0) name=name+" ("+comment+")";
+  	 this.setValue(name);
+   }
+   
+   public TandaTreeItem(TandaDb tandaDb)
+   {
+  	 super();
+  	 this.setTreeType("tanda");
+  	 this.artist=tandaDb.getArtist();
+  	 this.styleId=tandaDb.getStyleId();
+  	 setGraphic(new ImageView(flagsImage));
+  	 this.style=SharedValues.styles.get(styleId) ;
+  	 String name = artist + " - "+style;
+  	 if (tandaDb.getComment()!=null) if (tandaDb.getComment().length()>0) name=name+" ("+tandaDb.getComment()+")";
   	 this.setValue(name);
    }
    
