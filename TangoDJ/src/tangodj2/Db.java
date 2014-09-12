@@ -206,12 +206,11 @@ public class Db
     return cleanupTracks;
   }
   
-  public static ArrayList<FavoritesTrack> loadFavoritesTracks(int list_id)
+  public static ArrayList<FavoritesTrack> loadFavoritesTracks()
   {
     ArrayList<FavoritesTrack> favoritesTracksData = new ArrayList<FavoritesTrack>();
     
-    String sql= "select * from tracks where id in (select track_id from listmembers where list_id="
-                +list_id+") order by title";
+    String sql= "select * from tracks where favorite=1 order by leader, style";
       
     try
     {
@@ -391,6 +390,7 @@ public class Db
     return rating;
   }
   
+  /*
   public static void addToFavorites(String pathHash)
   {
     TrackDb trackDb = getTrackInfo(pathHash);
@@ -432,6 +432,17 @@ public class Db
       
     } catch (Exception e) { e.printStackTrace(); }
     
+  }
+  */
+  
+  public static void addToFavorites(String pathHash)
+  {
+	  String sql = "update tracks set favorite = 1 where pathHash =  '"+pathHash+"'";
+     try 
+     {
+       System.out.println("Db favoriteTrack sql: "+sql);
+       connection.createStatement().execute(sql);
+     } catch (Exception e) { e.printStackTrace();}
   }
   
   private static void insertFavorite(int list_id, int track_id, String pathHash)
@@ -560,7 +571,6 @@ public class Db
 	  CortinaTrack cortinaTrack=null;
       try
       {
-      connect();
       Statement statement = connection.createStatement();
       ResultSet resultSet = statement.executeQuery("select * from cortinas where id = "+id);
       
@@ -586,7 +596,6 @@ public class Db
       }
       if (resultSet!=null) resultSet.close();
       if (statement!=null) statement.close();
-      disconnect();
       } catch (Exception e) { e.printStackTrace();}
       if (cortinaTrack!=null)
       {
@@ -703,14 +712,30 @@ public class Db
 	               +" adjectives = '"+trackDb.adjectives+"', "
 	               +" style = '"+trackDb.style+"', "
 	               +" bpm = '"+trackDb.bpm+"', "
-	               +" delay = "+trackDb.delay
+	               +" delay = "+trackDb.delay+", "
+	               +" favorite = "+trackDb.favorite
 	               +" where pathHash =  '"+trackDb.pathHash+"'";
      try 
      {
-       //System.out.println("Db update track sql: "+sql);
+       System.out.println("Db update track sql: "+sql);
        connection.createStatement().execute(sql);
      } catch (Exception e) { e.printStackTrace();}
    }
+	
+	public static void favoriteTrack(TrackDb trackDb)
+	{
+	  sqlReadyTrackInfo(trackDb);
+	  String sql = "update tracks set " 
+	               
+	               +" favorite = "+trackDb.favorite
+	               +" where id =  "+trackDb.id;
+     try 
+     {
+       System.out.println("Db favoriteTrack sql: "+sql);
+       connection.createStatement().execute(sql);
+     } catch (Exception e) { e.printStackTrace();}
+   }
+	
 	
 	public static void setTrackDelay(boolean set, int id)
   {
@@ -735,7 +760,6 @@ public class Db
 	  TrackDb trackDb=null;
 	  try
 	  {
-	    connect();
 	 	  Statement statement = connection.createStatement();
 	 	  ResultSet resultSet = statement.executeQuery("select * from tracks where pathHash = '"+pathHash+"'");
 	 	  if(resultSet.next())
@@ -744,8 +768,7 @@ public class Db
 	 	  }
 	 	  if (resultSet!=null) resultSet.close();
 	 	  if (statement!=null) statement.close();
-	 	  disconnect();
-	  } catch (Exception e) { e.printStackTrace();}
+	  } catch (Exception e) { e.printStackTrace(); return null; }
 	  return trackDb;
 	}
 	
@@ -795,6 +818,7 @@ public class Db
     trackDb.track_no= resultSet.getInt("track_no");
     trackDb.delay= resultSet.getInt("delay");
     trackDb.id = resultSet.getInt("id");
+    trackDb.favorite=resultSet.getInt("favorite");
     return trackDb;
 	}
 	

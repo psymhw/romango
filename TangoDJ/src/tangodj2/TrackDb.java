@@ -21,6 +21,7 @@ public class TrackDb
   public String adjectives="";
   public int    delay=0;
   public int id;
+  public int favorite;
   
   public boolean metaComplete=false;
   

@@ -69,13 +69,13 @@ import tangodj2.util.FileViewer;
  */
 public class TangoDJ2 extends Application 
 {
-  public final static String version = "1.5";
+  public final static String version = "8.1";
   static Stage primaryStage;
   public static PlaylistBuilderTab playlistBuilderTab;
   static PlaylistChoiceTab playlistChoiceTab;
   static CortinaTab cortinaTab;
   static EventTab eventTab;
-  public static FavoritesTab favoritesTab;
+  //public static FavoritesTab favoritesTab;
   
   public static Preferences prefs = new Preferences();
   public static Label feedback = new Label("");
@@ -195,7 +195,7 @@ public class TangoDJ2 extends Application
     player.setPlaylist(playlist);
     eventTab.setPlayer(player);
     
-    favoritesTab=new FavoritesTab (player);
+   // favoritesTab=new FavoritesTab (player);
     playlistBuilderTab = new PlaylistBuilderTab(playlist,  player);
     tabPane.getTabs().add(playlistBuilderTab);
     
@@ -232,7 +232,7 @@ public class TangoDJ2 extends Application
     tabPane.getTabs().add(cortinaTab);
     
     
-    tabPane.getTabs().add(favoritesTab);
+   // tabPane.getTabs().add(favoritesTab);
     
     tabPane.getTabs().add(eventTab);
    

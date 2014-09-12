@@ -931,9 +931,9 @@ public class Playlist
 	       public void handle(Event t) 
 	       
 	       { 
-	    	   PlaylistBuilderTab.getTandaTable().deleteTandaRow(selectedTandaTreeItem.getDbId());
+	    	   
 	    	   playlistTreeItem.deleteTanda(selectedTandaTreeItem); 
-	         
+	    	   PlaylistBuilderTab.getTandaTable().reloadData();
 	         generateFlatList();  
 	       }
 	     });

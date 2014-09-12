@@ -318,7 +318,7 @@ public class MP3EditorDialog extends Stage
     }
     
     TangoTable.updateRow(trackDb);
-    TangoDJ2.favoritesTab.updateTableRow(trackDb);
+    //TangoDJ2.favoritesTab.updateTableRow(trackDb);
     
   }
   
