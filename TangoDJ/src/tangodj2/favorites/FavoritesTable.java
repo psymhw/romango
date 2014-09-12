@@ -52,22 +52,23 @@ public class FavoritesTable extends TableView<FavoritesTrack>
 	  setupTable();
 	  reloadData();
   }
-  
+ 
+  /*
   public  void reloadData()
   {
     favoritesTable.getSortOrder().clear();
     favoritesTracksData.clear();
-    favoritesTracksData.addAll(Db.loadFavoritesTracks(1));
+    favoritesTracksData.addAll(Db.loadFavoritesTracks());
   }
-  
-  public  void reloadData(final int list_id)
+  */
+  public  void reloadData()
   {
     Platform.runLater(new Runnable() 
     {
       public void run() 
       {
         favoritesTracksData.clear();
-        favoritesTracksData.addAll(Db.loadFavoritesTracks(list_id));
+        favoritesTracksData.addAll(Db.loadFavoritesTracks());
         ArrayList<TableColumn<FavoritesTrack, ?>> sortOrder = new ArrayList<>(favoritesTable.getSortOrder());
         favoritesTable.getSortOrder().clear();
         favoritesTable.getSortOrder().addAll(sortOrder);
@@ -161,11 +162,11 @@ public class FavoritesTable extends TableView<FavoritesTrack>
 	     styleCol.setCellValueFactory(new PropertyValueFactory<FavoritesTrack, String>("style"));
 	     styleCol.setCellFactory(new MyCellFactory());
 		       
-		  TableColumn artistCol = new TableColumn("Artist");
-		  artistCol.setMinWidth(50);
-		  artistCol.setPrefWidth(100);
-		  artistCol.setCellValueFactory(new PropertyValueFactory<FavoritesTrack, String>("artist"));
-		  artistCol.setCellFactory(new MyCellFactory());
+		  TableColumn leaderCol = new TableColumn("Leader");
+		  leaderCol.setMinWidth(50);
+		  leaderCol.setPrefWidth(100);
+		  leaderCol.setCellValueFactory(new PropertyValueFactory<FavoritesTrack, String>("leader"));
+		  leaderCol.setCellFactory(new MyCellFactory());
 		      
 		  TableColumn albumCol = new TableColumn("Album");
 		  albumCol.setMinWidth(50);
@@ -203,7 +204,7 @@ public class FavoritesTable extends TableView<FavoritesTrack>
 		  yearCol.setCellValueFactory(new PropertyValueFactory<FavoritesTrack, String>("track_year"));
 		  yearCol.setCellFactory(new MyCellFactory());
 		     
-		  this.getColumns().addAll(titleCol, styleCol, ratingCol, durationCol, yearCol, artistCol, albumCol, genreCol, commentCol);
+		  this.getColumns().addAll(leaderCol, styleCol, titleCol, ratingCol, durationCol, yearCol, albumCol, genreCol, commentCol);
 		      
 	  }
 		

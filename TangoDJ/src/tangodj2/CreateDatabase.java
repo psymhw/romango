@@ -190,7 +190,8 @@ public class CreateDatabase
 	    		"singer varchar(40), " +
 	    		"cleanup integer, " +
 	    		"adjectives varchar(100), " +
-	    		"comment varchar(100) " +
+	    		"comment varchar(100), " +
+	    		"favorite integer " +
 	    		")");
 	    
 	    connection.createStatement().execute("CREATE UNIQUE INDEX pathInd ON TRACKS(PATHHASH)");

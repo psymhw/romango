@@ -71,7 +71,7 @@ public class FavoritesTab extends Tab
       {
         //System.out.println("New Value: "+newValue); 
         int list_id = Db.getListHeaderId(newValue);
-        favoritesTable2.reloadData(list_id);
+        favoritesTable2.reloadData();
       }
     };
     

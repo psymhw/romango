@@ -34,6 +34,7 @@ import tangodj2.favorites.FavoritesTable;
 import tangodj2.favorites.FavoritesTrack;
 import tangodj2.favorites.ListHeaderDb;
 import tangodj2.tanda.TandaTable;
+import tangodj2.tanda.TandaTrack;
 import tangodj2.tango.TangoTable;
 import tangodj2.tango.TangoTrack;
 
@@ -252,11 +253,11 @@ public static Playlist playlist;
     final Label spacer7 = new Label("  ");
     spacer7.setFont(new Font("Arial", 16));
 	
-	  final ComboBox favoritesComboBox = getFavoritesComboBox();
-	  final HBox favotitesListBox = new HBox();
-	  Text listLabel = new Text("Favorites List: ");
-	  listLabel.setFont(new Font("Arial", 16));
-	  favotitesListBox.getChildren().addAll(listLabel,favoritesComboBox);
+	//  final ComboBox favoritesComboBox = getFavoritesComboBox();
+	//  final HBox favotitesListBox = new HBox();
+	//  Text listLabel = new Text("Favorites List: ");
+	//  listLabel.setFont(new Font("Arial", 16));
+	//  favotitesListBox.getChildren().addAll(listLabel,favoritesComboBox);
 	  
 	  HBox hbox = new HBox();
 	  hbox.setAlignment(Pos.BASELINE_CENTER);
@@ -285,7 +286,7 @@ public static Playlist playlist;
             vbox.getChildren().remove(cortinaTable);
             vbox.getChildren().remove(tandaTable); 
             vbox.getChildren().remove(favoritesTable);
-            vbox.getChildren().remove(favotitesListBox);
+         //   vbox.getChildren().remove(favotitesListBox);
             vbox.getChildren().add(tangoTable);
             currentTable="tango";
            // savedType=0;
@@ -296,7 +297,7 @@ public static Playlist playlist;
             vbox.getChildren().remove(cortinaTable);
             vbox.getChildren().remove(tandaTable);
             vbox.getChildren().remove(favoritesTable);
-            vbox.getChildren().remove(favotitesListBox);
+          //  vbox.getChildren().remove(favotitesListBox);
             vbox.getChildren().add(cleanupTable);
             currentTable="cleanup";
             //savedType=1;
@@ -307,7 +308,7 @@ public static Playlist playlist;
             vbox.getChildren().remove(cleanupTable);
             vbox.getChildren().remove(tandaTable);
             vbox.getChildren().remove(favoritesTable);
-            vbox.getChildren().remove(favotitesListBox);
+          //  vbox.getChildren().remove(favotitesListBox);
             vbox.getChildren().add(cortinaTable);
             currentTable="cortina";
            // savedType=2;
@@ -318,7 +319,7 @@ public static Playlist playlist;
             vbox.getChildren().remove(cleanupTable);
             vbox.getChildren().remove(cortinaTable);
             vbox.getChildren().remove(tandaTable);
-            vbox.getChildren().add(favotitesListBox);
+         //   vbox.getChildren().add(favotitesListBox);
             vbox.getChildren().add(favoritesTable);
             currentTable="cortina";
            // savedType=2;
@@ -329,9 +330,9 @@ public static Playlist playlist;
             vbox.getChildren().remove(cleanupTable);
             vbox.getChildren().remove(cortinaTable);
             vbox.getChildren().remove(favoritesTable);
-            vbox.getChildren().remove(favotitesListBox);
+          //  vbox.getChildren().remove(favotitesListBox);
             vbox.getChildren().add(tandaTable);
-            currentTable="cortina";
+            currentTable="tanda";
            // savedType=2;
           }
         }                
@@ -390,6 +391,22 @@ public static Playlist playlist;
       }
     });
     
+ // MOUSE TANDA TABLE ROW SELECTION
+    tandaTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() 
+    {
+      public void changed(ObservableValue observable, Object oldValue, Object newValue) 
+      {
+        TandaTrack tandaTrack = (TandaTrack)newValue;
+        if (tandaTrack!=null)
+        {
+          player.setPlayMode(Player.PLAYMODE_TANDA);
+          player.setCurrentTandaId(tandaTrack.getDbId());
+          player.setCurrentTandaIndex(0);
+          player.setCurrentTrackTitle(tandaTrack.getTrack_0_title());   
+        }
+      }
+    });
+    
     // TANGO TABLE LISTENER
     ChangeListener tangoTableListener = new ChangeListener() 
     {
@@ -413,6 +430,12 @@ public static Playlist playlist;
             tandaTable.update(tandaTreeItem.getDbId());
             playlist.generateFlatList();
           }
+        }
+        
+        if ("addToFav".equals(action))
+        {
+          Db.addToFavorites(tangoTrack.getPathHash());
+          favoritesTable.reloadData();
         }
         
         if ("edit".equals(action))
@@ -581,6 +604,7 @@ public void changePlaylist(int playlistId)
 	  } catch (Exception e) {e.printStackTrace();};
 }
 
+/*
 private final ComboBox getFavoritesComboBox()
 {
   final ComboBox comboBox = new ComboBox();
@@ -607,5 +631,6 @@ private final ComboBox getFavoritesComboBox()
   comboBox.getSelectionModel().selectFirst();
   return comboBox;
 }
+*/
   
 }

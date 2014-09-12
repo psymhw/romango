@@ -13,7 +13,49 @@ public class TandaDb
   private String trackHash_1;
   private String trackHash_2;
   private String trackHash_3;
-  private long cortinaId;
+  private String trackHash_4;
+  private String trackHash_5;
+  private String trackHash_6;
+  private String trackHash_7;
+  private String trackHash_8;
+  private String trackHash_9;
+  public String getTrackHash_4() {
+	return trackHash_4;
+}
+public void setTrackHash_4(String trackHash_4) {
+	this.trackHash_4 = trackHash_4;
+}
+public String getTrackHash_5() {
+	return trackHash_5;
+}
+public void setTrackHash_5(String trackHash_5) {
+	this.trackHash_5 = trackHash_5;
+}
+public String getTrackHash_6() {
+	return trackHash_6;
+}
+public void setTrackHash_6(String trackHash_6) {
+	this.trackHash_6 = trackHash_6;
+}
+public String getTrackHash_7() {
+	return trackHash_7;
+}
+public void setTrackHash_7(String trackHash_7) {
+	this.trackHash_7 = trackHash_7;
+}
+public String getTrackHash_8() {
+	return trackHash_8;
+}
+public void setTrackHash_8(String trackHash_8) {
+	this.trackHash_8 = trackHash_8;
+}
+public String getTrackHash_9() {
+	return trackHash_9;
+}
+public void setTrackHash_9(String trackHash_9) {
+	this.trackHash_9 = trackHash_9;
+}
+private long cortinaId;
   
 public String getTrackHash_0() {
 	return trackHash_0;

@@ -68,6 +68,7 @@ public class TandaTable  extends TableView<TandaTrack>
 	}
   }
   
+  /*
   public void deleteTandaRow(long tandaDbId)
   {
 	int counter=0;  
@@ -84,6 +85,7 @@ public class TandaTable  extends TableView<TandaTrack>
 	  counter++;
 	}
   }
+  */
   
   public void addTanda(int tandaDbId)
   {

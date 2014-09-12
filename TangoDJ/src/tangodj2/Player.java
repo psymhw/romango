@@ -113,6 +113,7 @@ public class Player
     final static int PLAYLIST_BUILD_TANGO_TABLE=10;
     final static int PLAYLIST_BUILD_CLEANUP_TABLE=11;
     final static int PLAYLIST_BUILD_CORTINA_TABLE=12;
+    final static int PLAYLIST_BUILD_TANDA_TABLE=15;
     final static int CORTINA_CREATE_CLEANUP_TABLE=13;
     final static int CORTINA_CREATE_CORTINA_TABLE=14;
   
@@ -128,6 +129,7 @@ public class Player
     final static int PLAYMODE_CORTINA_SINGLE_TRACK = 22;
     final static int PLAYMODE_CLEANUP_TO_CORTINA_TRACK = 23;
     final static int PLAYMODE_PREMADE_CORTINA_SINGLE_TRACK = 24;
+    final static int PLAYMODE_TANDA = 25;
     
     public final static int PLAYLIST_BUILDER_TAB = 0;
     public final static int EVENT_TAB = 1;
@@ -145,8 +147,18 @@ public class Player
     final private static int UPDATE = 1;
     int cortinaMode=INSERT;
     private int active_tab=0;
+    private long currentTandaId=0;
+    private int currentTandaIndex=-1;
     
-   // SimpleStringProperty source = new SimpleStringProperty();
+   public void setCurrentTandaIndex(int currentTandaIndex) {
+		this.currentTandaIndex = currentTandaIndex;
+	}
+
+public void setCurrentTandaId(long currentTandaId) {
+		this.currentTandaId = currentTandaId;
+	}
+
+	// SimpleStringProperty source = new SimpleStringProperty();
     public static InfoWindow2 infoWindow;
 
     public Player(EventTab eventTab) 
@@ -272,8 +284,17 @@ public class Player
         public void handle(ActionEvent e) 
         {
           stopPlaying();
-          playlist.skip();
-          playPreviousTrack();
+          
+          if (playMode==PLAYMODE_PLAYLIST)
+          {
+            playlist.skip();
+            playPreviousTrack();
+          }
+          if (playMode==PLAYMODE_TANDA)
+          {
+             currentTandaIndex--;
+             playTanda();
+          }
         }
       });
       
@@ -306,10 +327,19 @@ public class Player
           {
             stopPlaying();
             
-            if (playlist.getPlayingTrack()==playlist.getNextTrack()) 
-                 playlist.setNextTrack(playlist.getNextTrack()+1);
-            playlist.skip();
-             playPlaylist(); 
+            if (playMode==PLAYMODE_PLAYLIST)
+            {
+              if (playlist.getPlayingTrack()==playlist.getNextTrack()) 
+              playlist.setNextTrack(playlist.getNextTrack()+1);
+              playlist.skip();
+              playPlaylist(); 
+            }
+            
+            if (playMode==PLAYMODE_TANDA)
+            {
+               currentTandaIndex++;
+               playTanda();
+            }
           }
         
         }
@@ -332,6 +362,21 @@ public class Player
       {
         public void handle(ActionEvent e) 
         {
+        	
+        	if (playMode==PLAYMODE_TANDA)
+            {
+              if (mediaPlayer == null) 
+              {  
+                playTanda();
+              }
+              else
+              {  
+                Status status = mediaPlayer.getStatus();
+                if (status == Status.PLAYING) pauseTrack();
+                else if (status == Status.PAUSED) resumeTrack();
+                else playTanda();
+              }
+            }
           if (playMode==PLAYMODE_SINGLE_TRACK)
           {
             if (mediaPlayer == null) 
@@ -968,6 +1013,119 @@ public class Player
     });
   }
     
+    public void playTanda()
+    {
+      String sourcePath=null;
+      fadeOut=false;
+      volumeSlider.setValue(holdVolume);
+      
+      TandaDb tandaDb = Db.getTanda(currentTandaId);
+      
+      playing.set(true);
+         
+      TrackDb trackDb=null;
+      cortina=false;
+      premade=0;
+      switch (currentTandaIndex)
+      {
+        case 0: trackDb = Db.getTrackInfo(tandaDb.getTrackHash_0());  break;
+        case 1: trackDb = Db.getTrackInfo(tandaDb.getTrackHash_1());  break;
+        case 2:	trackDb = Db.getTrackInfo(tandaDb.getTrackHash_2());  break;
+        case 3:	trackDb = Db.getTrackInfo(tandaDb.getTrackHash_3());  break;
+        case 4:	trackDb = Db.getTrackInfo(tandaDb.getTrackHash_4());  break;
+        case 5: trackDb = Db.getTrackInfo(tandaDb.getTrackHash_5());  break;
+        case 6: trackDb = Db.getTrackInfo(tandaDb.getTrackHash_6());  break;
+        case 7:	trackDb = Db.getTrackInfo(tandaDb.getTrackHash_7());  break;
+        case 8:	trackDb = Db.getTrackInfo(tandaDb.getTrackHash_8());  break;
+        case 9:	trackDb = Db.getTrackInfo(tandaDb.getTrackHash_9());  break;
+      }
+      
+      CortinaTrack cortinaTrack=null;
+      if (trackDb==null) 
+      {
+    	if (tandaDb.getCortinaId()>0)  
+    	{
+    	  cortinaTrack=Db.getCortinaTrack((int)tandaDb.getCortinaId());
+    	  trackDb = cortinaTrack.getTrackDb();
+    	  cortina=true;
+    	  premade=cortinaTrack.getPremade();
+    	}
+      }
+      
+      if (trackDb==null)
+      {
+    	 currentTandaIndex=0; 
+    	 return;
+      }
+      
+      sourcePath=trackDb.path;
+     
+      playButton.setText("||");
+      stopButton.setDisable(false);
+
+      File file = new File(sourcePath);
+      
+      mediaPlayer = createMediaPlayer(file.toURI().toString(), true);
+      mediaPlayer.setVolume(volumeSlider.getValue());
+      
+      
+      if (cortina)
+      {
+       if (premade==0) 
+       {  
+    	   mediaPlayer.setStartTime(new Duration(cortinaTrack.getStartValue()));
+    	   mediaPlayer.setStopTime(new Duration(cortinaTrack.getStopValue()));
+         // FADE IN
+         if (cortinaTrack.getFadein()==1) fadeIn();
+         // FADE OUT
+         if (cortinaTrack.getFadeout()==1) fadeOut=true; else fadeOut=false;
+         System.out.println("Player - fadeOut: "+fadeOut);
+       }
+      }
+       
+      setCurrentTrackTitle(trackDb.title);
+      
+      mediaPlayer.volumeProperty().bindBidirectional(volumeSlider.valueProperty());
+
+          
+      mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() 
+      {
+        public void invalidated(Observable ov) { updateValues(); } });
+     
+      mediaPlayer.setOnPaused(new Runnable() 
+      {
+        public void run() { playButton.setText(">"); } });
+
+      mediaPlayer.setOnReady(new Runnable() 
+      {
+        public void run() { updateValues(); } });
+    
+      mediaPlayer.setOnStopped(new Runnable() 
+      {
+        public void run() 
+       {
+          //playlistTrack.baseTreeItem.setPlayingImage(false);
+         // playlistTrack.playing=false;
+        }
+     });
+      
+    mediaPlayer.setOnEndOfMedia(new Runnable() 
+    {
+      public void run() 
+      {
+        stopPlaying();
+        if (cortina) 
+        { 
+          cortina=false; 
+          currentTandaIndex=0; 
+          return;  
+        }
+        currentTandaIndex++;
+        playTanda();
+      }
+    });
+  }
+    
     private void stopPlaying()
     {
       if (active_tab==EVENT_TAB)
@@ -1523,6 +1681,14 @@ public class Player
       skipButton.setDisable(false);
       previousButton.setDisable(false);
       timeSlider.setDisable(false);
+    }
+    
+    if (playMode==PLAYMODE_TANDA)
+    {
+    	playButton.setDisable(false);
+       skipButton.setDisable(false);
+       previousButton.setDisable(false);
+       timeSlider.setDisable(false);
     }
     
     if (playMode==PLAYMODE_PREMADE_CORTINA_SINGLE_TRACK)
