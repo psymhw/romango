@@ -25,6 +25,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import tangodj2.PlaylistTree.TandaTreeItem;
+
 import tangodj2.cleanup.CleanupTable;
 import tangodj2.cleanup.CleanupTrack;
 import tangodj2.cortina.CortinaTable;
@@ -511,7 +512,7 @@ public static Playlist playlist;
         
         if ("copyToTanda".equals(action))
         {
-        	playlist.a
+        	playlist.addTanda(tandaTable.getSelectedTandaDb());
             playlist.generateFlatList();
         }
         

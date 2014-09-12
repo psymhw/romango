@@ -568,6 +568,14 @@ public class Playlist
 	  generateFlatList();
   }
   
+  public void addTanda(TandaDb tandaDb)
+  {
+	  int tandaDbId=playlistTreeItem.addTanda(tandaDb.getArtist(), tandaDb.getStyleId(), tandaDb.getComment());
+	  PlaylistBuilderTab.getTandaTable().addTanda(tandaDbId);
+	  generateFlatList();
+  }
+  
+  
   public void updateTanda(long tandaId, String artist, int styleId,  String comment, TandaTreeItem tandaTreeItem)
   {
 	  System.out.println("Playlist - updateTanda: tandaId="+tandaId+", artist="+artist+", styleId="+styleId+", comment="+comment);
