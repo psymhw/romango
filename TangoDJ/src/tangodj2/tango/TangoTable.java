@@ -225,24 +225,24 @@ public class TangoTable extends TableView<TangoTrack>
 	   
 	   // BPM COLUMN
      TableColumn bpmCol = new TableColumn("BPM");
-     bpmCol.setMinWidth(30);
-     bpmCol.setPrefWidth(getWidth(bpmCol, 30));
+     bpmCol.setMinWidth(40);
+     bpmCol.setPrefWidth(getWidth(bpmCol, 40));
      bpmCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("bpm"));
      bpmCol.setCellFactory(new MyCellFactory());
      bpmCol.setVisible(getVisibility(bpmCol, true));
      
       // RATING COLUMN
      TableColumn ratingCol = new TableColumn("Rating");
-     ratingCol.setMinWidth(30);
-     ratingCol.setPrefWidth(getWidth(ratingCol, 40));
+     ratingCol.setMinWidth(50);
+     ratingCol.setPrefWidth(getWidth(ratingCol, 50));
      ratingCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("rating"));
      ratingCol.setCellFactory(new MyCellFactory());
      ratingCol.setVisible(getVisibility(ratingCol, true));
   
      // STYLE COLUMN
      TableColumn styleCol = new TableColumn("Style");
-     styleCol.setMinWidth(30);
-     styleCol.setPrefWidth(getWidth(styleCol,50));
+     styleCol.setMinWidth(50);
+     styleCol.setPrefWidth(getWidth(styleCol,70));
      styleCol.setCellValueFactory(new PropertyValueFactory<TangoTrack, String>("style"));
      styleCol.setCellFactory(new MyCellFactory());
      styleCol.setVisible(getVisibility(styleCol, true));

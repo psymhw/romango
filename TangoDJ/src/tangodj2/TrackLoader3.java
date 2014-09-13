@@ -335,7 +335,7 @@ public class TrackLoader3
           stats.successCount++;
           Db.insertTrack(trackDb, type);
           
-          Db.addToFavorites(trackDb.pathHash);
+         // Db.addToFavorites(trackDb.pathHash);
           
         }
         else

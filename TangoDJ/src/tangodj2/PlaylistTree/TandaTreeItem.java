@@ -49,6 +49,7 @@ public class TandaTreeItem extends BaseTreeItem
   	 this.setTreeType("tanda");
   	 this.artist=tandaDb.getArtist();
   	 this.styleId=tandaDb.getStyleId();
+  	 this.dbId=(int)tandaDb.getId();
   	 setGraphic(new ImageView(flagsImage));
   	 this.style=SharedValues.styles.get(styleId) ;
   	 String name = artist + " - "+style;
@@ -240,8 +241,9 @@ public class TandaTreeItem extends BaseTreeItem
   
   public void loadTrack(String trackHash, int disabled)
   {
-    //System.out.println("TandaTreeItem - trackHash: "+trackHash+", disabled: "+disabled);
-  	if (trackHash==null) return;  
+   // System.out.println("TandaTreeItem - trackHash: "+trackHash+", disabled: "+disabled);
+  	if (trackHash==null) return; 
+  	if (trackHash.equals("null")) return;
   	trackHashCodes.add(trackHash);
   	TrackTreeItem tti = new TrackTreeItem(trackHash, trackHashCodes.size());
   	tti.setDisabled(disabled);

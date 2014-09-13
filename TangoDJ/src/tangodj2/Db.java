@@ -245,7 +245,7 @@ public class Db
       disconnect();
       
     } catch (Exception e) { e.printStackTrace();}
-    System.out.println("Db - loading favorites: "+favoritesTracksData.size());
+   // System.out.println("Db - loading favorites: "+favoritesTracksData.size());
     return favoritesTracksData;
   }
   
@@ -440,7 +440,7 @@ public class Db
 	  String sql = "update tracks set favorite = 1 where pathHash =  '"+pathHash+"'";
      try 
      {
-       System.out.println("Db favoriteTrack sql: "+sql);
+       //System.out.println("Db favoriteTrack sql: "+sql);
        connection.createStatement().execute(sql);
      } catch (Exception e) { e.printStackTrace();}
   }
@@ -858,6 +858,72 @@ public class Db
 	     return maxid;
 	}
 	
+	public static int insertTanda(TandaDb tandaDb, int playlistId, int tandaCount) 
+	{
+		int maxid=0;
+		fixNulls(tandaDb);
+		 String sql="insert into tandas (playlistId, position, artist, styleId, "
+		 		+ "trackHash_0, trackHash_1, trackHash_2, trackHash_3, trackHash_4, trackHash_5, trackHash_6, trackHash_7, trackHash_8, trackHash_9, "
+		 		+ "cortinaId, comment) "
+		 		+ "values("+playlistId+", "
+		 		+tandaCount+", '"
+		 		+tandaDb.getArtist()+"', "
+		 		+ tandaDb.getStyleId()+", " 
+		 		+ "'"+tandaDb.getTrackHash_0()+"', "
+		 		+ "'"+tandaDb.getTrackHash_1()+"', "
+		 		+ "'"+tandaDb.getTrackHash_2()+"', "
+		 		+ "'"+tandaDb.getTrackHash_3()+"', "
+		 		+ "'"+tandaDb.getTrackHash_4()+"', "
+		 		+ "'"+tandaDb.getTrackHash_5()+"', "
+		 		+ "'"+tandaDb.getTrackHash_6()+"', "
+		 		+ "'"+tandaDb.getTrackHash_7()+"', "
+		 		+ "'"+tandaDb.getTrackHash_8()+"', "
+		 		+ "'"+tandaDb.getTrackHash_9()+"', "
+		 		+ tandaDb.getCortinaId()+", "
+		 		+ "'"+tandaDb.getComment()+"') ";
+		 		
+		// System.out.println("Db insertTanda sql: "+sql);
+		 
+		 try {
+		 connection.createStatement().execute(sql);
+		 
+		 
+         sql="select max(id) maxid from tandas";
+         //System.out.println("Db - sql: "+sql);
+         Statement statement = connection.createStatement();
+         ResultSet resultSet = statement.executeQuery(sql);
+         if(resultSet.next())
+ 	 	 {
+           maxid= resultSet.getInt("maxid");
+ 	 	 }
+      	 if (resultSet!=null) resultSet.close();
+	 	 if (statement!=null) statement.close();
+		 } catch (Exception e) { e.printStackTrace(); }
+		 // System.out.println("maxid: "+maxid);
+	     return maxid;
+	}
+	
+	private static void fixNulls(TandaDb tandaDb)
+	{
+		tandaDb.setTrackHash_0(fixNull(tandaDb.getTrackHash_0()));
+		tandaDb.setTrackHash_1(fixNull(tandaDb.getTrackHash_1()));
+		tandaDb.setTrackHash_2(fixNull(tandaDb.getTrackHash_2()));
+		tandaDb.setTrackHash_3(fixNull(tandaDb.getTrackHash_3()));
+		tandaDb.setTrackHash_4(fixNull(tandaDb.getTrackHash_4()));
+		tandaDb.setTrackHash_5(fixNull(tandaDb.getTrackHash_5()));
+		tandaDb.setTrackHash_6(fixNull(tandaDb.getTrackHash_6()));
+		tandaDb.setTrackHash_7(fixNull(tandaDb.getTrackHash_7()));
+		tandaDb.setTrackHash_8(fixNull(tandaDb.getTrackHash_8()));
+		tandaDb.setTrackHash_9(fixNull(tandaDb.getTrackHash_9()));
+	}
+
+	private static String fixNull(String str)
+	{
+		if (str==null) return null;
+		if ("null".equals(str)) return null;
+		return str;
+	}
+
 	private static int getMaxId(String file) throws Exception
 	{
 		int maxid=0;
@@ -1065,6 +1131,46 @@ public class Db
 	  disconnect();
 	  return tandaTreeItems;
 	}
+	
+	public static TandaTreeItem getTandaTreeItem(int tandaDbId) 
+	{
+	  TandaTreeItem tandaTreeItem=null;
+	  String sql="select * from tandas where id="+tandaDbId;
+	  
+	  try 
+	  {
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+      
+        if (resultSet.next())
+        {
+    	  tandaTreeItem = new TandaTreeItem(resultSet.getString("artist"), resultSet.getInt("styleId"), resultSet.getString("comment"));
+    	  tandaTreeItem.setDbId(resultSet.getInt("id"));
+    	  tandaTreeItem.setCortinaId(resultSet.getInt("cortinaId"));
+    	  int tanda_disable=resultSet.getInt("tanda_disable");
+    	  tandaTreeItem.setDisabled(tanda_disable);
+    
+    	  // GET THE TRACKS 
+    	  for(int i=0; i<10; i++)
+    	  {
+    	 	String trackName="trackHash_"+i;
+    	 	String disableName="disable_t"+i;
+    		String trackHash=resultSet.getString(trackName);
+    		int track_disable=resultSet.getInt(disableName);
+    		if (trackHash!=null) tandaTreeItem.loadTrack(trackHash, track_disable);
+    	  }
+    	  
+    	  // GET THE CORTINA
+    	  int cortina_disable = resultSet.getInt("disable_cortina");
+    	  tandaTreeItem.loadCortina(tandaTreeItem.getCortinaId(), cortina_disable);
+    	  tandaTreeItem.setExpanded(false);
+        }
+   	    if (resultSet!=null) resultSet.close();
+ 	    if (statement!=null) statement.close();
+	  } catch (Exception e) { e.printStackTrace(); }
+	  return tandaTreeItem;
+	}
+
 
 	public static void updateTandaTracks(TandaTreeItem tandaTreeItem) throws SQLException, ClassNotFoundException
 	{

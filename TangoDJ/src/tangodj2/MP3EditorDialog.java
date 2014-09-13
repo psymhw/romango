@@ -11,6 +11,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -42,8 +43,11 @@ public class MP3EditorDialog extends Stage
   RestrictiveTextField bpm   =   new RestrictiveTextField();
   TextField singer  = new TextField("");
   TextArea comment = new TextArea("");
+  CheckBox favorite = new CheckBox();
+  
   TangoTrack ttrack;
   TangoTable ttable;
+  
   
   FavoritesTrack ftrack;
   FavoritesTable ftable;
@@ -60,7 +64,7 @@ public class MP3EditorDialog extends Stage
   final ComboBox styleComboBox = new ComboBox();
   
   double width=500;
-  double height=500;
+  double height=650;
   
   public MP3EditorDialog(TangoTrack tangoTrack,  TangoTable tangoTable)
   {
@@ -155,6 +159,7 @@ public class MP3EditorDialog extends Stage
     bpm.setText(trackDb.bpm);
     singer.setText(trackDb.singer);
     pathLabel.setText(trackDb.path);
+    favorite.setSelected(trackDb.favorite==1);
     
     
     final ComboBox styleComboBox = new ComboBox();
@@ -208,6 +213,7 @@ public class MP3EditorDialog extends Stage
     gridPane.add(new Label("Style: "),   col[0], row[labelRow++]);
     gridPane.add(new Label("BPM: "),     col[0], row[labelRow++]);
     gridPane.add(new Label("Singer: "),  col[0], row[labelRow++]);
+    gridPane.add(new Label("Favorite: "), col[0], row[labelRow++]);
     gridPane.add(new Label("Comment: "), col[0], row[labelRow++]);
     gridPane.add(new Label("Rating: "),  col[0], row[labelRow++]);
     gridPane.add(new Label("File: "),  col[0], row[labelRow++]);
@@ -223,6 +229,7 @@ public class MP3EditorDialog extends Stage
     gridPane.add(styleComboBox,    col[1], row[fieldRow++]);
     gridPane.add(bpm,   col[1], row[fieldRow++]);
     gridPane.add(singer,   col[1], row[fieldRow++]);
+    gridPane.add(favorite,  col[1], row[fieldRow++]);
     gridPane.add(comment,  col[1], row[fieldRow++]);
     gridPane.add(ratingComboBox,   col[1], row[fieldRow++]);
     gridPane.add(pathLabel,  col[1], row[fieldRow++]);
@@ -243,7 +250,7 @@ public class MP3EditorDialog extends Stage
             updateTrackDb();
             Db.updateTrack(trackDb);
             if (type==TANGO_TABLE) ttable.replaceRow(new TangoTrack(trackDb));
-            if (type==PLAYLIST_BUILDER_FAVORITES_TABLE) updateFavoritesTableView();
+           // if (type==PLAYLIST_BUILDER_FAVORITES_TABLE) updateFavoritesTableView();
             
             Platform.runLater(new Runnable() 
             {
@@ -292,6 +299,7 @@ public class MP3EditorDialog extends Stage
     */
   }
   
+  /*
   private void updateFavoritesTableView()
   {
     ftrack.setTitle(trackDb.title);
@@ -322,6 +330,8 @@ public class MP3EditorDialog extends Stage
     
   }
   
+  */
+  
   private void updateTrackDb()
   {
     trackDb.title=notNull(title.getText());
@@ -337,6 +347,8 @@ public class MP3EditorDialog extends Stage
     //trackDb.style=style; set in combobox
     trackDb.track_no=Integer.parseInt(track_no.getText());
     trackDb.bpm=notNull(bpm.getText());
+    if (favorite.isSelected())
+    trackDb.favorite=1; else trackDb.favorite=0;
   }
   
   private String notNull(String inStr)
