@@ -501,36 +501,25 @@ public static Playlist playlist;
     {
       public void changed(ObservableValue observable, Object oldValue, Object newValue) 
       {
+    	//System.out.println("PlaylistBuilderTab - tandaTable Action: "+ newValue);
+          
         if (!"nada".equals(newValue))
         {
           int row = tandaTable.getTableIndex();
           String action=tandaTable.getAction().get();
           TandaTrack tandaTrack = tandaTable.getItems().get(row);
+         
         
-         //System.out.println("PlaylistBuilderTab - favoritesTable Action: "+ action+" row: "+row+" "+favoritesTrack.getTitle());
-        
-        
-        if ("copyToTanda".equals(action))
+        if ("copyToPlaylist".equals(action))
         {
-        	playlist.addTanda(tandaTable.getSelectedTandaDb());
-            playlist.generateFlatList();
+          playlist.addTanda(tandaTable.getSelectedTandaDb());
         }
         
-        if ("edit".equals(action))
-        {
-          new MP3EditorDialog(favoritesTrack,  favoritesTable);
-       }
-        
-      //  if ("delete".equals(action))
-       // {
-       //   tangoTable.delete(row, tangoTrack.getPathHash());
-       // }
-        
-        favoritesTable.getAction().set("nada");
+        tandaTable.getAction().set("nada");
         }
       }
     };   
-    favoritesTable.getAction().addListener(favoritesTableListener);
+    tandaTable.getAction().addListener(tandaTableListener);
 
     
     // CLEANUP TABLE LISTENER

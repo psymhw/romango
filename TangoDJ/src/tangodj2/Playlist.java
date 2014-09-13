@@ -71,10 +71,12 @@ public class Playlist
   private int numberOfTandas=-1;
   double totalPlaylistTime=0;
   public static SimpleIntegerProperty playlistFocus = new SimpleIntegerProperty(0);
+  private int playlistId=0;
    
   public Playlist(int playlistId) 
   {
 	  this.playlist=this;
+	  this.playlistId=playlistId;
 	  setupTreeView(playlistId);	
 	  setNextTrackToPlay();  
   }
@@ -570,7 +572,7 @@ public class Playlist
   
   public void addTanda(TandaDb tandaDb)
   {
-	  int tandaDbId=playlistTreeItem.addTanda(tandaDb.getArtist(), tandaDb.getStyleId(), tandaDb.getComment());
+	  int tandaDbId=playlistTreeItem.addTanda(tandaDb, playlistId);
 	  PlaylistBuilderTab.getTandaTable().addTanda(tandaDbId);
 	  generateFlatList();
   }
@@ -937,11 +939,11 @@ public class Playlist
 	     delete.setOnAction(new EventHandler() 
 	     {
 	       public void handle(Event t) 
-	       
 	       { 
-	    	   
-	    	   playlistTreeItem.deleteTanda(selectedTandaTreeItem); 
-	    	   PlaylistBuilderTab.getTandaTable().reloadData();
+	    	 
+	    	 System.out.println("Playlist - delete Tanda: selectedTanda: "+selectedTandaTreeItem.getArtist());
+	    	 PlaylistBuilderTab.getTandaTable().deleteTandaRow(selectedTandaTreeItem.getDbId());;
+	    	 playlistTreeItem.deleteTanda(selectedTandaTreeItem); 
 	         generateFlatList();  
 	       }
 	     });

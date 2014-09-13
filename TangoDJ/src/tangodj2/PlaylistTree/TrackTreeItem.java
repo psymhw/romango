@@ -35,7 +35,10 @@ public class TrackTreeItem extends BaseTreeItem
   	this.setTreeType("tango");
    
   	setGraphic(new ImageView(gray_light));
+  	
+  	//System.out.println("TrackTreeItem: "+trackHash);
   	TrackDb trackDb=Db.getTrackInfo(trackHash);
+  	
   	if (trackDb.cleanup==1) setTreeType("cleanup");
   	album = trackDb.album;
   	path = trackDb.path;
