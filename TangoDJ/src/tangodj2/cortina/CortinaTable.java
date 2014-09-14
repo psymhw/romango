@@ -179,13 +179,8 @@ public class CortinaTable extends TableView<CortinaTrack>
     startCol.setCellFactory(myCellFactory);
     startCol.setStyle("-fx-background-color:rgba(219, 42, 199,.41);");
     
-    TableColumn premadeCol = new TableColumn("Premade");
-    premadeCol.setMinWidth(40);
-    premadeCol.setPrefWidth(40);
-    premadeCol.setCellValueFactory(new PropertyValueFactory<Cortina, String>("premade"));
-    premadeCol.setCellFactory(myCellFactory2);
-    premadeCol.setStyle("-fx-background-color:rgba(219, 42, 199,.41);");
-    this.getColumns().addAll(premadeCol, titleCol, lengthCol, artistCol, albumCol, startCol);
+    
+    this.getColumns().addAll(titleCol, lengthCol, artistCol, albumCol, startCol);
   }
 
   public int getTableIndex()
