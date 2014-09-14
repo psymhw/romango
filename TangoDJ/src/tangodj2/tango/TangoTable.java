@@ -280,7 +280,7 @@ public class TangoTable extends TableView<TangoTrack>
 	  yearCol.setVisible(getVisibility(yearCol, true));
 	
 	     
-	  this.getColumns().addAll(titleCol,  styleCol, leaderCol, artistCol, albumCol, trackNoCol, ratingCol, durationCol, bpmCol, yearCol, singerCol, genreCol,  commentCol);
+	  this.getColumns().addAll(titleCol,  styleCol, leaderCol,  yearCol, singerCol,  albumCol, trackNoCol, ratingCol, durationCol, bpmCol, genreCol,  commentCol);
 	  this.setTableMenuButtonVisible(true);  
 	  
   }
