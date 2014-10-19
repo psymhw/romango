@@ -606,6 +606,7 @@ public class Playlist
 	{
 	  playlistTreeItem =  Db.getPlaylist(playlistId);
 	  treeView = new TreeView<String>(playlistTreeItem);
+	  treeView.setId("playlistTreeView");
 	  treeView.setMinWidth(300);
 	  treeView.setPrefWidth(300);
 	  treeView.setMaxWidth(400);
