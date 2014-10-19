@@ -626,8 +626,8 @@ public void changePlaylist(int playlistId)
 {
 	  try {
 	  playlist = new Playlist(playlistId);
-	  rightBox.getChildren().remove(1);
-	  rightBox.getChildren().add(playlist.getTreeView());
+	  //rightBox.getChildren().remove(0);
+	  //rightBox.getChildren().add(playlist.getTreeView());
 	  } catch (Exception e) {e.printStackTrace();};
 }
 

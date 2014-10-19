@@ -263,8 +263,9 @@ Playlist.timeLeftProperty.addListener(remainingPlaylistTimeListener);
 	   try 
 	   {
 	     playlist = new Playlist(playlistId);
-	     leftBox.getChildren().remove(0);
-	     leftBox.getChildren().add(0, playlist.getTreeView());
+	     // System.out.println("EventTab change Playlist: "+leftBox.getChildren().size());
+	     //leftBox.getChildren().remove(0);
+	     //leftBox.getChildren().add(playlist.getTreeView());
 	  } catch (Exception e) {e.printStackTrace();};
  } 
    
