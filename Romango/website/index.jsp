@@ -257,6 +257,10 @@
 		
 	<img  src='image/closeup.jpg' border='2'/>
 	</p>
+	<p>
+		
+	<img  src='image/conor3.jpg' border='2'/>
+	</p>
 	<br/>
   	<hr/>
 	<div class="left">Copyright &copy; 2007-2013 <a href="index.jsp">romangoshoes.com</a></div>
