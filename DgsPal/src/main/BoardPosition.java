@@ -67,7 +67,7 @@ public class BoardPosition extends Group
 	  { 
 		importImages(); 
 		initiallized=true; 
-		System.out.println("intiallizing grid");
+		//System.out.println("intiallizing grid");
 	  }
 	  
       sgfLabel.setFont(Font.font("Serif", 12));

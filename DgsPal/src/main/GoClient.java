@@ -3481,13 +3481,11 @@ void playNextStone()
    
    private void updateControls()
    {
-     //System.out.println("UPDATE CONTROLS");
 	 String gameStatusStr="";
 	 gameStatusText.setText(""); 
 	// leapCursor.setMoveColor(getMoveColor());
 	 if (lastSgfMove==null)  // for first move, no handicap
 	 {
-	   // System.out.println("UpdateControls(): lastSgfMove==null");
 	   thisPlayerColor=BLACK;
 	   colorToPlay=BLACK;
 	   turnImageView.setImage(blackStoneImage);
@@ -3559,6 +3557,7 @@ void playNextStone()
 	     colorToPlay=WHITE; 
 	     turnImageView.setImage(whiteStoneImage);
 	     turnColorBar.setFill(Color.WHITE);
+	     stage.getIcons().clear();
 	     stage.getIcons().add(smallerWhiteStoneImage);
 	   } 
 	   else 
@@ -3566,6 +3565,7 @@ void playNextStone()
 	     colorToPlay=BLACK;
 	     turnImageView.setImage(blackStoneImage);
 	     turnColorBar.setFill(Color.BLACK);
+	     stage.getIcons().clear();
 	     stage.getIcons().add(smallerBlackStoneImage);
 	   }
 	 }
