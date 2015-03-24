@@ -167,7 +167,7 @@ public class Equalizer
 	  
 	  public void clear()
 	  {
-	    System.out.println("Equaliszer clear");
+	   // System.out.println("Equaliszer clear");
 	    for(int i=0; i<spectrumBars.length; i++)
 	    {
 	      spectrumBars[i].setValue(0);

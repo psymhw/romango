@@ -58,7 +58,6 @@ public class Playlist
   private CortinaTreeItem selectedCortinaTreeItem=null;
   private TreeView<String> treeView;
   private PlaylistTrack previouslyPlayingTrack=null;
-  private PlaylistTrack previouslySelectedTrack=null;
   private Playlist playlist;
   private int selectedFlatPlayableIndex=-1;
   
@@ -133,23 +132,27 @@ public class Playlist
 	
   public void setNextTrackToPlay()
   {
-	  if (selectedFlatPlayableIndex==-1) return;
-	  if (flatPlaylistTracks==null) return;
-	  if (flatPlaylistTracks.size()==0) return;
-	  PlaylistTrack playlistTrack = flatPlaylistTracks.get(selectedFlatPlayableIndex);
+	if (selectedFlatPlayableIndex==-1) return;
+	if (flatPlaylistTracks==null) return;
+	if (flatPlaylistTracks.size()==0) return;
+	PlaylistTrack playlistTrack = flatPlaylistTracks.get(selectedFlatPlayableIndex);
 	
-	  if (playlistTrack.baseTreeItem.getStatus()!=TrackTreeItem.PLAYING)
+	clearPlayNext();  
+	  
+	if (playlistTrack.baseTreeItem.getStatus()!=TrackTreeItem.PLAYING)
     {  
       playlistTrack.baseTreeItem.setNextPlayImage(true);
       nextTrack=selectedFlatPlayableIndex;
-      if (previouslySelectedTrack!=null) 
-      {
-        if (!previouslySelectedTrack.playing)
-        previouslySelectedTrack.baseTreeItem.setNextPlayImage(false);
-      }
-      previouslySelectedTrack=playlistTrack;
     }
 	  //System.out.println("Playlist next track: "+nextTrack);
+  }
+  
+  private void clearPlayNext()
+  {
+	for (PlaylistTrack playListTrack : flatPlaylistTracks)
+	{
+		playListTrack.baseTreeItem.setNextPlayImage(false);
+	}
   }
   
   public void disableTrack(boolean set)
